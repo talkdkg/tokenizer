@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0"?>
 <!--
 /*
  * Copyright 2007-2012 Tokenizer Inc.
@@ -22,53 +22,37 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
 >
 	<modelVersion>4.0.0</modelVersion>
-	<artifactId>main-module</artifactId>
-	<packaging>jar</packaging>
 	<parent>
-		<groupId>org.tokenizer</groupId>
 		<artifactId>tokenizer</artifactId>
+		<groupId>org.tokenizer</groupId>
 		<version>1.0-SNAPSHOT</version>
-		<relativePath>../pom.xml</relativePath>
+		<relativePath>..</relativePath>
 	</parent>
-	<name>org.tokenizer :: main kauri module</name>
+	<artifactId>tokenizer-core</artifactId>
 	<dependencies>
 		<dependency>
-			<groupId>org.restlet.jse</groupId>
-			<artifactId>org.restlet</artifactId>
+			<groupId>com.google.code.crawler-commons</groupId>
+			<artifactId>crawler-commons</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>javax.ws.rs</groupId>
-			<artifactId>jsr311-api</artifactId>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-beans</artifactId>
+			<groupId>org.apache.solr</groupId>
+			<artifactId>solr-solrj</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.kauriproject</groupId>
-			<artifactId>kauri-representationbuilder-api</artifactId>
+			<groupId>org.apache.tika</groupId>
+			<artifactId>tika-parsers</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.kauriproject</groupId>
-			<artifactId>kauri-dbresources-impl</artifactId>
-			<version>${version.kauri}</version>
+			<groupId>org.lilyproject</groupId>
+			<artifactId>lily-import</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.kauriproject</groupId>
-			<artifactId>kauri-dbresources-impl</artifactId>
-			<version>${version.kauri}</version>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
 		</dependency>
 	</dependencies>
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.kauriproject</groupId>
-				<artifactId>kauri-genclassloader-plugin</artifactId>
-			</plugin>
-			<plugin>
-				<groupId>org.eclipse.m2e</groupId>
-				<artifactId>lifecycle-mapping</artifactId>
-			</plugin>
-		</plugins>
-	</build>
 </project>
