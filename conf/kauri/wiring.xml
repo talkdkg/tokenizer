@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wiring>
+
+  <modules>
+
+    <artifact id="routing" groupId="org.kauriproject" artifactId="kauri-routing-impl">
+    </artifact>
+
+    <artifact id="template" groupId="org.kauriproject" artifactId="kauri-template-service-impl">
+    </artifact>
+
+    <artifact id="representation" groupId="org.kauriproject" artifactId="kauri-representationbuilder-impl">
+    </artifact>
+
+    <artifact id="jquery" groupId="org.kauriproject" artifactId="kauri-jquery" >
+      <mount name="main" path="/kauri/jquery"/>
+    </artifact>
+
+    <artifact id="tmprsrc" groupId="org.kauriproject" artifactId="kauri-tmprsrc"> 
+      <mount name="upload" path="/kauri/upload" /> 
+      <inject-restservice name="store" ref="url(file:///tmp/kauri-temp-upload)" /> 
+    </artifact> 
+
+    <artifact id="forms" groupId="org.kauriproject" artifactId="kauri-forms-framework" >
+      <mount name="main" path="/kauri/forms"/>
+      <inject-restservice name="jquery" ref="jquery:main"/>
+      <inject-restservice name="upload" ref="tmprsrc:upload"/>
+    </artifact>
+
+    <artifact id="application" groupId="org.tokenizer" artifactId="main-module" version="1.0-SNAPSHOT">
+      <inject-restservice name="forms" ref="forms:main"/>
+      <inject-restservice name="jquery" ref="jquery:main"/>
+
+      <mount name="main" path=""/>
+      <mount name="data" path="/data"/>
+    </artifact>
+
+  </modules>
+
+</wiring>

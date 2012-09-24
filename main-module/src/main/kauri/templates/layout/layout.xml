@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<html xmlns:t="http://kauriproject.org/template">
+  <head>
+    <title><t:block name="title">[title]</t:block></title>
+    <link rel="stylesheet" type="text/css" href="${publicUri('service:/main/static/css/main.css')}"/>
+    <script type="text/javascript" src="${publicUri('service:/main/static/js/basic.js')}"/>
+    <t:block name="extraHeaders"/>
+  </head>
+
+  <body>
+    <t:block name="content"/>
+
+    <br/>
+    <hr/>
+    <a href="${publicUri('service:/main/')}">Home</a>
+    |
+    <a href="http://kauriproject.org">Kauri</a>
+  </body>
+</html>
