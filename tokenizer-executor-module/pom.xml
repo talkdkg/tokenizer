@@ -16,66 +16,73 @@
  * limitations under the License.
  */
  -->
-<project
-	xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
 >
-	<modelVersion>4.0.0</modelVersion>
-	<artifactId>tokenizer-executor-module</artifactId>
-	<packaging>jar</packaging>
-	<parent>
-		<groupId>org.tokenizer</groupId>
-		<artifactId>tokenizer</artifactId>
-		<version>1.0-SNAPSHOT</version>
-		<relativePath>../pom.xml</relativePath>
-	</parent>
-	<name>org.tokenizer :: executor :: main kauri module</name>
-	<dependencies>
-		<dependency>
-			<groupId>org.restlet.jse</groupId>
-			<artifactId>org.restlet</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>javax.ws.rs</groupId>
-			<artifactId>jsr311-api</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-beans</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.kauriproject</groupId>
-			<artifactId>kauri-representationbuilder-api</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.kauriproject</groupId>
-			<artifactId>kauri-dbresources-impl</artifactId>
-			<version>${version.kauri}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.lilyproject</groupId>
-			<artifactId>lily-zk-util</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>tokenizer-executor-master</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>tokenizer-executor-worker</artifactId>
-		</dependency>
-	</dependencies>
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.kauriproject</groupId>
-				<artifactId>kauri-genclassloader-plugin</artifactId>
-			</plugin>
+  <modelVersion>4.0.0</modelVersion>
+  <artifactId>tokenizer-executor-module</artifactId>
+  <packaging>jar</packaging>
+  <parent>
+    <groupId>org.tokenizer</groupId>
+    <artifactId>tokenizer</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <relativePath>../pom.xml</relativePath>
+  </parent>
+  <name>org.tokenizer :: executor :: main kauri module</name>
+  <dependencies>
+    <dependency>
+      <groupId>org.restlet.jse</groupId>
+      <artifactId>org.restlet</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>javax.ws.rs</groupId>
+      <artifactId>jsr311-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-beans</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.kauriproject</groupId>
+      <artifactId>kauri-representationbuilder-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.kauriproject</groupId>
+      <artifactId>kauri-dbresources-impl</artifactId>
+      <version>${version.kauri}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.lilyproject</groupId>
+      <artifactId>lily-general-module</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.lilyproject</groupId>
+      <artifactId>lily-hbase-util</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.lilyproject</groupId>
+      <artifactId>lily-zk-util</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>tokenizer-executor-master</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>tokenizer-executor-worker</artifactId>
+    </dependency>
+  </dependencies>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.kauriproject</groupId>
+        <artifactId>kauri-genclassloader-plugin</artifactId>
+      </plugin>
 <!-- 			<plugin>
 				<groupId>org.eclipse.m2e</groupId>
 				<artifactId>lifecycle-mapping</artifactId>
 			</plugin>
- -->		</plugins>
-	</build>
+ -->
+    </plugins>
+  </build>
 </project>

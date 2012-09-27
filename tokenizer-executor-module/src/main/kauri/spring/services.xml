@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
-<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:kauri="http://kauriproject.org/runtime/1.0#springext"
-  xmlns:context="http://www.springframework.org/schema/context"
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:kauri="http://kauriproject.org/runtime/1.0#springext" xmlns:context="http://www.springframework.org/schema/context"
   xsi:schemaLocation="http://www.springframework.org/schema/beans
                              http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
                              http://www.springframework.org/schema/context
@@ -9,14 +9,19 @@
                              http://www.kauriproject.org/schemas/runtime/springext.xsd"
 >
   <context:annotation-config/>
-  <kauri:module restletContext="restletContext" classLoader="moduleClassLoader" handle="module" conf="confRegistry"/>
+  <kauri:module restletContext="restletContext" classLoader="moduleClassLoader"
+    handle="module" conf="confRegistry"/>
   <bean class="org.kauriproject.runtime.rapi.ConfPlaceholderConfigurer">
     <constructor-arg ref="confRegistry"/>
   </bean>
-  <kauri:module restletContext="restletContext" classLoader="moduleClassLoader" handle="module"/>
-  <kauri:import-service id="representationBuilder" service="org.kauriproject.representation.build.RepresentationBuilder"/>
-  <kauri:import-service id="routingService" service="org.kauriproject.routing.RoutingService"/>
-  <kauri:import-service id="templateService" service="org.kauriproject.template.service.TemplateService"/>
+  <kauri:module restletContext="restletContext" classLoader="moduleClassLoader"
+    handle="module"/>
+  <kauri:import-service id="representationBuilder"
+    service="org.kauriproject.representation.build.RepresentationBuilder"/>
+  <kauri:import-service id="routingService"
+    service="org.kauriproject.routing.RoutingService"/>
+  <kauri:import-service id="templateService"
+    service="org.kauriproject.template.service.TemplateService"/>
   <kauri:import-restservice name="forms"/>
   <kauri:import-restservice name="jquery"/>
   <kauri:export-restservice ref="main"/>
@@ -37,11 +42,53 @@
     <constructor-arg value="${zookeeper:sessionTimeout}"/>
     <constructor-arg value="${zookeeper:startupTimeout}"/>
   </bean>
-  <bean id="fetcherWorker" class="org.tokenizer.executor.worker.FetcherWorker">
-    <constructor-arg ref="fetcherModel"/>
+  <bean id="executorWorker" class="org.tokenizer.executor.worker.ExecutorWorker">
+    <constructor-arg ref="executorModel"/>
     <constructor-arg ref="zooKeeper"/>
   </bean>
-  <bean id="fetcherModel" class="org.tokenizer.executor.model.impl.FetcherModelImpl">
+  <bean id="executorModel" class="org.tokenizer.executor.model.impl.ExecutorModelImpl">
     <constructor-arg ref="zooKeeper"/>
+  </bean>
+  
+  
+    <!-- The depends-on zooKeeper is so that Lily's ZooKeeper connection establishment code
+       is the reference with regards to waiting until ZooKeeper is available. -->
+  <bean id="hbaseConfiguration"
+    class="org.lilyproject.server.modules.general.HadoopConfigurationFactoryImpl"
+    depends-on="zooKeeper"
+  >
+    <constructor-arg>
+      <kauri:conf path="hbase"/>
+    </constructor-arg>
+    <constructor-arg>
+      <kauri:conf path="mapreduce"/>
+    </constructor-arg>
+    <constructor-arg value="${zookeeper:connectString}"/>
+    <constructor-arg value="${zookeeper:sessionTimeout}"/>
+  </bean>
+  <bean id="hbaseConf" factory-bean="hbaseConfiguration" factory-method="getHBaseConf"/>
+  <bean id="hbaseTableFactory" class="org.lilyproject.util.hbase.HBaseTableFactoryImpl">
+    <constructor-arg ref="hbaseConf"/>
+    <constructor-arg>
+      <bean class="org.lilyproject.server.modules.general.TableConfigBuilder"
+        factory-method="buildTableConfigs"
+      >
+        <constructor-arg>
+          <kauri:conf path="tables"/>
+        </constructor-arg>
+      </bean>
+    </constructor-arg>
+    <constructor-arg>
+      <bean class="org.lilyproject.server.modules.general.TableConfigBuilder"
+        factory-method="buildCfConfig"
+      >
+        <constructor-arg>
+<!-- doesn't work with recent Kauri...           
+<kauri:conf path="tables" select="familyDefaults" type="node"/>
+ -->
+          <kauri:conf path="tables" select="familyDefaults"/>
+        </constructor-arg>
+      </bean>
+    </constructor-arg>
   </bean>
 </beans>
