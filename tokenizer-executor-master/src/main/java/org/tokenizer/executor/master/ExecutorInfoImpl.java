@@ -13,25 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.tokenizer.core.http;
+package org.tokenizer.executor.master;
 
-import org.apache.hadoop.conf.Configuration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.lilyproject.util.Version;
 
-import crawlercommons.fetcher.UserAgent;
+public class ExecutorInfoImpl implements ExecutorInfo {
 
-public class FetcherUtils {
+	private boolean master;
 
-	private static final Logger LOG = LoggerFactory.getLogger(FetcherUtils.class);
-
-	private static Configuration conf = new Configuration();
-
-	static {
-		conf.addResource("fetcher-default.xml");
-		conf.addResource("fetcher.xml");
+	@Override
+	public String getVersion() {
+    return Version.readVersion("org.tokenizer", "tokenizer-executor-master");
 	}
 
-	public static final UserAgent USER_AGENT = new UserAgent(conf.get("agent.name", ""), conf.get("agent.email", ""), conf.get("agent.url", ""));
+  @Override
+	public boolean isMaster() {
+		return master;
+	}
+
+	@Override
+	public void setMaster(boolean master) {
+		this.master = master;
+	}
 
 }

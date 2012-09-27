@@ -13,25 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.tokenizer.core.http;
+package org.tokenizer.executor.engine;
 
-import org.apache.hadoop.conf.Configuration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import crawlercommons.fetcher.UserAgent;
-
-public class FetcherUtils {
-
-	private static final Logger LOG = LoggerFactory.getLogger(FetcherUtils.class);
-
-	private static Configuration conf = new Configuration();
-
-	static {
-		conf.addResource("fetcher-default.xml");
-		conf.addResource("fetcher.xml");
-	}
-
-	public static final UserAgent USER_AGENT = new UserAgent(conf.get("agent.name", ""), conf.get("agent.email", ""), conf.get("agent.url", ""));
-
+public class SolrFields {
+  
+  public static final String LILY_ID = "lily.id";
+  
+  /**
+   * Solr is required to store URL and Timestamp fields, URL is "stored" and
+   * Timestamp is "indexed", for better performance and failover (we might have
+   * URL in Solr, and empty Lily server)
+   */
+  public static final String BASE_URL = "baseUrl";
+  public static final String TLD = "tld";
+  public static final String TIMESTAMP = "timestamp";
+  
 }

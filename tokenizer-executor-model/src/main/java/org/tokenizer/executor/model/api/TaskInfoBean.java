@@ -13,25 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.tokenizer.core.http;
+package org.tokenizer.executor.model.api;
 
-import org.apache.hadoop.conf.Configuration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+/**
+ * TODO: this class should be used as part of TaskDefinition; serialized/deserialized to JSON.
+ * 
+ * @author Fuad
+ * 
+ */
+public class TaskInfoBean {
 
-import crawlercommons.fetcher.UserAgent;
+	private long submitTime;
 
-public class FetcherUtils {
+  public long getSubmitTime() {
+    return submitTime;
+  }
 
-	private static final Logger LOG = LoggerFactory.getLogger(FetcherUtils.class);
-
-	private static Configuration conf = new Configuration();
-
-	static {
-		conf.addResource("fetcher-default.xml");
-		conf.addResource("fetcher.xml");
-	}
-
-	public static final UserAgent USER_AGENT = new UserAgent(conf.get("agent.name", ""), conf.get("agent.email", ""), conf.get("agent.url", ""));
+  public void setSubmitTime(long submitTime) {
+    this.submitTime = submitTime;
+  }
 
 }

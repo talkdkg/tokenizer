@@ -27,13 +27,16 @@
       <inject-restservice name="upload" ref="tmprsrc:upload"/>
     </artifact>
 
-    <artifact id="application" groupId="org.tokenizer" artifactId="main-module" version="1.0-SNAPSHOT">
+    <artifact id="executor" groupId="org.tokenizer" artifactId="tokenizer-executor-module" version="1.0-SNAPSHOT">
       <inject-restservice name="forms" ref="forms:main"/>
       <inject-restservice name="jquery" ref="jquery:main"/>
 
       <mount name="main" path=""/>
       <mount name="data" path="/data"/>
     </artifact>
+
+
+
 
   </modules>
 

@@ -13,25 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.tokenizer.core.http;
+package org.tokenizer.executor.model.configuration;
 
-import org.apache.hadoop.conf.Configuration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import crawlercommons.fetcher.UserAgent;
-
-public class FetcherUtils {
-
-	private static final Logger LOG = LoggerFactory.getLogger(FetcherUtils.class);
-
-	private static Configuration conf = new Configuration();
-
-	static {
-		conf.addResource("fetcher-default.xml");
-		conf.addResource("fetcher.xml");
+/**
+ * Thrown when there is an error in the user-provided configuration.
+ */
+@SuppressWarnings("serial")
+public class TaskConfigurationException extends Exception {
+	public TaskConfigurationException() {
+		super();
 	}
 
-	public static final UserAgent USER_AGENT = new UserAgent(conf.get("agent.name", ""), conf.get("agent.email", ""), conf.get("agent.url", ""));
+	public TaskConfigurationException(String message) {
+		super(message);
+	}
 
+	public TaskConfigurationException(String message, Throwable cause) {
+		super(message, cause);
+	}
+
+	public TaskConfigurationException(Throwable cause) {
+		super(cause);
+	}
 }

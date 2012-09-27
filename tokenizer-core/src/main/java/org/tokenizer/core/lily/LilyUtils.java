@@ -20,6 +20,7 @@ import java.io.IOException;
 import org.apache.zookeeper.KeeperException;
 import org.lilyproject.client.LilyClient;
 import org.lilyproject.client.NoServersException;
+import org.lilyproject.repository.api.QName;
 import org.lilyproject.repository.api.Repository;
 import org.lilyproject.repository.api.RepositoryException;
 import org.lilyproject.util.zookeeper.ZkConnectException;
@@ -31,6 +32,36 @@ public class LilyUtils {
 
 	private static final Logger LOG = LoggerFactory.getLogger(LilyUtils.class);
 
+	/**
+	 * Namespace "raw.http" reflects 1. RAW 2. CA Protocol is HTTP
+	 */
+	public static final String RAW_HTTP_NAMESPACE = "raw.http";
+
+	/**
+	 * Name reflects - "url" means traditional single-page-per-URL approach - primary key is constructed upon URL
+	 * (contr-sample: "ping")
+	 */
+	public static final QName RAW_RECORD_TYPE_QNAME = new QName(RAW_HTTP_NAMESPACE, "url");
+
+	public static final QName FETCHED_RESULT_TLD_QNAME = new QName(RAW_HTTP_NAMESPACE, "tld");
+	public static final QName FETCHED_RESULT_BASE_URL_QNAME = new QName(RAW_HTTP_NAMESPACE, "baseUrl");
+	public static final QName FETCHED_RESULT_FETCHED_URL_QNAME = new QName(RAW_HTTP_NAMESPACE, "fetchedUrl");
+	public static final QName FETCHED_RESULT_FETCH_TIME_QNAME = new QName(RAW_HTTP_NAMESPACE, "timestamp");
+	public static final QName FETCHED_RESULT_CONTENT_QNAME = new QName(RAW_HTTP_NAMESPACE, "content");
+	public static final QName FETCHED_RESULT_CONTENT_TYPE_QNAME = new QName(RAW_HTTP_NAMESPACE, "contentType");
+	public static final QName FETCHED_RESULT_LANGUAGE_QNAME = new QName(RAW_HTTP_NAMESPACE, "language");
+	public static final QName FETCHED_RESULT_CHARSET_QNAME = new QName(RAW_HTTP_NAMESPACE, "charset");
+	public static final QName FETCHED_RESULT_RESPONSE_CODE_QNAME = new QName(RAW_HTTP_NAMESPACE, "responseCode");
+	public static final QName FETCHED_RESULT_RESPONSE_MESSAGE_QNAME = new QName(RAW_HTTP_NAMESPACE, "responseMessage");
+
+	// for RSS feeds
+	public static final QName RSS_TITLE_QNAME = new QName(RAW_HTTP_NAMESPACE, "rssTitle");
+	public static final QName RSS_DESCRIPTION_QNAME = new QName(RAW_HTTP_NAMESPACE, "rssDescription");
+	public static final QName RSS_PUBLISHED_DATE_QNAME = new QName(RAW_HTTP_NAMESPACE, "rssPublishedDate");
+	public static final QName RSS_AUTHOR_QNAME = new QName(RAW_HTTP_NAMESPACE, "rssAuthor");
+	public static final QName RSS_CATEGORY_QNAME = new QName(RAW_HTTP_NAMESPACE, "rssCategory");
+
+	
 	private static volatile LilyClient lilyClient;
 	private static Repository repository;
 

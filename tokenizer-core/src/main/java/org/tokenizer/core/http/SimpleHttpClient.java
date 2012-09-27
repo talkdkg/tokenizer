@@ -91,19 +91,6 @@ import crawlercommons.fetcher.IOFetchException;
 import crawlercommons.fetcher.UrlFetchException;
 import crawlercommons.fetcher.UserAgent;
 
-/**
- * 
- * @author Fuad Efendi <br/>
- *         Changes to initial Crawler-Commons code: <br/>
- *         <ul>
- *         <li>added monitoring thread (Keep-Alive specific)</li>
- *         <li>removed crappy (deprecated) code related to redirects</li>
- *         <li>added ThreadLocal-based cookie store, unsynchronized, application scope</li>
- *         </ul>
- * 
- *         <a href="https://outsideiq.jira.com/wiki/display/DEV/SimpleHttpClient"> Details at WIKI </a>
- * 
- */
 public class SimpleHttpClient {
 
 	private static final Logger LOG = LoggerFactory.getLogger(SimpleHttpClient.class);
