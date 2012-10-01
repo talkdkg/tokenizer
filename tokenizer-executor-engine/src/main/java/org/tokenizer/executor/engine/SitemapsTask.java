@@ -21,7 +21,6 @@ import java.net.URL;
 import java.util.List;
 
 import org.apache.zookeeper.KeeperException;
-import org.lilyproject.repository.api.Repository;
 import org.lilyproject.util.Logs;
 import org.lilyproject.util.zookeeper.LeaderElection;
 import org.lilyproject.util.zookeeper.LeaderElectionCallback;
@@ -30,6 +29,7 @@ import org.lilyproject.util.zookeeper.ZooKeeperItf;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tokenizer.core.http.FetcherUtils;
+import org.tokenizer.crawler.db.CrawlerHBaseRepository;
 import org.tokenizer.executor.model.api.WritableExecutorModel;
 import org.tokenizer.executor.model.configuration.TaskConfiguration;
 
@@ -61,8 +61,9 @@ public class SitemapsTask extends AbstractTask {
   private static final long DELAY = 4 * 3600 * 1000L;
   
   public SitemapsTask(String fetchName, ZooKeeperItf zk,
-      TaskConfiguration fetcherConfiguration, Repository repository,
-      WritableExecutorModel fetcherModel, HostLocker hostLocker) {
+      TaskConfiguration fetcherConfiguration,
+      CrawlerHBaseRepository repository, WritableExecutorModel fetcherModel,
+      HostLocker hostLocker) {
     super(fetchName, zk, fetcherConfiguration, repository, fetcherModel,
         hostLocker);
     
@@ -229,8 +230,10 @@ public class SitemapsTask extends AbstractTask {
         
         sitemap = (SiteMap) abstractSitemap;
         for (SiteMapURL siteMapURL : sitemap.getSiteMapUrls()) {
-          PersistenceUtils.injectIfNotExists(siteMapURL.getUrl().toString(),
-              repository, metricsCache);
+          
+          // TODO:
+          // PersistenceUtils.injectIfNotExists(siteMapURL.getUrl().toString(),
+          // repository, metricsCache);
         }
         metricsCache.increment(MetricsCache.SITEMAPS_PROCESSED);
       }

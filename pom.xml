@@ -25,8 +25,10 @@
     <version.httpclient>4.2.1</version.httpclient>
     <version.jackson>1.9.7</version.jackson>
     <version.jaxrs>1.0</version.jaxrs>
+    <version.junit>4.10</version.junit>
     <version.kauri>0.4-RC2</version.kauri>
     <version.lily>1.4-SNAPSHOT</version.lily>
+    <version.log4j>1.2.17</version.log4j>
     <version.restlet>svn6565</version.restlet>
     <version.rome>1.0</version.rome>
     <version.slf4j>1.6.4</version.slf4j>
@@ -42,13 +44,13 @@
   <name>Kauri application: tokenizer</name>
   <modules>
     <module>tokenizer-core</module>
+    <module>tokenizer-crawler-db</module>
     <module>tokenizer-executor-admin-cli</module>
     <module>tokenizer-executor-engine</module>
     <module>tokenizer-executor-master</module>
     <module>tokenizer-executor-model</module>
     <module>tokenizer-executor-module</module>
     <module>tokenizer-executor-worker</module>
-    <module>tokenizer-crawler-db</module>
   </modules>
   <repositories>
     <repository>
@@ -105,6 +107,38 @@
         <groupId>javax.ws.rs</groupId>
         <artifactId>jsr311-api</artifactId>
         <version>${version.jaxrs}</version>
+      </dependency>
+      <dependency>
+        <groupId>junit</groupId>
+        <artifactId>junit</artifactId>
+        <version>${version.junit}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>log4j</groupId>
+        <artifactId>log4j</artifactId>
+        <version>${version.log4j}</version>
+        <scope>runtime</scope>
+        <exclusions>
+          <!-- jmxtools and jmxri dependencies were broken in repo -->
+          <exclusion>
+            <groupId>com.sun.jdmk</groupId>
+            <artifactId>jmxtools</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>com.sun.jmx</groupId>
+            <artifactId>jmxri</artifactId>
+          </exclusion>
+          <!-- Excluded mail & jms to reduce dependencies, assuming these are rarely used. -->
+          <exclusion>
+            <groupId>javax.mail</groupId>
+            <artifactId>mail</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>javax.jms</groupId>
+            <artifactId>jms</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>net.iharder</groupId>
@@ -241,6 +275,11 @@
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
+        <artifactId>tokenizer-crawler-db</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
         <artifactId>tokenizer-executor-engine</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -265,6 +304,18 @@
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-log4j12</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
     </dependency>
   </dependencies>
   <build>

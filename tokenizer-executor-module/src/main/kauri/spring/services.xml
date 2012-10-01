@@ -45,6 +45,7 @@
   <bean id="executorWorker" class="org.tokenizer.executor.worker.ExecutorWorker">
     <constructor-arg ref="executorModel"/>
     <constructor-arg ref="zooKeeper"/>
+    <constructor-arg ref="crawlerRepository"/>
   </bean>
   <bean id="executorModel" class="org.tokenizer.executor.model.impl.ExecutorModelImpl">
     <constructor-arg ref="zooKeeper"/>
@@ -90,5 +91,8 @@
         </constructor-arg>
       </bean>
     </constructor-arg>
+  </bean>
+  <bean id="crawlerRepository" class="org.tokenizer.crawler.db.CrawlerHBaseRepository">
+    <constructor-arg ref="hbaseTableFactory"/>
   </bean>
 </beans>

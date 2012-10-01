@@ -22,19 +22,28 @@ import java.security.NoSuchAlgorithmException;
 /**
  * 
  * @author Fuad
- * 
+ * TODO: use ThreadLocal to cache instance
  */
 public class MD5 {
 
+  
+  public static final byte[] digest(byte[] bytes) {
+    MessageDigest md;
+    try {
+      md = MessageDigest.getInstance("MD5");
+    } catch (NoSuchAlgorithmException e) {
+      throw new RuntimeException(e);
+    }
+    md.update(bytes);
+    return md.digest();
+
+  }
+
+  
+  
 	public static final String MD5(byte[] bytes) {
-		MessageDigest md;
-		try {
-			md = MessageDigest.getInstance("MD5");
-		} catch (NoSuchAlgorithmException e) {
-			throw new RuntimeException(e);
-		}
-		md.update(bytes);
-		byte[] mdbytes = md.digest();
+
+	  byte[] mdbytes = digest(bytes);
 
 		// convert the byte to hex format
 		StringBuffer hexString = new StringBuffer();

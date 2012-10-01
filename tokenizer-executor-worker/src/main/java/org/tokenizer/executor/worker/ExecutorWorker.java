@@ -28,13 +28,12 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
 import org.apache.zookeeper.KeeperException;
-import org.lilyproject.repository.api.Repository;
 import org.lilyproject.util.Logs;
 import org.lilyproject.util.zookeeper.LeaderElectionSetupException;
 import org.lilyproject.util.zookeeper.ZooKeeperItf;
+import org.tokenizer.crawler.db.CrawlerHBaseRepository;
 import org.tokenizer.executor.engine.AbstractTask;
 import org.tokenizer.executor.engine.ClassicRobotTask;
-import org.tokenizer.executor.engine.FetchByQueryTask;
 import org.tokenizer.executor.engine.HostLocker;
 import org.tokenizer.executor.engine.RssFetcherTask;
 import org.tokenizer.executor.engine.SimpleMultithreadedFetcher;
@@ -63,7 +62,7 @@ public class ExecutorWorker {
   
   private WritableExecutorModel executorModel;
   
-  private Repository repository;
+  private CrawlerHBaseRepository repository;
   
   private ZooKeeperItf zk;
   
@@ -78,8 +77,9 @@ public class ExecutorWorker {
   /** will be shared between tasks; multithreaded access */
   private HostLocker hostLocker;
   
-  public ExecutorWorker(WritableExecutorModel executorModel, ZooKeeperItf zk)
-      throws IOException, TaskNotFoundException {
+  public ExecutorWorker(WritableExecutorModel executorModel, ZooKeeperItf zk,
+      CrawlerHBaseRepository repository) throws IOException,
+      TaskNotFoundException {
     this.executorModel = executorModel;
     this.zk = zk;
     try {
@@ -303,9 +303,6 @@ public class ExecutorWorker {
     
     if (taskConfiguration.getType().equals("SitemapsTask")) {
       task = new SitemapsTask(taskConfiguration.getName(), zk,
-          taskConfiguration, repository, executorModel, hostLocker);
-    } else if (taskConfiguration.getType().equals("FetchByQueryTask")) {
-      task = new FetchByQueryTask(taskConfiguration.getName(), zk,
           taskConfiguration, repository, executorModel, hostLocker);
     } else if (taskConfiguration.getType().equals("ClassicRobotTask")) {
       task = new ClassicRobotTask(taskConfiguration.getName(), zk,

@@ -16,11 +16,11 @@
 package org.tokenizer.executor.engine;
 
 import org.apache.zookeeper.KeeperException;
-import org.lilyproject.repository.api.Repository;
 import org.lilyproject.util.zookeeper.LeaderElectionSetupException;
 import org.lilyproject.util.zookeeper.ZooKeeperItf;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tokenizer.crawler.db.CrawlerHBaseRepository;
 import org.tokenizer.executor.model.api.TaskDefinition;
 import org.tokenizer.executor.model.api.TaskNotFoundException;
 import org.tokenizer.executor.model.api.WritableExecutorModel;
@@ -33,18 +33,19 @@ public abstract class AbstractTask implements Runnable {
   protected final String taskName;
   protected final ZooKeeperItf zk;
   protected final TaskConfiguration taskConfiguration;
-  protected final Repository repository;
+  protected final CrawlerHBaseRepository crawlerRepository;
   protected final WritableExecutorModel model;
   protected final HostLocker hostLocker;
   protected final MetricsCache metricsCache;
   
   public AbstractTask(String taskName, ZooKeeperItf zk,
-      TaskConfiguration taskConfiguration, Repository repository,
-      WritableExecutorModel model, HostLocker hostLocker) {
+      TaskConfiguration taskConfiguration,
+      CrawlerHBaseRepository crawlerRepository, WritableExecutorModel model,
+      HostLocker hostLocker) {
     this.taskName = taskName;
     this.zk = zk;
     this.taskConfiguration = taskConfiguration;
-    this.repository = repository;
+    this.crawlerRepository = crawlerRepository;
     this.model = model;
     this.hostLocker = hostLocker;
     this.metricsCache = new MetricsCache(taskName, model);

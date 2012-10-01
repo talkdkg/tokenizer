@@ -31,6 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tokenizer.core.http.FetcherUtils;
 import org.tokenizer.core.http.SimpleHttpClient;
+import org.tokenizer.crawler.db.CrawlerHBaseRepository;
 import org.tokenizer.executor.model.api.WritableExecutorModel;
 import org.tokenizer.executor.model.configuration.TaskConfiguration;
 
@@ -58,7 +59,7 @@ public class RssFetcherTask extends AbstractTask {
       FetcherUtils.USER_AGENT);
   
   public RssFetcherTask(String fetchName, ZooKeeperItf zk,
-      TaskConfiguration fetcherConfiguration, Repository repository,
+      TaskConfiguration fetcherConfiguration, CrawlerHBaseRepository repository,
       WritableExecutorModel fetcherModel, HostLocker hostLocker) {
     super(fetchName, zk, fetcherConfiguration, repository, fetcherModel,
         hostLocker);
@@ -232,7 +233,11 @@ public class RssFetcherTask extends AbstractTask {
       } else {
         continue;
       }
-      PersistenceUtils.injectIfNotExists(entry, repository, metricsCache);
+     
+      // TODO:
+      //PersistenceUtils.injectIfNotExists(entry, repository, metricsCache);
+    
+    
     }
   }
   

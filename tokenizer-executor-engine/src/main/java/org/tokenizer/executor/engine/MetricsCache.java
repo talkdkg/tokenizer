@@ -59,9 +59,9 @@ public class MetricsCache {
   
   public static final String NOT_INDEXED_YET = "URLs retrieved but not indexed yet";
   
-  public static final String LILY_UPDATES_COUNT = "Lily updates count";
-  public static final String LILY_UPDATES_TIME = "Lily updates time (ms)";
-  public static final String LILY_INJECTS_COUNT = "Lily injects count";
+  public static final String UPDATES_COUNT = "Total updates";
+  public static final String UPDATES_TIME = "Total time for updates (ms)";
+  public static final String INJECTS_COUNT = "Total injects";
   public static final String SITEMAPS_PROCESSED = "sitemaps processed";
   public static final String SITEMAP_INDEXES_PROCESSED = "sitemap indexes processed";
   

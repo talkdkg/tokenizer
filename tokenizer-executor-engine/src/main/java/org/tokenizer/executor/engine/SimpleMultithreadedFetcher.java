@@ -23,20 +23,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.solr.client.solrj.SolrQuery;
-import org.apache.solr.client.solrj.SolrServer;
-import org.apache.solr.client.solrj.SolrServerException;
-import org.apache.solr.client.solrj.response.FacetField;
-import org.apache.solr.client.solrj.response.QueryResponse;
-import org.apache.solr.common.SolrDocument;
-import org.apache.solr.common.SolrDocumentList;
 import org.apache.zookeeper.KeeperException;
-import org.lilyproject.repository.api.Repository;
 import org.lilyproject.util.zookeeper.ZooKeeperItf;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tokenizer.core.http.FetcherUtils;
 import org.tokenizer.core.http.SimpleHttpClient;
+import org.tokenizer.crawler.db.CrawlerHBaseRepository;
 import org.tokenizer.executor.model.api.WritableExecutorModel;
 import org.tokenizer.executor.model.configuration.TaskConfiguration;
 
@@ -68,8 +61,9 @@ public class SimpleMultithreadedFetcher extends AbstractTask {
   private final static long HOSTS_REFRESH_DELAY = 60 * 60 * 1000L;
   
   public SimpleMultithreadedFetcher(String fetchName, ZooKeeperItf zk,
-      TaskConfiguration fetcherConfiguration, Repository repository,
-      WritableExecutorModel fetcherModel, HostLocker hostLocker) {
+      TaskConfiguration fetcherConfiguration,
+      CrawlerHBaseRepository repository, WritableExecutorModel fetcherModel,
+      HostLocker hostLocker) {
     
     super(fetchName, zk, fetcherConfiguration, repository, fetcherModel,
         hostLocker);
@@ -150,18 +144,6 @@ public class SimpleMultithreadedFetcher extends AbstractTask {
     
   }
   
-  /**
-   * @throws SolrServerException
-   */
-  private QueryResponse query(SolrQuery query) throws SolrServerException {
-    return getSolrServer().query(query);
-  }
-  
-  private SolrServer getSolrServer() {
-    // TODO
-    return null;
-  }
-  
   @Override
   public void run() {
     throw new RuntimeException("Not implemented!");
@@ -195,29 +177,6 @@ public class SimpleMultithreadedFetcher extends AbstractTask {
             continue;
           }
           
-          SolrQuery query = new SolrQuery();
-          query.setQuery("tld:" + host + " AND timestamp:0");
-          query.setStart(0);
-          query.setRows(1000);
-          
-          QueryResponse queryResponse = null;
-          try {
-            queryResponse = query(query);
-          } catch (SolrServerException e) {
-            LOG.error("Solr Exception, sleeping 60 seconds...", e);
-            try {
-              Thread.currentThread().sleep(60000);
-            } catch (InterruptedException e1) {
-              LOG.warn("interrupted...");
-              return;
-            }
-            
-          }
-          
-          if (queryResponse == null) continue;
-          
-          SolrDocumentList docs = queryResponse.getResults();
-          
           BaseRobotsParser parser = new SimpleRobotRulesParser();
           BaseRobotRules rules = null;
           try {
@@ -229,16 +188,7 @@ public class SimpleMultithreadedFetcher extends AbstractTask {
             // throw new CrawlerError(e);
           }
           
-          for (SolrDocument doc : docs) {
-            try {
-              PersistenceUtils.fetch(doc, repository, rules, metricsCache,
-                  simpleHttpClient);
-            } catch (InterruptedException e) {
-              LOG.error("InterruptedException catched... exiting...");
-              stop = true;
-              break;
-            }
-          }
+          // TODO: fetch URLs
           
           hostLocker.unlockLogFailure(host);
           
@@ -265,41 +215,11 @@ public class SimpleMultithreadedFetcher extends AbstractTask {
     }
     
     /**
-     * Retrieves (virtually unlimited) list of hosts from Solr TODO: implement
-     * "Collection" using Solr query
+     * Retrieves (virtually unlimited) list of hosts
      */
     private synchronized void refreshHosts() throws InterruptedException {
       
-      SolrQuery query = new SolrQuery();
-      query.setQuery("*:*");
-      query.setFacet(true);
-      query.setFacetMinCount(0);
-      query.setFacetLimit(-1);
-      query.addFacetField("tld");
-      query.setStart(0);
-      query.setRows(0);
-      
-      QueryResponse queryResponse = null;
-      
-      while (queryResponse == null) {
-        try {
-          queryResponse = query(query);
-        } catch (SolrServerException e) {
-          LOG.error("Solr Exception, sleeping 60 seconds...", e);
-          Thread.currentThread().sleep(60000);
-        }
-      }
-      
-      List<FacetField> facetFields = queryResponse.getFacetFields();
-      
-      FacetField facetField = facetFields.get(0);
-      
-      for (FacetField.Count c : facetField.getValues()) {
-        hosts.add(c.getName());
-      }
-      
+      // TODO:
     }
-    
   }
-  
 }
