@@ -42,7 +42,6 @@ public class UpdateTaskCli extends BaseAdminCli {
     options.add(nameOption);
     options.add(configurationOption);
     options.add(generalStateOption);
-    options.add(updateStateOption);
     options.add(buildStateOption);
     options.add(forceOption);
     

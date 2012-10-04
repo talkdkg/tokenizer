@@ -128,7 +128,6 @@ public class SimpleParser extends BaseParser {
 				result = task.get(getParserPolicy().getMaxParseDuration(), TimeUnit.MILLISECONDS);
 			} catch (TimeoutException e) {
 				task.cancel(true);
-				t.interrupt();
 				throw e;
 			} finally {
 				t = null;

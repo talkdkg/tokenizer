@@ -15,6 +15,10 @@
  */
 package org.tokenizer.crawler.db;
 
+import java.util.Arrays;
+
+import org.tokenizer.core.util.MD5;
+
 public class UrlRecord {
   
   private String url;
@@ -25,30 +29,40 @@ public class UrlRecord {
   public String getUrl() {
     return url;
   }
+  
   public void setUrl(String url) {
     this.url = url;
   }
+  
   public long getTimestamp() {
     return timestamp;
   }
+  
   public void setTimestamp(long timestamp) {
     this.timestamp = timestamp;
   }
+  
   public int getHttpResponseCode() {
     return httpResponseCode;
   }
+  
   public void setHttpResponseCode(int httpResponseCode) {
     this.httpResponseCode = httpResponseCode;
   }
+  
   public byte[] getDigest() {
     return digest;
   }
+  
   public void setDigest(byte[] digest) {
     this.digest = digest;
   }
   
-  
-  
-  
+  @Override
+  public String toString() {
+    return "UrlRecord [url=" + url + ", timestamp=" + timestamp
+        + ", httpResponseCode=" + httpResponseCode + ", digest="
+        + MD5.toHexString(digest) + "]";
+  }
   
 }

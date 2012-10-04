@@ -49,7 +49,8 @@ public abstract class AbstractTask implements Runnable {
     this.model = model;
     this.hostLocker = hostLocker;
     this.metricsCache = new MetricsCache(taskName, model);
-    this.metricsCache.reset();
+    LOG.debug("Resetting; it will produce TASK_DEFINITION_UPDATED event");
+    //this.metricsCache.reset();
   }
   
   public MetricsCache getMetricsCache() {
@@ -69,7 +70,7 @@ public abstract class AbstractTask implements Runnable {
   public abstract void start() throws InterruptedException,
       LeaderElectionSetupException, KeeperException;
   
-  public abstract void stop();
+  public abstract void stop() throws InterruptedException;
   
   public abstract Thread getThread();
   

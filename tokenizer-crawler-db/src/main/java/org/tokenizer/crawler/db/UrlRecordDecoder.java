@@ -38,6 +38,9 @@ public class UrlRecordDecoder {
   static final String EMPTY_STRING = "";
   static final String CHARSET = "US-ASCII";
   static final String URL_PREFIX = "http://";
+  static final String URL_PREFIX_HTTPS = "https://";
+  static final String MESSAGE_HTTP = "<non-http-host>";
+
   static final int URL_PREFIX_LENGTH = 7;
   
   public static String decode(Result result) {
@@ -117,7 +120,8 @@ public class UrlRecordDecoder {
   
   
   public static String getHost(String url) {
-    if (url == null || url.length() == 0 || !url.startsWith(URL_PREFIX)) return EMPTY_STRING;
+    if (url == null || url.length() == 0) return EMPTY_STRING;
+    if (!url.startsWith(URL_PREFIX) && !url.startsWith(URL_PREFIX_HTTPS)) return MESSAGE_HTTP;
     int end = url.indexOf('/', URL_PREFIX_LENGTH);
     end = end >= 0 ? end : url.length();
     return url.substring(URL_PREFIX_LENGTH, end);

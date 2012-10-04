@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<executor>
+	<task>
+        
+		<name>www.tokenizer.ca</name>
+		<type>ClassicRobotTask</type>
+		<tld>www.tokenizer.ca</tld>
+		<!-- sample of key/value pair -->
+        <property>
+			<key>delay</key>
+			<value>1000</value>
+		</property>
+	</task>
+</executor>

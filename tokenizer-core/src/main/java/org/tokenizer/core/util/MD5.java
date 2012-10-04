@@ -21,11 +21,9 @@ import java.security.NoSuchAlgorithmException;
 
 /**
  * 
- * @author Fuad
- * TODO: use ThreadLocal to cache instance
+ * @author Fuad TODO: use ThreadLocal to cache instance
  */
 public class MD5 {
-
   
   public static final byte[] digest(byte[] bytes) {
     MessageDigest md;
@@ -36,40 +34,45 @@ public class MD5 {
     }
     md.update(bytes);
     return md.digest();
-
+    
   }
-
   
+  public static final String MD5(byte[] bytes) {
+    
+    byte[] mdbytes = digest(bytes);
+    
+    return toHexString(mdbytes);
+  }
   
-	public static final String MD5(byte[] bytes) {
-
-	  byte[] mdbytes = digest(bytes);
-
-		// convert the byte to hex format
-		StringBuffer hexString = new StringBuffer();
-		for (int i = 0; i < mdbytes.length; i++) {
-			String hex = Integer.toHexString(0xff & mdbytes[i]);
-			if (hex.length() == 1)
-				hexString.append('0');
-			hexString.append(hex);
-		}
-
-		return hexString.toString();
-	}
-
-	public static final String MD5(String text) {
-		try {
-			return MD5(text.getBytes("UTF-8"));
-		} catch (UnsupportedEncodingException e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	public static void main(String[] args) {
-
-		System.out.println(MD5("http://gugehige.exblog.jp/"));
-		System.out.println("78abc5644577237daa605e6486eb9170");
-
-	}
-
+  public static final String MD5(String text) {
+    try {
+      return MD5(text.getBytes("UTF-8"));
+    } catch (UnsupportedEncodingException e) {
+      throw new RuntimeException(e);
+    }
+  }
+  
+  private static final String EMPTY_STRING = "";
+  
+  public final static String toHexString(byte[] bytes) {
+    
+    if (bytes == null || bytes.length == 0) return EMPTY_STRING;
+    StringBuffer hexString = new StringBuffer();
+    for (int i = 0; i < bytes.length; i++) {
+      String hex = Integer.toHexString(0xff & bytes[i]);
+      if (hex.length() == 1) hexString.append('0');
+      hexString.append(hex);
+    }
+    
+    return hexString.toString();
+    
+  }
+  
+  public static void main(String[] args) {
+    
+    System.out.println(MD5("http://gugehige.exblog.jp/"));
+    System.out.println("78abc5644577237daa605e6486eb9170");
+    
+  }
+  
 }

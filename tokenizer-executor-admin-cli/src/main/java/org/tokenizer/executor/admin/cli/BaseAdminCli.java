@@ -45,7 +45,6 @@ public abstract class BaseAdminCli extends BaseZkCliTool {
   protected Option nameOption;
   protected Option configurationOption;
   protected Option generalStateOption;
-  protected Option updateStateOption;
   protected Option buildStateOption;
   protected Option outputFileOption;
   

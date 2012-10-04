@@ -102,6 +102,12 @@
         <groupId>com.google.code.crawler-commons</groupId>
         <artifactId>crawler-commons</artifactId>
         <version>${version.crawler-commons}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.apache.tika</groupId>
+            <artifactId>tika-core</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>javax.ws.rs</groupId>

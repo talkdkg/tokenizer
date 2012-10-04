@@ -15,8 +15,12 @@
  */
 package org.tokenizer.executor.master;
 
-public interface ExecutorInfo extends ExecutorInfoMBean {
-
-	void setMaster(boolean master);
-
+public interface ExecutorInfo {
+  
+  String getVersion();
+  
+  boolean isMaster();
+  
+  void setMaster(boolean master);
+  
 }

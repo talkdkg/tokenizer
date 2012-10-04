@@ -57,7 +57,7 @@ public class PersistenceUtils {
   public static FetchedResult fetch(UrlRecord urlRecord,
       CrawlerHBaseRepository repository, BaseRobotRules baseRobotRules,
       MetricsCache metricsCache, SimpleHttpClient simpleHttpClient, String hostConstraint)
-      throws InterruptedException {
+      throws InterruptedException, IOException {
     
     metricsCache.increment(MetricsCache.URL_TOTAL_KEY);
     
@@ -65,17 +65,24 @@ public class PersistenceUtils {
     
     FetchedResult fetchedResult = fetch(urlRecord, repository, metricsCache,
         simpleHttpClient);
-    if (fetchedResult == null) return null;
+    
+    
+    if (fetchedResult == null) {
+      repository.update(urlRecord);
+      return null;
+    }
     
     parse(fetchedResult, repository, hostConstraint);
     
-    update(fetchedResult, urlRecord, repository, metricsCache);
-    
+    WebpageRecord webpageRecord = update(fetchedResult, urlRecord, repository, metricsCache);
+    urlRecord.setDigest(webpageRecord.getDigest());
+    repository.update(urlRecord);
+
     return fetchedResult;
     
   }
   
-  public static void update(FetchedResult fetchedResult, UrlRecord urlRecord,
+  public static WebpageRecord update(FetchedResult fetchedResult, UrlRecord urlRecord,
       CrawlerHBaseRepository repository, MetricsCache metricsCache)
       throws InterruptedException {
     
@@ -95,6 +102,8 @@ public class PersistenceUtils {
           System.currentTimeMillis() - start);
       LOG.error("", e);
     }
+    
+    return webpageRecord;
     
   }
   
@@ -136,6 +145,11 @@ public class PersistenceUtils {
       if (e.getMessage().contains("Aborted due to INTERRUPTED")) {
         throw new InterruptedException("Aborted...");
       }
+      //e.printStackTrace();
+      record.setHttpResponseCode(-2);
+      record.setTimestamp(System.currentTimeMillis());
+      return null;
+      
     }
     
     record.setTimestamp(System.currentTimeMillis());
@@ -210,6 +224,7 @@ public class PersistenceUtils {
         String host = UrlRecordDecoder.getHost(url);
         
         // This is definition of "domain restricted crawl" (vertical crawl):
+        
         if (!hostConstraint.equals(host)) {
           LOG.debug("extrenal host ignored: {}, URL: {}", host, url);
           continue;

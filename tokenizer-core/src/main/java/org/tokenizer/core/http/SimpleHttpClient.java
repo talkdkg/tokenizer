@@ -99,7 +99,7 @@ public class SimpleHttpClient {
 
 	private static final int DEFAULT_SO_TIMEOUT = 30000;
 	private static final int DEFAULT_CONNECTION_TIMEOUT = 60000;
-	private static final int DEFAULT_MAX_REDIRECTS = 8;
+	private static final int DEFAULT_MAX_REDIRECTS = 16;
 
 	// ThreadLocal replacement to traditional HttpContext
 	private static LocalContext context = new LocalContext();

@@ -28,7 +28,6 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
 import org.apache.zookeeper.KeeperException;
-import org.lilyproject.util.Logs;
 import org.lilyproject.util.zookeeper.LeaderElectionSetupException;
 import org.lilyproject.util.zookeeper.ZooKeeperItf;
 import org.tokenizer.crawler.db.CrawlerHBaseRepository;
@@ -79,88 +78,62 @@ public class ExecutorWorker {
   
   public ExecutorWorker(WritableExecutorModel executorModel, ZooKeeperItf zk,
       CrawlerHBaseRepository repository) throws IOException,
-      TaskNotFoundException {
+      TaskNotFoundException, InterruptedException, KeeperException {
     this.executorModel = executorModel;
     this.zk = zk;
-    try {
-      hostLocker = new HostLocker(zk);
-    } catch (InterruptedException e) {
-      throw new RuntimeException(e);
-    } catch (KeeperException e) {
-      throw new RuntimeException(e);
-    }
+    this.repository = repository;
+    hostLocker = new HostLocker(zk);
   }
   
   @PostConstruct
   public void init() {
     
     eventWorkerThread = new Thread(new EventWorker(),
-        "Tokenizer Executor - EventWorkerThread");
+        "ExecutorWorker.EventWorker");
     eventWorkerThread.start();
     
-    synchronized (tasks) {
-      if (executorModel == null) {
-        LOG.warn("Model is null");
-        return;
+    Collection<TaskDefinition> taskDefinitions = executorModel
+        .getTaskDefinitions(listener);
+    
+    for (TaskDefinition taskDefinition : taskDefinitions) {
+      try {
+        eventQueue.put(new ExecutorModelEvent(
+            ExecutorModelEventType.TASK_DEFINITION_ADDED, taskDefinition
+                .getName()));
+      } catch (InterruptedException e) {
+        eventWorkerThread.interrupt();
+        Thread.currentThread().interrupt();
       }
-      
-      Collection<TaskDefinition> taskDefinitions = executorModel
-          .getTaskDefinitions(listener);
-      
-      LOG.info("Executor model contains " + taskDefinitions.size()
-          + " definitions");
-      
-      // TODO: we call task.start() few times which creates few
-      // LeaderElections?..
-      
-      for (TaskDefinition taskDefinition : taskDefinitions) {
-        AbstractTask task = createTask(taskDefinition);
-        tasks.put(taskDefinition.getName(), task);
-        if (task.init() && !taskDefinition.getGeneralState().isStopState()
-            && !taskDefinition.getGeneralState().isDeleteState()) {
-          try {
-            task.start();
-          } catch (InterruptedException e) {
-            LOG.error("", e);
-          } catch (LeaderElectionSetupException e) {
-            LOG.error("", e);
-          } catch (KeeperException e) {
-            LOG.error("", e);
-          }
-        }
-      }
-      
     }
     
   }
   
   @PreDestroy
   public void stop() {
-    
-    if (eventWorkerThread == null) {
-      LOG.warn("event worker thrad is null");
-    } else {
-      eventWorkerThread.interrupt();
-      try {
-        Logs.logThreadJoin(eventWorkerThread);
-        eventWorkerThread.join();
-      } catch (InterruptedException e) {
-        LOG.info("Interrupted while joining eventWorkerThread.");
-      }
-    }
-    
+    eventWorkerThread.interrupt();
+    try {
+      eventWorkerThread.join();
+    } catch (InterruptedException e) {}
     for (AbstractTask task : tasks.values()) {
-      task.stop();
+      // although each task should be "daemon"... to be safe:
+      task.getThread().interrupt();
+      LOG.warn("committing metrics for {}...", task.getTaskDefinition()
+          .getName());
+      task.getMetricsCache().commit();
+      LOG.warn("committed successfully {}.", task.getTaskDefinition().getName());
     }
-    
   }
   
   private class MyListener implements ExecutorModelListener {
     public void process(ExecutorModelEvent event) {
+      
+      LOG.debug("Event: {}", event.getType());
+      
       try {
         eventQueue.put(event);
       } catch (InterruptedException e) {
-        LOG.info("listener thread interrupted...");
+        eventWorkerThread.interrupt();
+        Thread.currentThread().interrupt();
       }
     }
   }
@@ -170,121 +143,108 @@ public class ExecutorWorker {
       
       LOG.info("Starting EventWorker thread...");
       
-      // TODO: this is temporary solution...
-      LOG.info("Waiting 30 seconds until ZooKeeper stabilizes Tasks (see init() method)...");
-      try {
-        Thread.sleep(30000);
-      } catch (InterruptedException e) {
-        LOG.error("", e);
-      }
-      
-      while (true) {
+      while (!Thread.interrupted()) {
         
-        synchronized (tasks) {
-          try {
+        try {
+          
+          int queueSize = eventQueue.size();
+          
+          LOG.debug("queue size: {}", queueSize);
+          
+          if (queueSize >= 10) {
+            LOG.warn("EventWorker queue getting large: {}" + queueSize);
+          }
+          
+          ExecutorModelEvent event = eventQueue.take();
+          LOG.debug("Event removed from queue: {}", event);
+          
+          if (event.getType() == ExecutorModelEventType.TASK_DEFINITION_ADDED
+              || event.getType() == ExecutorModelEventType.TASK_DEFINITION_UPDATED) {
             
-            int queueSize = eventQueue.size();
-            if (queueSize >= 10) {
-              LOG.warn("EventWorker queue getting large: {}" + queueSize);
-            }
+            TaskDefinition taskDefinition = executorModel
+                .getTaskDefinition(event.getTaskDefinitionName());
+            TaskGeneralState taskGeneralState = taskDefinition
+                .getGeneralState();
             
-            ExecutorModelEvent event = eventQueue.take();
-            LOG.debug("Event removed from queue: {}", event);
+            AbstractTask task = tasks.get(event.getTaskDefinitionName());
             
-            if (event.getType() == ExecutorModelEventType.TASK_DEFINITION_ADDED
-                || event.getType() == ExecutorModelEventType.TASK_DEFINITION_UPDATED) {
+            if (task == null) {
               
-              TaskDefinition taskDefinition = executorModel
-                  .getTaskDefinition(event.getTaskDefinitionName());
-              TaskGeneralState taskGeneralState = taskDefinition
-                  .getGeneralState();
+              if (taskGeneralState.isDeleteState()) continue;
               
-              AbstractTask task = tasks.get(event.getTaskDefinitionName());
-              
-              if (task == null) {
-                
-                if (taskGeneralState.isDeleteState()) continue;
-                
-                task = createTask(taskDefinition);
-                // this can happen if XML config was wrong - createTask returned
-                // null
-                if (task == null) {
-                  LOG.error("can't create task: {}",
-                      event.getTaskDefinitionName());
-                  continue;
-                }
-                // if we don't have it in Map it means it is new; start it
-                // automatically
-                if (task.init()
-                    && taskGeneralState.equals(TaskGeneralState.ACTIVE)
-                    || taskGeneralState
-                        .equals(TaskGeneralState.START_REQUESTED)) task.start();
-                tasks.put(event.getTaskDefinitionName(), task);
-                continue;
-              }
-              
-              // might happen that we have newer data already ;) ? - why not...
-              if (task.getTaskDefinition().getZkDataVersion() >= taskDefinition
-                  .getZkDataVersion()) {
-                continue;
-              }
-              
-              // task definition contains extra attributes such as stats. We do
-              // not need to restart task if Metrics has been changed:
-              boolean relevantChanges = !Arrays.equals(task.getTaskDefinition()
-                  .getConfiguration(), taskDefinition.getConfiguration());
-              
-              if (!relevantChanges) {
-                LOG.info("Not relevant changes...");
-                if (task.init()
-                    && taskGeneralState
-                        .equals(TaskGeneralState.START_REQUESTED)) task.start();
-                if (taskGeneralState.equals(TaskGeneralState.STOP_REQUESTED)) task
-                    .stop();
-                continue;
-              }
-              
-              // remaining is when smth changed... stop, remove, create, start
-              // if necessary:
-              LOG.info("Relevant changes... stop/recreate/start");
-              task.stop();
               task = createTask(taskDefinition);
-              
+              // this can happen if XML config was wrong - createTask returned
+              // null
+              if (task == null) {
+                LOG.error("can't create task: {}",
+                    event.getTaskDefinitionName());
+                continue;
+              }
+              // if we don't have it in Map it means it is new; start it
+              // automatically
               if (task.init()
                   && taskGeneralState.equals(TaskGeneralState.ACTIVE)
                   || taskGeneralState.equals(TaskGeneralState.START_REQUESTED)) task
                   .start();
-              
               tasks.put(event.getTaskDefinitionName(), task);
-              
-            } else if (event.getType() == ExecutorModelEventType.TASK_DEFINITION_REMOVED) {
-              LOG.debug("Task definition removed...");
-              tasks.get(event.getTaskDefinitionName()).stop();
-              tasks.remove(event.getTaskDefinitionName());
+              continue;
             }
             
-          } catch (InterruptedException e) {
-            LOG.warn("event listener interrupted... committing Metrics...");
-            for (Map.Entry<String,AbstractTask> task : tasks.entrySet()) {
-              LOG.warn("committing metrics for {}...", task.getKey());
-              task.getValue().getMetricsCache().commit();
+            // might happen that we have newer data already ;) ? - why not...
+            if (task.getTaskDefinition().getZkDataVersion() >= taskDefinition
+                .getZkDataVersion()) {
+              continue;
             }
-            // TODO: is it best practice?
-            LOG.warn("interrupted... exiting");
-            return;
-          } catch (LeaderElectionSetupException e) {
-            LOG.info("LeaderElectionSetupException... continue");
-            continue;
-          } catch (KeeperException e) {
-            LOG.info("KeeperException... continue");
-            continue;
-          } catch (Throwable t) {
-            LOG.error("unknown error... exiting", t);
-            return;
+            
+            // task definition contains extra attributes such as stats. We do
+            // not need to restart task if Metrics has been changed:
+            boolean relevantChanges = !Arrays.equals(task.getTaskDefinition()
+                .getConfiguration(), taskDefinition.getConfiguration());
+            
+            if (!relevantChanges) {
+              LOG.info("Not relevant changes...");
+              if (task.init()
+                  && taskGeneralState.equals(TaskGeneralState.START_REQUESTED)) task
+                  .start();
+              if (taskGeneralState.equals(TaskGeneralState.STOP_REQUESTED)) task
+                  .stop();
+              continue;
+            }
+            
+            // remaining is when smth changed... stop, remove, create, start
+            // if necessary:
+            LOG.info("Relevant changes... stop/recreate/start");
+            task.stop();
+            task = createTask(taskDefinition);
+            
+            if (task.init() && taskGeneralState.equals(TaskGeneralState.ACTIVE)
+                || taskGeneralState.equals(TaskGeneralState.START_REQUESTED)) task
+                .start();
+            
+            tasks.put(event.getTaskDefinitionName(), task);
+            
+          } else if (event.getType() == ExecutorModelEventType.TASK_DEFINITION_REMOVED) {
+            LOG.debug("Task definition removed...");
+            tasks.get(event.getTaskDefinitionName()).stop();
+            tasks.remove(event.getTaskDefinitionName());
           }
+          
+        } catch (InterruptedException e) {
+          LOG.warn("exiting...");
+          return;
+        } catch (LeaderElectionSetupException e) {
+          LOG.error("LeaderElectionSetupException... continue", e);
+          continue;
+        } catch (KeeperException e) {
+          LOG.error("KeeperException... continue", e);
+          continue;
+        } catch (TaskNotFoundException e) {
+          LOG.error("TaskNotFoundException... continue", e);
+          continue;
         }
         
       }
+      
     }
   }
   

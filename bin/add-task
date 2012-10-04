@@ -1,0 +1,31 @@
+#!/bin/bash
+
+#
+# Configuration variables
+#
+# LILY_CLI_CLASSPATH
+#    additional entries to be added to the classpath
+#
+# LILY_JAVA_OPTIONS
+#    additional options to be passed to the java executable
+#
+
+if [ -z "$JAVA_HOME" ] ; then
+  echo "JAVA_HOME not set!"
+  exit 1
+fi
+
+CLASSPATH="/Users/Fuad/.m2/repository/org/tokenizer/tokenizer-executor-model/1.0-SNAPSHOT/tokenizer-executor-model-1.0-SNAPSHOT.jar:/Users/Fuad/.m2/repository/org/lilyproject/lily-zk-util/1.4-SNAPSHOT/lily-zk-util-1.4-SNAPSHOT.jar:/Users/Fuad/.m2/repository/org/apache/zookeeper/zookeeper/3.4.3-cdh4.0.0/zookeeper-3.4.3-cdh4.0.0.jar:/Users/Fuad/.m2/repository/jline/jline/0.9.94/jline-0.9.94.jar:/Users/Fuad/.m2/repository/commons-logging/commons-logging/1.1.1/commons-logging-1.1.1.jar:/Users/Fuad/.m2/repository/org/lilyproject/lily-json-util/1.4-SNAPSHOT/lily-json-util-1.4-SNAPSHOT.jar:/Users/Fuad/.m2/repository/org/codehaus/jackson/jackson-core-asl/1.9.7/jackson-core-asl-1.9.7.jar:/Users/Fuad/.m2/repository/org/codehaus/jackson/jackson-mapper-asl/1.9.7/jackson-mapper-asl-1.9.7.jar:/Users/Fuad/.m2/repository/net/iharder/base64/2.3.8/base64-2.3.8.jar:/Users/Fuad/.m2/repository/org/lilyproject/lily-cli-fw/1.4-SNAPSHOT/lily-cli-fw-1.4-SNAPSHOT.jar:/Users/Fuad/.m2/repository/org/lilyproject/lily-util/1.4-SNAPSHOT/lily-util-1.4-SNAPSHOT.jar:/Users/Fuad/.m2/repository/commons-cli/commons-cli/1.2/commons-cli-1.2.jar:/Users/Fuad/.m2/repository/commons-io/commons-io/2.1/commons-io-2.1.jar:/Users/Fuad/.m2/repository/org/slf4j/slf4j-api/1.6.4/slf4j-api-1.6.4.jar:/Users/Fuad/.m2/repository/org/slf4j/slf4j-log4j12/1.6.4/slf4j-log4j12-1.6.4.jar:/Users/Fuad/.m2/repository/log4j/log4j/1.2.17/log4j-1.2.17.jar:/Users/Fuad/.m2/repository/org/tokenizer/tokenizer-executor-admin-cli/1.0-SNAPSHOT/tokenizer-executor-admin-cli-1.0-SNAPSHOT.jar"
+
+# Only add LILY_CLI_CLASSPATH when it is not empty, to avoid adding the working dir to
+# the classpath by accident.
+if [ ! -z "$LILY_CLI_CLASSPATH" ] ; then
+  CLASSPATH=$CLASSPATH:$LILY_CLI_CLASSPATH
+fi
+
+export CLASSPATH
+
+LILY_OPTIONS=$LILY_JAVA_OPTIONS
+
+
+"$JAVA_HOME/bin/java" $LILY_OPTIONS  org.tokenizer.executor.admin.cli.AddTaskCli  "$@"

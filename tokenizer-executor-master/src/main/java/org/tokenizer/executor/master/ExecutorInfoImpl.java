@@ -18,22 +18,22 @@ package org.tokenizer.executor.master;
 import org.lilyproject.util.Version;
 
 public class ExecutorInfoImpl implements ExecutorInfo {
-
-	private boolean master;
-
-	@Override
-	public String getVersion() {
-    return Version.readVersion("org.tokenizer", "tokenizer-executor-master");
-	}
-
+  
+  private boolean master;
+  
   @Override
-	public boolean isMaster() {
-		return master;
-	}
-
-	@Override
-	public void setMaster(boolean master) {
-		this.master = master;
-	}
-
+  public String getVersion() {
+    return Version.readVersion("org.tokenizer", "tokenizer-executor-master");
+  }
+  
+  @Override
+  public boolean isMaster() {
+    return master;
+  }
+  
+  @Override
+  public void setMaster(boolean master) {
+    this.master = master;
+  }
+  
 }

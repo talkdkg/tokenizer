@@ -153,7 +153,7 @@ public class ExecutorModelImpl implements WritableExecutorModel {
     
     if (taskDefinition.getBatchBuildState() == null) throw new TaskValidityException(
         "Build state should not be null.");
-        
+    
     try {
       TaskConfigurationBuilder.validate(new ByteArrayInputStream(taskDefinition
           .getConfiguration()));
@@ -472,9 +472,7 @@ public class ExecutorModelImpl implements WritableExecutorModel {
           modelCacheRefresher.triggerTaskDefinitionToRefresh(name);
         }
       } catch (Throwable t) {
-        LOG.error(
-            "Executor Model: error handling event from ZooKeeper. Event: "
-                + event, t);
+        LOG.error("Event: " + event, t);
       }
     }
   }
@@ -524,7 +522,7 @@ public class ExecutorModelImpl implements WritableExecutorModel {
       // Upon startup, be sure to run a refresh of all definitions
       this.refreshAllDefinitions = true;
       
-      thread = new Thread(this, "Executor Model Refresher");
+      thread = new Thread(this, "ExecutorModelImpl.ModelCacheRefresher");
       // Set as daemon thread: ExecutorModel can be used in tools like the
       // executor admin CLI tools,
       // where we should not require explicit shutdown.
@@ -581,6 +579,8 @@ public class ExecutorModelImpl implements WritableExecutorModel {
                 startedLock.notifyAll();
               }
             }
+          } catch (KeeperException e) {
+            LOG.error("", e);
           } finally {
             // We notify the listeners here because we want to be sure events
             // for every
@@ -599,13 +599,8 @@ public class ExecutorModelImpl implements WritableExecutorModel {
               refreshLock.wait();
             }
           }
-        } catch (KeeperException.ConnectionLossException e) {
-          // we will be retriggered when the connection is back
         } catch (InterruptedException e) {
           Thread.currentThread().interrupt();
-          return;
-        } catch (Throwable t) {
-          LOG.error("Executor Model Refresher: some exception happened.", t);
         }
       }
     }

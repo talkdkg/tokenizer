@@ -34,12 +34,11 @@ public class AddTaskCli extends BaseAdminCli {
   @Override
   public List<Option> getOptions() {
     List<Option> options = super.getOptions();
-    nameOption.setRequired(true);
-    configurationOption.setRequired(true);
+    //nameOption.setRequired(true);
+    //configurationOption.setRequired(true);
     options.add(nameOption);
     options.add(configurationOption);
     options.add(generalStateOption);
-    options.add(updateStateOption);
     options.add(buildStateOption);
     options.add(forceOption);
     return options;

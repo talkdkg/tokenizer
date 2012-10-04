@@ -15,6 +15,7 @@
  */
 package org.tokenizer.executor.engine;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -50,9 +51,6 @@ public class ClassicRobotTask extends AbstractTask {
   private Thread thread;
   private LeaderElection leaderElection;
   
-  /** Default for Solr queries */
-  private int rows = 1000;
-  
   private final SimpleHttpClient httpClient;
   
   // special instance for robots.txt only:
@@ -68,6 +66,9 @@ public class ClassicRobotTask extends AbstractTask {
     this.httpClient = new SimpleHttpClient(FetcherUtils.USER_AGENT);
     this.robotFetcher = RobotUtils.createFetcher(FetcherUtils.USER_AGENT, 1);
     this.robotFetcher.setDefaultMaxContentSize(4 * 1024 * 1024);
+    
+    LOG.debug("Instance created");
+    
   }
   
   @Override
@@ -103,17 +104,26 @@ public class ClassicRobotTask extends AbstractTask {
   @Override
   public void run() {
     while (!stop && !Thread.interrupted()) {
-      try {
         refreshRobotRules();
         String url = "http://" + taskConfiguration.getTld();
         UrlRecord urlRecord = new UrlRecord();
         urlRecord.setUrl(url);
+        
         // create if it doesn't exist
-        crawlerRepository.create(urlRecord);
-        process();
-      } catch (Throwable t) {
-        LOG.error("Error processing", t);
-      }
+        try {
+          crawlerRepository.create(urlRecord);
+        } catch (IOException e) {
+          throw new RuntimeException(e);
+        }
+        
+        try {
+          process();
+        } catch (InterruptedException e) {
+          Thread.currentThread().interrupt();
+        } catch (IOException e) {
+          throw new RuntimeException(e);
+        }
+
     }
   }
   
@@ -134,6 +144,7 @@ public class ClassicRobotTask extends AbstractTask {
       // stop = false;
       
       thread = new Thread(ClassicRobotTask.this, ClassicRobotTask.this.taskName);
+      thread.setDaemon(true);
       thread.start();
       LOG.warn("Activated as Leader.");
     }
@@ -163,20 +174,25 @@ public class ClassicRobotTask extends AbstractTask {
    * Real job is done here
    * 
    * @throws InterruptedException
+   * @throws IOException 
    */
-  private void process() throws InterruptedException {
+  private void process() throws InterruptedException, IOException {
     
     UrlScanner urlScanner = new UrlScanner(taskConfiguration.getTld(),
         crawlerRepository);
     
     for (UrlRecord urlRecord : urlScanner) {
       
+      LOG.debug("urlRecord: {}", urlRecord);
+      
       if (urlRecord.getTimestamp() > 0) continue;
       
+      LOG.debug("Trying URL: {}", urlRecord.getUrl());
       FetchedResult fetchedResult = PersistenceUtils.fetch(urlRecord,
           crawlerRepository, robotRules, metricsCache, httpClient,
           taskConfiguration.getTld());
-      
+      LOG.debug("Result: {} {}", urlRecord.getUrl(),
+          urlRecord.getHttpResponseCode());
     }
     
   }
