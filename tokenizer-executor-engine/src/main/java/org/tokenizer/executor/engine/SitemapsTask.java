@@ -36,6 +36,7 @@ import org.tokenizer.executor.model.configuration.TaskConfiguration;
 import crawlercommons.fetcher.BaseFetchException;
 import crawlercommons.fetcher.BaseFetcher;
 import crawlercommons.fetcher.FetchedResult;
+import crawlercommons.fetcher.http.BaseHttpFetcher;
 import crawlercommons.robots.BaseRobotRules;
 import crawlercommons.robots.BaseRobotsParser;
 import crawlercommons.robots.RobotUtils;
@@ -127,7 +128,8 @@ public class SitemapsTask extends AbstractTask {
   
   private void processFetch() throws InterruptedException {
     
-    BaseFetcher fetcher = RobotUtils.createFetcher(FetcherUtils.USER_AGENT, 1);
+    BaseHttpFetcher fetcher = RobotUtils.createFetcher(FetcherUtils.USER_AGENT,
+        1);
     LOG.warn("User-Agent: {}", fetcher.getUserAgent().getUserAgentString());
     fetcher.setDefaultMaxContentSize(Integer.MAX_VALUE);
     
@@ -190,7 +192,7 @@ public class SitemapsTask extends AbstractTask {
       
       metricsCache.increment(MetricsCache.SITEMAP_INDEXES_PROCESSED);
       
-      for (SiteMap sitemap : sitemapIndex.getSitemaps()) {
+      for (AbstractSiteMap sitemap : sitemapIndex.getSitemaps()) {
         
         String sitemapUrl = sitemap.getUrl().toString();
         LOG.debug("fetching sitemap: {}", sitemapUrl);
@@ -228,8 +230,9 @@ public class SitemapsTask extends AbstractTask {
           continue;
         }
         
-        sitemap = (SiteMap) abstractSitemap;
-        for (SiteMapURL siteMapURL : sitemap.getSiteMapUrls()) {
+        // TODO: ???
+        for (SiteMapURL siteMapURL : ((SiteMap) abstractSitemap)
+            .getSiteMapUrls()) {
           
           // TODO:
           // PersistenceUtils.injectIfNotExists(siteMapURL.getUrl().toString(),

@@ -19,8 +19,10 @@ import java.io.Serializable;
 
 import org.apache.tika.parser.Parser;
 import org.tokenizer.core.datum.ParsedDatum;
-import org.tokenizer.core.http.FetchedResult;
+
 import org.tokenizer.core.util.ParserPolicy;
+
+import crawlercommons.fetcher.FetchedResult;
 
 @SuppressWarnings("serial")
 public abstract class BaseParser implements Serializable {

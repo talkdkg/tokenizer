@@ -33,7 +33,9 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tokenizer.core.http.FetchedResult;
+
+import crawlercommons.fetcher.FetchedResult;
+
 
 public class XmlUtils {
 

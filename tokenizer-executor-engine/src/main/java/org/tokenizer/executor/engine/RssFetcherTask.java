@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.zookeeper.KeeperException;
-import org.lilyproject.repository.api.Repository;
 import org.lilyproject.util.Logs;
 import org.lilyproject.util.zookeeper.LeaderElection;
 import org.lilyproject.util.zookeeper.LeaderElectionCallback;
@@ -30,7 +29,6 @@ import org.lilyproject.util.zookeeper.ZooKeeperItf;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tokenizer.core.http.FetcherUtils;
-import org.tokenizer.core.http.SimpleHttpClient;
 import org.tokenizer.crawler.db.CrawlerHBaseRepository;
 import org.tokenizer.executor.model.api.WritableExecutorModel;
 import org.tokenizer.executor.model.configuration.TaskConfiguration;
@@ -44,6 +42,8 @@ import com.sun.syndication.fetcher.impl.FeedFetcherCache;
 import com.sun.syndication.fetcher.impl.HashMapFeedInfoCache;
 import com.sun.syndication.fetcher.impl.HttpURLFeedFetcher;
 
+import crawlercommons.fetcher.http.SimpleHttpFetcher;
+
 public class RssFetcherTask extends AbstractTask {
   
   private static final Logger LOG = LoggerFactory
@@ -55,12 +55,13 @@ public class RssFetcherTask extends AbstractTask {
   
   private LeaderElection leaderElection;
   
-  SimpleHttpClient simpleHttpClient = new SimpleHttpClient(
+  SimpleHttpFetcher simpleHttpClient = new SimpleHttpFetcher(
       FetcherUtils.USER_AGENT);
   
   public RssFetcherTask(String fetchName, ZooKeeperItf zk,
-      TaskConfiguration fetcherConfiguration, CrawlerHBaseRepository repository,
-      WritableExecutorModel fetcherModel, HostLocker hostLocker) {
+      TaskConfiguration fetcherConfiguration,
+      CrawlerHBaseRepository repository, WritableExecutorModel fetcherModel,
+      HostLocker hostLocker) {
     super(fetchName, zk, fetcherConfiguration, repository, fetcherModel,
         hostLocker);
   }
@@ -233,11 +234,10 @@ public class RssFetcherTask extends AbstractTask {
       } else {
         continue;
       }
-     
+      
       // TODO:
-      //PersistenceUtils.injectIfNotExists(entry, repository, metricsCache);
-    
-    
+      // PersistenceUtils.injectIfNotExists(entry, repository, metricsCache);
+      
     }
   }
   

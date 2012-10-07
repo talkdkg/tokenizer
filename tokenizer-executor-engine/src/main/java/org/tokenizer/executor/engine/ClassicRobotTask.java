@@ -27,16 +27,18 @@ import org.lilyproject.util.zookeeper.LeaderElectionSetupException;
 import org.lilyproject.util.zookeeper.ZooKeeperItf;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tokenizer.core.http.FetchedResult;
+//import org.tokenizer.core.http.FetchedResult;
 import org.tokenizer.core.http.FetcherUtils;
-import org.tokenizer.core.http.SimpleHttpClient;
+//import org.tokenizer.core.http.SimpleHttpClient;
 import org.tokenizer.crawler.db.CrawlerHBaseRepository;
 import org.tokenizer.crawler.db.UrlRecord;
 import org.tokenizer.crawler.db.UrlScanner;
 import org.tokenizer.executor.model.api.WritableExecutorModel;
 import org.tokenizer.executor.model.configuration.TaskConfiguration;
 
-import crawlercommons.fetcher.BaseFetcher;
+import crawlercommons.fetcher.FetchedResult;
+import crawlercommons.fetcher.http.BaseHttpFetcher;
+import crawlercommons.fetcher.http.SimpleHttpFetcher;
 import crawlercommons.robots.BaseRobotRules;
 import crawlercommons.robots.BaseRobotsParser;
 import crawlercommons.robots.RobotUtils;
@@ -51,10 +53,10 @@ public class ClassicRobotTask extends AbstractTask {
   private Thread thread;
   private LeaderElection leaderElection;
   
-  private final SimpleHttpClient httpClient;
+  private final SimpleHttpFetcher httpClient;
   
   // special instance for robots.txt only:
-  private final BaseFetcher robotFetcher;
+  private final BaseHttpFetcher robotFetcher;
   BaseRobotRules robotRules = null;
   
   public ClassicRobotTask(String fetchName, ZooKeeperItf zk,
@@ -63,7 +65,7 @@ public class ClassicRobotTask extends AbstractTask {
       HostLocker hostLocker) {
     super(fetchName, zk, fetcherConfiguration, crawlerRepository, model,
         hostLocker);
-    this.httpClient = new SimpleHttpClient(FetcherUtils.USER_AGENT);
+    this.httpClient = new SimpleHttpFetcher(FetcherUtils.USER_AGENT);
     this.robotFetcher = RobotUtils.createFetcher(FetcherUtils.USER_AGENT, 1);
     this.robotFetcher.setDefaultMaxContentSize(4 * 1024 * 1024);
     
@@ -104,26 +106,26 @@ public class ClassicRobotTask extends AbstractTask {
   @Override
   public void run() {
     while (!stop && !Thread.interrupted()) {
-        refreshRobotRules();
-        String url = "http://" + taskConfiguration.getTld();
-        UrlRecord urlRecord = new UrlRecord();
-        urlRecord.setUrl(url);
-        
-        // create if it doesn't exist
-        try {
-          crawlerRepository.create(urlRecord);
-        } catch (IOException e) {
-          throw new RuntimeException(e);
-        }
-        
-        try {
-          process();
-        } catch (InterruptedException e) {
-          Thread.currentThread().interrupt();
-        } catch (IOException e) {
-          throw new RuntimeException(e);
-        }
-
+      refreshRobotRules();
+      String url = "http://" + taskConfiguration.getTld();
+      UrlRecord urlRecord = new UrlRecord();
+      urlRecord.setUrl(url);
+      
+      // create if it doesn't exist
+      try {
+        crawlerRepository.create(urlRecord);
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+      
+      try {
+        process();
+      } catch (InterruptedException e) {
+        Thread.currentThread().interrupt();
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+      
     }
   }
   
@@ -174,7 +176,7 @@ public class ClassicRobotTask extends AbstractTask {
    * Real job is done here
    * 
    * @throws InterruptedException
-   * @throws IOException 
+   * @throws IOException
    */
   private void process() throws InterruptedException, IOException {
     

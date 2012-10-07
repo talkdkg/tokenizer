@@ -24,17 +24,20 @@ import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import org.apache.http.HttpHeaders;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.parser.AutoDetectParser;
 import org.apache.tika.parser.Parser;
 import org.apache.tika.utils.CharsetUtils;
 import org.slf4j.Logger;
 import org.tokenizer.core.datum.ParsedDatum;
-import org.tokenizer.core.http.FetchedResult;
-import org.tokenizer.core.http.HttpHeaderNames;
+
+
 import org.tokenizer.core.util.HttpUtils;
 import org.tokenizer.core.util.IoUtils;
 import org.tokenizer.core.util.ParserPolicy;
+
+import crawlercommons.fetcher.FetchedResult;
 
 @SuppressWarnings("serial")
 public class SimpleParser extends BaseParser {
@@ -133,7 +136,7 @@ public class SimpleParser extends BaseParser {
 				t = null;
 			}
 
-			result.setHostAddress(fetchedResult.getHttpHost().getHostName());
+			result.setHostAddress(fetchedResult.getHostAddress());
 			return result;
 		} finally {
 			IoUtils.safeClose(is);
@@ -141,12 +144,12 @@ public class SimpleParser extends BaseParser {
 	}
 
 	protected URL getContentLocation(FetchedResult fetchedResult) throws MalformedURLException {
-		URL baseUrl = fetchedResult.getTargetUri().toURL();
+		URL baseUrl = new URL(fetchedResult.getNewBaseUrl());
 
 		// See if we have a content location from the HTTP headers that we
 		// should use as
 		// the base for resolving relative URLs in the document.
-		String clUrl = fetchedResult.getHeaders().get(HttpHeaderNames.CONTENT_LOCATION);
+		String clUrl = fetchedResult.getHeaders().get(HttpHeaders.CONTENT_LOCATION);
 		if (clUrl != null) {
 			// FUTURE KKr - should we try to keep processing if this step fails,
 			// but
@@ -176,7 +179,7 @@ public class SimpleParser extends BaseParser {
 	 * @return first language in response headers, or null
 	 */
 	protected String getLanguage(FetchedResult fetchedResult, String charset) {
-		return fetchedResult.getHeaders().get(HttpHeaderNames.CONTENT_LANGUAGE);
+		return fetchedResult.getHeaders().get(HttpHeaders.CONTENT_LANGUAGE);
 	}
 
 }

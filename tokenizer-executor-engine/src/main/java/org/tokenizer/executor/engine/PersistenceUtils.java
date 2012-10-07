@@ -23,12 +23,11 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.tika.utils.CharsetUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tokenizer.core.datum.Outlink;
 import org.tokenizer.core.datum.ParsedDatum;
-import org.tokenizer.core.http.FetchedResult;
-import org.tokenizer.core.http.SimpleHttpClient;
 import org.tokenizer.core.parser.SimpleParser;
 import org.tokenizer.core.urls.BaseUrlFilter;
 import org.tokenizer.core.urls.BaseUrlNormalizer;
@@ -36,6 +35,7 @@ import org.tokenizer.core.urls.BaseUrlValidator;
 import org.tokenizer.core.urls.SimpleUrlFilter;
 import org.tokenizer.core.urls.SimpleUrlNormalizer;
 import org.tokenizer.core.urls.SimpleUrlValidator;
+import org.tokenizer.core.util.HttpUtils;
 import org.tokenizer.core.util.ParserPolicy;
 import org.tokenizer.crawler.db.CrawlerHBaseRepository;
 import org.tokenizer.crawler.db.UrlRecord;
@@ -46,7 +46,9 @@ import com.sun.syndication.feed.synd.SyndCategory;
 import com.sun.syndication.feed.synd.SyndEntry;
 
 import crawlercommons.fetcher.BaseFetchException;
+import crawlercommons.fetcher.FetchedResult;
 import crawlercommons.fetcher.HttpFetchException;
+import crawlercommons.fetcher.http.SimpleHttpFetcher;
 import crawlercommons.robots.BaseRobotRules;
 
 public class PersistenceUtils {
@@ -56,7 +58,7 @@ public class PersistenceUtils {
   
   public static FetchedResult fetch(UrlRecord urlRecord,
       CrawlerHBaseRepository repository, BaseRobotRules baseRobotRules,
-      MetricsCache metricsCache, SimpleHttpClient simpleHttpClient, String hostConstraint)
+      MetricsCache metricsCache, SimpleHttpFetcher simpleHttpClient, String hostConstraint)
       throws InterruptedException, IOException {
     
     metricsCache.increment(MetricsCache.URL_TOTAL_KEY);
@@ -89,7 +91,11 @@ public class PersistenceUtils {
     long start = System.currentTimeMillis();
     
     WebpageRecord webpageRecord = new WebpageRecord();
-    webpageRecord.setCharset(fetchedResult.getCharset());
+    
+    String charset = CharsetUtils.clean(HttpUtils
+        .getCharsetFromContentType(fetchedResult.getContentType()));
+    webpageRecord.setCharset(charset);
+
     webpageRecord.setContent(fetchedResult.getContent());
     webpageRecord.setTimestamp(urlRecord.getTimestamp());
     webpageRecord.setUrl(urlRecord.getUrl());
@@ -129,14 +135,14 @@ public class PersistenceUtils {
   
   public static FetchedResult fetch(UrlRecord record,
       CrawlerHBaseRepository repository, MetricsCache metricsCache,
-      SimpleHttpClient simpleHttpClient) throws InterruptedException {
+      SimpleHttpFetcher simpleHttpClient) throws InterruptedException {
     
     String url = record.getUrl();
     FetchedResult fetchedResult = null;
     long start = System.currentTimeMillis();
     
     try {
-      fetchedResult = simpleHttpClient.get(url);
+      fetchedResult = simpleHttpClient.get(url, null);
     } catch (HttpFetchException e) {
       record.setHttpResponseCode(((HttpFetchException) e).getHttpStatus());
       record.setTimestamp(System.currentTimeMillis());
@@ -146,7 +152,10 @@ public class PersistenceUtils {
         throw new InterruptedException("Aborted...");
       }
       //e.printStackTrace();
-      record.setHttpResponseCode(-2);
+      //record.setHttpResponseCode(-2);
+      
+      
+      
       record.setTimestamp(System.currentTimeMillis());
       return null;
       

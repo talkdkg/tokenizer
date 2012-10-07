@@ -28,12 +28,12 @@ import org.lilyproject.util.zookeeper.ZooKeeperItf;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tokenizer.core.http.FetcherUtils;
-import org.tokenizer.core.http.SimpleHttpClient;
 import org.tokenizer.crawler.db.CrawlerHBaseRepository;
 import org.tokenizer.executor.model.api.WritableExecutorModel;
 import org.tokenizer.executor.model.configuration.TaskConfiguration;
 
-import crawlercommons.fetcher.BaseFetcher;
+import crawlercommons.fetcher.http.BaseHttpFetcher;
+import crawlercommons.fetcher.http.SimpleHttpFetcher;
 import crawlercommons.robots.BaseRobotRules;
 import crawlercommons.robots.BaseRobotsParser;
 import crawlercommons.robots.RobotUtils;
@@ -45,10 +45,10 @@ public class SimpleMultithreadedFetcher extends AbstractTask {
       .getLogger(SimpleMultithreadedFetcher.class);
   
   /** used for generic retrieval */
-  private final SimpleHttpClient simpleHttpClient;
+  private final SimpleHttpFetcher simpleHttpClient;
   
   /** for robots.txt and sitemaps */
-  private final BaseFetcher baseFetcher;
+  private final BaseHttpFetcher baseFetcher;
   
   private Set<String> hosts = Collections
       .synchronizedSet(new HashSet<String>());
@@ -68,7 +68,7 @@ public class SimpleMultithreadedFetcher extends AbstractTask {
     super(fetchName, zk, fetcherConfiguration, repository, fetcherModel,
         hostLocker);
     
-    this.simpleHttpClient = new SimpleHttpClient(FetcherUtils.USER_AGENT);
+    this.simpleHttpClient = new SimpleHttpFetcher(FetcherUtils.USER_AGENT);
     this.baseFetcher = RobotUtils.createFetcher(FetcherUtils.USER_AGENT, 1024);
     this.baseFetcher.setDefaultMaxContentSize(4 * 1024 * 1024);
     
