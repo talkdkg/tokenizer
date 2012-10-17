@@ -44,7 +44,7 @@ public class MetricsCache {
   
   private static final Logger LOG = LoggerFactory.getLogger(MetricsCache.class);
   
-  private static final long COMMIT_INTERVAL = 10 * 1000L;
+  private static final long COMMIT_INTERVAL = 1 * 1000L;
   
   public static final String URL_ROBOTS_KEY = "robots.txt restricted";
   public static final String URL_TOTAL_KEY = "URLs processed total";
@@ -69,13 +69,13 @@ public class MetricsCache {
   
   private Map<String,Long> cache = new HashMap<String,Long>();
   
-  private String fetchName;
-  private WritableExecutorModel writableFetcherModel;
+  private String taskName;
+  private WritableExecutorModel model;
   
-  public MetricsCache(String fetchName,
-      WritableExecutorModel writableFetcherModel) {
-    this.fetchName = fetchName;
-    this.writableFetcherModel = writableFetcherModel;
+  public MetricsCache(String taskName,
+      WritableExecutorModel model) {
+    this.taskName = taskName;
+    this.model = model;
     this.lastCommitTimestamp = System.currentTimeMillis();
   }
   
@@ -117,25 +117,28 @@ public class MetricsCache {
    * @return
    */
   public synchronized boolean commit() {
+    
+    LOG.info("Committing to ZooKeeper...");
+    
     boolean success = false;
     long currentTimestamp = System.currentTimeMillis();
     String lock = null;
     try {
-      lock = writableFetcherModel.lockTaskDefinition(fetchName);
-      TaskDefinition fetchDefinition = writableFetcherModel
-          .getMutableTaskDefinition(fetchName);
-      if (fetchDefinition.getGeneralState() == TaskGeneralState.DELETE_REQUESTED
-          || fetchDefinition.getGeneralState() == TaskGeneralState.DELETING) {
+      lock = model.lockTaskDefinition(taskName);
+      TaskDefinition taskDefinition = model
+          .getMutableTaskDefinition(taskName);
+      if (taskDefinition.getGeneralState() == TaskGeneralState.DELETE_REQUESTED
+          || taskDefinition.getGeneralState() == TaskGeneralState.DELETING) {
         return true;
       }
       for (String key : cache.keySet()) {
-        Long value = fetchDefinition.getCounters().get(key);
+        Long value = taskDefinition.getCounters().get(key);
         if (value == null) value = 0L;
         value = value + cache.get(key);
-        fetchDefinition.addCounter(key, value);
+        taskDefinition.addCounter(key, value);
       }
-      fetchDefinition.setMetricsUpdateTimestamp(currentTimestamp);
-      writableFetcherModel.updateTaskDefinition(fetchDefinition, lock);
+      taskDefinition.setMetricsUpdateTimestamp(currentTimestamp);
+      model.updateTaskDefinition(taskDefinition, lock);
       for (String key : cache.keySet()) {
         cache.put(key, 0L);
       }
@@ -144,7 +147,7 @@ public class MetricsCache {
     } catch (ZkLockException e) {
       LOG.error("", e);
     } catch (TaskNotFoundException e) {
-      LOG.warn("fetch {} not found...", fetchName);
+      LOG.warn("fetch {} not found...", taskName);
     } catch (InterruptedException e) {
       LOG.error("", e);
     } catch (KeeperException e) {
@@ -159,7 +162,7 @@ public class MetricsCache {
       LOG.error("", e);
     } finally {
       try {
-        if (lock != null) writableFetcherModel.unlockTaskDefinition(lock, true);
+        if (lock != null) model.unlockTaskDefinition(lock, true);
       } catch (ZkLockException e) {
         LOG.error("", e);
       }
@@ -182,24 +185,24 @@ public class MetricsCache {
     long currentTimestamp = System.currentTimeMillis();
     String lock = null;
     try {
-      lock = writableFetcherModel.lockTaskDefinition(fetchName);
-      TaskDefinition fetchDefinition = writableFetcherModel
-          .getMutableTaskDefinition(fetchName);
-      if (fetchDefinition.getGeneralState() == TaskGeneralState.DELETE_REQUESTED
-          || fetchDefinition.getGeneralState() == TaskGeneralState.DELETING) {
+      lock = model.lockTaskDefinition(taskName);
+      TaskDefinition taskDefinition = model
+          .getMutableTaskDefinition(taskName);
+      if (taskDefinition.getGeneralState() == TaskGeneralState.DELETE_REQUESTED
+          || taskDefinition.getGeneralState() == TaskGeneralState.DELETING) {
         return true;
       }
-      fetchDefinition.getCounters().clear();
-      fetchDefinition.setSubmitTime(currentTimestamp);
-      fetchDefinition.setMetricsUpdateTimestamp(currentTimestamp);
-      writableFetcherModel.updateTaskDefinition(fetchDefinition, lock);
+      taskDefinition.getCounters().clear();
+      taskDefinition.setSubmitTime(currentTimestamp);
+      taskDefinition.setMetricsUpdateTimestamp(currentTimestamp);
+      model.updateTaskDefinition(taskDefinition, lock);
       cache.clear();
       lastCommitTimestamp = currentTimestamp;
       success = true;
     } catch (ZkLockException e) {
       LOG.error("", e);
     } catch (TaskNotFoundException e) {
-      LOG.warn("fetch {} not found...", fetchName);
+      LOG.warn("task {} not found...", taskName);
     } catch (InterruptedException e) {
       LOG.error("", e);
     } catch (KeeperException e) {
@@ -214,7 +217,7 @@ public class MetricsCache {
       LOG.error("", e);
     } finally {
       try {
-        if (lock != null) writableFetcherModel.unlockTaskDefinition(lock, true);
+        if (lock != null) model.unlockTaskDefinition(lock, true);
       } catch (ZkLockException e) {
         LOG.error("", e);
       }

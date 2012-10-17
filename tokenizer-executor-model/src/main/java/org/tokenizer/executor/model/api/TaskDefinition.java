@@ -35,10 +35,6 @@ public interface TaskDefinition {
 
 	void setBatchBuildState(TaskBatchBuildState state);
 
-	String getQueueSubscriptionId();
-
-	void setQueueSubscriptionId(String queueSubscriptionId);
-
 	/**
 	 * The XML configuration for the Task.
 	 */

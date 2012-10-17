@@ -12,10 +12,14 @@
 
   <context:annotation-config/>
 
+<!-- 
   <kauri:module restletContext="restletContext" classLoader="moduleClassLoader" handle="module"/>
 
   <import resource="classpath:/org/kauriproject/dbresources/jpa/services.xml"/>
 
   <kauri:export-restservice name="data" ref="jpaRestlet"/>
+
+ -->
+ 
 
 </beans>

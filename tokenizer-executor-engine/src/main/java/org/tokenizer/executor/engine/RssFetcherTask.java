@@ -241,9 +241,5 @@ public class RssFetcherTask extends AbstractTask {
     }
   }
   
-  @Override
-  public boolean init() {
-    return true;
-  }
-  
+   
 }

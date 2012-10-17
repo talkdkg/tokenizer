@@ -1,0 +1,99 @@
+body,div {
+	font-family: 'lucida grande', helvetica, verdana, arial, sans-serif;
+	font-size: small;
+	font-weight: bold;
+}
+
+label {
+	padding-right: 0.5em;
+}
+
+form {
+	background: #EEE;
+}
+
+form legend {
+	font-weight: bold;
+}
+
+.error {
+	background: PeachPuff;
+}
+
+label.error {
+	font-weight: normal;
+	color: red;
+	background: none;
+	padding-left: 0.5em;
+}
+
+#fullname {
+	padding: 0.5em;
+}
+
+.unfocused {
+	border: 1px solid #ddd;
+}
+
+input.valid {
+	border: 1px solid #aea;
+}
+
+.invalid {
+	border: 1px solid #faa;
+}
+
+input.focused {
+	border: 1px solid gray;
+}
+
+form td {
+	padding: 5px 10px 7px;
+}
+
+.repeatblock {
+	padding: 2px;
+}
+
+.messages {
+	color: red;
+	display: inline;
+	margin-left: 5px;
+}
+
+ul.collection {
+	list-style: none;
+	/*margin-left: -3em;*/
+}
+
+.blockPlaceholder {
+	border: 1px dashed gray;
+}
+
+.addblock {
+	cursor: pointer;
+}
+
+.delblock {
+	cursor: pointer;
+}
+
+.handleblock {
+	cursor: move;
+}
+
+.smallbtn {
+	margin-left: 3px;
+}
+
+.tinyletters {
+	font-size: xx-small;
+}
+
+.ImageLinkWidget_edit {
+	margin-left: 3px;
+	display: inline-block;
+	vertical-align: top;
+	font-size: xx-small;
+	cursor: pointer;
+}

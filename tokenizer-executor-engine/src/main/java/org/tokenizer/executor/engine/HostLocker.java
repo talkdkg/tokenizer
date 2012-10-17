@@ -58,7 +58,7 @@ public class HostLocker {
    * <p>
    * If this method returns without failure, you obtained the lock
    * 
-   * @throws IndexLockTimeoutException
+   * @throws HostLockException
    *           if the lock could not be obtained within the given timeout.
    */
   public boolean lock(String host) throws HostLockException {

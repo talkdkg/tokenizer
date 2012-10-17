@@ -1,0 +1,11 @@
+Vaadin
+https://vaadin.com/wiki/-/wiki/Main/Using+Vaadin+with+Maven
+
+mvn archetype:generate \
+-DarchetypeGroupId=com.vaadin \
+-DarchetypeArtifactId=vaadin-archetype-clean \
+-DarchetypeVersion=LATEST \
+-DgroupId=org.tokenizer \
+-DartifactId=tokenizer-ui \
+-Dversion=1.0.0 \
+-Dpackaging=war

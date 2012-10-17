@@ -50,10 +50,7 @@ public class TaskDefinitionConverter {
         "generalState"));
     TaskBatchBuildState buildState = TaskBatchBuildState.valueOf(JsonUtil
         .getString(node, "batchBuildState"));
-    
-    String queueSubscriptionId = JsonUtil.getString(node,
-        "queueSubscriptionId", null);
-    
+        
     byte[] configuration;
     try {
       String configurationAsString = JsonUtil.getString(node, "configuration");
@@ -77,7 +74,6 @@ public class TaskDefinitionConverter {
     
     taskDefinition.setGeneralState(state);
     taskDefinition.setBatchBuildState(buildState);
-    taskDefinition.setQueueSubscriptionId(queueSubscriptionId);
     taskDefinition.setConfiguration(configuration);
     
   }
@@ -95,10 +91,7 @@ public class TaskDefinitionConverter {
     
     node.put("generalState", taskDefinition.getGeneralState().toString());
     node.put("batchBuildState", taskDefinition.getBatchBuildState().toString());
-    
-    if (taskDefinition.getQueueSubscriptionId() != null) node.put(
-        "queueSubscriptionId", taskDefinition.getQueueSubscriptionId());
-    
+        
     String configurationAsString;
     try {
       configurationAsString = Base64.encodeBytes(

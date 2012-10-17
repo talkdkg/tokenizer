@@ -38,6 +38,7 @@ import org.tokenizer.executor.model.configuration.TaskConfiguration;
 
 import crawlercommons.fetcher.FetchedResult;
 import crawlercommons.fetcher.http.BaseHttpFetcher;
+import crawlercommons.fetcher.http.BaseHttpFetcher.RedirectMode;
 import crawlercommons.fetcher.http.SimpleHttpFetcher;
 import crawlercommons.robots.BaseRobotRules;
 import crawlercommons.robots.BaseRobotsParser;
@@ -66,6 +67,7 @@ public class ClassicRobotTask extends AbstractTask {
     super(fetchName, zk, fetcherConfiguration, crawlerRepository, model,
         hostLocker);
     this.httpClient = new SimpleHttpFetcher(FetcherUtils.USER_AGENT);
+    this.httpClient.setRedirectMode(RedirectMode.FOLLOW_ALL);
     this.robotFetcher = RobotUtils.createFetcher(FetcherUtils.USER_AGENT, 1);
     this.robotFetcher.setDefaultMaxContentSize(4 * 1024 * 1024);
     
@@ -199,11 +201,6 @@ public class ClassicRobotTask extends AbstractTask {
     
   }
   
-  public boolean init() {
-    
-    return true;
-    
-  }
   
   /**
    * Should be called few times a day

@@ -29,10 +29,10 @@
     <version.kauri>0.4-RC2</version.kauri>
     <version.lily>1.4-SNAPSHOT</version.lily>
     <version.log4j>1.2.17</version.log4j>
-    <version.restlet>svn6565</version.restlet>
+    <version.restlet>2.0.15</version.restlet>
     <version.rome>1.0</version.rome>
     <version.slf4j>1.6.4</version.slf4j>
-    <version.solr>4.0.0-BETA</version.solr>
+    <version.solr>4.0.0</version.solr>
     <version.spring>2.5.6</version.spring>
     <version.tika>1.2</version.tika>
   </properties>
@@ -51,6 +51,7 @@
     <module>tokenizer-executor-model</module>
     <module>tokenizer-executor-module</module>
     <module>tokenizer-executor-worker</module>
+    <module>tokenizer-ui</module>
   </modules>
   <repositories>
     <repository>
@@ -65,10 +66,7 @@
     <repository>
       <id>restlet</id>
       <url>http://maven.restlet.org/</url>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-    </repository>
+     </repository>
     <repository>
       <id>kauri-deploy</id>
       <url>http://kauriproject.org/maven/maven2/deploy</url>
@@ -194,6 +192,16 @@
         <version>${version.kauri}</version>
       </dependency>
       <dependency>
+        <groupId>org.kauriproject</groupId>
+        <artifactId>kauri-runtime</artifactId>
+        <version>${version.kauri}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kauriproject</groupId>
+        <artifactId>kauri-util</artifactId>
+        <version>${version.kauri}</version>
+      </dependency>
+      <dependency>
         <groupId>org.lilyproject</groupId>
         <artifactId>lily-cli-fw</artifactId>
         <version>${version.lily}</version>
@@ -234,6 +242,11 @@
         <version>${version.lily}</version>
       </dependency>
       <dependency>
+        <groupId>org.restlet.gae</groupId>
+        <artifactId>org.restlet.ext.servlet</artifactId>
+        <version>${version.restlet}</version>
+      </dependency>
+      <dependency>
         <groupId>org.restlet.jse</groupId>
         <artifactId>org.restlet</artifactId>
         <version>${version.restlet}</version>
@@ -252,6 +265,11 @@
       <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-beans</artifactId>
+        <version>${version.spring}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-context</artifactId>
         <version>${version.spring}</version>
       </dependency>
       <dependency>

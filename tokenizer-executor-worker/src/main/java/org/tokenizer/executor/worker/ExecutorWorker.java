@@ -182,8 +182,7 @@ public class ExecutorWorker {
               }
               // if we don't have it in Map it means it is new; start it
               // automatically
-              if (task.init()
-                  && taskGeneralState.equals(TaskGeneralState.ACTIVE)
+              if (taskGeneralState.equals(TaskGeneralState.ACTIVE)
                   || taskGeneralState.equals(TaskGeneralState.START_REQUESTED)) task
                   .start();
               tasks.put(event.getTaskDefinitionName(), task);
@@ -198,13 +197,11 @@ public class ExecutorWorker {
             
             // task definition contains extra attributes such as stats. We do
             // not need to restart task if Metrics has been changed:
-            boolean relevantChanges = !Arrays.equals(task.getTaskDefinition()
+            boolean configurationChanged = !Arrays.equals(task.getTaskDefinition()
                 .getConfiguration(), taskDefinition.getConfiguration());
             
-            if (!relevantChanges) {
-              LOG.info("Not relevant changes...");
-              if (task.init()
-                  && taskGeneralState.equals(TaskGeneralState.START_REQUESTED)) task
+            if (!configurationChanged) {
+              if (taskGeneralState.equals(TaskGeneralState.START_REQUESTED)) task
                   .start();
               if (taskGeneralState.equals(TaskGeneralState.STOP_REQUESTED)) task
                   .stop();
@@ -217,7 +214,7 @@ public class ExecutorWorker {
             task.stop();
             task = createTask(taskDefinition);
             
-            if (task.init() && taskGeneralState.equals(TaskGeneralState.ACTIVE)
+            if (taskGeneralState.equals(TaskGeneralState.ACTIVE)
                 || taskGeneralState.equals(TaskGeneralState.START_REQUESTED)) task
                 .start();
             

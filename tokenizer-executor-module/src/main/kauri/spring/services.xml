@@ -9,38 +9,16 @@
                              http://www.kauriproject.org/schemas/runtime/springext.xsd"
 >
   <context:annotation-config/>
-  <kauri:module restletContext="restletContext" classLoader="moduleClassLoader"
-    handle="module" conf="confRegistry"/>
-  <bean class="org.kauriproject.runtime.rapi.ConfPlaceholderConfigurer">
-    <constructor-arg ref="confRegistry"/>
-  </bean>
-  <kauri:module restletContext="restletContext" classLoader="moduleClassLoader"
-    handle="module"/>
-  <kauri:import-service id="representationBuilder"
-    service="org.kauriproject.representation.build.RepresentationBuilder"/>
-  <kauri:import-service id="routingService"
-    service="org.kauriproject.routing.RoutingService"/>
-  <kauri:import-service id="templateService"
-    service="org.kauriproject.template.service.TemplateService"/>
-  <kauri:import-restservice name="forms"/>
-  <kauri:import-restservice name="jquery"/>
-  <kauri:export-restservice ref="main"/>
-  <bean factory-bean="representationBuilder" factory-method="install">
-    <constructor-arg ref="module"/>
-  </bean>
-  <bean id="main" factory-bean="routingService" factory-method="createRouter">
-    <constructor-arg ref="restletContext"/>
-    <constructor-arg ref="module"/>
-    <constructor-arg>
-      <bean class="org.kauriproject.routing.RoutingConfig">
-        <property name="templateService" ref="templateService"/>
-      </bean>
-    </constructor-arg>
-  </bean>
   <bean id="zooKeeper" class="org.lilyproject.util.zookeeper.StateWatchingZooKeeper">
-    <constructor-arg value="${zookeeper:connectString}"/>
-    <constructor-arg value="${zookeeper:sessionTimeout}"/>
-    <constructor-arg value="${zookeeper:startupTimeout}"/>
+    <constructor-arg>
+      <kauri:conf path="zookeeper" select="connectString"/>
+    </constructor-arg>
+    <constructor-arg>
+      <kauri:conf path="zookeeper" select="sessionTimeout"/>
+    </constructor-arg>
+    <constructor-arg>
+      <kauri:conf path="zookeeper" select="startupTimeout"/>
+    </constructor-arg>
   </bean>
   <bean id="executorWorker" class="org.tokenizer.executor.worker.ExecutorWorker">
     <constructor-arg ref="executorModel"/>
@@ -50,10 +28,6 @@
   <bean id="executorModel" class="org.tokenizer.executor.model.impl.ExecutorModelImpl">
     <constructor-arg ref="zooKeeper"/>
   </bean>
-  
-  
-    <!-- The depends-on zooKeeper is so that Lily's ZooKeeper connection establishment code
-       is the reference with regards to waiting until ZooKeeper is available. -->
   <bean id="hbaseConfiguration"
     class="org.lilyproject.server.modules.general.HadoopConfigurationFactoryImpl"
     depends-on="zooKeeper"
@@ -64,8 +38,12 @@
     <constructor-arg>
       <kauri:conf path="mapreduce"/>
     </constructor-arg>
-    <constructor-arg value="${zookeeper:connectString}"/>
-    <constructor-arg value="${zookeeper:sessionTimeout}"/>
+    <constructor-arg>
+      <kauri:conf path="zookeeper" select="connectString"/>
+    </constructor-arg>
+    <constructor-arg>
+      <kauri:conf path="zookeeper" select="sessionTimeout"/>
+    </constructor-arg>
   </bean>
   <bean id="hbaseConf" factory-bean="hbaseConfiguration" factory-method="getHBaseConf"/>
   <bean id="hbaseTableFactory" class="org.lilyproject.util.hbase.HBaseTableFactoryImpl">
@@ -74,4 +52,5 @@
   <bean id="crawlerRepository" class="org.tokenizer.crawler.db.CrawlerHBaseRepository">
     <constructor-arg ref="hbaseTableFactory"/>
   </bean>
+  <bean id="applicationContextProvider" class="org.tokenizer.core.context.ApplicationContextProvider"></bean>
 </beans>

@@ -21,8 +21,8 @@
 >
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <artifactId>tokenizer</artifactId>
     <groupId>org.tokenizer</groupId>
+    <artifactId>tokenizer</artifactId>
     <version>1.0-SNAPSHOT</version>
     <relativePath>..</relativePath>
   </parent>

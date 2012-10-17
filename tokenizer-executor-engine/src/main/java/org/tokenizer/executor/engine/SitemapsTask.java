@@ -280,9 +280,5 @@ public class SitemapsTask extends AbstractTask {
     return this.stop;
   }
   
-  @Override
-  public boolean init() {
-    return true;
-  }
   
 }

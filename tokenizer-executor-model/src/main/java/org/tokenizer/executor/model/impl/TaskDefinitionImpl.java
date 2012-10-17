@@ -26,7 +26,6 @@ public class TaskDefinitionImpl implements TaskDefinition {
   private String name;
   private TaskGeneralState generalState = TaskGeneralState.ACTIVE;
   private TaskBatchBuildState buildState = TaskBatchBuildState.INACTIVE;
-  private String queueSubscriptionId;
   private byte[] configuration;
   private int zkDataVersion = -1;
   private boolean immutable;
@@ -89,16 +88,7 @@ public class TaskDefinitionImpl implements TaskDefinition {
     checkIfMutable();
     this.buildState = state;
   }
-  
-  public String getQueueSubscriptionId() {
-    return queueSubscriptionId;
-  }
-  
-  public void setQueueSubscriptionId(String queueSubscriptionId) {
-    checkIfMutable();
-    this.queueSubscriptionId = queueSubscriptionId;
-  }
-  
+    
   public byte[] getConfiguration() {
     // Note that while one could modify the returned byte array, it is very
     // unlikely to do this

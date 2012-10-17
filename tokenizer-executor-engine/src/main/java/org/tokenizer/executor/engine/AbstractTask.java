@@ -76,13 +76,5 @@ public abstract class AbstractTask implements Runnable {
   
   public abstract boolean isStop();
   
-  /**
-   * Must be called explicitly before class can be used Reason: I want to catch
-   * all "recoverable" errors such as Solr temporary unavailability and to
-   * return true/false (instead of throwing RuntimeException)
-   * 
-   * @return
-   */
-  public abstract boolean init();
   
 }

@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<t:if test="${true}" xmlns:t="http://kauriproject.org/template">
+    
+  <!--
+      | blueprintcss-header()
+      -->
+  <t:macro name="blueprintcss-header">     
+      <t:include src="../snippet/headerlinks.xml" />
+  </t:macro>
+  
+</t:if>

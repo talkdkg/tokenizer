@@ -2,19 +2,9 @@
 <html t:inherit="module:/templates/layout/layout.xml"
       xmlns:t="http://kauriproject.org/template">
 
-  <t:block name="title">Home page</t:block>
-
-  <t:block name="content">
+  <t:block name="main">
     <h2>Welcome</h2>
 
-    <p>We have created a sample 'person' resource for you:</p>
-
-    <!-- About the publicUri() function call: we don't know where in the URI
-         space this module will be mounted. Therefore, we ask Kauri to convert
-         this internal URI to a public URI. In this particular case, we
-         could as well have used a relative URI, this features becomes more
-         useful when linking to other modules.
-    -->
-    <p><a href="${publicUri('service:/main/persons/1.html')}">View person</a></p>
+    <p></p>
   </t:block>
 </html>
