@@ -21,8 +21,8 @@ import java.util.Collection;
 import org.tokenizer.executor.model.api.ExecutorModelEvent;
 import org.tokenizer.executor.model.api.ExecutorModelEventType;
 import org.tokenizer.executor.model.api.ExecutorModelListener;
-import org.tokenizer.executor.model.api.TaskDefinition;
 import org.tokenizer.executor.model.api.TaskNotFoundException;
+import org.tokenizer.executor.model.impl.TaskInfoBean;
 import org.tokenizer.ui.MyVaadinApplication;
 
 import com.vaadin.data.Property;
@@ -45,11 +45,11 @@ public class TaskContainer extends BeanContainer<String, TaskVO> implements
         this.app = app;
 
         ExecutorModelListener listener = new MyExecutorModelListener();
-        Collection<TaskDefinition> taskDefinitions = MyVaadinApplication
+        Collection<TaskInfoBean> taskDefinitions = MyVaadinApplication
                 .getModel().getTaskDefinitions(listener);
 
         synchronized (app) {
-            for (TaskDefinition taskDefinition : taskDefinitions) {
+            for (TaskInfoBean taskDefinition : taskDefinitions) {
                 TaskVO taskVO = new TaskVO(taskDefinition);
                 addItem(taskVO.getTaskName(), taskVO);
             }
@@ -64,7 +64,7 @@ public class TaskContainer extends BeanContainer<String, TaskVO> implements
             synchronized (app) {
 
                 String taskName = event.getTaskDefinitionName();
-                TaskDefinition taskDefinition;
+                TaskInfoBean taskDefinition;
                 try {
                     taskDefinition = MyVaadinApplication.getModel()
                             .getTaskDefinition(taskName);

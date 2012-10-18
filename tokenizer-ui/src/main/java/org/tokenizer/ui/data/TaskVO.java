@@ -20,8 +20,8 @@ import java.util.Date;
 
 import org.tokenizer.executor.engine.MetricsCache;
 import org.tokenizer.executor.model.api.TaskBatchBuildState;
-import org.tokenizer.executor.model.api.TaskDefinition;
 import org.tokenizer.executor.model.api.TaskGeneralState;
+import org.tokenizer.executor.model.impl.TaskInfoBean;
 
 public class TaskVO implements Serializable {
 
@@ -47,7 +47,7 @@ public class TaskVO implements Serializable {
     public TaskVO() {
     }
 
-    public TaskVO(TaskDefinition taskDefinition) {
+    public TaskVO(TaskInfoBean taskDefinition) {
 
         this.taskName = taskDefinition.getName();
         this.taskGeneralState = taskDefinition.getGeneralState();

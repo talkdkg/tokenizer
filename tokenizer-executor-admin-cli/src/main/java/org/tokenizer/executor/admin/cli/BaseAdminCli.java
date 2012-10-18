@@ -35,6 +35,7 @@ import org.tokenizer.executor.model.api.TaskBatchBuildState;
 import org.tokenizer.executor.model.api.TaskGeneralState;
 import org.tokenizer.executor.model.api.TaskValidityException;
 import org.tokenizer.executor.model.api.WritableExecutorModel;
+import org.tokenizer.executor.model.configuration.TaskConfiguration;
 import org.tokenizer.executor.model.configuration.TaskConfigurationBuilder;
 import org.tokenizer.executor.model.configuration.TaskConfigurationException;
 import org.tokenizer.executor.model.impl.ExecutorModelImpl;
@@ -49,7 +50,7 @@ public abstract class BaseAdminCli extends BaseZkCliTool {
   protected Option outputFileOption;
   
   protected String taskName;
-  protected byte[] taskConfiguration;
+  protected TaskConfiguration taskConfiguration;
   protected String outputFileName;
   
   protected TaskGeneralState generalState;
@@ -149,12 +150,12 @@ public abstract class BaseAdminCli extends BaseZkCliTool {
         return 1;
       }
       
-      taskConfiguration = FileUtils.readFileToByteArray(configurationFile);
+      byte[] bytes = FileUtils.readFileToByteArray(configurationFile);
       
       if (!cmd.hasOption(forceOption.getOpt())) {
         try {
-          TaskConfigurationBuilder.build(new ByteArrayInputStream(
-              taskConfiguration));
+            taskConfiguration = TaskConfigurationBuilder.build(new ByteArrayInputStream(
+              bytes));
         } catch (Exception e) {
           System.out.println(); // separator line because we might have some
                                 // errors on screen

@@ -130,6 +130,11 @@
       <artifactId>kauri-runtime</artifactId>
       <exclusions>
         <exclusion>
+          <!--  
+            to avoid weird classloading problem with GWT such as
+            [INFO]    [ERROR] Unexpected internal compiler error
+            [INFO] java.lang.NoSuchFieldError: reportUnusedDeclaredThrownExceptionIncludeDocCommentReference
+          -->
           <artifactId>core</artifactId>
           <groupId>org.eclipse.jdt</groupId>
         </exclusion>
@@ -148,18 +153,62 @@
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>tokenizer-core</artifactId>
+      <exclusions>
+        <exclusion>
+          <!--  
+            to avoid weird classloading problem with GWT such as
+            [INFO]    [ERROR] Unexpected internal compiler error
+            [INFO] java.lang.NoSuchFieldError: reportUnusedDeclaredThrownExceptionIncludeDocCommentReference
+          -->
+          <artifactId>core</artifactId>
+          <groupId>org.eclipse.jdt</groupId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>tokenizer-crawler-db</artifactId>
+      <exclusions>
+        <exclusion>
+          <!--  
+            to avoid weird classloading problem with GWT such as
+            [INFO]    [ERROR] Unexpected internal compiler error
+            [INFO] java.lang.NoSuchFieldError: reportUnusedDeclaredThrownExceptionIncludeDocCommentReference
+          -->
+          <artifactId>core</artifactId>
+          <groupId>org.eclipse.jdt</groupId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>tokenizer-executor-engine</artifactId>
+      <exclusions>
+        <exclusion>
+          <!--  
+            to avoid weird classloading problem with GWT such as
+            [INFO]    [ERROR] Unexpected internal compiler error
+            [INFO] java.lang.NoSuchFieldError: reportUnusedDeclaredThrownExceptionIncludeDocCommentReference
+          -->
+          <artifactId>core</artifactId>
+          <groupId>org.eclipse.jdt</groupId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>tokenizer-executor-model</artifactId>
+      <exclusions>
+        <exclusion>
+          <!--  
+            to avoid weird classloading problem with GWT such as
+            [INFO]    [ERROR] Unexpected internal compiler error
+            [INFO] java.lang.NoSuchFieldError: reportUnusedDeclaredThrownExceptionIncludeDocCommentReference
+          -->
+          <artifactId>core</artifactId>
+          <groupId>org.eclipse.jdt</groupId>
+        </exclusion>
+      </exclusions>
     </dependency>
   </dependencies>
   <build>

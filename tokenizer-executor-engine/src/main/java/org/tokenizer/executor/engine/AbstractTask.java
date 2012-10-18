@@ -21,60 +21,60 @@ import org.lilyproject.util.zookeeper.ZooKeeperItf;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tokenizer.crawler.db.CrawlerHBaseRepository;
-import org.tokenizer.executor.model.api.TaskDefinition;
 import org.tokenizer.executor.model.api.TaskNotFoundException;
 import org.tokenizer.executor.model.api.WritableExecutorModel;
 import org.tokenizer.executor.model.configuration.TaskConfiguration;
+import org.tokenizer.executor.model.impl.TaskInfoBean;
 
 public abstract class AbstractTask implements Runnable {
-  
-  private static final Logger LOG = LoggerFactory.getLogger(AbstractTask.class);
-  
-  protected final String taskName;
-  protected final ZooKeeperItf zk;
-  protected final TaskConfiguration taskConfiguration;
-  protected final CrawlerHBaseRepository crawlerRepository;
-  protected final WritableExecutorModel model;
-  protected final HostLocker hostLocker;
-  protected final MetricsCache metricsCache;
-  
-  public AbstractTask(String taskName, ZooKeeperItf zk,
-      TaskConfiguration taskConfiguration,
-      CrawlerHBaseRepository crawlerRepository, WritableExecutorModel model,
-      HostLocker hostLocker) {
-    this.taskName = taskName;
-    this.zk = zk;
-    this.taskConfiguration = taskConfiguration;
-    this.crawlerRepository = crawlerRepository;
-    this.model = model;
-    this.hostLocker = hostLocker;
-    this.metricsCache = new MetricsCache(taskName, model);
-    LOG.debug("Resetting; it will produce TASK_DEFINITION_UPDATED event");
-    //this.metricsCache.reset();
-  }
-  
-  public MetricsCache getMetricsCache() {
-    return metricsCache;
-  }
-  
-  public TaskDefinition getTaskDefinition() {
-    TaskDefinition taskDefinition = null;
-    try {
-      taskDefinition = model.getTaskDefinition(taskName);
-    } catch (TaskNotFoundException e) {
-      LOG.error(taskName);
+
+    private static final Logger LOG = LoggerFactory
+            .getLogger(AbstractTask.class);
+
+    protected final String taskName;
+    protected final ZooKeeperItf zk;
+    protected final TaskConfiguration taskConfiguration;
+    protected final CrawlerHBaseRepository crawlerRepository;
+    protected final WritableExecutorModel model;
+    protected final HostLocker hostLocker;
+    protected final MetricsCache metricsCache;
+
+    public AbstractTask(String taskName, ZooKeeperItf zk,
+            TaskConfiguration taskConfiguration,
+            CrawlerHBaseRepository crawlerRepository,
+            WritableExecutorModel model, HostLocker hostLocker) {
+        this.taskName = taskName;
+        this.zk = zk;
+        this.taskConfiguration = taskConfiguration;
+        this.crawlerRepository = crawlerRepository;
+        this.model = model;
+        this.hostLocker = hostLocker;
+        this.metricsCache = new MetricsCache(taskName, model);
+        LOG.debug("Resetting; it will produce TASK_DEFINITION_UPDATED event");
+        // this.metricsCache.reset();
     }
-    return taskDefinition;
-  }
-  
-  public abstract void start() throws InterruptedException,
-      LeaderElectionSetupException, KeeperException;
-  
-  public abstract void stop() throws InterruptedException;
-  
-  public abstract Thread getThread();
-  
-  public abstract boolean isStop();
-  
-  
+
+    public MetricsCache getMetricsCache() {
+        return metricsCache;
+    }
+
+    public TaskInfoBean getTaskInfoBean() {
+        TaskInfoBean taskInfoBean = null;
+        try {
+            taskInfoBean = model.getTaskDefinition(taskName);
+        } catch (TaskNotFoundException e) {
+            LOG.error(taskName);
+        }
+        return taskInfoBean;
+    }
+
+    public abstract void start() throws InterruptedException,
+            LeaderElectionSetupException, KeeperException;
+
+    public abstract void stop() throws InterruptedException;
+
+    public abstract Thread getThread();
+
+    public abstract boolean isStop();
+
 }

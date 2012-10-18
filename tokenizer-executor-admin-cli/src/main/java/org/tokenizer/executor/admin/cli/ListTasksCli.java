@@ -22,47 +22,48 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.cli.CommandLine;
-import org.tokenizer.executor.model.api.TaskDefinition;
-import org.tokenizer.executor.model.api.TaskDefinitionNameComparator;
+import org.tokenizer.executor.model.api.TaskInfoBeanComparator;
+import org.tokenizer.executor.model.impl.TaskInfoBean;
 
 public class ListTasksCli extends BaseAdminCli {
-  @Override
-  protected String getCmdName() {
-    return "list-tasks";
-  }
-  
-  public static void main(String[] args) {
-    new ListTasksCli().start(args);
-  }
-  
-  @Override
-  public int run(CommandLine cmd) throws Exception {
-    int result = super.run(cmd);
-    if (result != 0) return result;
-    
-    List<TaskDefinition> taskDefinitions = new ArrayList<TaskDefinition>(
-        model.getTaskDefinitions());
-    
-    Collections.sort(taskDefinitions, TaskDefinitionNameComparator.INSTANCE);
-    
-    System.out.println("Number of tasks: " + taskDefinitions.size());
-    System.out.println();
-    
-    for (TaskDefinition taskDefinition : taskDefinitions) {
-      System.out.println(taskDefinition.getName());
-      System.out.println("  + General state: "
-          + taskDefinition.getGeneralState());
-      System.out.println("  + Submitted: "
-          + new Date(taskDefinition.getSubmitTime()));
-      System.out.println("  + Stats: ");
-      for (Map.Entry<String,Long> counter : taskDefinition.getCounters()
-          .entrySet()) {
-        System.out.println("    + " + counter.getKey() + ": "
-            + counter.getValue());
-      }
+    @Override
+    protected String getCmdName() {
+        return "list-tasks";
     }
-    
-    return 0;
-  }
-  
+
+    public static void main(String[] args) {
+        new ListTasksCli().start(args);
+    }
+
+    @Override
+    public int run(CommandLine cmd) throws Exception {
+        int result = super.run(cmd);
+        if (result != 0)
+            return result;
+
+        List<TaskInfoBean> taskDefinitions = new ArrayList<TaskInfoBean>(
+                model.getTaskDefinitions());
+
+        Collections.sort(taskDefinitions, TaskInfoBeanComparator.INSTANCE);
+
+        System.out.println("Number of tasks: " + taskDefinitions.size());
+        System.out.println();
+
+        for (TaskInfoBean taskDefinition : taskDefinitions) {
+            System.out.println(taskDefinition.getName());
+            System.out.println("  + General state: "
+                    + taskDefinition.getGeneralState());
+            System.out.println("  + Submitted: "
+                    + new Date(taskDefinition.getSubmitTime()));
+            System.out.println("  + Stats: ");
+            for (Map.Entry<String, Long> counter : taskDefinition.getCounters()
+                    .entrySet()) {
+                System.out.println("    + " + counter.getKey() + ": "
+                        + counter.getValue());
+            }
+        }
+
+        return 0;
+    }
+
 }

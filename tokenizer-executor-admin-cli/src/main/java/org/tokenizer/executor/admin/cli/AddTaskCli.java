@@ -19,7 +19,8 @@ import java.util.List;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
-import org.tokenizer.executor.model.api.TaskDefinition;
+import org.tokenizer.executor.model.impl.TaskInfoBean;
+
 
 public class AddTaskCli extends BaseAdminCli {
   @Override
@@ -48,11 +49,13 @@ public class AddTaskCli extends BaseAdminCli {
   public int run(CommandLine cmd) throws Exception {
     int result = super.run(cmd);
     if (result != 0) return result;
-    TaskDefinition taskDefinition = model.newTaskDefinition(taskName);
-    taskDefinition.setConfiguration(taskConfiguration);
-    if (generalState != null) taskDefinition.setGeneralState(generalState);
-    if (buildState != null) taskDefinition.setBatchBuildState(buildState);
-    model.addTaskDefinition(taskDefinition);
+    TaskInfoBean task = model.newTaskDefinition(taskName);
+    
+    task.setTaskConfiguration(taskConfiguration);
+    
+    if (generalState != null) task.setGeneralState(generalState);
+    if (buildState != null) task.setBatchBuildState(buildState);
+    model.addTaskDefinition(task);
     System.out.println("Task created: " + taskName);
     return 0;
   }
