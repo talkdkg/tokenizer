@@ -15,59 +15,99 @@
  */
 package org.tokenizer.ui.data;
 
-import java.io.Serializable;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 import org.tokenizer.executor.model.api.ExecutorModelEvent;
 import org.tokenizer.executor.model.api.ExecutorModelEventType;
 import org.tokenizer.executor.model.api.ExecutorModelListener;
+import org.tokenizer.executor.model.api.TaskInfoBean;
 import org.tokenizer.executor.model.api.TaskNotFoundException;
-import org.tokenizer.executor.model.impl.TaskInfoBean;
+import org.tokenizer.executor.model.configuration.TaskConfiguration;
 import org.tokenizer.ui.MyVaadinApplication;
 
+import com.vaadin.data.Item;
 import com.vaadin.data.Property;
-import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItem;
+import com.vaadin.data.util.IndexedContainer;
+import com.vaadin.data.util.ObjectProperty;
 
-@SuppressWarnings("serial")
-public class TaskContainer extends BeanContainer<String, TaskVO> implements
-        Serializable, Property.ValueChangeListener {
+public class TaskContainer extends IndexedContainer {
+
+    private static final long serialVersionUID = 1L;
 
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory
             .getLogger(TaskContainer.class);
 
     MyVaadinApplication app;
 
-    public TaskContainer(MyVaadinApplication app)
-            throws InstantiationException, IllegalAccessException {
-        super(TaskVO.class);
+    public TaskContainer(MyVaadinApplication app) {
+        super();
 
         this.app = app;
 
         ExecutorModelListener listener = new MyExecutorModelListener();
-        Collection<TaskInfoBean> taskDefinitions = MyVaadinApplication
-                .getModel().getTaskDefinitions(listener);
+        Collection<TaskInfoBean> tasks = MyVaadinApplication.getModel()
+                .getTasks(listener);
+
+        addContainerProperty("name", String.class, "");
+        addContainerProperty("type", String.class, "");
+        addContainerProperty("tld", String.class, "");
+        addContainerProperty("General State", String.class, "");
+        addContainerProperty("ZkDataVersion", Long.class, 0);
+        
 
         synchronized (app) {
-            for (TaskInfoBean taskDefinition : taskDefinitions) {
-                TaskVO taskVO = new TaskVO(taskDefinition);
-                addItem(taskVO.getTaskName(), taskVO);
+            for (TaskInfoBean task : tasks) {
+
+                Item item = addItem(task.getName());
+
+                item.getItemProperty("name").setValue(
+                        task.getTaskConfiguration().getName());
+
+                item.getItemProperty("type").setValue(
+                        task.getTaskConfiguration().getType());
+
+                item.getItemProperty("tld").setValue(
+                        task.getTaskConfiguration().getTld());
+
+                item.getItemProperty("General State").setValue(
+                        task.getGeneralState());
+
+                item.getItemProperty("ZkDataVersion").setValue(
+                        task.getZkDataVersion());
+
+                for (Map.Entry<String, Long> entry : task.getCounters()
+                        .entrySet()) {
+
+                    addContainerProperty(entry.getKey(), Long.class, 0L);
+                    item.getItemProperty(entry.getKey()).setValue(
+                            entry.getValue());
+
+                }
+
+                LOG.debug("BeanItem: {}", item);
+
             }
+
+            fireContainerPropertySetChange();
+
         }
     }
 
     private class MyExecutorModelListener implements ExecutorModelListener {
         public void process(final ExecutorModelEvent event) {
 
-            LOG.info("Event::: {}", event.getType());
+            LOG.debug("Event::: {}", event.getType());
 
             synchronized (app) {
 
                 String taskName = event.getTaskDefinitionName();
-                TaskInfoBean taskDefinition;
+                TaskInfoBean newTask;
                 try {
-                    taskDefinition = MyVaadinApplication.getModel()
-                            .getTaskDefinition(taskName);
+                    newTask = MyVaadinApplication.getModel().getTask(taskName);
                 } catch (TaskNotFoundException e) {
                     /*
                      * this will also handle
@@ -77,45 +117,46 @@ public class TaskContainer extends BeanContainer<String, TaskVO> implements
                     return;
                 }
 
-                if (event.getType() == ExecutorModelEventType.TASK_DEFINITION_ADDED) {
-                    TaskVO taskVO = new TaskVO(taskDefinition);
-                    addItem(taskVO.getTaskName(), taskVO);
-                } else if (event.getType() == ExecutorModelEventType.TASK_DEFINITION_UPDATED) {
+                if (event.getType() == ExecutorModelEventType.TASK_ADDED) {
+                    Item item = addItem(taskName);
 
-                    TaskVO newTaskVO = new TaskVO(taskDefinition);
+                    item.getItemProperty("name").setValue(newTask.getName());
+                    item.getItemProperty("type").setValue(
+                            newTask.getTaskConfiguration().getType());
+                    item.getItemProperty("tld").setValue(
+                            newTask.getTaskConfiguration().getTld());
+                    item.getItemProperty("General State").setValue(
+                            newTask.getGeneralState());
 
-                    BeanItem<TaskVO> beanItem = getItem(taskName);
+                } else if (event.getType() == ExecutorModelEventType.TASK_UPDATED) {
 
-                    TaskVO oldTaskVO = beanItem.getBean();
+                    getContainerProperty(taskName, "name").setValue(
+                            newTask.getTaskConfiguration().getName());
 
-                    if (oldTaskVO.equals(newTaskVO))
-                        return;
+                    getContainerProperty(taskName, "type").setValue(
+                            newTask.getTaskConfiguration().getType());
 
-                    beanItem.getItemProperty("submitTime").setValue(
-                            newTaskVO.getSubmitTime());
-                    beanItem.getItemProperty("taskGeneralState").setValue(
-                            newTaskVO.getTaskGeneralState());
-                    beanItem.getItemProperty("taskBatchBuildState").setValue(
-                            newTaskVO.getTaskBatchBuildState());
-                    beanItem.getItemProperty("robotsRestrictedUrlCount")
-                            .setValue(newTaskVO.getRobotsRestrictedUrlCount());
-                    beanItem.getItemProperty("totalProcessedUrlCount")
-                            .setValue(newTaskVO.getTotalProcessedUrlCount());
-                    beanItem.getItemProperty("fetchedSuccessfullyUrlCount")
-                            .setValue(
-                                    newTaskVO.getFetchedSuccessfullyUrlCount());
-                    beanItem.getItemProperty("fetchErrorsCount").setValue(
-                            newTaskVO.getFetchErrorsCount());
-                    beanItem.getItemProperty("otherErrorsCount").setValue(
-                            newTaskVO.getOtherErrorsCount());
-                    beanItem.getItemProperty("injectedUrlCount").setValue(
-                            newTaskVO.getInjectedUrlCount());
-                    beanItem.getItemProperty("totalSuccessfulMeanTime")
-                            .setValue(newTaskVO.getTotalSuccessfulMeanTime());
-                    beanItem.getItemProperty("averageSuccessfulMeanTime")
-                            .setValue(newTaskVO.getAverageSuccessfulMeanTime());
+                    getContainerProperty(taskName, "tld").setValue(
+                            newTask.getTaskConfiguration().getTld());
+
+                    getContainerProperty(taskName, "General State").setValue(
+                            newTask.getGeneralState());
+
+                    for (Map.Entry<String, Long> entry : newTask.getCounters()
+                            .entrySet()) {
+
+                        LOG.debug("Entry: {}", entry);
+
+                        addContainerProperty(entry.getKey(), Long.class, 0L);
+
+                        getContainerProperty(taskName, entry.getKey())
+                                .setValue(entry.getValue());
+
+                    }
 
                 }
+
+                fireContainerPropertySetChange();
 
             }
 

@@ -17,7 +17,6 @@ package org.tokenizer.executor.model.api;
 
 import java.util.Comparator;
 
-import org.tokenizer.executor.model.impl.TaskInfoBean;
 
 public class TaskInfoBeanComparator implements Comparator<TaskInfoBean> {
 

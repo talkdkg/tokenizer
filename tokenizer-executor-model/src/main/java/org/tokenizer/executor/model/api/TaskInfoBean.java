@@ -13,21 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.tokenizer.executor.model.impl;
+package org.tokenizer.executor.model.api;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import org.tokenizer.executor.model.api.TaskBatchBuildState;
-import org.tokenizer.executor.model.api.TaskGeneralState;
 import org.tokenizer.executor.model.configuration.TaskConfiguration;
 
 public class TaskInfoBean {
 
-    private TaskConfiguration taskConfiguration;
+    private TaskConfiguration taskConfiguration = new TaskConfiguration();
 
-    private String name;
-    private TaskGeneralState generalState = TaskGeneralState.ACTIVE;
+    private TaskGeneralState generalState = TaskGeneralState.START_REQUESTED;
     private TaskBatchBuildState buildState = TaskBatchBuildState.INACTIVE;
 
     private int zkDataVersion = -1;
@@ -66,12 +63,8 @@ public class TaskInfoBean {
         this.counters.put(key, value);
     }
 
-    public TaskInfoBean(String name) {
-        this.name = name;
-    }
-
     public String getName() {
-        return name;
+        return taskConfiguration.getName();
     }
 
     public TaskGeneralState getGeneralState() {

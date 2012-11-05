@@ -118,15 +118,6 @@ public class SimpleMultithreadedFetcher extends AbstractTask {
     }
   }
   
-  @Override
-  public Thread getThread() {
-    throw new RuntimeException("Not implemented!");
-  }
-  
-  @Override
-  public boolean isStop() {
-    return stop;
-  }
   
   public boolean init() {
     

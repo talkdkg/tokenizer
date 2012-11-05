@@ -16,5 +16,5 @@
 package org.tokenizer.executor.model.api;
 
 public enum ExecutorModelEventType {
-	TASK_DEFINITION_UPDATED, TASK_DEFINITION_ADDED, TASK_DEFINITION_REMOVED;
+	TASK_UPDATED, TASK_ADDED, TASK_REMOVED;
 }

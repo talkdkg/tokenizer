@@ -17,11 +17,10 @@ package org.tokenizer.executor.model.api;
 
 import java.util.Collection;
 
-import org.tokenizer.executor.model.impl.TaskInfoBean;
 
 public interface ExecutorModel {
   
-  Collection<TaskInfoBean> getTaskDefinitions();
+  Collection<TaskInfoBean> getTasks();
   
   /**
    * Gets the list of task definitions, and registers a listener. It guarantees that the
@@ -31,11 +30,11 @@ public interface ExecutorModel {
    * Note that the listener does not work like the watcher in ZooKeeper:
    * listeners are not one-time only.
    */
-  Collection<TaskInfoBean> getTaskDefinitions(ExecutorModelListener listener);
+  Collection<TaskInfoBean> getTasks(ExecutorModelListener listener);
   
-  TaskInfoBean getTaskDefinition(String name) throws TaskNotFoundException;
+  TaskInfoBean getTask(String name) throws TaskNotFoundException;
   
-  boolean hasTaskDefinition(String name);
+  boolean hasTask(String name);
   
   void registerListener(ExecutorModelListener listener);
   

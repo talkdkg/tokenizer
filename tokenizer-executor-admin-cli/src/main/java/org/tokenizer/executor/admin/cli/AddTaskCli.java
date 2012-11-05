@@ -19,45 +19,47 @@ import java.util.List;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
-import org.tokenizer.executor.model.impl.TaskInfoBean;
-
+import org.tokenizer.executor.model.api.TaskInfoBean;
 
 public class AddTaskCli extends BaseAdminCli {
-  @Override
-  protected String getCmdName() {
-    return "add-task";
-  }
-  
-  public static void main(String[] args) {
-    new AddTaskCli().start(args);
-  }
-  
-  @Override
-  public List<Option> getOptions() {
-    List<Option> options = super.getOptions();
-    //nameOption.setRequired(true);
-    //configurationOption.setRequired(true);
-    options.add(nameOption);
-    options.add(configurationOption);
-    options.add(generalStateOption);
-    options.add(buildStateOption);
-    options.add(forceOption);
-    return options;
-  }
-  
-  @Override
-  public int run(CommandLine cmd) throws Exception {
-    int result = super.run(cmd);
-    if (result != 0) return result;
-    TaskInfoBean task = model.newTaskDefinition(taskName);
-    
-    task.setTaskConfiguration(taskConfiguration);
-    
-    if (generalState != null) task.setGeneralState(generalState);
-    if (buildState != null) task.setBatchBuildState(buildState);
-    model.addTaskDefinition(task);
-    System.out.println("Task created: " + taskName);
-    return 0;
-  }
-  
+    @Override
+    protected String getCmdName() {
+        return "add-task";
+    }
+
+    public static void main(String[] args) {
+        new AddTaskCli().start(args);
+    }
+
+    @Override
+    public List<Option> getOptions() {
+        List<Option> options = super.getOptions();
+        // nameOption.setRequired(true);
+        // configurationOption.setRequired(true);
+        options.add(nameOption);
+        options.add(configurationOption);
+        options.add(generalStateOption);
+        options.add(buildStateOption);
+        options.add(forceOption);
+        return options;
+    }
+
+    @Override
+    public int run(CommandLine cmd) throws Exception {
+        int result = super.run(cmd);
+        if (result != 0)
+            return result;
+        TaskInfoBean task = new TaskInfoBean();
+
+        task.setTaskConfiguration(taskConfiguration);
+
+        if (generalState != null)
+            task.setGeneralState(generalState);
+        if (buildState != null)
+            task.setBatchBuildState(buildState);
+        model.addTask(task);
+        System.out.println("Task created: " + taskName);
+        return 0;
+    }
+
 }

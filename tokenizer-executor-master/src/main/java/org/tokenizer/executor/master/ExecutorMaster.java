@@ -24,7 +24,7 @@ import java.util.concurrent.TimeUnit;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
-import org.apache.hadoop.conf.Configuration;
+// import org.apache.hadoop.conf.Configuration;
 import org.apache.zookeeper.KeeperException;
 import org.lilyproject.util.Logs;
 import org.lilyproject.util.zookeeper.LeaderElection;
@@ -37,9 +37,9 @@ import org.tokenizer.executor.model.api.ExecutorModelEvent;
 import org.tokenizer.executor.model.api.ExecutorModelEventType;
 import org.tokenizer.executor.model.api.ExecutorModelListener;
 import org.tokenizer.executor.model.api.TaskGeneralState;
+import org.tokenizer.executor.model.api.TaskInfoBean;
 import org.tokenizer.executor.model.api.TaskNotFoundException;
 import org.tokenizer.executor.model.api.WritableExecutorModel;
-import org.tokenizer.executor.model.impl.TaskInfoBean;
 
 /**
  * Responsible for start/stop/watch MapReduce, and Delete existing task; only
@@ -60,7 +60,7 @@ public class ExecutorMaster {
     private EventWorker eventWorker = new EventWorker();
 
     public ExecutorMaster(ZooKeeperItf zk, WritableExecutorModel model,
-            Configuration mapReduceConf, Configuration hbaseConf,
+            /* Configuration mapReduceConf, Configuration hbaseConf,*/
             String zkConnectString, int zkSessionTimeout,
             ExecutorInfo executorInfo, String hostName) {
         this.zk = zk;
@@ -101,14 +101,13 @@ public class ExecutorMaster {
             eventWorker.start();
             // jobStatusWatcher.start();
 
-            Collection<TaskInfoBean> taskDefinitions = model
-                    .getTaskDefinitions(listener);
+            Collection<TaskInfoBean> taskDefinitions = model.getTasks(listener);
 
             // push out fake events
             for (TaskInfoBean taskDefinition : taskDefinitions) {
                 eventWorker.putEvent(new ExecutorModelEvent(
-                        ExecutorModelEventType.TASK_DEFINITION_UPDATED,
-                        taskDefinition.getName()));
+                        ExecutorModelEventType.TASK_UPDATED, taskDefinition
+                                .getName()));
             }
 
             LOG.info("Startup as Master successful.");
@@ -212,19 +211,18 @@ public class ExecutorMaster {
                                 + queueSize);
                     }
 
-                    if (event.getType() == ExecutorModelEventType.TASK_DEFINITION_ADDED
-                            || event.getType() == ExecutorModelEventType.TASK_DEFINITION_UPDATED) {
+                    if (event.getType() == ExecutorModelEventType.TASK_ADDED
+                            || event.getType() == ExecutorModelEventType.TASK_UPDATED) {
                         TaskInfoBean taskDefinition = null;
                         try {
-                            taskDefinition = model.getTaskDefinition(event
+                            taskDefinition = model.getTask(event
                                     .getTaskDefinitionName());
                         } catch (TaskNotFoundException e) {
                             // ignore
                         }
 
                         if (taskDefinition != null) {
-                            if (taskDefinition.getGeneralState() == TaskGeneralState.DELETE_REQUESTED
-                                    || taskDefinition.getGeneralState() == TaskGeneralState.DELETING) {
+                            if (taskDefinition.getGeneralState() == TaskGeneralState.DELETE_REQUESTED) {
 
                                 prepareDeleteTaskDefinition(taskDefinition
                                         .getName());
@@ -262,9 +260,8 @@ public class ExecutorMaster {
     private void prepareDeleteTaskDefinition(String name) {
         boolean canBeDeleted = false;
         try {
-            TaskInfoBean taskDefinition = model.getMutableTaskDefinition(name);
-            if (taskDefinition.getGeneralState() == TaskGeneralState.DELETE_REQUESTED
-                    || taskDefinition.getGeneralState() == TaskGeneralState.DELETING) {
+            TaskInfoBean taskDefinition = model.getMutableTask(name);
+            if (taskDefinition.getGeneralState() == TaskGeneralState.DELETE_REQUESTED) {
 
                 // TODO: some logic for MapReduce tasks in the future...
 
@@ -282,7 +279,7 @@ public class ExecutorMaster {
     private void deleteTaskDefinition(String name) {
         boolean success = false;
         try {
-            model.deleteTaskDefinition(name);
+            model.deleteTask(name);
             success = true;
         } catch (Throwable t) {
             LOG.error("Failed to delete task definition.", t);
@@ -290,10 +287,9 @@ public class ExecutorMaster {
 
         if (!success) {
             try {
-                TaskInfoBean taskDefinition = model
-                        .getMutableTaskDefinition(name);
+                TaskInfoBean taskDefinition = model.getMutableTask(name);
                 taskDefinition.setGeneralState(TaskGeneralState.DELETE_FAILED);
-                model.updateTaskDefinitionInternal(taskDefinition);
+                model.updateTaskInternal(taskDefinition);
             } catch (Throwable t) {
                 LOG.error("Failed to set task definition state to "
                         + TaskGeneralState.DELETE_FAILED, t);

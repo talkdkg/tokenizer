@@ -49,16 +49,18 @@ public class UrlRecordDecoder {
       byte[] rowKey = result.getRow();
       return decodeRecordIdInternal(rowKey);
     } catch (UnsupportedEncodingException e) {
+        LOG.error("", e);
       return EMPTY_STRING;
     }
     
   }
   
-  public static String decode(byte[] encodedUrl) {
+  public static String decode(byte[] urlEncoded) {
     try {
-      return decodeRecordIdInternal(encodedUrl);
+      return decodeRecordIdInternal(urlEncoded);
     } catch (UnsupportedEncodingException e) {
-      return null;
+        LOG.error("",e);
+      return EMPTY_STRING;
     }
   }
   

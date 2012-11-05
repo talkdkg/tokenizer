@@ -10,10 +10,10 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.Link;
 import com.vaadin.ui.Table;
 
-public class PersonListTable extends Table {
+public class PersonList extends Table {
   private static final long serialVersionUID = 1L;
   
-  public PersonListTable(MyVaadinApplication app) {
+  public PersonList(MyVaadinApplication app) {
     
     setSizeFull();
     

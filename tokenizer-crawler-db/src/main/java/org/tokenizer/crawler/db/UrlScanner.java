@@ -24,59 +24,41 @@ import org.apache.hadoop.hbase.client.Scan;
 import org.apache.hadoop.hbase.util.Bytes;
 
 public class UrlScanner extends AbstractHBaseRecordScanner<UrlRecord> {
-  
-  private ResultScanner hbaseScanner;
-  
-  /**
-   * 
-   * @param host
-   *          - internet hos such as www.amazon.ca (without "dot" at the end)
-   */
-  
-  public UrlScanner(String host, CrawlerHBaseRepository repository) {
-    byte[] start = UrlRecordDecoder.encode("http://" + host);
-    byte[] end = Arrays.copyOf(start, start.length + 1);
-    end[start.length] = (byte) 0xff;
-    Scan scan = new Scan(start, end);
-    
-    try {
-      hbaseScanner = repository.urlTable.getScanner(scan);
-    } catch (IOException e) {
-      throw new RuntimeException(e);
+
+    private ResultScanner hbaseScanner;
+
+    /**
+     * 
+     * @param host
+     *            - internet hos such as www.amazon.ca (without "dot" at the
+     *            end)
+     */
+
+    public UrlScanner(String host, CrawlerHBaseRepository repository) {
+        byte[] start = UrlRecordDecoder.encode("http://" + host);
+        byte[] end = Arrays.copyOf(start, start.length + 1);
+        end[start.length] = (byte) 0xff;
+        Scan scan = new Scan(start, end);
+
+        try {
+            hbaseScanner = repository.urlTable.getScanner(scan);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
     }
-    
-  }
-  
-  @Override
-  UrlRecord decode(Result result) throws RepositoryException,
-      InterruptedException {
-    
-    UrlRecord urlRecord = new UrlRecord();
-    
-    String url = UrlRecordDecoder.decode(result);
-    urlRecord.setUrl(url);
-    
-    byte[] digest = result.getValue(CrawlerHBaseSchema.UrlCf.DATA.bytes,
-        CrawlerHBaseSchema.UrlColumn.DIGEST.bytes);
-    if (digest != null) urlRecord.setDigest(digest);
-    
-    byte[] timestamp = result.getValue(CrawlerHBaseSchema.UrlCf.DATA.bytes,
-        CrawlerHBaseSchema.UrlColumn.TIMESTAMP.bytes);
-    if (timestamp != null) urlRecord.setTimestamp(Bytes.toLong(timestamp));
-    
-    byte[] httpResponseCode = result.getValue(
-        CrawlerHBaseSchema.UrlCf.DATA.bytes,
-        CrawlerHBaseSchema.UrlColumn.HTTP_RESPONSE_CODE.bytes);
-    if (httpResponseCode != null) urlRecord.setHttpResponseCode(Bytes
-        .toInt(httpResponseCode));
-    
-    return urlRecord;
-    
-  }
-  
-  @Override
-  ResultScanner getScanner() {
-    return hbaseScanner;
-  }
-  
+
+    @Override
+    UrlRecord decode(Result result) throws RepositoryException,
+            InterruptedException {
+
+        return CrawlerHBaseRepository.decodeUrlRecord(result);
+    }
+
+    @Override
+    ResultScanner getScanner() {
+        return hbaseScanner;
+    }
+
+
 }

@@ -32,7 +32,11 @@
       <groupId>com.google.code.crawler-commons</groupId>
       <artifactId>crawler-commons</artifactId>
     </dependency>
-    <dependency>
+<!--     <dependency>
+      <groupId>org.apache.hadoop</groupId>
+      <artifactId>hadoop-common</artifactId>
+    </dependency>
+ -->    <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpclient</artifactId>
     </dependency>

@@ -83,6 +83,6 @@ public class SearchView extends Panel {
     if (saveSearch.booleanValue()) {
         app.saveSearch(searchFilter);
     }
-    app.search(searchFilter);
+   // app.search(searchFilter);
 }
 }

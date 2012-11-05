@@ -24,12 +24,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tokenizer.executor.model.api.TaskConcurrentModificationException;
 import org.tokenizer.executor.model.api.TaskGeneralState;
+import org.tokenizer.executor.model.api.TaskInfoBean;
 import org.tokenizer.executor.model.api.TaskModelException;
 import org.tokenizer.executor.model.api.TaskNotFoundException;
 import org.tokenizer.executor.model.api.TaskUpdateException;
 import org.tokenizer.executor.model.api.TaskValidityException;
 import org.tokenizer.executor.model.api.WritableExecutorModel;
-import org.tokenizer.executor.model.impl.TaskInfoBean;
 
 /**
  * Thread safe instance of this class should be used as an attribute of
@@ -125,11 +125,9 @@ public class MetricsCache {
         long currentTimestamp = System.currentTimeMillis();
         String lock = null;
         try {
-            lock = model.lockTaskDefinition(taskName);
-            TaskInfoBean taskDefinition = model
-                    .getMutableTaskDefinition(taskName);
-            if (taskDefinition.getGeneralState() == TaskGeneralState.DELETE_REQUESTED
-                    || taskDefinition.getGeneralState() == TaskGeneralState.DELETING) {
+            lock = model.lockTask(taskName);
+            TaskInfoBean taskDefinition = model.getMutableTask(taskName);
+            if (taskDefinition.getGeneralState() == TaskGeneralState.DELETE_REQUESTED) {
                 return true;
             }
             for (String key : cache.keySet()) {
@@ -140,7 +138,7 @@ public class MetricsCache {
                 taskDefinition.addCounter(key, value);
             }
             taskDefinition.setMetricsUpdateTimestamp(currentTimestamp);
-            model.updateTaskDefinition(taskDefinition, lock);
+            model.updateTask(taskDefinition, lock);
             for (String key : cache.keySet()) {
                 cache.put(key, 0L);
             }
@@ -165,7 +163,7 @@ public class MetricsCache {
         } finally {
             try {
                 if (lock != null)
-                    model.unlockTaskDefinition(lock, true);
+                    model.unlockTask(lock, true);
             } catch (ZkLockException e) {
                 LOG.error("", e);
             }
@@ -188,17 +186,15 @@ public class MetricsCache {
         long currentTimestamp = System.currentTimeMillis();
         String lock = null;
         try {
-            lock = model.lockTaskDefinition(taskName);
-            TaskInfoBean taskDefinition = model
-                    .getMutableTaskDefinition(taskName);
-            if (taskDefinition.getGeneralState() == TaskGeneralState.DELETE_REQUESTED
-                    || taskDefinition.getGeneralState() == TaskGeneralState.DELETING) {
+            lock = model.lockTask(taskName);
+            TaskInfoBean taskDefinition = model.getMutableTask(taskName);
+            if (taskDefinition.getGeneralState() == TaskGeneralState.DELETE_REQUESTED) {
                 return true;
             }
             taskDefinition.getCounters().clear();
             taskDefinition.setSubmitTime(currentTimestamp);
             taskDefinition.setMetricsUpdateTimestamp(currentTimestamp);
-            model.updateTaskDefinition(taskDefinition, lock);
+            model.updateTask(taskDefinition, lock);
             cache.clear();
             lastCommitTimestamp = currentTimestamp;
             success = true;
@@ -221,7 +217,7 @@ public class MetricsCache {
         } finally {
             try {
                 if (lock != null)
-                    model.unlockTaskDefinition(lock, true);
+                    model.unlockTask(lock, true);
             } catch (ZkLockException e) {
                 LOG.error("", e);
             }

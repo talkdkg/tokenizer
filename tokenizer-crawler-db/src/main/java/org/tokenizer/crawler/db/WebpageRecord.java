@@ -18,41 +18,54 @@ package org.tokenizer.crawler.db;
 import org.tokenizer.core.util.MD5;
 
 public class WebpageRecord {
-  
-  private String url;
-  private long timestamp;
-  private String charset;
-  private byte[] content;
-  private byte[] digest;
-  
-  public String getUrl() {
-    return url;
-  }
-  public void setUrl(String url) {
-    this.url = url;
-  }
-  public long getTimestamp() {
-    return timestamp;
-  }
-  public void setTimestamp(long timestamp) {
-    this.timestamp = timestamp;
-  }
-  public String getCharset() {
-    return charset;
-  }
-  public void setCharset(String charset) {
-    this.charset = charset;
-  }
-  public byte[] getContent() {
-    return content;
-  }
-  public void setContent(byte[] content) {
-    this.content = content;
-    this.digest = MD5.digest(content);
-  }
-  public byte[] getDigest() {
-    return digest;
-  }
-  
-  
+    private String url;
+    private long timestamp;
+    private String charset;
+    private byte[] content;
+    private byte[] digest;
+
+    public WebpageRecord() {
+    }
+
+    public WebpageRecord(byte[] digest) {
+        this.digest = digest;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public long getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(long timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    public String getCharset() {
+        return charset;
+    }
+
+    public void setCharset(String charset) {
+        this.charset = charset;
+    }
+
+    public byte[] getContent() {
+        return content;
+    }
+
+    public void setContent(byte[] content) {
+        this.content = content;
+        if (this.digest == null)
+            this.digest = MD5.digest(content);
+    }
+
+    public byte[] getDigest() {
+        return digest;
+    }
 }

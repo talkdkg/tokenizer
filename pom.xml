@@ -22,18 +22,21 @@
   <properties>
     <version.base64>2.3.8</version.base64>
     <version.crawler-commons>0.2-SNAPSHOT</version.crawler-commons>
-    <version.httpclient>4.2.1</version.httpclient>
+    <version.hadoop>1.0.3</version.hadoop>
+    <version.hbase>0.94.1</version.hbase>
+    <version.httpclient>4.2.2</version.httpclient>
     <version.jackson>1.9.7</version.jackson>
     <version.jaxrs>1.0</version.jaxrs>
     <version.junit>4.10</version.junit>
     <version.kauri>0.4-RC2</version.kauri>
-    <version.lily>1.4-SNAPSHOT</version.lily>
+    <version.lily>1.3</version.lily>
     <version.log4j>1.2.17</version.log4j>
     <version.restlet>2.0.15</version.restlet>
     <version.rome>1.0</version.rome>
     <version.slf4j>1.6.4</version.slf4j>
     <version.solr>4.0.0</version.solr>
     <version.spring>2.5.6</version.spring>
+    <version.tagsoup>1.2.1</version.tagsoup>
     <version.tika>1.2</version.tika>
   </properties>
   <modelVersion>4.0.0</modelVersion>
@@ -52,6 +55,8 @@
     <module>tokenizer-executor-module</module>
     <module>tokenizer-executor-worker</module>
     <module>tokenizer-ui</module>
+    <module>tokenizer-dist</module>
+    <module>tokenizer-analysis</module>
   </modules>
   <repositories>
     <repository>
@@ -66,7 +71,7 @@
     <repository>
       <id>restlet</id>
       <url>http://maven.restlet.org/</url>
-     </repository>
+    </repository>
     <repository>
       <id>kauri-deploy</id>
       <url>http://kauriproject.org/maven/maven2/deploy</url>
@@ -104,6 +109,91 @@
           <exclusion>
             <groupId>org.apache.tika</groupId>
             <artifactId>tika-core</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.hbase</groupId>
+        <artifactId>hbase</artifactId>
+        <version>${version.hbase}</version>
+        <exclusions>
+          <!-- We use the log4j binding for slf4j instead of the simple one -->
+          <exclusion>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+          </exclusion>
+          <!-- We use a more recent Avro in Lily (which has a different groupId). -->
+          <exclusion>
+            <groupId>org.apache.avro</groupId>
+            <artifactId>avro</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.apache.avro</groupId>
+            <artifactId>avro-ipc</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.mortbay.jetty</groupId>
+            <artifactId>jsp-2.1</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.mortbay.jetty</groupId>
+            <artifactId>jsp-api-2.1</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.mortbay.jetty</groupId>
+            <artifactId>servlet-api-2.5</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpcore</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.codehaus.jackson</groupId>
+            <artifactId>jackson-core-asl</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.codehaus.jackson</groupId>
+            <artifactId>jackson-mapper-asl</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.codehaus.jackson</groupId>
+            <artifactId>jackson-jaxrs</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.codehaus.jackson</groupId>
+            <artifactId>jackson-xc</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.hadoop</groupId>
+        <artifactId>hadoop-core</artifactId>
+        <version>${version.hadoop}</version>
+        <optional>true</optional>
+        <exclusions>
+          <exclusion>
+            <groupId>hsqldb</groupId>
+            <artifactId>hsqldb</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>net.sf.kosmosfs</groupId>
+            <artifactId>kfs</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.eclipse.jdt</groupId>
+            <artifactId>core</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>net.java.dev.jets3t</groupId>
+            <artifactId>jets3t</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>oro</groupId>
+            <artifactId>oro</artifactId>
           </exclusion>
         </exclusions>
       </dependency>
@@ -158,6 +248,12 @@
         <groupId>org.apache.solr</groupId>
         <artifactId>solr-solrj</artifactId>
         <version>${version.solr}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpmime</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
 			<!-- TODO: replace Tika with direct calls to TagSoup -->
       <dependency>
@@ -170,6 +266,11 @@
             <artifactId>netcdf</artifactId>
           </exclusion>
         </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.ccil.cowan.tagsoup</groupId>
+        <artifactId>tagsoup</artifactId>
+        <version>${version.tagsoup}</version>
       </dependency>
       <dependency>
         <groupId>org.codehaus.jackson</groupId>
@@ -215,16 +316,46 @@
         <groupId>org.lilyproject</groupId>
         <artifactId>lily-hbase-client</artifactId>
         <version>${version.lily}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.apache.hbase</groupId>
+            <artifactId>hbase</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.apache.hadoop</groupId>
+            <artifactId>hadoop-common</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.apache.hadoop</groupId>
+            <artifactId>hadoop-core</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.apache.hadoop</groupId>
+            <artifactId>hadoop-hdfs</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.lilyproject</groupId>
         <artifactId>lily-hbase-util</artifactId>
         <version>${version.lily}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.apache.hbase</groupId>
+            <artifactId>hbase</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.lilyproject</groupId>
         <artifactId>lily-hbaseindex-impl</artifactId>
         <version>${version.lily}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.apache.hbase</groupId>
+            <artifactId>hbase</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.lilyproject</groupId>

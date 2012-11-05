@@ -76,8 +76,8 @@ public abstract class BaseAdminCli extends BaseZkCliTool {
         .withArgName("state")
         .hasArg()
         .withDescription(
-            "General state, one of: " + TaskGeneralState.ACTIVE + ", "
-                + TaskGeneralState.DISABLED + ", "
+            "General state, one of: " + TaskGeneralState.START_REQUESTED + ", "
+                + TaskGeneralState.STOP_REQUESTED + ", "
                 + TaskGeneralState.DELETE_REQUESTED).withLongOpt("state")
         .create("i");
     

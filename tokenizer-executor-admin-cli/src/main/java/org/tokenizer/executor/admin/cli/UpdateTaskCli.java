@@ -20,7 +20,7 @@ import java.util.List;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.tokenizer.executor.model.api.TaskGeneralState;
-import org.tokenizer.executor.model.impl.TaskInfoBean;
+import org.tokenizer.executor.model.api.TaskInfoBean;
 
 public class UpdateTaskCli extends BaseAdminCli {
     @Override
@@ -53,14 +53,14 @@ public class UpdateTaskCli extends BaseAdminCli {
         if (result != 0)
             return result;
 
-        if (!model.hasTaskDefinition(taskName)) {
+        if (!model.hasTask(taskName)) {
             System.out.println("Task does not exist: " + taskName);
             return 1;
         }
 
-        String lock = model.lockTaskDefinition(taskName);
+        String lock = model.lockTask(taskName);
         try {
-            TaskInfoBean task = model.getMutableTaskDefinition(taskName);
+            TaskInfoBean task = model.getMutableTask(taskName);
 
             boolean changes = false;
 
@@ -81,7 +81,7 @@ public class UpdateTaskCli extends BaseAdminCli {
             }
 
             if (changes) {
-                model.updateTaskDefinition(task, lock);
+                model.updateTask(task, lock);
                 System.out.println("Task definition updated: " + taskName);
             } else {
                 System.out
@@ -95,7 +95,7 @@ public class UpdateTaskCli extends BaseAdminCli {
             // deletion.
             boolean ignoreMissing = generalState != null
                     && generalState == TaskGeneralState.DELETE_REQUESTED;
-            model.unlockTaskDefinition(lock, ignoreMissing);
+            model.unlockTask(lock, ignoreMissing);
         }
 
         return 0;

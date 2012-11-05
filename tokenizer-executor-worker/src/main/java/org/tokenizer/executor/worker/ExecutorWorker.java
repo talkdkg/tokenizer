@@ -39,10 +39,10 @@ import org.tokenizer.executor.model.api.ExecutorModelEvent;
 import org.tokenizer.executor.model.api.ExecutorModelEventType;
 import org.tokenizer.executor.model.api.ExecutorModelListener;
 import org.tokenizer.executor.model.api.TaskGeneralState;
+import org.tokenizer.executor.model.api.TaskInfoBean;
 import org.tokenizer.executor.model.api.TaskNotFoundException;
 import org.tokenizer.executor.model.api.WritableExecutorModel;
 import org.tokenizer.executor.model.configuration.TaskConfiguration;
-import org.tokenizer.executor.model.impl.TaskInfoBean;
 
 /**
  * Worker is responsible for starting/stopping tasks.
@@ -89,13 +89,13 @@ public class ExecutorWorker {
         eventWorkerThread.start();
 
         Collection<TaskInfoBean> taskDefinitions = executorModel
-                .getTaskDefinitions(listener);
+                .getTasks(listener);
 
         for (TaskInfoBean taskDefinition : taskDefinitions) {
             try {
                 eventQueue.put(new ExecutorModelEvent(
-                        ExecutorModelEventType.TASK_DEFINITION_ADDED,
-                        taskDefinition.getName()));
+                        ExecutorModelEventType.TASK_ADDED, taskDefinition
+                                .getName()));
             } catch (InterruptedException e) {
                 eventWorkerThread.interrupt();
                 Thread.currentThread().interrupt();
@@ -113,11 +113,11 @@ public class ExecutorWorker {
         }
         for (AbstractTask task : tasks.values()) {
             // although each task should be "daemon"... to be safe:
-            task.getThread().interrupt();
-            LOG.warn("committing metrics for {}...", task.getTaskInfoBean()
-                    .getName());
+            task.stop();
+            LOG.warn("committing metrics for {}...", task
+                    .getTaskConfiguration().getName());
             task.getMetricsCache().commit();
-            LOG.warn("committed successfully {}.", task.getTaskInfoBean()
+            LOG.warn("committed successfully {}.", task.getTaskConfiguration()
                     .getName());
         }
     }
@@ -157,83 +157,52 @@ public class ExecutorWorker {
                     ExecutorModelEvent event = eventQueue.take();
                     LOG.debug("Event removed from queue: {}", event);
 
-                    if (event.getType() == ExecutorModelEventType.TASK_DEFINITION_ADDED
-                            || event.getType() == ExecutorModelEventType.TASK_DEFINITION_UPDATED) {
+                    if (event.getType() == ExecutorModelEventType.TASK_ADDED) {
+                        TaskInfoBean taskInfo = executorModel.getTask(event
+                                .getTaskDefinitionName());
+                        AbstractTask task = createTask(taskInfo);
+                        if (taskInfo.getGeneralState() == TaskGeneralState.START_REQUESTED)
+                            task.start();
+                        tasks.put(event.getTaskDefinitionName(), task);
+                        continue;
 
-                        TaskInfoBean taskDefinition = executorModel
-                                .getTaskDefinition(event
-                                        .getTaskDefinitionName());
-                        TaskGeneralState taskGeneralState = taskDefinition
+                    } else if (event.getType() == ExecutorModelEventType.TASK_UPDATED) {
+
+                        TaskInfoBean taskInfo = executorModel.getTask(event
+                                .getTaskDefinitionName());
+                        TaskGeneralState taskGeneralState = taskInfo
                                 .getGeneralState();
 
                         AbstractTask task = tasks.get(event
                                 .getTaskDefinitionName());
 
-                        if (task == null) {
-
-                            if (taskGeneralState.isDeleteState())
-                                continue;
-
-                            task = createTask(taskDefinition);
-                            // this can happen if XML config was wrong -
-                            // createTask returned
-                            // null
-                            if (task == null) {
-                                LOG.error("can't create task: {}",
-                                        event.getTaskDefinitionName());
-                                continue;
-                            }
-                            // if we don't have it in Map it means it is new;
-                            // start it
-                            // automatically
-                            if (taskGeneralState
-                                    .equals(TaskGeneralState.ACTIVE)
-                                    || taskGeneralState
-                                            .equals(TaskGeneralState.START_REQUESTED))
-                                task.start();
-                            tasks.put(event.getTaskDefinitionName(), task);
-                            continue;
-                        }
-
-                        // might happen that we have newer data already ;) ? -
-                        // why not...
-                        if (task.getTaskInfoBean().getZkDataVersion() >= taskDefinition
-                                .getZkDataVersion()) {
-                            continue;
-                        }
-
-                        // task definition contains extra attributes such as
-                        // stats. We do
-                        // not need to restart task if Metrics has been changed:
                         boolean configurationChanged = !task
-                                .getTaskInfoBean().getTaskConfiguration()
-                                .equals(taskDefinition.getTaskConfiguration());
+                                .getTaskConfiguration().equals(
+                                        taskInfo.getTaskConfiguration());
+
+                        LOG.debug("configurationChanged: {}",
+                                configurationChanged);
 
                         if (!configurationChanged) {
                             if (taskGeneralState
-                                    .equals(TaskGeneralState.START_REQUESTED))
+                                    .equals(TaskGeneralState.START_REQUESTED)) {
+                                LOG.info("start requested...");
                                 task.start();
-                            if (taskGeneralState
-                                    .equals(TaskGeneralState.STOP_REQUESTED))
+                            } else if (taskGeneralState
+                                    .equals(TaskGeneralState.STOP_REQUESTED)) {
+                                LOG.info("stop requested...");
                                 task.stop();
+                            }
                             continue;
                         }
 
-                        // remaining is when smth changed... stop, remove,
-                        // create, start
-                        // if necessary:
-                        LOG.info("Relevant changes... stop/recreate/start");
-                        task.stop();
-                        task = createTask(taskDefinition);
+                        if (configurationChanged) {
+                            task.setTaskConfiguration(taskInfo
+                                    .getTaskConfiguration());
+                            continue;
+                        }
 
-                        if (taskGeneralState.equals(TaskGeneralState.ACTIVE)
-                                || taskGeneralState
-                                        .equals(TaskGeneralState.START_REQUESTED))
-                            task.start();
-
-                        tasks.put(event.getTaskDefinitionName(), task);
-
-                    } else if (event.getType() == ExecutorModelEventType.TASK_DEFINITION_REMOVED) {
+                    } else if (event.getType() == ExecutorModelEventType.TASK_REMOVED) {
                         LOG.debug("Task definition removed...");
                         tasks.get(event.getTaskDefinitionName()).stop();
                         tasks.remove(event.getTaskDefinitionName());
@@ -258,12 +227,11 @@ public class ExecutorWorker {
         }
     }
 
-    private AbstractTask createTask(TaskInfoBean taskDefinition) {
+    private AbstractTask createTask(TaskInfoBean taskInfo) {
 
         AbstractTask task = null;
 
-        TaskConfiguration taskConfiguration = taskDefinition
-                .getTaskConfiguration();
+        TaskConfiguration taskConfiguration = taskInfo.getTaskConfiguration();
 
         if (taskConfiguration.getType().equals("SitemapsTask")) {
             task = new SitemapsTask(taskConfiguration.getName(), zk,

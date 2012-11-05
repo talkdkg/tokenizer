@@ -22,8 +22,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.cli.CommandLine;
+import org.tokenizer.executor.model.api.TaskInfoBean;
 import org.tokenizer.executor.model.api.TaskInfoBeanComparator;
-import org.tokenizer.executor.model.impl.TaskInfoBean;
 
 public class ListTasksCli extends BaseAdminCli {
     @Override
@@ -41,22 +41,20 @@ public class ListTasksCli extends BaseAdminCli {
         if (result != 0)
             return result;
 
-        List<TaskInfoBean> taskDefinitions = new ArrayList<TaskInfoBean>(
-                model.getTaskDefinitions());
+        List<TaskInfoBean> tasks = new ArrayList<TaskInfoBean>(model.getTasks());
 
-        Collections.sort(taskDefinitions, TaskInfoBeanComparator.INSTANCE);
+        Collections.sort(tasks, TaskInfoBeanComparator.INSTANCE);
 
-        System.out.println("Number of tasks: " + taskDefinitions.size());
+        System.out.println("Number of tasks: " + tasks.size());
         System.out.println();
 
-        for (TaskInfoBean taskDefinition : taskDefinitions) {
-            System.out.println(taskDefinition.getName());
-            System.out.println("  + General state: "
-                    + taskDefinition.getGeneralState());
+        for (TaskInfoBean task : tasks) {
+            System.out.println(task.getName());
+            System.out.println("  + General state: " + task.getGeneralState());
             System.out.println("  + Submitted: "
-                    + new Date(taskDefinition.getSubmitTime()));
+                    + new Date(task.getSubmitTime()));
             System.out.println("  + Stats: ");
-            for (Map.Entry<String, Long> counter : taskDefinition.getCounters()
+            for (Map.Entry<String, Long> counter : task.getCounters()
                     .entrySet()) {
                 System.out.println("    + " + counter.getKey() + ": "
                         + counter.getValue());

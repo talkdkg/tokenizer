@@ -28,6 +28,7 @@ import org.lilyproject.util.json.JsonFormat;
 import org.lilyproject.util.json.JsonUtil;
 import org.tokenizer.executor.model.api.TaskBatchBuildState;
 import org.tokenizer.executor.model.api.TaskGeneralState;
+import org.tokenizer.executor.model.api.TaskInfoBean;
 import org.tokenizer.executor.model.configuration.TaskConfiguration;
 
 public class TaskInfoBeanConverter {

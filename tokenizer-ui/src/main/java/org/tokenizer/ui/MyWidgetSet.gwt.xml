@@ -21,3 +21,4 @@
   <inherits name="com.vaadin.terminal.gwt.DefaultWidgetSet"/>
   <inherits name="org.vaadin.dontpush.widgetset.DontPushOzoneWidgetset"/>
 </module>
+

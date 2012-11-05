@@ -16,43 +16,6 @@
 package org.tokenizer.executor.model.api;
 
 public enum TaskGeneralState {
-	/**
-	 * Indicates active task configuration
-	 */
-	ACTIVE,
-
-	/**
-	 * Indicates disabled task configuration
-	 */
-	DISABLED,
-
-	/**
-	 * Indicates a request towards the master to drop task definition.
-	 */
-	DELETE_REQUESTED,
-
-	/**
-	 * Indicates the delete request is being processed.
-	 */
-	DELETING,
-
-	/**
-	 * Indicates a delete request failed, set again to {@link #DELETE_REQUESTED} to retry.
-	 */
-	DELETE_FAILED,
-
-	STOP_REQUESTED, STOPPING, STOP_FAILED, START_REQUESTED, STARTING, START_FAILED;
-
-	public boolean isDeleteState() {
-		return this == TaskGeneralState.DELETE_REQUESTED || this == TaskGeneralState.DELETING || this == TaskGeneralState.DELETE_FAILED;
-	}
-
-	public boolean isStopState() {
-		return this == TaskGeneralState.STOP_REQUESTED || this == TaskGeneralState.STOPPING || this == TaskGeneralState.STOP_FAILED;
-	}
-
-	public boolean isStartState() {
-		return this == TaskGeneralState.START_REQUESTED || this == TaskGeneralState.STARTING || this == TaskGeneralState.START_FAILED;
-	}
+    START_REQUESTED, STOP_REQUESTED, DELETE_REQUESTED, DELETE_FAILED;
 
 }

@@ -152,15 +152,6 @@ public class RssFetcherTask extends AbstractTask {
     
   }
   
-  @Override
-  public Thread getThread() {
-    return this.thread;
-  }
-  
-  @Override
-  public boolean isStop() {
-    return this.stop;
-  }
   
   // IMPLEMENTATION
   
