@@ -29,7 +29,7 @@ import org.tokenizer.crawler.db.CrawlerHBaseRepository;
 import org.tokenizer.executor.model.api.WritableExecutorModel;
 import org.tokenizer.executor.model.configuration.TaskConfiguration;
 
-public abstract class AbstractTask implements Runnable {
+public abstract class AbstractTask implements Runnable, LeaderElectionCallback {
     private static final Logger LOG = LoggerFactory
             .getLogger(AbstractTask.class);
     protected final String taskName;
@@ -41,7 +41,6 @@ public abstract class AbstractTask implements Runnable {
     protected final MetricsCache metricsCache;
     protected Thread thread;
     protected LeaderElection leaderElection;
-    protected LeaderElectionCallback leaderElectionCallback;
 
     public AbstractTask(String taskName, ZooKeeperItf zk,
             TaskConfiguration taskConfiguration,
@@ -75,8 +74,7 @@ public abstract class AbstractTask implements Runnable {
         this.taskConfiguration = taskConfiguration;
     }
 
-    // TODO: make it final
-    protected synchronized void shutdown() throws InterruptedException {
+    private final synchronized void shutdown() throws InterruptedException {
         LOG.warn("shutdown...");
         if (!thread.isAlive()) {
             return;
@@ -100,18 +98,18 @@ public abstract class AbstractTask implements Runnable {
         }
     }
 
-    protected void start() throws InterruptedException,
+    public void start() throws InterruptedException,
             LeaderElectionSetupException, KeeperException {
         if (leaderElection == null) {
             leaderElection = new LeaderElection(zk, "Master "
                     + this.getClass().getCanonicalName(),
                     "/org/tokenizer/executor/engine/"
                             + this.getClass().getCanonicalName() + "/"
-                            + this.taskName, this.leaderElectionCallback);
+                            + this.taskName, this);
         }
     }
 
-    protected void stop() {
+    public void stop() {
         LOG.warn("stop...");
         try {
             this.leaderElection.stop();
@@ -127,4 +125,25 @@ public abstract class AbstractTask implements Runnable {
     }
 
     protected abstract void process() throws InterruptedException, IOException;
+
+    public void activateAsLeader() throws Exception {
+        LOG.warn("activateAsLeader...");
+        if (thread != null && thread.isAlive()) {
+            LOG.warn("Start was requested, but old thread was still there. Stopping it now.");
+            thread.interrupt();
+            Logs.logThreadJoin(thread);
+            thread.join();
+        } else {
+            thread = new Thread(this, this.taskName);
+            thread.setDaemon(true);
+            thread.start();
+            LOG.warn("Activated as Leader.");
+        }
+    }
+
+    public void deactivateAsLeader() throws Exception {
+        LOG.warn("deactivateAsLeader...");
+        shutdown();
+        LOG.warn("Deactivated as Leader.");
+    }
 }

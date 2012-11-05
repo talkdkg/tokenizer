@@ -34,20 +34,6 @@ public class HtmlSplitterTask extends AbstractTask {
     }
 
 
-    
-     @Override
-    public void start() throws InterruptedException,
-            LeaderElectionSetupException, KeeperException {
-        // TODO Auto-generated method stub
-        
-    }
-
-    @Override
-    public void stop() {
-        // TODO Auto-generated method stub
-        
-    }
-    
 
     @Override
     protected void process() throws InterruptedException, IOException {
@@ -57,44 +43,6 @@ public class HtmlSplitterTask extends AbstractTask {
 
     
     
-    
-    ///////////////////////////////////////////////////////
-    // Standard Template Methods, to be refactored later //
-    ///////////////////////////////////////////////////////
-    
-    
-    private class MyLeaderElectionCallback implements LeaderElectionCallback {
 
-        public void activateAsLeader() throws Exception {
-            LOG.warn("activateAsLeader...");
-            if (thread != null && thread.isAlive()) {
-                LOG.warn("Start was requested, but old thread was still there. Stopping it now.");
-                thread.interrupt();
-                Logs.logThreadJoin(thread);
-                thread.join();
-            } else {
-                thread = new Thread(HtmlSplitterTask.this,
-                        HtmlSplitterTask.this.taskName);
-                thread.setDaemon(true);
-                thread.start();
-                LOG.warn("Activated as Leader.");
-            }
-        }
-
-        public void deactivateAsLeader() throws Exception {
-            LOG.warn("deactivateAsLeader...");
-            shutdown();
-            LOG.warn("Deactivated as Leader.");
-        }
-
-    }
-
-
-
-
-
-    
-    
-    
     
 }

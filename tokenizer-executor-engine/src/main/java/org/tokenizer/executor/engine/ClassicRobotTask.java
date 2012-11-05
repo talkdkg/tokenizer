@@ -46,15 +46,9 @@ import crawlercommons.robots.RobotUtils;
 import crawlercommons.robots.SimpleRobotRulesParser;
 
 public class ClassicRobotTask extends AbstractTask {
-
     private static final Logger LOG = LoggerFactory
             .getLogger(ClassicRobotTask.class);
-
-    private LeaderElection leaderElection;
-
     private final SimpleHttpFetcher httpClient;
-
-    // special instance for robots.txt only:
     private final BaseHttpFetcher robotFetcher;
     BaseRobotRules robotRules = null;
 
@@ -64,74 +58,13 @@ public class ClassicRobotTask extends AbstractTask {
             WritableExecutorModel model, HostLocker hostLocker) {
         super(taskName, zk, taskConfiguration, crawlerRepository, model,
                 hostLocker);
-
         this.httpClient = new SimpleHttpFetcher(FetcherUtils.USER_AGENT);
         this.httpClient.setRedirectMode(RedirectMode.FOLLOW_ALL);
         this.robotFetcher = RobotUtils
                 .createFetcher(FetcherUtils.USER_AGENT, 1);
         this.robotFetcher.setDefaultMaxContentSize(4 * 1024 * 1024);
-
-        
-        this.leaderElectionCallback = new MyLeaderElectionCallback(); 
-        
-        
         LOG.debug("Instance created");
-
     }
-
-
-    @Override
-    public void run() {
-        while (!Thread.interrupted()) {
-            refreshRobotRules();
-            String url = "http://" + taskConfiguration.getTld();
-            UrlRecord urlRecord = new UrlRecord();
-            urlRecord.setUrl(url);
-
-            // create if it doesn't exist
-            try {
-                crawlerRepository.create(urlRecord);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-
-            try {
-                process();
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-
-        }
-    }
-
-    private class MyLeaderElectionCallback implements LeaderElectionCallback {
-
-        public void activateAsLeader() throws Exception {
-            LOG.warn("activateAsLeader...");
-            if (thread != null && thread.isAlive()) {
-                LOG.warn("Start was requested, but old thread was still there. Stopping it now.");
-                thread.interrupt();
-                Logs.logThreadJoin(thread);
-                thread.join();
-            } else {
-                thread = new Thread(ClassicRobotTask.this,
-                        ClassicRobotTask.this.taskName);
-                thread.setDaemon(true);
-                thread.start();
-                LOG.warn("Activated as Leader.");
-            }
-        }
-
-        public void deactivateAsLeader() throws Exception {
-            LOG.warn("deactivateAsLeader...");
-            shutdown();
-            LOG.warn("Deactivated as Leader.");
-        }
-
-    }
-
 
     /**
      * Real job is done here
@@ -141,17 +74,22 @@ public class ClassicRobotTask extends AbstractTask {
      */
     @Override
     protected void process() throws InterruptedException, IOException {
-
+        refreshRobotRules();
+        String url = "http://" + taskConfiguration.getTld();
+        UrlRecord home = new UrlRecord();
+        home.setUrl(url);
+        // create if it doesn't exist
+        try {
+            crawlerRepository.create(home);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         UrlScanner urlScanner = new UrlScanner(taskConfiguration.getTld(),
                 crawlerRepository);
-
         for (UrlRecord urlRecord : urlScanner) {
-
             LOG.debug("urlRecord: {}", urlRecord);
-
             if (urlRecord.getTimestamp() > 0)
                 continue;
-
             LOG.debug("Trying URL: {}", urlRecord.getUrl());
             FetchedResult fetchedResult = PersistenceUtils.fetch(urlRecord,
                     crawlerRepository, robotRules, metricsCache, httpClient,
@@ -159,7 +97,6 @@ public class ClassicRobotTask extends AbstractTask {
             LOG.debug("Result: {} {}", urlRecord.getUrl(),
                     urlRecord.getHttpResponseCode());
         }
-
     }
 
     /**
@@ -179,5 +116,4 @@ public class ClassicRobotTask extends AbstractTask {
         }
         return true;
     }
-
 }
