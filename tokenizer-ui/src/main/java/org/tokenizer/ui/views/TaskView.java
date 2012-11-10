@@ -1,8 +1,6 @@
 package org.tokenizer.ui.views;
 
 import org.tokenizer.ui.MyVaadinApplication;
-import org.tokenizer.ui.widgets.TaskForm;
-import org.tokenizer.ui.widgets.TaskList;
 
 import com.vaadin.ui.VerticalSplitPanel;
 
@@ -21,7 +19,7 @@ public class TaskView extends VerticalSplitPanel {
 
         this.app = app;
         this.taskList = new TaskList(app);
-        this.taskForm = new TaskForm();
+        this.taskForm = new TaskForm(app);
 
         setCaption("Tokenizer: Tasks");
         setSizeFull();

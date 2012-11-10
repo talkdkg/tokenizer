@@ -1,0 +1,20 @@
+2012-11-08 10:50:58,646 INFO [org.tokenizer.twitter.TweetCollectorTest] create new TwitterSearch for efendi_fuad
+2012-11-08 10:50:58,647 INFO [org.tokenizer.twitter.TweetCollectorTest] Starting over with 2 tags. indexed tweets:0 tweetsPerSecLimit:0.5 [Obama, Romney]
+2012-11-08 10:50:58,654 INFO [twitter4j.TwitterStreamImpl] Establishing connection.
+2012-11-08 10:50:59,179 INFO [twitter4j.TwitterStreamImpl] Connection established.
+2012-11-08 10:50:59,179 INFO [twitter4j.TwitterStreamImpl] Receiving status stream.
+2012-11-08 10:52:16,315 INFO [org.tokenizer.twitter.TweetCollectorTest] create new TwitterSearch for efendi_fuad
+2012-11-08 10:52:16,315 INFO [org.tokenizer.twitter.TweetCollectorTest] Starting over with 2 tags. indexed tweets:0 tweetsPerSecLimit:0.5 [Obama, Romney]
+2012-11-08 10:52:16,324 INFO [twitter4j.TwitterStreamImpl] Establishing connection.
+2012-11-08 10:52:16,855 INFO [twitter4j.TwitterStreamImpl] Connection established.
+2012-11-08 10:52:16,855 INFO [twitter4j.TwitterStreamImpl] Receiving status stream.
+2012-11-08 12:35:40,086 INFO [org.tokenizer.twitter.TweetCollectorTest] create new TwitterSearch for efendi_fuad
+2012-11-08 12:35:40,086 INFO [org.tokenizer.twitter.TweetCollectorTest] Starting over with 2 tags. indexed tweets:0 tweetsPerSecLimit:0.5 [Obama, Romney]
+2012-11-08 12:35:40,096 INFO [twitter4j.TwitterStreamImpl] Establishing connection.
+2012-11-08 12:35:40,639 INFO [twitter4j.TwitterStreamImpl] Connection established.
+2012-11-08 12:35:40,639 INFO [twitter4j.TwitterStreamImpl] Receiving status stream.
+2012-11-08 13:37:41,103 INFO [org.tokenizer.twitter.TweetCollectorTest] create new TwitterSearch for efendi_fuad
+2012-11-08 13:37:41,104 INFO [org.tokenizer.twitter.TweetCollectorTest] Starting over with 2 tags. indexed tweets:0 tweetsPerSecLimit:0.5 [Obama, Romney]
+2012-11-08 13:37:41,115 INFO [twitter4j.TwitterStreamImpl] Establishing connection.
+2012-11-08 13:37:41,690 INFO [twitter4j.TwitterStreamImpl] Connection established.
+2012-11-08 13:37:41,690 INFO [twitter4j.TwitterStreamImpl] Receiving status stream.

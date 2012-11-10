@@ -1,4 +1,4 @@
-package ca.t;
+package org.tokenizer.core.http;
 
 import org.apache.tika.mime.MediaType;
 

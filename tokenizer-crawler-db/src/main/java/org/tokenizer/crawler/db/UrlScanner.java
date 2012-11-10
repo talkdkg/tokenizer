@@ -21,10 +21,8 @@ import java.util.Arrays;
 import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.client.ResultScanner;
 import org.apache.hadoop.hbase.client.Scan;
-import org.apache.hadoop.hbase.util.Bytes;
 
 public class UrlScanner extends AbstractHBaseRecordScanner<UrlRecord> {
-
     private ResultScanner hbaseScanner;
 
     /**
@@ -33,25 +31,21 @@ public class UrlScanner extends AbstractHBaseRecordScanner<UrlRecord> {
      *            - internet hos such as www.amazon.ca (without "dot" at the
      *            end)
      */
-
     public UrlScanner(String host, CrawlerHBaseRepository repository) {
         byte[] start = UrlRecordDecoder.encode("http://" + host);
         byte[] end = Arrays.copyOf(start, start.length + 1);
         end[start.length] = (byte) 0xff;
         Scan scan = new Scan(start, end);
-
         try {
-            hbaseScanner = repository.urlTable.getScanner(scan);
+            hbaseScanner = repository.getUrlTable().getScanner(scan);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
     }
 
     @Override
     UrlRecord decode(Result result) throws RepositoryException,
             InterruptedException {
-
         return CrawlerHBaseRepository.decodeUrlRecord(result);
     }
 
@@ -59,6 +53,4 @@ public class UrlScanner extends AbstractHBaseRecordScanner<UrlRecord> {
     ResultScanner getScanner() {
         return hbaseScanner;
     }
-
-
 }

@@ -16,9 +16,11 @@
 package org.tokenizer.crawler.db;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.hadoop.hbase.client.Get;
@@ -32,25 +34,38 @@ import org.apache.hadoop.hbase.util.Bytes;
 import org.lilyproject.util.hbase.HBaseTableFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tokenizer.core.util.MD5;
 import org.tokenizer.crawler.db.CrawlerHBaseSchema.Table;
 
 public class CrawlerHBaseRepository {
     private static final Logger LOG = LoggerFactory
             .getLogger(CrawlerHBaseRepository.class);
-    
-    
     HBaseTableFactory tableFactory;
-    protected HTableInterface urlTable;
-    protected HTableInterface webpageTable;
+    private final HTableInterface urlTable;
+    private final HTableInterface webpageTable;
+    private final HTableInterface xmlTable;
     public static byte[] POSTFIX = new byte[] { 0 };
     public static final byte[] ZERO_LONG = Bytes.toBytes(0L);
     public static final byte[] ZERO_INT = Bytes.toBytes(0);
+
+    public HTableInterface getUrlTable() {
+        return urlTable;
+    }
+
+    public HTableInterface getWebpageTable() {
+        return webpageTable;
+    }
+
+    public HTableInterface getXmlTable() {
+        return xmlTable;
+    }
 
     public CrawlerHBaseRepository(HBaseTableFactory tableFactory) {
         this.tableFactory = tableFactory;
         try {
             urlTable = CrawlerHBaseSchema.getUrlTable(tableFactory);
             webpageTable = CrawlerHBaseSchema.getWebpageTable(tableFactory);
+            xmlTable = CrawlerHBaseSchema.getXmlTable(tableFactory);
         } catch (IOException e) {
             throw new RuntimeException("Can't get access to tables", e);
         } catch (InterruptedException e) {
@@ -257,9 +272,35 @@ public class CrawlerHBaseRepository {
                 CrawlerHBaseSchema.WebpageCf.DATA.bytes,
                 CrawlerHBaseSchema.WebpageColumn.CONTENT.bytes);
         webpage.setUrl(Bytes.toString(url));
-        //webpage.setTimestamp(Bytes.toLong(timestamp));
+        // webpage.setTimestamp(Bytes.toLong(timestamp));
         webpage.setCharset(Bytes.toString(charset));
         webpage.setContent(content);
         return webpage;
+    }
+
+    public void createXmlObjects(String[] xmlObjects, String host) {
+        for (String xml : xmlObjects) {
+            byte[] row;
+            try {
+                row = MD5.digest(xml.getBytes("UTF-8"));
+                Get get = new Get(row);
+                // TODO: implement simple cache & measure performance
+                // improvements
+                if (xmlTable.exists(get))
+                    return;
+                Put put = new Put(row);
+                put.add(CrawlerHBaseSchema.XmlCf.DATA.bytes,
+                        CrawlerHBaseSchema.XmlColumn.XML.bytes,
+                        Bytes.toBytes(xml));
+                put.add(CrawlerHBaseSchema.XmlCf.DATA.bytes,
+                        CrawlerHBaseSchema.XmlColumn.HOST.bytes,
+                        Bytes.toBytes(host));
+                webpageTable.put(put);
+            } catch (UnsupportedEncodingException e) {
+                LOG.error(StringUtils.EMPTY, e);
+            } catch (IOException e) {
+                LOG.error(StringUtils.EMPTY, e);
+            }
+        }
     }
 }

@@ -32,6 +32,7 @@ import org.tokenizer.crawler.db.CrawlerHBaseRepository;
 import org.tokenizer.executor.engine.AbstractTask;
 import org.tokenizer.executor.engine.ClassicRobotTask;
 import org.tokenizer.executor.engine.HostLocker;
+import org.tokenizer.executor.engine.HtmlSplitterTask;
 import org.tokenizer.executor.engine.RssFetcherTask;
 import org.tokenizer.executor.engine.SimpleMultithreadedFetcher;
 import org.tokenizer.executor.engine.SitemapsTask;
@@ -235,6 +236,9 @@ public class ExecutorWorker {
 
         if (taskConfiguration.getType().equals("SitemapsTask")) {
             task = new SitemapsTask(taskConfiguration.getName(), zk,
+                    taskConfiguration, repository, executorModel, hostLocker);
+        } else if (taskConfiguration.getType().equals("HtmlSplitterTask")) {
+            task = new HtmlSplitterTask(taskConfiguration.getName(), zk,
                     taskConfiguration, repository, executorModel, hostLocker);
         } else if (taskConfiguration.getType().equals("ClassicRobotTask")) {
             task = new ClassicRobotTask(taskConfiguration.getName(), zk,

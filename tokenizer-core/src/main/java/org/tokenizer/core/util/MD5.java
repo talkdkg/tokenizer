@@ -24,55 +24,47 @@ import java.security.NoSuchAlgorithmException;
  * @author Fuad TODO: use ThreadLocal to cache instance
  */
 public class MD5 {
-  
-  public static final byte[] digest(byte[] bytes) {
-    MessageDigest md;
-    try {
-      md = MessageDigest.getInstance("MD5");
-    } catch (NoSuchAlgorithmException e) {
-      throw new RuntimeException(e);
+    public static final byte[] digest(byte[] bytes) {
+        MessageDigest md;
+        try {
+            md = MessageDigest.getInstance("MD5");
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
+        md.update(bytes);
+        return md.digest();
     }
-    md.update(bytes);
-    return md.digest();
-    
-  }
-  
-  public static final String MD5(byte[] bytes) {
-    
-    byte[] mdbytes = digest(bytes);
-    
-    return toHexString(mdbytes);
-  }
-  
-  public static final String MD5(String text) {
-    try {
-      return MD5(text.getBytes("UTF-8"));
-    } catch (UnsupportedEncodingException e) {
-      throw new RuntimeException(e);
+
+    public static final String MD5(byte[] bytes) {
+        byte[] mdbytes = digest(bytes);
+        return toHexString(mdbytes);
     }
-  }
-  
-  private static final String EMPTY_STRING = "";
-  
-  public final static String toHexString(byte[] bytes) {
-    
-    if (bytes == null || bytes.length == 0) return EMPTY_STRING;
-    StringBuffer hexString = new StringBuffer();
-    for (int i = 0; i < bytes.length; i++) {
-      String hex = Integer.toHexString(0xff & bytes[i]);
-      if (hex.length() == 1) hexString.append('0');
-      hexString.append(hex);
+
+    public static final String MD5(String text) {
+        try {
+            return MD5(text.getBytes("UTF-8"));
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
     }
-    
-    return hexString.toString();
-    
-  }
-  
-  public static void main(String[] args) {
-    
-    System.out.println(MD5("http://gugehige.exblog.jp/"));
-    System.out.println("78abc5644577237daa605e6486eb9170");
-    
-  }
-  
+
+    private static final String EMPTY_STRING = "";
+
+    public final static String toHexString(byte[] bytes) {
+        if (bytes == null || bytes.length == 0)
+            return EMPTY_STRING;
+        StringBuffer hexString = new StringBuffer();
+        for (int i = 0; i < bytes.length; i++) {
+            String hex = Integer.toHexString(0xff & bytes[i]);
+            if (hex.length() == 1)
+                hexString.append('0');
+            hexString.append(hex);
+        }
+        return hexString.toString();
+    }
+
+    public static void main(String[] args) {
+        System.out.println(MD5("http://gugehige.exblog.jp/"));
+        System.out.println("78abc5644577237daa605e6486eb9170");
+    }
 }

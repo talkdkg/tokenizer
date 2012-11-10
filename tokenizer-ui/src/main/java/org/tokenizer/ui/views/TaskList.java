@@ -13,7 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.tokenizer.ui.widgets;
+package org.tokenizer.ui.views;
+
+import java.util.Collection;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,10 +25,8 @@ import com.vaadin.data.Container;
 import com.vaadin.data.Property;
 import com.vaadin.ui.Table;
 
-public class TaskList extends Table { 
-    //implements        Container.PropertySetChangeListener {
-    
-    
+public class TaskList extends Table implements
+        Container.PropertySetChangeListener {
     private static final long serialVersionUID = 1L;
     private static final Logger LOG = LoggerFactory.getLogger(TaskList.class);
 
@@ -36,20 +36,25 @@ public class TaskList extends Table {
         // setColumnHeaderMode(COLUMN_HEADER_MODE_EXPLICIT);
         // setVisibleColumns(PersonContainer.NATURAL_COL_ORDER);
         // setColumnHeaders(PersonContainer.COL_HEADERS_ENGLISH);
-        setSelectable(true);
-        setImmediate(true);
-        
-        addListener((Property.ValueChangeListener) app);
-        
-        
-        //app.getTaskContainer().addListener(
-        //        (Container.PropertySetChangeListener) this);
-
-        
-        
-        /* We don't want to allow users to de-select a row */
-        setNullSelectionAllowed(false);
         // setColumnCollapsingAllowed(true);
         // setColumnReorderingAllowed(true);
+        setSelectable(true);
+        setImmediate(true);
+        setNullSelectionAllowed(false);
+        addListener((Property.ValueChangeListener) app);
+        app.getTaskContainer().addListener(
+                (Container.PropertySetChangeListener) this);
+    }
+
+    @Override
+    public void containerPropertySetChange(
+            Container.PropertySetChangeEvent event) {
+        disableContentRefreshing();
+        super.containerPropertySetChange(event);
+        Collection<?> containerPropertyIds = getContainerDataSource()
+                .getContainerPropertyIds();
+        setVisibleColumns(containerPropertyIds.toArray());
+        resetPageBuffer();
+        enableContentRefreshing(true);
     }
 }
