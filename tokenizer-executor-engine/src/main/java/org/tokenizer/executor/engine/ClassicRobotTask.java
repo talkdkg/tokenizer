@@ -34,6 +34,7 @@ import org.tokenizer.crawler.db.CrawlerHBaseRepository;
 import org.tokenizer.crawler.db.UrlRecord;
 import org.tokenizer.crawler.db.UrlScanner;
 import org.tokenizer.executor.model.api.WritableExecutorModel;
+import org.tokenizer.executor.model.configuration.ClassicRobotTaskConfiguration;
 import org.tokenizer.executor.model.configuration.TaskConfiguration;
 
 import crawlercommons.fetcher.FetchedResult;
@@ -51,13 +52,14 @@ public class ClassicRobotTask extends AbstractTask {
     private final SimpleHttpFetcher httpClient;
     private final BaseHttpFetcher robotFetcher;
     BaseRobotRules robotRules = null;
+    private ClassicRobotTaskConfiguration taskConfiguration;
 
     public ClassicRobotTask(String taskName, ZooKeeperItf zk,
             TaskConfiguration taskConfiguration,
             CrawlerHBaseRepository crawlerRepository,
             WritableExecutorModel model, HostLocker hostLocker) {
-        super(taskName, zk, taskConfiguration, crawlerRepository, model,
-                hostLocker);
+        super(taskName, zk, crawlerRepository, model, hostLocker);
+        this.taskConfiguration = (ClassicRobotTaskConfiguration) taskConfiguration;
         this.httpClient = new SimpleHttpFetcher(FetcherUtils.USER_AGENT);
         this.httpClient.setRedirectMode(RedirectMode.FOLLOW_ALL);
         this.robotFetcher = RobotUtils
@@ -75,7 +77,7 @@ public class ClassicRobotTask extends AbstractTask {
     @Override
     protected void process() throws InterruptedException, IOException {
         refreshRobotRules();
-        String url = "http://" + taskConfiguration.getTld();
+        String url = "http://" + taskConfiguration.getHost();
         UrlRecord home = new UrlRecord();
         home.setUrl(url);
         // create if it doesn't exist
@@ -84,7 +86,7 @@ public class ClassicRobotTask extends AbstractTask {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        UrlScanner urlScanner = new UrlScanner(taskConfiguration.getTld(),
+        UrlScanner urlScanner = new UrlScanner(taskConfiguration.getHost(),
                 crawlerRepository);
         for (UrlRecord urlRecord : urlScanner) {
             LOG.debug("urlRecord: {}", urlRecord);
@@ -93,7 +95,7 @@ public class ClassicRobotTask extends AbstractTask {
             LOG.debug("Trying URL: {}", urlRecord.getUrl());
             FetchedResult fetchedResult = PersistenceUtils.fetch(urlRecord,
                     crawlerRepository, robotRules, metricsCache, httpClient,
-                    taskConfiguration.getTld());
+                    taskConfiguration.getHost());
             LOG.debug("Result: {} {}", urlRecord.getUrl(),
                     urlRecord.getHttpResponseCode());
         }
@@ -108,12 +110,22 @@ public class ClassicRobotTask extends AbstractTask {
         BaseRobotsParser parser = new SimpleRobotRulesParser();
         try {
             robotRules = RobotUtils.getRobotRules(robotFetcher, parser,
-                    new URL("http://" + taskConfiguration.getTld()
+                    new URL("http://" + taskConfiguration.getHost()
                             + "/robots.txt"));
         } catch (MalformedURLException e) {
             LOG.error("", e);
             return false;
         }
         return true;
+    }
+
+    @Override
+    public TaskConfiguration getTaskConfiguration() {
+        return this.taskConfiguration;
+    }
+
+    @Override
+    public void setTaskConfiguration(TaskConfiguration taskConfiguration) {
+        this.taskConfiguration = (ClassicRobotTaskConfiguration) taskConfiguration;
     }
 }

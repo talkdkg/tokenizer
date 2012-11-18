@@ -21,18 +21,14 @@ import java.util.Map;
 import org.tokenizer.executor.model.configuration.TaskConfiguration;
 
 public class TaskInfoBean {
-
-    private TaskConfiguration taskConfiguration = new TaskConfiguration();
-
+    private TaskConfiguration taskConfiguration;
+    private String name;
     private TaskGeneralState generalState = TaskGeneralState.START_REQUESTED;
     private TaskBatchBuildState buildState = TaskBatchBuildState.INACTIVE;
-
     private int zkDataVersion = -1;
     private boolean immutable;
-
     private long submitTime;
     private Map<String, Long> counters = new HashMap<String, Long>();
-
     private long metricsUpdateTimestamp;
 
     public long getMetricsUpdateTimestamp() {
@@ -61,10 +57,6 @@ public class TaskInfoBean {
 
     public void addCounter(String key, Long value) {
         this.counters.put(key, value);
-    }
-
-    public String getName() {
-        return taskConfiguration.getName();
     }
 
     public TaskGeneralState getGeneralState() {
@@ -96,7 +88,6 @@ public class TaskInfoBean {
 
     public void makeImmutable() {
         this.immutable = true;
-
     }
 
     private void checkIfMutable() {
@@ -112,4 +103,11 @@ public class TaskInfoBean {
         this.taskConfiguration = taskConfiguration;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 }

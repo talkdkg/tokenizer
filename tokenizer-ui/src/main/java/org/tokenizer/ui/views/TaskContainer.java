@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.tokenizer.ui.data;
+package org.tokenizer.ui.views;
 
 import java.util.Collection;
 import java.util.Map;
@@ -42,20 +42,18 @@ public class TaskContainer extends IndexedContainer {
         ExecutorModelListener listener = new MyExecutorModelListener();
         Collection<TaskInfoBean> tasks = MyVaadinApplication.getModel()
                 .getTasks(listener);
-        addContainerProperty("taskConfiguration.name", String.class, "");
-        addContainerProperty("taskConfiguration.type", String.class, "");
-        addContainerProperty("taskConfiguration.tld", String.class, "");
+        addContainerProperty("name", String.class, "");
+        addContainerProperty("type", String.class, "");
+        // addContainerProperty("taskConfiguration.tld", String.class, "");
         addContainerProperty("General State", String.class, "");
         addContainerProperty("ZkDataVersion", Long.class, 0);
         synchronized (app) {
             for (TaskInfoBean task : tasks) {
                 Item item = addItem(task.getName());
-                item.getItemProperty("taskConfiguration.name").setValue(
-                        task.getTaskConfiguration().getName());
-                item.getItemProperty("taskConfiguration.type").setValue(
-                        task.getTaskConfiguration().getType());
-                item.getItemProperty("taskConfiguration.tld").setValue(
-                        task.getTaskConfiguration().getTld());
+                item.getItemProperty("name").setValue(task.getName());
+                item.getItemProperty("type").setValue(task.getTaskConfiguration().getClass().getSimpleName());
+                // item.getItemProperty("taskConfiguration.tld").setValue(
+                // task.getTaskConfiguration().getTld());
                 item.getItemProperty("General State").setValue(
                         task.getGeneralState());
                 item.getItemProperty("ZkDataVersion").setValue(
@@ -92,23 +90,21 @@ public class TaskContainer extends IndexedContainer {
                 }
                 if (event.getType() == ExecutorModelEventType.TASK_ADDED) {
                     Item item = addItem(taskName);
-                    item.getItemProperty("taskConfiguration.name").setValue(
-                            newTask.getName());
-                    item.getItemProperty("taskConfiguration.type").setValue(
-                            newTask.getTaskConfiguration().getType());
-                    item.getItemProperty("taskConfiguration.tld").setValue(
-                            newTask.getTaskConfiguration().getTld());
+                    item.getItemProperty("name").setValue(newTask.getName());
+                    item.getItemProperty("type").setValue(newTask.getTaskConfiguration().getClass().getSimpleName());
+                    // item.getItemProperty("taskConfiguration.tld").setValue(
+                    // newTask.getTaskConfiguration().getTld());
                     item.getItemProperty("General State").setValue(
                             newTask.getGeneralState());
                     item.getItemProperty("ZkDataVersion").setValue(
                             newTask.getZkDataVersion());
                 } else if (event.getType() == ExecutorModelEventType.TASK_UPDATED) {
-                    getContainerProperty(taskName, "taskConfiguration.name")
-                            .setValue(newTask.getTaskConfiguration().getName());
-                    getContainerProperty(taskName, "taskConfiguration.type")
-                            .setValue(newTask.getTaskConfiguration().getType());
-                    getContainerProperty(taskName, "taskConfiguration.tld")
-                            .setValue(newTask.getTaskConfiguration().getTld());
+                    getContainerProperty(taskName, "name").setValue(
+                            newTask.getName());
+                    getContainerProperty(taskName, "type").setValue(
+                            newTask.getClass().getSimpleName());
+                    // getContainerProperty(taskName, "taskConfiguration.tld")
+                    // .setValue(newTask.getTaskConfiguration().getTld());
                     getContainerProperty(taskName, "General State").setValue(
                             newTask.getGeneralState());
                     for (Map.Entry<String, Long> entry : newTask.getCounters()

@@ -1,16 +1,9 @@
 package org.tokenizer.executor.engine;
 
 import java.io.ByteArrayInputStream;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.StringWriter;
 
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
@@ -18,53 +11,38 @@ import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.hbase.client.HTableInterface;
-import org.apache.hadoop.hbase.client.Result;
-import org.apache.hadoop.hbase.client.ResultScanner;
-import org.apache.hadoop.hbase.client.Scan;
-import org.apache.hadoop.hbase.util.Bytes;
-import org.apache.zookeeper.KeeperException;
-import org.lilyproject.util.Logs;
-import org.lilyproject.util.hbase.HBaseTableFactory;
-import org.lilyproject.util.hbase.HBaseTableFactoryImpl;
-import org.lilyproject.util.zookeeper.LeaderElection;
-import org.lilyproject.util.zookeeper.LeaderElectionCallback;
-import org.lilyproject.util.zookeeper.LeaderElectionSetupException;
 import org.lilyproject.util.zookeeper.ZooKeeperItf;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tokenizer.core.parser.HtmlParser;
 import org.tokenizer.crawler.db.CrawlerHBaseRepository;
-import org.tokenizer.crawler.db.CrawlerHBaseSchema;
 import org.tokenizer.crawler.db.UrlRecord;
-import org.tokenizer.crawler.db.UrlRecordDecoder;
 import org.tokenizer.crawler.db.UrlScanner;
 import org.tokenizer.crawler.db.WebpageRecord;
 import org.tokenizer.executor.model.api.WritableExecutorModel;
+import org.tokenizer.executor.model.configuration.HtmlSplitterTaskConfiguration;
 import org.tokenizer.executor.model.configuration.TaskConfiguration;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
-import crawlercommons.fetcher.FetchedResult;
-
 public class HtmlSplitterTask extends AbstractTask {
     private static final Logger LOG = LoggerFactory
             .getLogger(HtmlSplitterTask.class);
+    HtmlSplitterTaskConfiguration taskConfiguration;
 
     public HtmlSplitterTask(String taskName, ZooKeeperItf zk,
             TaskConfiguration taskConfiguration,
             CrawlerHBaseRepository crawlerRepository,
             WritableExecutorModel model, HostLocker hostLocker) {
-        super(taskName, zk, taskConfiguration, crawlerRepository, model,
-                hostLocker);
+        super(taskName, zk, crawlerRepository, model, hostLocker);
+        this.taskConfiguration = (HtmlSplitterTaskConfiguration) taskConfiguration;
         LOG.debug("Instance created");
     }
 
     @Override
     protected void process() throws InterruptedException, IOException {
-        UrlScanner urlScanner = new UrlScanner(taskConfiguration.getTld(),
+        UrlScanner urlScanner = new UrlScanner(taskConfiguration.getHost(),
                 crawlerRepository);
         for (UrlRecord urlRecord : urlScanner) {
             LOG.trace("urlRecord: {}", urlRecord);
@@ -74,14 +52,13 @@ public class HtmlSplitterTask extends AbstractTask {
             // if (urlRecord.getUrl().contains("/product-reviews/") continue;
             WebpageRecord page = crawlerRepository.getWebpageRecord(urlRecord
                     .getDigest());
-            
-            if (page == null) continue;
-            
+            if (page == null)
+                continue;
             String[] xmlObjects = parse(page);
-            if (xmlObjects == null || xmlObjects.length == 1) continue;
-            
-            crawlerRepository.createXmlObjects(xmlObjects, taskConfiguration.getTld());
-            
+            if (xmlObjects == null || xmlObjects.length == 1)
+                continue;
+            crawlerRepository.createXmlObjects(xmlObjects,
+                    taskConfiguration.getHost());
         }
     }
 
@@ -101,7 +78,6 @@ public class HtmlSplitterTask extends AbstractTask {
         XPathExpression expr;
         try {
             expr = xpath.compile("//table[@id='productReviews']//td/div");
-            
             NodeList nodes = (NodeList) expr.evaluate(node,
                     XPathConstants.NODESET);
             String[] xmlObjects = new String[nodes.getLength()];
@@ -115,5 +91,15 @@ public class HtmlSplitterTask extends AbstractTask {
             LOG.error(StringUtils.EMPTY, e);
         }
         return null;
+    }
+
+    @Override
+    public TaskConfiguration getTaskConfiguration() {
+        return this.taskConfiguration;
+    }
+
+    @Override
+    public void setTaskConfiguration(TaskConfiguration taskConfiguration) {
+        this.taskConfiguration = (HtmlSplitterTaskConfiguration) taskConfiguration;
     }
 }

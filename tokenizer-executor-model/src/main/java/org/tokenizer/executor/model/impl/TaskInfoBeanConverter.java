@@ -32,7 +32,6 @@ import org.tokenizer.executor.model.api.TaskInfoBean;
 import org.tokenizer.executor.model.configuration.TaskConfiguration;
 
 public class TaskInfoBeanConverter {
-
     private TaskInfoBeanConverter() {
     }
 
@@ -48,11 +47,14 @@ public class TaskInfoBeanConverter {
     }
 
     public static void fromJson(ObjectNode node, TaskInfoBean task) {
+        String name = JsonUtil.getString(node, "name");
+        task.setName(name);
+        //String type = JsonUtil.getString(node, "type");
+        //task.setType(type);
         TaskGeneralState state = TaskGeneralState.valueOf(JsonUtil.getString(
                 node, "generalState"));
         TaskBatchBuildState buildState = TaskBatchBuildState.valueOf(JsonUtil
                 .getString(node, "batchBuildState"));
-
         byte[] configuration;
         try {
             String configurationAsString = JsonUtil.getString(node,
@@ -61,7 +63,6 @@ public class TaskInfoBeanConverter {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
         ObjectNode info = JsonUtil.getObject(node, "info");
         task.setSubmitTime(JsonUtil.getLong(info, "submitTime"));
         ObjectNode countersNode = JsonUtil.getObject(info, "counters");
@@ -71,18 +72,13 @@ public class TaskInfoBeanConverter {
             long value = JsonUtil.getLong(countersNode, key);
             task.addCounter(key, value);
         }
-
         task.setMetricsUpdateTimestamp(JsonUtil.getLong(info,
                 "metricsUpdateTimestamp"));
-
         task.setGeneralState(state);
         task.setBatchBuildState(buildState);
-
         TaskConfiguration config = (TaskConfiguration) JavaSerializationUtils
                 .deserialize(configuration);
-
         task.setTaskConfiguration(config);
-
     }
 
     public static byte[] toJsonBytes(TaskInfoBean task) {
@@ -96,26 +92,21 @@ public class TaskInfoBeanConverter {
 
     public static ObjectNode toJson(TaskInfoBean task) {
         ObjectNode node = JsonNodeFactory.instance.objectNode();
-
+        node.put("name", task.getName().toString());
+        //node.put("type", task.getType().toString());
         node.put("generalState", task.getGeneralState().toString());
         node.put("batchBuildState", task.getBatchBuildState().toString());
-
         String configurationAsString;
         configurationAsString = Base64.encodeBytes(JavaSerializationUtils
                 .serialize(task.getTaskConfiguration()));
-
         node.put("configuration", configurationAsString);
-
         ObjectNode info = node.putObject("info");
         info.put("submitTime", task.getSubmitTime());
         ObjectNode countersNode = info.putObject("counters");
         for (Map.Entry<String, Long> counter : task.getCounters().entrySet()) {
             countersNode.put(counter.getKey(), counter.getValue());
         }
-
         info.put("metricsUpdateTimestamp", task.getMetricsUpdateTimestamp());
-
         return node;
-
     }
 }

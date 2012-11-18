@@ -25,11 +25,12 @@ import org.tokenizer.executor.model.api.TaskModelException;
 import org.tokenizer.executor.model.api.TaskNotFoundException;
 import org.tokenizer.executor.model.api.TaskUpdateException;
 import org.tokenizer.executor.model.api.TaskValidityException;
+import org.tokenizer.executor.model.configuration.TaskConfiguration;
 import org.tokenizer.ui.MyVaadinApplication;
+import org.vaadin.addon.customfield.CustomField;
 
 import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanItem;
-import com.vaadin.data.util.NestedMethodProperty;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
@@ -50,8 +51,8 @@ public class TaskForm extends Form implements ClickListener {
     private Button edit = new Button("Edit", (ClickListener) this);
     private TaskInfoBean newTask;
     private boolean newTaskMode = false;
-    private final ComboBox type = new ComboBox("Type");
     private final ComboBox state = new ComboBox("State");
+    private TaskConfigurationComponent taskConfigurationComponent;
 
     @SuppressWarnings("serial")
     public TaskForm(MyVaadinApplication app) {
@@ -64,74 +65,36 @@ public class TaskForm extends Form implements ClickListener {
         footer.addComponent(edit);
         footer.setVisible(false);
         setFooter(footer);
-        type.setNewItemsAllowed(false);
-        type.setNullSelectionAllowed(false);
-        type.addItem("");
-        type.addItem("ClassicRobotTask");
-        type.addItem("HtmlSplitterTask");
-        type.addItem("RssFetcherTask");
-        type.addItem("SimpleMultithreadedFetcher");
-        type.addItem("SitemapsTask");
         state.setNewItemsAllowed(false);
         state.setNullSelectionAllowed(false);
         state.addItem(TaskGeneralState.START_REQUESTED);
         state.addItem(TaskGeneralState.STOP_REQUESTED);
         state.addItem(TaskGeneralState.DELETE_REQUESTED);
-        /*
-         * Field factory for overriding how the component for city selection is
-         * created
-         */
         setFormFieldFactory(new DefaultFieldFactory() {
             @Override
             public Field createField(Item item, Object propertyId,
                     Component uiContext) {
                 Field field = null;
-                if (propertyId.equals("taskConfiguration.name")) {
-                    field = super.createField(item, propertyId, uiContext);
-                } else if (propertyId.equals("taskConfiguration.type")) {
-                    field = type;
-                } else if ("taskConfiguration.tld".equals(propertyId)) {
+                if (propertyId.equals("name")) {
                     field = super.createField(item, propertyId, uiContext);
                 } else if (propertyId.equals("generalState")) {
                     field = state;
-                } else if ("taskConfiguration.properties".equals(propertyId)) {
-                    // field = new PropertiesCustomField();
-                    // field.setPropertyDataSource(item
-                    // .getItemProperty("properties"));
-                    // field.setCaption("Properties");
-                } else if ("taskConfiguration.seeds".equals(propertyId)) {
                 } else {
-                    // TODO: add "task"-dependant logic; it uses "item" from
-                    // "table" right now...
-                    // if (item.getItemProperty("taskConfiguration.type") !=
-                    // null
-                    // && "ClassicRobotTask".equals(item.getItemProperty(
-                    // "taskConfiguration.type").getValue())) {
-                    // field = super.createField(item, propertyId, uiContext);
-                    // }
-                    // LOG.debug((String) item.getItemProperty(
-                    // "taskConfiguration.type").getValue());
-                    //
-                    //
-                    //
-                    // LOG.debug((String) propertyId);
                     field = super.createField(item, propertyId, uiContext);
                 }
                 LOG.trace("createField: {}", propertyId);
                 return field;
             }
         });
+        taskConfigurationComponent = new TaskConfigurationComponent();
+        getLayout().addComponent(taskConfigurationComponent);
+        setReadOnly(true);
     }
 
     public void addTask() {
         newTask = new TaskInfoBean();
-        BeanItem<TaskInfoBean> item = new BeanItem(newTask, new String[] {});
-        item.addItemProperty("taskConfiguration.name",
-                new NestedMethodProperty(newTask, "taskConfiguration.name"));
-        item.addItemProperty("taskConfiguration.tld", new NestedMethodProperty(
-                newTask, "taskConfiguration.tld"));
-        item.addItemProperty("taskConfiguration.type",
-                new NestedMethodProperty(newTask, "taskConfiguration.type"));
+        BeanItem<TaskInfoBean> item = new BeanItem(newTask,
+                new String[] { "name" });
         setItemDataSource(item);
         newTaskMode = true;
         setReadOnly(false);
@@ -146,6 +109,14 @@ public class TaskForm extends Form implements ClickListener {
             }
             commit();
             if (newTaskMode) {
+                CustomField cf = taskConfigurationComponent.getConfigurationField();
+                cf.commit();
+                TaskConfiguration taskConfiguration = (TaskConfiguration) cf
+                        .getValue();
+                LOG.info("taskConfiguration: {}", taskConfiguration);
+                newTask.setTaskConfiguration(taskConfiguration);
+                if (cf instanceof ClassicRobotTaskConfigurationField) {
+                }
                 try {
                     MyVaadinApplication.getModel().addTask(newTask);
                 } catch (TaskExistsException e) {
@@ -178,20 +149,9 @@ public class TaskForm extends Form implements ClickListener {
             TaskInfoBean task2;
             try {
                 task2 = MyVaadinApplication.getModel().getMutableTask(
-                        (String) getItemProperty("taskConfiguration.name")
-                                .getValue());
-                BeanItem<TaskInfoBean> item = new BeanItem(task2,
-                        new String[] { "generalState" });
-                item.addItemProperty("taskConfiguration.name",
-                        new NestedMethodProperty(task2,
-                                "taskConfiguration.name"));
-                item.addItemProperty(
-                        "taskConfiguration.tld",
-                        new NestedMethodProperty(task2, "taskConfiguration.tld"));
-                item.addItemProperty("taskConfiguration.type",
-                        new NestedMethodProperty(task2,
-                                "taskConfiguration.type"));
-                // super.
+                        (String) getItemProperty("name").getValue());
+                BeanItem<TaskInfoBean> item = new BeanItem(task2, new String[] {
+                        "name", "generalState" });
                 setItemDataSource(item);
                 setReadOnly(false);
             } catch (InterruptedException e) {
@@ -223,17 +183,19 @@ public class TaskForm extends Form implements ClickListener {
         super.setReadOnly(readOnly);
         LOG.info("" + getItemPropertyIds());
         if (!readOnly && !newTaskMode) {
-            getField("taskConfiguration.name").setReadOnly(true);
-            getField("taskConfiguration.tld").setReadOnly(true);
-            getField("taskConfiguration.type").setReadOnly(true);
+            getField("name").setReadOnly(true);
         }
+        taskConfigurationComponent.setVisible(!readOnly);
+        //if (readOnly) getLayout().removeComponent(taskConfigurationComponent);
+        //else  getLayout().addComponent(taskConfigurationComponent);
+        
         save.setVisible(!readOnly);
         cancel.setVisible(!readOnly);
         edit.setVisible(readOnly);
     }
 
     private TaskInfoBean update(TaskInfoBean task) {
-        String taskName = task.getTaskConfiguration().getName();
+        String taskName = task.getName();
         String lock = lockTask(taskName);
         if (lock == null)
             return null;
@@ -304,6 +266,8 @@ public class TaskForm extends Form implements ClickListener {
         }
         return mutableTask;
     }
+    
+
 
     public static void updateTask(TaskInfoBean mutableTask, String lock) {
         try {

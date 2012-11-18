@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
 import org.tokenizer.core.http.FetcherUtils;
 import org.tokenizer.crawler.db.CrawlerHBaseRepository;
 import org.tokenizer.executor.model.api.WritableExecutorModel;
+import org.tokenizer.executor.model.configuration.SimpleMultithreadedFetcherTaskConfiguration;
 import org.tokenizer.executor.model.configuration.TaskConfiguration;
 
 import crawlercommons.fetcher.http.BaseHttpFetcher;
@@ -53,13 +54,14 @@ public class SimpleMultithreadedFetcher extends AbstractTask {
     private static final int MAX_THREADS = 64;
     List<Thread> threads = new ArrayList<Thread>();
     private final static long HOSTS_REFRESH_DELAY = 60 * 60 * 1000L;
+    private SimpleMultithreadedFetcherTaskConfiguration taskConfiguration;
 
-    public SimpleMultithreadedFetcher(String fetchName, ZooKeeperItf zk,
-            TaskConfiguration fetcherConfiguration,
+    public SimpleMultithreadedFetcher(String taskName, ZooKeeperItf zk,
+            TaskConfiguration taskConfiguration,
             CrawlerHBaseRepository repository,
             WritableExecutorModel fetcherModel, HostLocker hostLocker) {
-        super(fetchName, zk, fetcherConfiguration, repository, fetcherModel,
-                hostLocker);
+        super(taskName, zk, repository, fetcherModel, hostLocker);
+        this.taskConfiguration = (SimpleMultithreadedFetcherTaskConfiguration) taskConfiguration;
         this.simpleHttpClient = new SimpleHttpFetcher(FetcherUtils.USER_AGENT);
         this.baseFetcher = RobotUtils.createFetcher(FetcherUtils.USER_AGENT,
                 1024);
@@ -192,5 +194,15 @@ public class SimpleMultithreadedFetcher extends AbstractTask {
     @Override
     protected void process() throws InterruptedException, IOException {
         // TODO Auto-generated method stub
+    }
+
+    @Override
+    public TaskConfiguration getTaskConfiguration() {
+        return this.taskConfiguration;
+    }
+
+    @Override
+    public void setTaskConfiguration(TaskConfiguration taskConfiguration) {
+        this.taskConfiguration = (SimpleMultithreadedFetcherTaskConfiguration) taskConfiguration;
     }
 }

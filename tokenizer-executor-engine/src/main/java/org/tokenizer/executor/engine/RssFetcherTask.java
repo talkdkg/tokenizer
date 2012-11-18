@@ -28,6 +28,7 @@ import org.tokenizer.core.http.FetcherUtils;
 import org.tokenizer.crawler.db.CrawlerHBaseRepository;
 import org.tokenizer.executor.engine.RssFetcherTask.FetcherEventListenerImpl;
 import org.tokenizer.executor.model.api.WritableExecutorModel;
+import org.tokenizer.executor.model.configuration.RssFetcherTaskConfiguration;
 import org.tokenizer.executor.model.configuration.TaskConfiguration;
 
 import com.google.common.cache.Cache;
@@ -49,13 +50,14 @@ public class RssFetcherTask extends AbstractTask {
             FetcherUtils.USER_AGENT);
     static FeedFetcherCache feedInfoCache = HashMapFeedInfoCache.getInstance();
     static FeedFetcher feedFetcher = new HttpURLFeedFetcher(feedInfoCache);
+    private RssFetcherTaskConfiguration taskConfiguration;
 
-    public RssFetcherTask(String fetchName, ZooKeeperItf zk,
-            TaskConfiguration fetcherConfiguration,
+    public RssFetcherTask(String taskName, ZooKeeperItf zk,
+            TaskConfiguration taskConfiguration,
             CrawlerHBaseRepository repository,
             WritableExecutorModel fetcherModel, HostLocker hostLocker) {
-        super(fetchName, zk, fetcherConfiguration, repository, fetcherModel,
-                hostLocker);
+        super(taskName, zk, repository, fetcherModel, hostLocker);
+        this.taskConfiguration = (RssFetcherTaskConfiguration) taskConfiguration;
         RssFetcherTask.feedFetcher.setUserAgent(FetcherUtils.USER_AGENT
                 .getUserAgentString());
         FetcherEventListenerImpl listener = new RssFetcherTask.FetcherEventListenerImpl();
@@ -132,5 +134,15 @@ public class RssFetcherTask extends AbstractTask {
             // PersistenceUtils.injectIfNotExists(entry, repository,
             // metricsCache);
         }
+    }
+
+    @Override
+    public TaskConfiguration getTaskConfiguration() {
+        return this.taskConfiguration;
+    }
+
+    @Override
+    public void setTaskConfiguration(TaskConfiguration taskConfiguration) {
+        this.taskConfiguration = (RssFetcherTaskConfiguration) taskConfiguration;
     }
 }

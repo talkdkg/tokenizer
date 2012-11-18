@@ -34,7 +34,6 @@ public abstract class AbstractTask implements Runnable, LeaderElectionCallback {
             .getLogger(AbstractTask.class);
     protected final String taskName;
     protected final ZooKeeperItf zk;
-    protected TaskConfiguration taskConfiguration;
     protected final CrawlerHBaseRepository crawlerRepository;
     protected final WritableExecutorModel model;
     protected final HostLocker hostLocker;
@@ -42,13 +41,18 @@ public abstract class AbstractTask implements Runnable, LeaderElectionCallback {
     protected Thread thread;
     protected LeaderElection leaderElection;
 
+    public String getTaskName() {
+        return taskName;
+    }
+
+    public abstract TaskConfiguration getTaskConfiguration();
+    public abstract void setTaskConfiguration(TaskConfiguration taskConfiguration);
+    
     public AbstractTask(String taskName, ZooKeeperItf zk,
-            TaskConfiguration taskConfiguration,
             CrawlerHBaseRepository crawlerRepository,
             WritableExecutorModel model, HostLocker hostLocker) {
         this.taskName = taskName;
         this.zk = zk;
-        this.taskConfiguration = taskConfiguration;
         this.crawlerRepository = crawlerRepository;
         this.model = model;
         this.hostLocker = hostLocker;
@@ -63,15 +67,6 @@ public abstract class AbstractTask implements Runnable, LeaderElectionCallback {
 
     public boolean isAlive() {
         return thread.isAlive();
-    }
-
-    public TaskConfiguration getTaskConfiguration() {
-        return taskConfiguration;
-    }
-
-    /** To allow runtime configuration changes */
-    public void setTaskConfiguration(TaskConfiguration taskConfiguration) {
-        this.taskConfiguration = taskConfiguration;
     }
 
     private final synchronized void shutdown() throws InterruptedException {

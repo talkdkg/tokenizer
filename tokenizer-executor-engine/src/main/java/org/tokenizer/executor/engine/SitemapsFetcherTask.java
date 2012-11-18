@@ -20,13 +20,13 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 
-import org.lilyproject.util.zookeeper.LeaderElection;
 import org.lilyproject.util.zookeeper.ZooKeeperItf;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tokenizer.core.http.FetcherUtils;
 import org.tokenizer.crawler.db.CrawlerHBaseRepository;
 import org.tokenizer.executor.model.api.WritableExecutorModel;
+import org.tokenizer.executor.model.configuration.SitemapsFetcherTaskConfiguration;
 import org.tokenizer.executor.model.configuration.TaskConfiguration;
 
 import crawlercommons.fetcher.BaseFetchException;
@@ -43,19 +43,20 @@ import crawlercommons.sitemaps.SiteMapParser;
 import crawlercommons.sitemaps.SiteMapURL;
 import crawlercommons.sitemaps.UnknownFormatException;
 
-public class SitemapsTask extends AbstractTask {
+public class SitemapsFetcherTask extends AbstractTask {
     private static final Logger LOG = LoggerFactory
-            .getLogger(SitemapsTask.class);
+            .getLogger(SitemapsFetcherTask.class);
     private boolean stop;
     // Delay 4 hours between subsequent refresh of sitemaps
     private static final long DELAY = 4 * 3600 * 1000L;
+    private SitemapsFetcherTaskConfiguration taskConfiguration;
 
-    public SitemapsTask(String fetchName, ZooKeeperItf zk,
+    public SitemapsFetcherTask(String taskName, ZooKeeperItf zk,
             TaskConfiguration fetcherConfiguration,
             CrawlerHBaseRepository repository,
             WritableExecutorModel fetcherModel, HostLocker hostLocker) {
-        super(fetchName, zk, fetcherConfiguration, repository, fetcherModel,
-                hostLocker);
+        super(taskName, zk, repository, fetcherModel, hostLocker);
+        this.taskConfiguration = (SitemapsFetcherTaskConfiguration) taskConfiguration;
     }
 
     @Override
@@ -96,7 +97,7 @@ public class SitemapsTask extends AbstractTask {
         BaseRobotsParser parser = new SimpleRobotRulesParser();
         URL robotsUrl;
         try {
-            robotsUrl = new URL("http://" + taskConfiguration.getTld()
+            robotsUrl = new URL("http://" + taskConfiguration.getHost()
                     + "/robots.txt");
         } catch (MalformedURLException e) {
             LOG.error("", e);
@@ -188,5 +189,15 @@ public class SitemapsTask extends AbstractTask {
     @Override
     protected void process() throws InterruptedException, IOException {
         // TODO Auto-generated method stub
+    }
+
+    @Override
+    public TaskConfiguration getTaskConfiguration() {
+        return this.taskConfiguration;
+    }
+
+    @Override
+    public void setTaskConfiguration(TaskConfiguration taskConfiguration) {
+        this.taskConfiguration = (SitemapsFetcherTaskConfiguration) taskConfiguration;
     }
 }

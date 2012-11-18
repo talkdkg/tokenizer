@@ -35,7 +35,7 @@ import org.tokenizer.executor.engine.HostLocker;
 import org.tokenizer.executor.engine.HtmlSplitterTask;
 import org.tokenizer.executor.engine.RssFetcherTask;
 import org.tokenizer.executor.engine.SimpleMultithreadedFetcher;
-import org.tokenizer.executor.engine.SitemapsTask;
+import org.tokenizer.executor.engine.SitemapsFetcherTask;
 import org.tokenizer.executor.model.api.ExecutorModelEvent;
 import org.tokenizer.executor.model.api.ExecutorModelEventType;
 import org.tokenizer.executor.model.api.ExecutorModelListener;
@@ -43,6 +43,11 @@ import org.tokenizer.executor.model.api.TaskGeneralState;
 import org.tokenizer.executor.model.api.TaskInfoBean;
 import org.tokenizer.executor.model.api.TaskNotFoundException;
 import org.tokenizer.executor.model.api.WritableExecutorModel;
+import org.tokenizer.executor.model.configuration.ClassicRobotTaskConfiguration;
+import org.tokenizer.executor.model.configuration.HtmlSplitterTaskConfiguration;
+import org.tokenizer.executor.model.configuration.RssFetcherTaskConfiguration;
+import org.tokenizer.executor.model.configuration.SimpleMultithreadedFetcherTaskConfiguration;
+import org.tokenizer.executor.model.configuration.SitemapsFetcherTaskConfiguration;
 import org.tokenizer.executor.model.configuration.TaskConfiguration;
 
 /**
@@ -52,24 +57,15 @@ import org.tokenizer.executor.model.configuration.TaskConfiguration;
  * Worker does not shut down the tasks when the ZooKeeper connection is lost.
  */
 public class ExecutorWorker {
-
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory
             .getLogger(ExecutorWorker.class);
-
     private WritableExecutorModel executorModel;
-
     private CrawlerHBaseRepository repository;
-
     private ZooKeeperItf zk;
-
     private ExecutorModelListener listener = new MyListener();
-
     private BlockingQueue<ExecutorModelEvent> eventQueue = new LinkedBlockingQueue<ExecutorModelEvent>();
-
     private Thread eventWorkerThread;
-
     private Map<String, AbstractTask> tasks = new HashMap<String, AbstractTask>();
-
     /** will be shared between tasks; multithreaded access */
     private HostLocker hostLocker;
 
@@ -84,14 +80,11 @@ public class ExecutorWorker {
 
     @PostConstruct
     public void init() {
-
         eventWorkerThread = new Thread(new EventWorker(),
                 "ExecutorWorker.EventWorker");
         eventWorkerThread.start();
-
         Collection<TaskInfoBean> taskDefinitions = executorModel
                 .getTasks(listener);
-
         for (TaskInfoBean taskDefinition : taskDefinitions) {
             try {
                 eventQueue.put(new ExecutorModelEvent(
@@ -102,7 +95,6 @@ public class ExecutorWorker {
                 Thread.currentThread().interrupt();
             }
         }
-
     }
 
     @PreDestroy
@@ -115,19 +107,15 @@ public class ExecutorWorker {
         for (AbstractTask task : tasks.values()) {
             // although each task should be "daemon"... to be safe:
             task.stop();
-            LOG.warn("committing metrics for {}...", task
-                    .getTaskConfiguration().getName());
+            LOG.warn("committing metrics for {}...", task.getTaskName());
             task.getMetricsCache().commit();
-            LOG.warn("committed successfully {}.", task.getTaskConfiguration()
-                    .getName());
+            LOG.warn("committed successfully {}.", task.getTaskName());
         }
     }
 
     private class MyListener implements ExecutorModelListener {
         public void process(ExecutorModelEvent event) {
-
             LOG.debug("Event: {}", event.getType());
-
             try {
                 eventQueue.put(event);
             } catch (InterruptedException e) {
@@ -139,25 +127,17 @@ public class ExecutorWorker {
 
     private class EventWorker implements Runnable {
         public void run() {
-
             LOG.info("Starting EventWorker thread...");
-
             while (!Thread.interrupted()) {
-
                 try {
-
                     int queueSize = eventQueue.size();
-
                     LOG.debug("queue size: {}", queueSize);
-
                     if (queueSize >= 10) {
                         LOG.warn("EventWorker queue getting large: {}"
                                 + queueSize);
                     }
-
                     ExecutorModelEvent event = eventQueue.take();
                     LOG.debug("Event removed from queue: {}", event);
-
                     if (event.getType() == ExecutorModelEventType.TASK_ADDED) {
                         TaskInfoBean taskInfo = executorModel.getTask(event
                                 .getTaskDefinitionName());
@@ -166,24 +146,18 @@ public class ExecutorWorker {
                             task.start();
                         tasks.put(event.getTaskDefinitionName(), task);
                         continue;
-
                     } else if (event.getType() == ExecutorModelEventType.TASK_UPDATED) {
-
                         TaskInfoBean taskInfo = executorModel.getTask(event
                                 .getTaskDefinitionName());
                         TaskGeneralState taskGeneralState = taskInfo
                                 .getGeneralState();
-
                         AbstractTask task = tasks.get(event
                                 .getTaskDefinitionName());
-
                         boolean configurationChanged = !task
                                 .getTaskConfiguration().equals(
                                         taskInfo.getTaskConfiguration());
-
                         LOG.debug("configurationChanged: {}",
                                 configurationChanged);
-
                         if (!configurationChanged) {
                             if (taskGeneralState
                                     .equals(TaskGeneralState.START_REQUESTED)) {
@@ -196,19 +170,16 @@ public class ExecutorWorker {
                             }
                             continue;
                         }
-
                         if (configurationChanged) {
                             task.setTaskConfiguration(taskInfo
                                     .getTaskConfiguration());
                             continue;
                         }
-
                     } else if (event.getType() == ExecutorModelEventType.TASK_REMOVED) {
                         LOG.debug("Task definition removed...");
                         tasks.get(event.getTaskDefinitionName()).stop();
                         tasks.remove(event.getTaskDefinitionName());
                     }
-
                 } catch (InterruptedException e) {
                     LOG.warn("exiting...");
                     return;
@@ -222,39 +193,29 @@ public class ExecutorWorker {
                     LOG.error("TaskNotFoundException... continue", e);
                     continue;
                 }
-
             }
-
         }
     }
 
     private AbstractTask createTask(TaskInfoBean taskInfo) {
-
         AbstractTask task = null;
-
-        TaskConfiguration taskConfiguration = taskInfo.getTaskConfiguration();
-
-        if (taskConfiguration.getType().equals("SitemapsTask")) {
-            task = new SitemapsTask(taskConfiguration.getName(), zk,
+         TaskConfiguration taskConfiguration = taskInfo.getTaskConfiguration();
+        if (taskConfiguration instanceof SitemapsFetcherTaskConfiguration) {
+            task = new SitemapsFetcherTask(taskInfo.getName(), zk, taskConfiguration,
+                    repository, executorModel, hostLocker);
+        } else if (taskConfiguration instanceof HtmlSplitterTaskConfiguration) {
+            task = new HtmlSplitterTask(taskInfo.getName(), zk,
                     taskConfiguration, repository, executorModel, hostLocker);
-        } else if (taskConfiguration.getType().equals("HtmlSplitterTask")) {
-            task = new HtmlSplitterTask(taskConfiguration.getName(), zk,
+        } else if (taskConfiguration instanceof ClassicRobotTaskConfiguration) {
+            task = new ClassicRobotTask(taskInfo.getName(), zk,
                     taskConfiguration, repository, executorModel, hostLocker);
-        } else if (taskConfiguration.getType().equals("ClassicRobotTask")) {
-            task = new ClassicRobotTask(taskConfiguration.getName(), zk,
+        } else if (taskConfiguration instanceof RssFetcherTaskConfiguration) {
+            task = new RssFetcherTask(taskInfo.getName(), zk,
                     taskConfiguration, repository, executorModel, hostLocker);
-        } else if (taskConfiguration.getType().equals("RssFetcherTask")) {
-            task = new RssFetcherTask(taskConfiguration.getName(), zk,
+        } else if (taskConfiguration instanceof SimpleMultithreadedFetcherTaskConfiguration) {
+            task = new SimpleMultithreadedFetcher(taskInfo.getName(), zk,
                     taskConfiguration, repository, executorModel, hostLocker);
-        } else if (taskConfiguration.getType().equals(
-                "SimpleMultithreadedFetcher")) {
-            task = new SimpleMultithreadedFetcher(taskConfiguration.getName(),
-                    zk, taskConfiguration, repository, executorModel,
-                    hostLocker);
         }
-
         return task;
-
     }
-
 }
