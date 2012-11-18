@@ -69,7 +69,7 @@ public abstract class AbstractTask implements Runnable, LeaderElectionCallback {
         return thread.isAlive();
     }
 
-    private final synchronized void shutdown() throws InterruptedException {
+    protected synchronized void shutdown() throws InterruptedException {
         LOG.warn("shutdown...");
         if (!thread.isAlive()) {
             return;

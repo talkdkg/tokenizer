@@ -300,6 +300,21 @@
                 </exclusion>
             </exclusions>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>tokenizer-executor-engine-twitter</artifactId>
+            <exclusions>
+                <exclusion>
+          <!--  
+            to avoid weird classloading problem with GWT such as
+            [INFO]    [ERROR] Unexpected internal compiler error
+            [INFO] java.lang.NoSuchFieldError: reportUnusedDeclaredThrownExceptionIncludeDocCommentReference
+          -->
+                    <artifactId>core</artifactId>
+                    <groupId>org.eclipse.jdt</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
     </dependencies>
     <build>
         <plugins>

@@ -38,6 +38,10 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
+      <artifactId>tokenizer-executor-engine-twitter</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
       <artifactId>tokenizer-executor-model</artifactId>
     </dependency>
   </dependencies>

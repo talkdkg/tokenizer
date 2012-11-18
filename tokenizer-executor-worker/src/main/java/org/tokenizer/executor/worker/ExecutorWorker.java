@@ -36,6 +36,8 @@ import org.tokenizer.executor.engine.HtmlSplitterTask;
 import org.tokenizer.executor.engine.RssFetcherTask;
 import org.tokenizer.executor.engine.SimpleMultithreadedFetcher;
 import org.tokenizer.executor.engine.SitemapsFetcherTask;
+import org.tokenizer.executor.engine.twitter.TweetCollectorTask;
+import org.tokenizer.executor.engine.twitter.TweetCollectorTaskConfiguration;
 import org.tokenizer.executor.model.api.ExecutorModelEvent;
 import org.tokenizer.executor.model.api.ExecutorModelEventType;
 import org.tokenizer.executor.model.api.ExecutorModelListener;
@@ -205,6 +207,9 @@ public class ExecutorWorker {
                     repository, executorModel, hostLocker);
         } else if (taskConfiguration instanceof HtmlSplitterTaskConfiguration) {
             task = new HtmlSplitterTask(taskInfo.getName(), zk,
+                    taskConfiguration, repository, executorModel, hostLocker);
+        } else if (taskConfiguration instanceof TweetCollectorTaskConfiguration) {
+            task = new TweetCollectorTask(taskInfo.getName(), zk,
                     taskConfiguration, repository, executorModel, hostLocker);
         } else if (taskConfiguration instanceof ClassicRobotTaskConfiguration) {
             task = new ClassicRobotTask(taskInfo.getName(), zk,

@@ -22,6 +22,7 @@
     <properties>
         <version.base64>2.3.8</version.base64>
         <version.crawler-commons>0.2-SNAPSHOT</version.crawler-commons>
+        <version.eclipselink>2.4.1</version.eclipselink>
         <version.hadoop>1.0.3</version.hadoop>
         <version.hbase>0.94.1</version.hbase>
         <version.httpclient>4.2.2</version.httpclient>
@@ -31,6 +32,7 @@
         <version.kauri>0.4-RC2</version.kauri>
         <version.lily>1.3</version.lily>
         <version.log4j>1.2.17</version.log4j>
+        <version.mysql-connector-java>5.1.21</version.mysql-connector-java>
         <version.restlet>2.0.15</version.restlet>
         <version.rome>1.0</version.rome>
         <version.slf4j>1.6.4</version.slf4j>
@@ -38,6 +40,7 @@
         <version.spring>2.5.6</version.spring>
         <version.tagsoup>1.2.1</version.tagsoup>
         <version.tika>1.2</version.tika>
+        <version.twitter4j>3.0.0-SNAPSHOT</version.twitter4j>
     </properties>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.tokenizer</groupId>
@@ -50,6 +53,7 @@
         <module>tokenizer-crawler-db</module>
         <module>tokenizer-executor-admin-cli</module>
         <module>tokenizer-executor-engine</module>
+        <module>tokenizer-executor-engine-twitter</module>
         <module>tokenizer-executor-master</module>
         <module>tokenizer-executor-model</module>
         <module>tokenizer-executor-module</module>
@@ -85,6 +89,11 @@
             <id>lilyproject</id>
             <name>Lily Maven repository</name>
             <url>http://lilyproject.org/maven/maven2/deploy/</url>
+        </repository>
+        <repository>
+            <id>EclipseLink Repo</id>
+            <url>http://download.eclipse.org/rt/eclipselink/maven.repo</url>
+            <name>EclipseLink Repo</name>
         </repository>
     </repositories>
     <pluginRepositories>
@@ -478,6 +487,11 @@
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
+                <artifactId>tokenizer-executor-engine-twitter</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
                 <artifactId>tokenizer-executor-master</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -490,6 +504,26 @@
                 <groupId>${project.groupId}</groupId>
                 <artifactId>tokenizer-executor-worker</artifactId>
                 <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>mysql</groupId>
+                <artifactId>mysql-connector-java</artifactId>
+                <version>${version.mysql-connector-java}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.persistence</groupId>
+                <artifactId>eclipselink</artifactId>
+                <version>${version.eclipselink}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.twitter4j</groupId>
+                <artifactId>twitter4j-core</artifactId>
+                <version>${version.twitter4j}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.twitter4j</groupId>
+                <artifactId>twitter4j-stream</artifactId>
+                <version>${version.twitter4j}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

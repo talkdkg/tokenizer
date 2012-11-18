@@ -55,6 +55,7 @@ public class TaskConfigurationComponent extends CustomComponent {
         type.addItem("");
         type.addItem("ClassicRobotTask");
         type.addItem("HtmlSplitterTask");
+        type.addItem("TweetCollectorTask");
         type.addItem("SitemapsFetcherTask");
         type.addItem("RssFetcherTask");
         return type;
@@ -82,6 +83,11 @@ public class TaskConfigurationComponent extends CustomComponent {
                     configurationField = new HtmlSplitterTaskConfigurationField();
                     ((HtmlSplitterTaskConfigurationField) configurationField)
                             .setInternalValue(new HtmlSplitterTaskConfiguration());
+                    layout.addComponent(configurationField);
+                } else if ("TweetCollectorTask".equals(selected)) {
+                    configurationField = new TweetCollectorTaskConfigurationField();
+                    ((TweetCollectorTaskConfigurationField) configurationField)
+                            .setInternalValue(new TweetCollectorTaskConfigurationField());
                     layout.addComponent(configurationField);
                 } else if ("RssFetcherTask".equals(selected)) {
                     configurationField = new RssFetcherTaskConfigurationField();
