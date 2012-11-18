@@ -29,7 +29,7 @@ import com.vaadin.ui.VerticalLayout;
 
 public class TaskConfigurationComponent extends CustomComponent {
     /**
-     * TDE-1 #close test 2 3 4 5
+     * TDE-1 #close test 2 3 4 5 6
      */
     private static final long serialVersionUID = 1L;
     private CustomField configurationField;
