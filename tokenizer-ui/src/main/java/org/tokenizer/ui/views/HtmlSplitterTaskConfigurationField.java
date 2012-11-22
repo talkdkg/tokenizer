@@ -35,9 +35,6 @@ public class HtmlSplitterTaskConfigurationField extends CustomField {
             return super.createField(item, propertyId, uiContext);
         }
     }
-    
-    
-    
 
     public HtmlSplitterTaskConfigurationField() {
         super();
@@ -56,13 +53,9 @@ public class HtmlSplitterTaskConfigurationField extends CustomField {
         HtmlSplitterTaskConfiguration taskConfiguration = (newValue instanceof HtmlSplitterTaskConfiguration) ? (HtmlSplitterTaskConfiguration) newValue
                 : new HtmlSplitterTaskConfiguration();
         super.setInternalValue(taskConfiguration);
-        // set item data source and visible properties in a single operation to
-        // avoid creating fields multiple times
-        List<String> visibleProperties = new ArrayList<String>();
-        visibleProperties.add("xpath");
-        taskConfigurationForm.setItemDataSource(
-                new BeanItem<HtmlSplitterTaskConfiguration>(taskConfiguration),
-                visibleProperties);
+        taskConfigurationForm
+                .setItemDataSource(new BeanItem<HtmlSplitterTaskConfiguration>(
+                        taskConfiguration));
     }
 
     /**

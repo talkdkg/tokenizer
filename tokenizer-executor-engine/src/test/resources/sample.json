@@ -1,0 +1,71 @@
+{
+    "geo":null,
+    "text":"Q coStipao maaS toNto...:(",
+    "created_at":"Tue Nov 20 17:06:51 +0000 2012",
+    "in_reply_to_status_id_str":null,
+    "coordinates":null,
+    "id_str":"270936255238377472",
+    "retweeted":false,
+    "in_reply_to_user_id_str":null,
+    "in_reply_to_screen_name":null,
+    "source":"\u003Ca href=\"http:\/\/twitter.com\/download\/android\" rel=\"nofollow\"\u003ETwitter for Android\u003C\/a\u003E",
+    "entities":{
+        "urls":[
+            
+        ],
+        "hashtags":[
+            
+        ],
+        "user_mentions":[
+            
+        ]
+    },
+    "in_reply_to_user_id":null,
+    "in_reply_to_status_id":null,
+    "place":null,
+    "contributors":null,
+    "truncated":false,
+    "favorited":false,
+    "user":{
+        "follow_request_sent":null,
+        "contributors_enabled":false,
+        "time_zone":"Athens",
+        "created_at":"Tue Nov 29 11:39:23 +0000 2011",
+        "profile_background_color":"EBEBEB",
+        "profile_background_tile":false,
+        "url":null,
+        "is_translator":false,
+        "listed_count":0,
+        "profile_sidebar_fill_color":"F3F3F3",
+        "id_str":"424156528",
+        "friends_count":35,
+        "description":"...la realidad supera sue\u00f1os...xo pueden simples sue\u00d1os superar tu realidad??poko a poko he aprendido q no se debe abandonar x miedo a perder...",
+        "default_profile":false,
+        "verified":false,
+        "profile_sidebar_border_color":"DFDFDF",
+        "location":"segovia",
+        "lang":"es",
+        "statuses_count":831,
+        "profile_use_background_image":true,
+        "profile_background_image_url_https":"https:\/\/si0.twimg.com\/images\/themes\/theme7\/bg.gif",
+        "profile_image_url":"http:\/\/a0.twimg.com\/profile_images\/2873704848\/dc94ce7f836e461ab41e23bb28417d09_normal.jpeg",
+        "profile_banner_url":"https:\/\/si0.twimg.com\/profile_banners\/424156528\/1352503634",
+        "geo_enabled":true,
+        "notifications":null,
+        "profile_text_color":"333333",
+        "protected":false,
+        "screen_name":"laury_wii",
+        "default_profile_image":false,
+        "following":null,
+        "profile_background_image_url":"http:\/\/a0.twimg.com\/images\/themes\/theme7\/bg.gif",
+        "name":"laury wiiiii",
+        "favourites_count":4,
+        "profile_link_color":"990000",
+        "profile_image_url_https":"https:\/\/si0.twimg.com\/profile_images\/2873704848\/dc94ce7f836e461ab41e23bb28417d09_normal.jpeg",
+        "id":424156528,
+        "utc_offset":7200,
+        "followers_count":31
+    },
+    "id":270936255238377472,
+    "retweet_count":0
+}

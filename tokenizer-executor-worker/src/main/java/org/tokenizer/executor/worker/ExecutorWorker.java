@@ -201,7 +201,10 @@ public class ExecutorWorker {
 
     private AbstractTask createTask(TaskInfoBean taskInfo) {
         AbstractTask task = null;
-         TaskConfiguration taskConfiguration = taskInfo.getTaskConfiguration();
+        TaskConfiguration taskConfiguration = taskInfo.getTaskConfiguration();
+        
+        LOG.debug(taskConfiguration.toString());
+        
         if (taskConfiguration instanceof SitemapsFetcherTaskConfiguration) {
             task = new SitemapsFetcherTask(taskInfo.getName(), zk, taskConfiguration,
                     repository, executorModel, hostLocker);

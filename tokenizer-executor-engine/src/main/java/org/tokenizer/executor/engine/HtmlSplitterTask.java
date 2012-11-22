@@ -42,6 +42,8 @@ public class HtmlSplitterTask extends AbstractTask {
 
     @Override
     protected void process() throws InterruptedException, IOException {
+        
+        
         UrlScanner urlScanner = new UrlScanner(taskConfiguration.getHost(),
                 crawlerRepository);
         for (UrlRecord urlRecord : urlScanner) {
