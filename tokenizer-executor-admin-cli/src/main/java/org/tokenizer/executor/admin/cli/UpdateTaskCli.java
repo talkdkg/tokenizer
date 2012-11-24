@@ -35,15 +35,12 @@ public class UpdateTaskCli extends BaseAdminCli {
     @Override
     public List<Option> getOptions() {
         List<Option> options = super.getOptions();
-
         nameOption.setRequired(true);
-
         options.add(nameOption);
         options.add(configurationOption);
         options.add(generalStateOption);
         options.add(buildStateOption);
         options.add(forceOption);
-
         return options;
     }
 
@@ -52,34 +49,25 @@ public class UpdateTaskCli extends BaseAdminCli {
         int result = super.run(cmd);
         if (result != 0)
             return result;
-
         if (!model.hasTask(taskName)) {
             System.out.println("Task does not exist: " + taskName);
             return 1;
         }
-
         String lock = model.lockTask(taskName);
         try {
             TaskInfoBean task = model.getMutableTask(taskName);
-
             boolean changes = false;
-
             if (taskConfiguration != null
                     && !taskConfiguration.equals(task.getTaskConfiguration())) {
                 task.setTaskConfiguration(taskConfiguration);
                 changes = true;
             }
-
-            if (generalState != null && generalState != task.getGeneralState()) {
-                task.setGeneralState(generalState);
+            if (generalState != null
+                    && generalState != task.getTaskConfiguration()
+                            .getGeneralState()) {
+                task.getTaskConfiguration().setGeneralState(generalState);
                 changes = true;
             }
-
-            if (buildState != null && buildState != task.getBatchBuildState()) {
-                task.setBatchBuildState(buildState);
-                changes = true;
-            }
-
             if (changes) {
                 model.updateTask(task, lock);
                 System.out.println("Task definition updated: " + taskName);
@@ -87,7 +75,6 @@ public class UpdateTaskCli extends BaseAdminCli {
                 System.out
                         .println("Task already matches the specified settings, did not update it.");
             }
-
         } finally {
             // In case we requested deletion of a task, it might be that the
             // lock is
@@ -97,8 +84,6 @@ public class UpdateTaskCli extends BaseAdminCli {
                     && generalState == TaskGeneralState.DELETE_REQUESTED;
             model.unlockTask(lock, ignoreMissing);
         }
-
         return 0;
     }
-
 }

@@ -61,15 +61,15 @@ import org.tokenizer.executor.model.configuration.TaskConfiguration;
 public class ExecutorWorker {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory
             .getLogger(ExecutorWorker.class);
-    private WritableExecutorModel executorModel;
-    private CrawlerHBaseRepository repository;
-    private ZooKeeperItf zk;
-    private ExecutorModelListener listener = new MyListener();
-    private BlockingQueue<ExecutorModelEvent> eventQueue = new LinkedBlockingQueue<ExecutorModelEvent>();
+    private final WritableExecutorModel executorModel;
+    private final CrawlerHBaseRepository repository;
+    private final ZooKeeperItf zk;
+    private final ExecutorModelListener listener = new MyListener();
+    private final BlockingQueue<ExecutorModelEvent> eventQueue = new LinkedBlockingQueue<ExecutorModelEvent>();
     private Thread eventWorkerThread;
-    private Map<String, AbstractTask> tasks = new HashMap<String, AbstractTask>();
+    private final Map<String, AbstractTask> tasks = new HashMap<String, AbstractTask>();
     /** will be shared between tasks; multithreaded access */
-    private HostLocker hostLocker;
+    private final HostLocker hostLocker;
 
     public ExecutorWorker(WritableExecutorModel executorModel, ZooKeeperItf zk,
             CrawlerHBaseRepository repository) throws IOException,
@@ -91,7 +91,7 @@ public class ExecutorWorker {
             try {
                 eventQueue.put(new ExecutorModelEvent(
                         ExecutorModelEventType.TASK_ADDED, taskDefinition
-                                .getName()));
+                                .getTaskConfiguration().getName()));
             } catch (InterruptedException e) {
                 eventWorkerThread.interrupt();
                 Thread.currentThread().interrupt();
@@ -116,6 +116,7 @@ public class ExecutorWorker {
     }
 
     private class MyListener implements ExecutorModelListener {
+        @Override
         public void process(ExecutorModelEvent event) {
             LOG.debug("Event: {}", event.getType());
             try {
@@ -128,6 +129,7 @@ public class ExecutorWorker {
     }
 
     private class EventWorker implements Runnable {
+        @Override
         public void run() {
             LOG.info("Starting EventWorker thread...");
             while (!Thread.interrupted()) {
@@ -144,15 +146,16 @@ public class ExecutorWorker {
                         TaskInfoBean taskInfo = executorModel.getTask(event
                                 .getTaskDefinitionName());
                         AbstractTask task = createTask(taskInfo);
-                        if (taskInfo.getGeneralState() == TaskGeneralState.START_REQUESTED)
+                        if (taskInfo.getTaskConfiguration().getGeneralState() == TaskGeneralState.START_REQUESTED) {
                             task.start();
+                        }
                         tasks.put(event.getTaskDefinitionName(), task);
                         continue;
                     } else if (event.getType() == ExecutorModelEventType.TASK_UPDATED) {
                         TaskInfoBean taskInfo = executorModel.getTask(event
                                 .getTaskDefinitionName());
                         TaskGeneralState taskGeneralState = taskInfo
-                                .getGeneralState();
+                                .getTaskConfiguration().getGeneralState();
                         AbstractTask task = tasks.get(event
                                 .getTaskDefinitionName());
                         boolean configurationChanged = !task
@@ -202,27 +205,31 @@ public class ExecutorWorker {
     private AbstractTask createTask(TaskInfoBean taskInfo) {
         AbstractTask task = null;
         TaskConfiguration taskConfiguration = taskInfo.getTaskConfiguration();
-        
         LOG.debug(taskConfiguration.toString());
-        
         if (taskConfiguration instanceof SitemapsFetcherTaskConfiguration) {
-            task = new SitemapsFetcherTask(taskInfo.getName(), zk, taskConfiguration,
-                    repository, executorModel, hostLocker);
+            task = new SitemapsFetcherTask(taskInfo.getTaskConfiguration()
+                    .getName(), zk, taskConfiguration, repository,
+                    executorModel, hostLocker);
         } else if (taskConfiguration instanceof HtmlSplitterTaskConfiguration) {
-            task = new HtmlSplitterTask(taskInfo.getName(), zk,
-                    taskConfiguration, repository, executorModel, hostLocker);
+            task = new HtmlSplitterTask(taskInfo.getTaskConfiguration()
+                    .getName(), zk, taskConfiguration, repository,
+                    executorModel, hostLocker);
         } else if (taskConfiguration instanceof TweetCollectorTaskConfiguration) {
-            task = new TweetCollectorTask(taskInfo.getName(), zk,
-                    taskConfiguration, repository, executorModel, hostLocker);
+            task = new TweetCollectorTask(taskInfo.getTaskConfiguration()
+                    .getName(), zk, taskConfiguration, repository,
+                    executorModel, hostLocker);
         } else if (taskConfiguration instanceof ClassicRobotTaskConfiguration) {
-            task = new ClassicRobotTask(taskInfo.getName(), zk,
-                    taskConfiguration, repository, executorModel, hostLocker);
+            task = new ClassicRobotTask(taskInfo.getTaskConfiguration()
+                    .getName(), zk, taskConfiguration, repository,
+                    executorModel, hostLocker);
         } else if (taskConfiguration instanceof RssFetcherTaskConfiguration) {
-            task = new RssFetcherTask(taskInfo.getName(), zk,
+            task = new RssFetcherTask(
+                    taskInfo.getTaskConfiguration().getName(), zk,
                     taskConfiguration, repository, executorModel, hostLocker);
         } else if (taskConfiguration instanceof SimpleMultithreadedFetcherTaskConfiguration) {
-            task = new SimpleMultithreadedFetcher(taskInfo.getName(), zk,
-                    taskConfiguration, repository, executorModel, hostLocker);
+            task = new SimpleMultithreadedFetcher(taskInfo
+                    .getTaskConfiguration().getName(), zk, taskConfiguration,
+                    repository, executorModel, hostLocker);
         }
         return task;
     }

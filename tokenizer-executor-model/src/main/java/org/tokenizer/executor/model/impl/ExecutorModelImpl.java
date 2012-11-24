@@ -48,7 +48,6 @@ import org.lilyproject.util.zookeeper.ZooKeeperOperation;
 import org.tokenizer.executor.model.api.ExecutorModelEvent;
 import org.tokenizer.executor.model.api.ExecutorModelEventType;
 import org.tokenizer.executor.model.api.ExecutorModelListener;
-import org.tokenizer.executor.model.api.TaskBatchBuildState;
 import org.tokenizer.executor.model.api.TaskConcurrentModificationException;
 import org.tokenizer.executor.model.api.TaskExistsException;
 import org.tokenizer.executor.model.api.TaskGeneralState;
@@ -60,33 +59,22 @@ import org.tokenizer.executor.model.api.TaskValidityException;
 import org.tokenizer.executor.model.api.WritableExecutorModel;
 
 public class ExecutorModelImpl implements WritableExecutorModel {
-
     private final static Log LOG = LogFactory.getLog(ExecutorModelImpl.class);
-
-    private ZooKeeperItf zk;
-
+    private final ZooKeeperItf zk;
     /**
      * Cache of the tasks as they are stored in ZK. Updated based on ZK watcher
      * events. Updates to this cache should synchronize on {@link #model_lock}.
      */
-    private Map<String, TaskInfoBean> tasksMap = new ConcurrentHashMap<String, TaskInfoBean>(
+    private final Map<String, TaskInfoBean> tasksMap = new ConcurrentHashMap<String, TaskInfoBean>(
             16, 0.75f, 1);
-
     private final Object model_lock = new Object();
-
-    private Set<ExecutorModelListener> listeners = Collections
+    private final Set<ExecutorModelListener> listeners = Collections
             .newSetFromMap(new IdentityHashMap<ExecutorModelListener, Boolean>());
-
-    private Watcher watcher = new ModelChangeWatcher();
-
-    private Watcher connectStateWatcher = new ConnectStateWatcher();
-
-    private ModelCacheRefresher modelCacheRefresher = new ModelCacheRefresher();
-
+    private final Watcher watcher = new ModelChangeWatcher();
+    private final Watcher connectStateWatcher = new ConnectStateWatcher();
+    private final ModelCacheRefresher modelCacheRefresher = new ModelCacheRefresher();
     private boolean stopped = false;
-
     private static final String EXECUTOR_COLLECTION_PATH = "/org/tokenizer/executor/tasks";
-
     private static final String EXECUTOR_TRASH_PATH = "/org/tokenizer/executor/tasks-trash";
 
     public ExecutorModelImpl(ZooKeeperItf zk) throws InterruptedException,
@@ -94,9 +82,7 @@ public class ExecutorModelImpl implements WritableExecutorModel {
         this.zk = zk;
         ZkUtil.createPath(zk, EXECUTOR_COLLECTION_PATH);
         ZkUtil.createPath(zk, EXECUTOR_TRASH_PATH);
-
         zk.addDefaultWatcher(connectStateWatcher);
-
         modelCacheRefresher.start();
         modelCacheRefresher.waitUntilStarted();
     }
@@ -112,13 +98,12 @@ public class ExecutorModelImpl implements WritableExecutorModel {
     public void addTask(TaskInfoBean task) throws TaskExistsException,
             TaskModelException, TaskValidityException {
         assertValid(task);
-
-        final String taskPath = EXECUTOR_COLLECTION_PATH + "/" + task.getName();
-
+        final String taskPath = EXECUTOR_COLLECTION_PATH + "/"
+                + task.getTaskConfiguration().getName();
         final byte[] data = TaskInfoBeanConverter.toJsonBytes(task);
-
         try {
             zk.retryOperation(new ZooKeeperOperation<String>() {
+                @Override
                 public String execute() throws KeeperException,
                         InterruptedException {
                     return zk.create(taskPath, data,
@@ -126,104 +111,80 @@ public class ExecutorModelImpl implements WritableExecutorModel {
                 }
             });
         } catch (KeeperException.NodeExistsException e) {
-            throw new TaskExistsException(task.getName());
+            throw new TaskExistsException(task.getTaskConfiguration().getName());
         } catch (Exception e) {
             throw new TaskModelException("Error creating Task.", e);
         }
     }
 
     private void assertValid(TaskInfoBean task) throws TaskValidityException {
-        if (task.getName() == null || task.getName().length() == 0)
+        if (task.getTaskConfiguration().getName() == null
+                || task.getTaskConfiguration().getName().length() == 0)
             throw new TaskValidityException(
                     "Name should not be null or zero-length");
-
         if (task.getTaskConfiguration() == null)
             throw new TaskValidityException("Configuration should not be null.");
-
-        if (task.getGeneralState() == null)
+        if (task.getTaskConfiguration().getGeneralState() == null)
             throw new TaskValidityException("General state should not be null.");
-
-        if (task.getBatchBuildState() == null)
-            throw new TaskValidityException("Build state should not be null.");
     }
 
+    @Override
     public void updateTaskInternal(final TaskInfoBean task)
             throws InterruptedException, KeeperException,
             TaskNotFoundException, TaskConcurrentModificationException,
             TaskValidityException {
-
         assertValid(task);
-
         final byte[] newData = TaskInfoBeanConverter.toJsonBytes(task);
-
         try {
             zk.retryOperation(new ZooKeeperOperation<Stat>() {
+                @Override
                 public Stat execute() throws KeeperException,
                         InterruptedException {
-                    return zk.setData(
-                            EXECUTOR_COLLECTION_PATH + "/" + task.getName(),
-                            newData, task.getZkDataVersion());
+                    return zk.setData(EXECUTOR_COLLECTION_PATH + "/"
+                            + task.getTaskConfiguration().getName(), newData,
+                            task.getZkDataVersion());
                 }
             });
         } catch (KeeperException.NoNodeException e) {
-            throw new TaskNotFoundException(task.getName());
+            throw new TaskNotFoundException(task.getTaskConfiguration()
+                    .getName());
         } catch (KeeperException.BadVersionException e) {
-            throw new TaskConcurrentModificationException(task.getName());
+            throw new TaskConcurrentModificationException(task
+                    .getTaskConfiguration().getName());
         }
     }
 
+    @Override
     public void updateTask(final TaskInfoBean task, String lock)
             throws InterruptedException, KeeperException,
             TaskNotFoundException, TaskConcurrentModificationException,
             ZkLockException, TaskUpdateException, TaskValidityException {
-
-        if (!ZkLock.ownsLock(zk, lock)) {
+        if (!ZkLock.ownsLock(zk, lock))
             throw new TaskUpdateException(
                     "You are not owner of the Task lock, your lock path is: "
                             + lock);
-        }
-
         assertValid(task);
-
-        TaskInfoBean currentTask = getMutableTask(task.getName());
-
-        // if (currentTask.getGeneralState() ==
-        // TaskGeneralState.DELETE_REQUESTED
-        // || currentTask.getGeneralState() == TaskGeneralState.DELETING) {
-        // throw new TaskUpdateException("Task in the state "
-        // + task.getGeneralState() + " cannot be modified.");
-        // }
-
-        if (task.getBatchBuildState() == TaskBatchBuildState.BUILD_REQUESTED
-                && currentTask.getBatchBuildState() != TaskBatchBuildState.INACTIVE) {
-            throw new TaskUpdateException("Cannot move Task build state from "
-                    + currentTask.getBatchBuildState() + " to "
-                    + task.getBatchBuildState());
-        }
-
-        // if (currentTask.getGeneralState() ==
-        // TaskGeneralState.DELETE_REQUESTED) {
-        // throw new TaskUpdateException("Task in the state "
-        // + TaskGeneralState.DELETE_REQUESTED + " cannot be updated.");
-        // }
-
+        TaskInfoBean currentTask = getMutableTask(task.getTaskConfiguration()
+                .getName());
+        if (currentTask.getTaskConfiguration().getGeneralState() == TaskGeneralState.DELETE_REQUESTED)
+            throw new TaskUpdateException("Task in the state "
+                    + task.getTaskConfiguration().getGeneralState()
+                    + " cannot be modified.");
         updateTaskInternal(task);
-
     }
 
+    @Override
     public void deleteTask(final String name) throws TaskModelException {
         final String taskPath = EXECUTOR_COLLECTION_PATH + "/" + name;
         final String taskLockPath = taskPath + "/lock";
-
         try {
             // Make a copy of the Task data in the executor trash
             zk.retryOperation(new ZooKeeperOperation<Object>() {
+                @Override
                 public Object execute() throws KeeperException,
                         InterruptedException {
                     byte[] data = zk.getData(taskPath, false, null);
-
                     String trashPath = EXECUTOR_TRASH_PATH + "/" + name;
-
                     // Taskwith the same name might have existed
                     // before and
                     // hence already exist in the executor trash, handle this by
@@ -235,14 +196,11 @@ public class ExecutorModelImpl implements WritableExecutorModel {
                         count++;
                         trashPath = baseTrashpath + "." + count;
                     }
-
                     zk.create(trashPath, data, ZooDefs.Ids.OPEN_ACL_UNSAFE,
                             CreateMode.PERSISTENT);
-
                     return null;
                 }
             });
-
             // The loop below is normally not necessary, since we disallow
             // taking new
             // locks on tasks which are being deleted.
@@ -250,6 +208,7 @@ public class ExecutorModelImpl implements WritableExecutorModel {
             while (true) {
                 boolean success = zk
                         .retryOperation(new ZooKeeperOperation<Boolean>() {
+                            @Override
                             public Boolean execute() throws KeeperException,
                                     InterruptedException {
                                 try {
@@ -264,7 +223,6 @@ public class ExecutorModelImpl implements WritableExecutorModel {
                                         } catch (KeeperException.NoNodeException e) {
                                             // ok
                                         }
-
                                         for (String child : children) {
                                             try {
                                                 zk.delete(taskLockPath + "/"
@@ -274,16 +232,13 @@ public class ExecutorModelImpl implements WritableExecutorModel {
                                                 // removed
                                             }
                                         }
-
                                         try {
                                             zk.delete(taskLockPath, -1);
                                         } catch (KeeperException.NoNodeException e) {
                                             // ignore
                                         }
                                     }
-
                                     zk.delete(taskPath, -1);
-
                                     return true;
                                 } catch (KeeperException.NotEmptyException e) {
                                     // Someone again took a lock on the
@@ -292,20 +247,19 @@ public class ExecutorModelImpl implements WritableExecutorModel {
                                 return false;
                             }
                         });
-
-                if (success)
+                if (success) {
                     break;
-
+                }
                 tryCount++;
-                if (tryCount > 10) {
+                if (tryCount > 10)
                     throw new TaskModelException(
                             "Failed to delete the Task because it still has child data. Task name: "
                                     + name);
-                }
             }
         } catch (Throwable t) {
-            if (t instanceof InterruptedException)
+            if (t instanceof InterruptedException) {
                 Thread.currentThread().interrupt();
+            }
             throw new TaskModelException("Failed to delete Task " + name, t);
         }
     }
@@ -314,28 +268,23 @@ public class ExecutorModelImpl implements WritableExecutorModel {
     public String lockTaskInternal(String name, boolean checkDeleted)
             throws ZkLockException, TaskNotFoundException,
             InterruptedException, KeeperException, TaskModelException {
-
         TaskInfoBean task = getTask(name);
-
         if (checkDeleted) {
-            if (task.getGeneralState() == TaskGeneralState.DELETE_REQUESTED) {
-                // TODO: uncomment
-                // throw new TaskModelException("A task in state "
-                // + task.getGeneralState() + " cannot be locked.");
-            }
+            if (task.getTaskConfiguration().getGeneralState() == TaskGeneralState.DELETE_REQUESTED)
+                throw new TaskModelException("A task in state "
+                        + task.getTaskConfiguration().getGeneralState()
+                        + " cannot be locked.");
         }
-
         final String lockPath = EXECUTOR_COLLECTION_PATH + "/" + name + "/lock";
-
         //
         // Create the lock path if necessary
         //
         Stat stat = zk.retryOperation(new ZooKeeperOperation<Stat>() {
+            @Override
             public Stat execute() throws KeeperException, InterruptedException {
                 return zk.exists(lockPath, null);
             }
         });
-
         if (stat == null) {
             // We do not make use of ZkUtil.createPath (= recursive path
             // creation) on
@@ -346,6 +295,7 @@ public class ExecutorModelImpl implements WritableExecutorModel {
             // path (with null data) like that.
             try {
                 zk.retryOperation(new ZooKeeperOperation<String>() {
+                    @Override
                     public String execute() throws KeeperException,
                             InterruptedException {
                         return zk.create(lockPath, null,
@@ -359,12 +309,7 @@ public class ExecutorModelImpl implements WritableExecutorModel {
                 throw new TaskNotFoundException(name);
             }
         }
-
-        //
-        // Take the actual lock
-        //
         return ZkLock.lock(zk, lockPath);
-
     }
 
     @Override
@@ -374,36 +319,42 @@ public class ExecutorModelImpl implements WritableExecutorModel {
         return lockTaskInternal(name, true);
     }
 
+    @Override
     public void unlockTask(String lock) throws ZkLockException {
         ZkLock.unlock(zk, lock);
     }
 
+    @Override
     public void unlockTask(String lock, boolean ignoreMissing)
             throws ZkLockException {
         ZkLock.unlock(zk, lock, ignoreMissing);
     }
 
+    @Override
     public TaskInfoBean getTask(String name) throws TaskNotFoundException {
         TaskInfoBean task = tasksMap.get(name);
-        if (task == null) {
+        if (task == null)
             throw new TaskNotFoundException(name);
-        }
         return task;
     }
 
+    @Override
     public boolean hasTask(String name) {
         return tasksMap.containsKey(name);
     }
 
+    @Override
     public TaskInfoBean getMutableTask(String name)
             throws InterruptedException, KeeperException, TaskNotFoundException {
         return loadTask(name, false);
     }
 
+    @Override
     public Collection<TaskInfoBean> getTasks() {
         return new ArrayList<TaskInfoBean>(tasksMap.values());
     }
 
+    @Override
     public Collection<TaskInfoBean> getTasks(ExecutorModelListener listener) {
         synchronized (model_lock) {
             registerListener(listener);
@@ -415,7 +366,6 @@ public class ExecutorModelImpl implements WritableExecutorModel {
             throws InterruptedException, KeeperException, TaskNotFoundException {
         final String childPath = EXECUTOR_COLLECTION_PATH + "/" + taskName;
         final Stat stat = new Stat();
-
         byte[] data;
         try {
             if (forCache) {
@@ -424,6 +374,7 @@ public class ExecutorModelImpl implements WritableExecutorModel {
             } else {
                 // do retry, do not install watcher
                 data = zk.retryOperation(new ZooKeeperOperation<byte[]>() {
+                    @Override
                     public byte[] execute() throws KeeperException,
                             InterruptedException {
                         return zk.getData(childPath, false, stat);
@@ -433,11 +384,9 @@ public class ExecutorModelImpl implements WritableExecutorModel {
         } catch (KeeperException.NoNodeException e) {
             throw new TaskNotFoundException(taskName);
         }
-
         TaskInfoBean task = new TaskInfoBean();
         task.setZkDataVersion(stat.getVersion());
         TaskInfoBeanConverter.fromJsonBytes(data, task);
-
         return task;
     }
 
@@ -449,20 +398,21 @@ public class ExecutorModelImpl implements WritableExecutorModel {
         }
     }
 
+    @Override
     public void registerListener(ExecutorModelListener listener) {
         this.listeners.add(listener);
     }
 
+    @Override
     public void unregisterListener(ExecutorModelListener listener) {
         this.listeners.remove(listener);
     }
 
     private class ModelChangeWatcher implements Watcher {
+        @Override
         public void process(WatchedEvent event) {
-            if (stopped) {
+            if (stopped)
                 return;
-            }
-
             try {
                 if (NodeChildrenChanged.equals(event.getType())
                         && event.getPath().equals(EXECUTOR_COLLECTION_PATH)) {
@@ -481,11 +431,10 @@ public class ExecutorModelImpl implements WritableExecutorModel {
     }
 
     public class ConnectStateWatcher implements Watcher {
+        @Override
         public void process(WatchedEvent event) {
-            if (stopped) {
+            if (stopped)
                 return;
-            }
-
             if (event.getType() == Event.EventType.None
                     && event.getState() == Event.KeeperState.SyncConnected) {
                 // Each time the connection is established, we trigger
@@ -512,10 +461,8 @@ public class ExecutorModelImpl implements WritableExecutorModel {
         private volatile boolean started = false;
 
         public synchronized void shutdown() throws InterruptedException {
-            if (thread == null || !thread.isAlive()) {
+            if (thread == null || !thread.isAlive())
                 return;
-            }
-
             thread.interrupt();
             Logs.logThreadJoin(thread);
             thread.join();
@@ -525,7 +472,6 @@ public class ExecutorModelImpl implements WritableExecutorModel {
         public synchronized void start() {
             // Upon startup, be sure to run a refresh of all tasks
             this.refreshAll = true;
-
             thread = new Thread(this, "ExecutorModelImpl.ModelCacheRefresher");
             // Set as daemon thread: ExecutorModel can be used in tools like the
             // executor admin CLI tools,
@@ -545,6 +491,7 @@ public class ExecutorModelImpl implements WritableExecutorModel {
             }
         }
 
+        @Override
         public void run() {
             while (!Thread.interrupted()) {
                 try {
@@ -552,7 +499,6 @@ public class ExecutorModelImpl implements WritableExecutorModel {
                     try {
                         Set<String> tasksToRefresh = null;
                         boolean refreshAll = false;
-
                         synchronized (refreshLock) {
                             if (this.refreshAll
                                     || this.tasksToRefresh.isEmpty()) {
@@ -564,7 +510,6 @@ public class ExecutorModelImpl implements WritableExecutorModel {
                             this.refreshAll = false;
                             this.tasksToRefresh.clear();
                         }
-
                         if (refreshAll) {
                             synchronized (model_lock) {
                                 refreshTasks(events);
@@ -576,7 +521,6 @@ public class ExecutorModelImpl implements WritableExecutorModel {
                                 }
                             }
                         }
-
                         if (!started) {
                             started = true;
                             synchronized (startedLock) {
@@ -599,7 +543,6 @@ public class ExecutorModelImpl implements WritableExecutorModel {
                             notifyListeners(events);
                         }
                     }
-
                     synchronized (refreshLock) {
                         if (!this.refreshAll && this.tasksToRefresh.isEmpty()) {
                             refreshLock.wait();
@@ -629,10 +572,8 @@ public class ExecutorModelImpl implements WritableExecutorModel {
                 throws InterruptedException, KeeperException {
             List<String> taskNamesList = zk.getChildren(
                     EXECUTOR_COLLECTION_PATH, watcher);
-
             Set<String> taskNamesSet = new HashSet<String>();
             taskNamesSet.addAll(taskNamesList);
-
             // Remove tasks which no longer exist in ZK
             Iterator<String> currentTasksIterator = tasksMap.keySet()
                     .iterator();
@@ -644,7 +585,6 @@ public class ExecutorModelImpl implements WritableExecutorModel {
                             ExecutorModelEventType.TASK_REMOVED, name));
                 }
             }
-
             // Add/update the other Task
             for (String name : taskNamesList) {
                 refreshTask(name, events);
@@ -660,9 +600,7 @@ public class ExecutorModelImpl implements WritableExecutorModel {
             try {
                 TaskInfoBean task = loadTask(taskName, true);
                 task.makeImmutable();
-
                 TaskInfoBean oldTask = tasksMap.get(taskName);
-
                 if (oldTask != null
                         && oldTask.getZkDataVersion() == task
                                 .getZkDataVersion()) {
@@ -677,7 +615,6 @@ public class ExecutorModelImpl implements WritableExecutorModel {
                 }
             } catch (TaskNotFoundException e) {
                 Object oldTask = tasksMap.remove(taskName);
-
                 if (oldTask != null) {
                     events.add(new ExecutorModelEvent(
                             ExecutorModelEventType.TASK_REMOVED, taskName));
@@ -685,5 +622,4 @@ public class ExecutorModelImpl implements WritableExecutorModel {
             }
         }
     }
-
 }

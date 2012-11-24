@@ -49,13 +49,15 @@ public class TaskContainer extends IndexedContainer {
         addContainerProperty("ZkDataVersion", Long.class, 0);
         synchronized (app) {
             for (TaskInfoBean task : tasks) {
-                Item item = addItem(task.getName());
-                item.getItemProperty("name").setValue(task.getName());
-                item.getItemProperty("type").setValue(task.getTaskConfiguration().getClass().getSimpleName());
+                Item item = addItem(task.getTaskConfiguration().getName());
+                item.getItemProperty("name").setValue(
+                        task.getTaskConfiguration().getName());
+                item.getItemProperty("type").setValue(
+                        task.getTaskConfiguration().getClass().getSimpleName());
                 // item.getItemProperty("taskConfiguration.tld").setValue(
                 // task.getTaskConfiguration().getTld());
                 item.getItemProperty("General State").setValue(
-                        task.getGeneralState());
+                        task.getTaskConfiguration().getGeneralState());
                 item.getItemProperty("ZkDataVersion").setValue(
                         task.getZkDataVersion());
                 for (Map.Entry<String, Long> entry : task.getCounters()
@@ -71,6 +73,7 @@ public class TaskContainer extends IndexedContainer {
     }
 
     private class MyExecutorModelListener implements ExecutorModelListener {
+        @Override
         public void process(final ExecutorModelEvent event) {
             LOG.debug("Event::: {}", event.getType());
             synchronized (app) {
@@ -90,23 +93,26 @@ public class TaskContainer extends IndexedContainer {
                 }
                 if (event.getType() == ExecutorModelEventType.TASK_ADDED) {
                     Item item = addItem(taskName);
-                    item.getItemProperty("name").setValue(newTask.getName());
-                    item.getItemProperty("type").setValue(newTask.getTaskConfiguration().getClass().getSimpleName());
+                    item.getItemProperty("name").setValue(
+                            newTask.getTaskConfiguration().getName());
+                    item.getItemProperty("type").setValue(
+                            newTask.getTaskConfiguration().getClass()
+                                    .getSimpleName());
                     // item.getItemProperty("taskConfiguration.tld").setValue(
                     // newTask.getTaskConfiguration().getTld());
                     item.getItemProperty("General State").setValue(
-                            newTask.getGeneralState());
+                            newTask.getTaskConfiguration().getGeneralState());
                     item.getItemProperty("ZkDataVersion").setValue(
                             newTask.getZkDataVersion());
                 } else if (event.getType() == ExecutorModelEventType.TASK_UPDATED) {
                     getContainerProperty(taskName, "name").setValue(
-                            newTask.getName());
+                            newTask.getTaskConfiguration().getName());
                     getContainerProperty(taskName, "type").setValue(
                             newTask.getClass().getSimpleName());
                     // getContainerProperty(taskName, "taskConfiguration.tld")
                     // .setValue(newTask.getTaskConfiguration().getTld());
                     getContainerProperty(taskName, "General State").setValue(
-                            newTask.getGeneralState());
+                            newTask.getTaskConfiguration().getGeneralState());
                     for (Map.Entry<String, Long> entry : newTask.getCounters()
                             .entrySet()) {
                         LOG.debug("Entry: {}", entry);
@@ -120,8 +126,9 @@ public class TaskContainer extends IndexedContainer {
                         }
                     }
                 }
-                if (propertyAdded)
+                if (propertyAdded) {
                     fireContainerPropertySetChange();
+                }
             }
         }
     }

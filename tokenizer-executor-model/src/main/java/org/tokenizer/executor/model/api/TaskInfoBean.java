@@ -22,9 +22,6 @@ import org.tokenizer.executor.model.configuration.TaskConfiguration;
 
 public class TaskInfoBean {
     private TaskConfiguration taskConfiguration;
-    private String name;
-    private TaskGeneralState generalState = TaskGeneralState.START_REQUESTED;
-    private TaskBatchBuildState buildState = TaskBatchBuildState.INACTIVE;
     private int zkDataVersion = -1;
     private boolean immutable;
     private long submitTime;
@@ -59,24 +56,6 @@ public class TaskInfoBean {
         this.counters.put(key, value);
     }
 
-    public TaskGeneralState getGeneralState() {
-        return generalState;
-    }
-
-    public void setGeneralState(TaskGeneralState state) {
-        checkIfMutable();
-        this.generalState = state;
-    }
-
-    public TaskBatchBuildState getBatchBuildState() {
-        return buildState;
-    }
-
-    public void setBatchBuildState(TaskBatchBuildState state) {
-        checkIfMutable();
-        this.buildState = state;
-    }
-
     public int getZkDataVersion() {
         return zkDataVersion;
     }
@@ -101,13 +80,5 @@ public class TaskInfoBean {
 
     public void setTaskConfiguration(TaskConfiguration taskConfiguration) {
         this.taskConfiguration = taskConfiguration;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 }

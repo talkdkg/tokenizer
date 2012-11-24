@@ -55,13 +55,13 @@ import twitter4j.auth.AccessToken;
 public class TweetCollectorTask extends AbstractTask {
     private static final Logger LOG = LoggerFactory
             .getLogger(TweetCollectorTask.class);
-    private Twitter twitter;
-    private String consumerKey = TokenizerConfig
+    private final Twitter twitter;
+    private final String consumerKey = TokenizerConfig
             .getString("twitter.consumerKey");
-    private String consumerSecret = TokenizerConfig
+    private final String consumerSecret = TokenizerConfig
             .getString("twitter.consumerSecret");
-    private String token = TokenizerConfig.getString("twitter.token");
-    private String tokenSecret = TokenizerConfig
+    private final String token = TokenizerConfig.getString("twitter.token");
+    private final String tokenSecret = TokenizerConfig
             .getString("twitter.tokenSecret");
     static {
         // default read timeout 120000 see
@@ -71,8 +71,7 @@ public class TweetCollectorTask extends AbstractTask {
         System.setProperty("twitter4j.http.connectionTimeout", "10000");
     }
     Collection<String> input = new TreeSet<String>();
-    private double tweetsPerSecLimit = 0.5;
-    private EntityManager manager;
+    private final EntityManager manager;
     private TweetCollectorTaskConfiguration taskConfiguration;
     BlockingQueue<Status> queue;
     TwitterStream stream;
@@ -130,9 +129,10 @@ public class TweetCollectorTask extends AbstractTask {
             public void onStatus(Status status) {
                 if (isEmpty(status.getUser().getScreenName()))
                     return;
-                if (!queue.offer(status))
+                if (!queue.offer(status)) {
                     LOG.error("Cannot add tweet as input queue for streaming is full:"
                             + queue.size());
+                }
             }
 
             @Override
@@ -181,12 +181,13 @@ public class TweetCollectorTask extends AbstractTask {
 
     @Override
     protected void process() throws InterruptedException, IOException {
-        if (stream == null)
+        if (stream == null) {
             try {
                 stream = streamingTwitter(input, queue);
             } catch (TwitterException e) {
                 LOG.error("", e);
             }
+        }
         Status status = queue.take();
         StatusVO vo = new StatusVO(status);
         EntityTransaction tx = manager.getTransaction();
@@ -202,8 +203,9 @@ public class TweetCollectorTask extends AbstractTask {
 
     @Override
     protected synchronized void shutdown() throws InterruptedException {
-        if (this.stream != null)
+        if (this.stream != null) {
             this.stream.shutdown();
+        }
         super.shutdown();
     }
 }

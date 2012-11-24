@@ -17,13 +17,12 @@ package org.tokenizer.executor.model.api;
 
 import java.util.Comparator;
 
-
 public class TaskInfoBeanComparator implements Comparator<TaskInfoBean> {
-
     public final static TaskInfoBeanComparator INSTANCE = new TaskInfoBeanComparator();
 
+    @Override
     public int compare(TaskInfoBean o1, TaskInfoBean o2) {
-        return o1.getName().compareTo(o2.getName());
+        return o1.getTaskConfiguration().getName()
+                .compareTo(o2.getTaskConfiguration().getName());
     }
-
 }

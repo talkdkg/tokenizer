@@ -26,8 +26,6 @@ import org.codehaus.jackson.node.JsonNodeFactory;
 import org.codehaus.jackson.node.ObjectNode;
 import org.lilyproject.util.json.JsonFormat;
 import org.lilyproject.util.json.JsonUtil;
-import org.tokenizer.executor.model.api.TaskBatchBuildState;
-import org.tokenizer.executor.model.api.TaskGeneralState;
 import org.tokenizer.executor.model.api.TaskInfoBean;
 import org.tokenizer.executor.model.configuration.TaskConfiguration;
 
@@ -47,14 +45,6 @@ public class TaskInfoBeanConverter {
     }
 
     public static void fromJson(ObjectNode node, TaskInfoBean task) {
-        String name = JsonUtil.getString(node, "name");
-        task.setName(name);
-        //String type = JsonUtil.getString(node, "type");
-        //task.setType(type);
-        TaskGeneralState state = TaskGeneralState.valueOf(JsonUtil.getString(
-                node, "generalState"));
-        TaskBatchBuildState buildState = TaskBatchBuildState.valueOf(JsonUtil
-                .getString(node, "batchBuildState"));
         byte[] configuration;
         try {
             String configurationAsString = JsonUtil.getString(node,
@@ -74,8 +64,6 @@ public class TaskInfoBeanConverter {
         }
         task.setMetricsUpdateTimestamp(JsonUtil.getLong(info,
                 "metricsUpdateTimestamp"));
-        task.setGeneralState(state);
-        task.setBatchBuildState(buildState);
         TaskConfiguration config = (TaskConfiguration) JavaSerializationUtils
                 .deserialize(configuration);
         task.setTaskConfiguration(config);
@@ -92,10 +80,6 @@ public class TaskInfoBeanConverter {
 
     public static ObjectNode toJson(TaskInfoBean task) {
         ObjectNode node = JsonNodeFactory.instance.objectNode();
-        node.put("name", task.getName().toString());
-        //node.put("type", task.getType().toString());
-        node.put("generalState", task.getGeneralState().toString());
-        node.put("batchBuildState", task.getBatchBuildState().toString());
         String configurationAsString;
         configurationAsString = Base64.encodeBytes(JavaSerializationUtils
                 .serialize(task.getTaskConfiguration()));

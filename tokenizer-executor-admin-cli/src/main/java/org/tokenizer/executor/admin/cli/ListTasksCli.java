@@ -40,17 +40,14 @@ public class ListTasksCli extends BaseAdminCli {
         int result = super.run(cmd);
         if (result != 0)
             return result;
-
         List<TaskInfoBean> tasks = new ArrayList<TaskInfoBean>(model.getTasks());
-
         Collections.sort(tasks, TaskInfoBeanComparator.INSTANCE);
-
         System.out.println("Number of tasks: " + tasks.size());
         System.out.println();
-
         for (TaskInfoBean task : tasks) {
-            System.out.println(task.getName());
-            System.out.println("  + General state: " + task.getGeneralState());
+            System.out.println(task.getTaskConfiguration().getName());
+            System.out.println("  + General state: "
+                    + task.getTaskConfiguration().getGeneralState());
             System.out.println("  + Submitted: "
                     + new Date(task.getSubmitTime()));
             System.out.println("  + Stats: ");
@@ -60,8 +57,6 @@ public class ListTasksCli extends BaseAdminCli {
                         + counter.getValue());
             }
         }
-
         return 0;
     }
-
 }

@@ -30,7 +30,6 @@ import org.lilyproject.util.Version;
 import org.lilyproject.util.io.Closer;
 import org.lilyproject.util.zookeeper.StateWatchingZooKeeper;
 import org.lilyproject.util.zookeeper.ZooKeeperItf;
-import org.tokenizer.executor.model.api.TaskBatchBuildState;
 import org.tokenizer.executor.model.api.TaskGeneralState;
 import org.tokenizer.executor.model.api.TaskValidityException;
 import org.tokenizer.executor.model.api.WritableExecutorModel;
@@ -49,7 +48,6 @@ public abstract class BaseAdminCli extends BaseZkCliTool {
     protected TaskConfiguration taskConfiguration;
     protected String outputFileName;
     protected TaskGeneralState generalState;
-    protected TaskBatchBuildState buildState;
     protected WritableExecutorModel model;
     private ZooKeeperItf zk;
 
@@ -72,13 +70,6 @@ public abstract class BaseAdminCli extends BaseZkCliTool {
                                 + TaskGeneralState.STOP_REQUESTED + ", "
                                 + TaskGeneralState.DELETE_REQUESTED)
                 .withLongOpt("state").create("i");
-        buildStateOption = OptionBuilder
-                .withArgName("state")
-                .hasArg()
-                .withDescription(
-                        "Build state, only: "
-                                + TaskBatchBuildState.BUILD_REQUESTED)
-                .withLongOpt("build-state").create("b");
         outputFileOption = OptionBuilder.withArgName("filename").hasArg()
                 .withDescription("Output file name").withLongOpt("output-file")
                 .create("o");
@@ -172,21 +163,6 @@ public abstract class BaseAdminCli extends BaseZkCliTool {
                 return 1;
             }
         }
-        if (cmd.hasOption(buildStateOption.getOpt())) {
-            String stateName = cmd.getOptionValue(buildStateOption.getOpt());
-            try {
-                buildState = TaskBatchBuildState.valueOf(stateName
-                        .toUpperCase());
-            } catch (IllegalArgumentException e) {
-                System.out.println("Invalid build state: " + stateName);
-                return 1;
-            }
-            if (buildState != TaskBatchBuildState.BUILD_REQUESTED) {
-                System.out.println("The build state can only be set to "
-                        + TaskBatchBuildState.BUILD_REQUESTED);
-                return 1;
-            }
-        }
         if (cmd.hasOption(outputFileOption.getOpt())) {
             outputFileName = cmd.getOptionValue(outputFileOption.getOpt());
             File file = new File(outputFileName);
@@ -215,19 +191,19 @@ public abstract class BaseAdminCli extends BaseZkCliTool {
     private String getStates(Enum[] values) {
         StringBuilder builder = new StringBuilder();
         for (Enum value : values) {
-            if (builder.length() > 0)
+            if (builder.length() > 0) {
                 builder.append(", ");
+            }
             builder.append(value);
         }
         return builder.toString();
     }
 
     protected OutputStream getOutput() throws FileNotFoundException {
-        if (outputFileName == null) {
+        if (outputFileName == null)
             return System.out;
-        } else {
+        else
             return new FileOutputStream(outputFileName);
-        }
     }
 
     @Override

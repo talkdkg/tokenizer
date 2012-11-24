@@ -16,6 +16,5 @@
 package org.tokenizer.executor.model.api;
 
 public enum TaskGeneralState {
-    START_REQUESTED, STOP_REQUESTED, DELETE_REQUESTED, DELETE_FAILED;
-
+    START_REQUESTED, STOP_REQUESTED, DELETE_REQUESTED;
 }

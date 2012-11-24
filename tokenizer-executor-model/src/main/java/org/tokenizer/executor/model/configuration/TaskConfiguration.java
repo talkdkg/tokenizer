@@ -17,9 +17,30 @@ package org.tokenizer.executor.model.configuration;
 
 import java.io.Serializable;
 
+import org.tokenizer.executor.model.api.TaskGeneralState;
+
 /**
  * The configuration for a simple task.
  * 
  */
-public interface TaskConfiguration extends Serializable {
+public abstract class TaskConfiguration implements Serializable {
+    private static final long serialVersionUID = 1L;
+    private String name;
+    private TaskGeneralState generalState = TaskGeneralState.START_REQUESTED;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public TaskGeneralState getGeneralState() {
+        return generalState;
+    }
+
+    public void setGeneralState(TaskGeneralState generalState) {
+        this.generalState = generalState;
+    }
 }

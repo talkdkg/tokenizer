@@ -17,7 +17,7 @@ package org.tokenizer.executor.engine.twitter;
 
 import org.tokenizer.executor.model.configuration.TaskConfiguration;
 
-public class TweetCollectorTaskConfiguration implements TaskConfiguration {
+public class TweetCollectorTaskConfiguration extends TaskConfiguration {
     private static final long serialVersionUID = 1L;
     private String keywords;
 

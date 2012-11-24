@@ -50,16 +50,12 @@ public class AddTaskCli extends BaseAdminCli {
         if (result != 0)
             return result;
         TaskInfoBean task = new TaskInfoBean();
-
         task.setTaskConfiguration(taskConfiguration);
-
-        if (generalState != null)
-            task.setGeneralState(generalState);
-        if (buildState != null)
-            task.setBatchBuildState(buildState);
+        if (generalState != null) {
+            task.getTaskConfiguration().setGeneralState(generalState);
+        }
         model.addTask(task);
         System.out.println("Task created: " + taskName);
         return 0;
     }
-
 }

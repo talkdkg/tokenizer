@@ -41,37 +41,27 @@ import org.tokenizer.executor.model.api.WritableExecutorModel;
  * 
  */
 public class MetricsCache {
-
     private static final Logger LOG = LoggerFactory
             .getLogger(MetricsCache.class);
-
     private static final long COMMIT_INTERVAL = 1 * 1000L;
-
     public static final String URL_ROBOTS_KEY = "robots.txt restricted";
     public static final String URL_TOTAL_KEY = "URLs processed total";
     public static final String URL_OK_KEY = "URLs fetched successfully HTTP total count";
     public static final String URL_INJECTED = "URLs injected";
-
     public static final String TOTAL_RESPONSE_TIME_KEY = "URLs fetched successfully HTTP total time (ms)";
     public static final String URL_ERROR_KEY = "URLs with fetch errors";
     public static final String OTHER_ERRORS = "other errors";
-
     public static final String TOTAL_MEAN_TIME_KEY = "total mean time (including HTTP, Lily, and Solr) (ms)";
-
     public static final String NOT_INDEXED_YET = "URLs retrieved but not indexed yet";
-
     public static final String UPDATES_COUNT = "Total updates";
     public static final String UPDATES_TIME = "Total time for updates (ms)";
     public static final String INJECTS_COUNT = "Total injects";
     public static final String SITEMAPS_PROCESSED = "sitemaps processed";
     public static final String SITEMAP_INDEXES_PROCESSED = "sitemap indexes processed";
-
     private long lastCommitTimestamp;
-
-    private Map<String, Long> cache = new HashMap<String, Long>();
-
-    private String taskName;
-    private WritableExecutorModel model;
+    private final Map<String, Long> cache = new HashMap<String, Long>();
+    private final String taskName;
+    private final WritableExecutorModel model;
 
     public MetricsCache(String taskName, WritableExecutorModel model) {
         this.taskName = taskName;
@@ -95,8 +85,9 @@ public class MetricsCache {
      */
     public synchronized void increment(String key, long value) {
         Long count = cache.get(key);
-        if (count == null)
+        if (count == null) {
             count = 0L;
+        }
         count = count + value;
         cache.put(key, count);
         commitIfTimedOut();
@@ -118,22 +109,20 @@ public class MetricsCache {
      * @return
      */
     public synchronized boolean commit() {
-
         LOG.info("Committing to ZooKeeper...");
-
         boolean success = false;
         long currentTimestamp = System.currentTimeMillis();
         String lock = null;
         try {
             lock = model.lockTask(taskName);
             TaskInfoBean taskDefinition = model.getMutableTask(taskName);
-            if (taskDefinition.getGeneralState() == TaskGeneralState.DELETE_REQUESTED) {
+            if (taskDefinition.getTaskConfiguration().getGeneralState() == TaskGeneralState.DELETE_REQUESTED)
                 return true;
-            }
             for (String key : cache.keySet()) {
                 Long value = taskDefinition.getCounters().get(key);
-                if (value == null)
+                if (value == null) {
                     value = 0L;
+                }
                 value = value + cache.get(key);
                 taskDefinition.addCounter(key, value);
             }
@@ -162,8 +151,9 @@ public class MetricsCache {
             LOG.error("", e);
         } finally {
             try {
-                if (lock != null)
+                if (lock != null) {
                     model.unlockTask(lock, true);
+                }
             } catch (ZkLockException e) {
                 LOG.error("", e);
             }
@@ -188,9 +178,8 @@ public class MetricsCache {
         try {
             lock = model.lockTask(taskName);
             TaskInfoBean taskDefinition = model.getMutableTask(taskName);
-            if (taskDefinition.getGeneralState() == TaskGeneralState.DELETE_REQUESTED) {
+            if (taskDefinition.getTaskConfiguration().getGeneralState() == TaskGeneralState.DELETE_REQUESTED)
                 return true;
-            }
             taskDefinition.getCounters().clear();
             taskDefinition.setSubmitTime(currentTimestamp);
             taskDefinition.setMetricsUpdateTimestamp(currentTimestamp);
@@ -216,13 +205,13 @@ public class MetricsCache {
             LOG.error("", e);
         } finally {
             try {
-                if (lock != null)
+                if (lock != null) {
                     model.unlockTask(lock, true);
+                }
             } catch (ZkLockException e) {
                 LOG.error("", e);
             }
         }
         return success;
     }
-
 }

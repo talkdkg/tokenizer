@@ -46,9 +46,9 @@ public class TaskForm extends Form implements ClickListener {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory
             .getLogger(TaskForm.class);
     private MyVaadinApplication app;
-    private Button save = new Button("Save", (ClickListener) this);
-    private Button cancel = new Button("Cancel", (ClickListener) this);
-    private Button edit = new Button("Edit", (ClickListener) this);
+    private final Button save = new Button("Save", (ClickListener) this);
+    private final Button cancel = new Button("Cancel", (ClickListener) this);
+    private final Button edit = new Button("Edit", (ClickListener) this);
     private TaskInfoBean newTask;
     private boolean newTaskMode = false;
     private final ComboBox state = new ComboBox("State");
@@ -104,12 +104,12 @@ public class TaskForm extends Form implements ClickListener {
     public void buttonClick(ClickEvent event) {
         Button source = event.getButton();
         if (source == save) {
-            if (!isValid()) {
+            if (!isValid())
                 return;
-            }
             commit();
             if (newTaskMode) {
-                CustomField cf = taskConfigurationComponent.getConfigurationField();
+                CustomField cf = taskConfigurationComponent
+                        .getConfigurationField();
                 cf.commit();
                 TaskConfiguration taskConfiguration = (TaskConfiguration) cf
                         .getValue();
@@ -186,16 +186,16 @@ public class TaskForm extends Form implements ClickListener {
             getField("name").setReadOnly(true);
         }
         taskConfigurationComponent.setVisible(!readOnly);
-        //if (readOnly) getLayout().removeComponent(taskConfigurationComponent);
-        //else  getLayout().addComponent(taskConfigurationComponent);
-        
+        // if (readOnly)
+        // getLayout().removeComponent(taskConfigurationComponent);
+        // else getLayout().addComponent(taskConfigurationComponent);
         save.setVisible(!readOnly);
         cancel.setVisible(!readOnly);
         edit.setVisible(readOnly);
     }
 
     private TaskInfoBean update(TaskInfoBean task) {
-        String taskName = task.getName();
+        String taskName = task.getTaskConfiguration().getName();
         String lock = lockTask(taskName);
         if (lock == null)
             return null;
@@ -209,9 +209,11 @@ public class TaskForm extends Form implements ClickListener {
             mutableTask.setTaskConfiguration(task.getTaskConfiguration());
             changes = true;
         }
-        if (task.getGeneralState() != null
-                && task.getGeneralState() != mutableTask.getGeneralState()) {
-            mutableTask.setGeneralState(task.getGeneralState());
+        if (task.getTaskConfiguration().getGeneralState() != null
+                && task.getTaskConfiguration().getGeneralState() != mutableTask
+                        .getTaskConfiguration().getGeneralState()) {
+            mutableTask.getTaskConfiguration().setGeneralState(
+                    task.getTaskConfiguration().getGeneralState());
             changes = true;
         }
         if (changes) {
@@ -243,8 +245,9 @@ public class TaskForm extends Form implements ClickListener {
     }
 
     public static void unlockTask(String lock, TaskInfoBean mutableTask) {
-        boolean ignoreMissing = mutableTask.getGeneralState() != null
-                && mutableTask.getGeneralState() == TaskGeneralState.DELETE_REQUESTED;
+        boolean ignoreMissing = mutableTask.getTaskConfiguration()
+                .getGeneralState() != null
+                && mutableTask.getTaskConfiguration().getGeneralState() == TaskGeneralState.DELETE_REQUESTED;
         try {
             MyVaadinApplication.getModel().unlockTask(lock, ignoreMissing);
         } catch (ZkLockException e) {
@@ -266,8 +269,6 @@ public class TaskForm extends Form implements ClickListener {
         }
         return mutableTask;
     }
-    
-
 
     public static void updateTask(TaskInfoBean mutableTask, String lock) {
         try {
