@@ -20,7 +20,6 @@ import org.tokenizer.executor.model.configuration.ClassicRobotTaskConfiguration;
 import org.tokenizer.executor.model.configuration.HtmlSplitterTaskConfiguration;
 import org.tokenizer.executor.model.configuration.RssFetcherTaskConfiguration;
 import org.tokenizer.executor.model.configuration.SitemapsFetcherTaskConfiguration;
-import org.vaadin.addon.customfield.CustomField;
 
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
@@ -30,11 +29,11 @@ import com.vaadin.ui.VerticalLayout;
 
 public class TaskConfigurationComponent extends CustomComponent {
     private static final long serialVersionUID = 1L;
-    private CustomField configurationField;
+    private TaskConfigurationFormBase taskConfigurationField;
     private final VerticalLayout layout;
 
-    public CustomField getConfigurationField() {
-        return configurationField;
+    public TaskConfigurationFormBase getTaskConfigurationField() {
+        return taskConfigurationField;
     }
 
     public TaskConfigurationComponent() {
@@ -70,27 +69,27 @@ public class TaskConfigurationComponent extends CustomComponent {
             public void valueChange(ValueChangeEvent event) {
                 String selected = (String) event.getProperty().getValue();
                 System.out.println(selected);
-                if (configurationField != null) {
-                    layout.removeComponent(configurationField);
+                if (taskConfigurationField != null) {
+                    layout.removeComponent(taskConfigurationField);
                 }
                 if ("ClassicRobotTask".equals(selected)) {
-                    configurationField = new ClassicRobotTaskConfigurationForm(
+                    taskConfigurationField = new ClassicRobotTaskConfigurationForm(
                             new ClassicRobotTaskConfiguration());
                 } else if ("HtmlSplitterTask".equals(selected)) {
-                    configurationField = new HtmlSplitterTaskConfigurationForm(
+                    taskConfigurationField = new HtmlSplitterTaskConfigurationForm(
                             new HtmlSplitterTaskConfiguration());
                 } else if ("TweetCollectorTask".equals(selected)) {
-                    configurationField = new TweetCollectorTaskConfigurationForm(
+                    taskConfigurationField = new TweetCollectorTaskConfigurationForm(
                             new TweetCollectorTaskConfiguration());
                 } else if ("RssFetcherTask".equals(selected)) {
-                    configurationField = new RssFetcherTaskConfigurationForm(
+                    taskConfigurationField = new RssFetcherTaskConfigurationForm(
                             new RssFetcherTaskConfiguration());
                 } else if ("SitemapsFetcherTask".equals(selected)) {
-                    configurationField = new SitemapsFetcherTaskConfigurationForm(
+                    taskConfigurationField = new SitemapsFetcherTaskConfigurationForm(
                             new SitemapsFetcherTaskConfiguration());
                 }
-                if (configurationField != null) {
-                    layout.addComponent(configurationField);
+                if (taskConfigurationField != null) {
+                    layout.addComponent(taskConfigurationField);
                 }
             }
         };

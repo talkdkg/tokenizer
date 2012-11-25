@@ -29,9 +29,19 @@ import com.vaadin.ui.FormFieldFactory;
 public abstract class TaskConfigurationFormBase extends CustomField {
     private static final long serialVersionUID = 1L;
     private final Form taskConfigurationForm;
+    private final TaskConfiguration taskConfiguration;
+
+    public TaskConfiguration getTaskConfiguration() {
+        return taskConfiguration;
+    }
+
+    public Form getTaskConfigurationForm() {
+        return taskConfigurationForm;
+    }
 
     public TaskConfigurationFormBase(TaskConfiguration taskConfiguration) {
         super();
+        this.taskConfiguration = taskConfiguration;
         taskConfigurationForm = new Form();
         taskConfigurationForm.setCaption("Task Configuration for "
                 + getType().getSimpleName());

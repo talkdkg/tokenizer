@@ -27,7 +27,6 @@ import org.tokenizer.executor.model.api.TaskUpdateException;
 import org.tokenizer.executor.model.api.TaskValidityException;
 import org.tokenizer.executor.model.configuration.TaskConfiguration;
 import org.tokenizer.ui.MyVaadinApplication;
-import org.vaadin.addon.customfield.CustomField;
 
 import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanItem;
@@ -45,11 +44,10 @@ public class TaskForm extends Form implements ClickListener {
     private final Button save = new Button("Save", (ClickListener) this);
     private final Button cancel = new Button("Cancel", (ClickListener) this);
     private final Button edit = new Button("Edit", (ClickListener) this);
-    private TaskInfoBean newTask;
+    // private TaskInfoBean newTask;
     private boolean newTaskMode = false;
     private final TaskConfigurationComponent taskConfigurationComponent;
 
-    @SuppressWarnings("serial")
     public TaskForm(MyVaadinApplication app) {
         this.app = app;
         setWriteThrough(false);
@@ -60,34 +58,19 @@ public class TaskForm extends Form implements ClickListener {
         footer.addComponent(edit);
         footer.setVisible(false);
         setFooter(footer);
-        // setFormFieldFactory(new DefaultFieldFactory() {
-        // @Override
-        // public Field createField(Item item, Object propertyId,
-        // Component uiContext) {
-        // Field field = null;
-        // if (propertyId.equals("name")) {
-        // field = super.createField(item, propertyId, uiContext);
-        // } else if (propertyId.equals("generalState")) {
-        // field = state;
-        // } else {
-        // field = super.createField(item, propertyId, uiContext);
-        // }
-        // LOG.trace("createField: {}", propertyId);
-        // return field;
-        // }
-        // });
         taskConfigurationComponent = new TaskConfigurationComponent();
         getLayout().addComponent(taskConfigurationComponent);
         setReadOnly(true);
     }
 
     public void addTask() {
-        newTask = new TaskInfoBean();
-        BeanItem<TaskInfoBean> item = new BeanItem(newTask,
-                new String[] { "name" });
+        TaskInfoBean newTask = new TaskInfoBean();
+        String[] propertyIds = {};
+        BeanItem<TaskInfoBean> item = new BeanItem(newTask, propertyIds);
         setItemDataSource(item);
         newTaskMode = true;
         setReadOnly(false);
+        requestRepaint();
     }
 
     @Override
@@ -98,17 +81,19 @@ public class TaskForm extends Form implements ClickListener {
                 return;
             commit();
             if (newTaskMode) {
-                CustomField cf = taskConfigurationComponent
-                        .getConfigurationField();
-                cf.commit();
-                TaskConfiguration taskConfiguration = (TaskConfiguration) cf
-                        .getValue();
+                TaskConfigurationFormBase subform = taskConfigurationComponent
+                        .getTaskConfigurationField();
+                subform.commit();
+                TaskConfiguration taskConfiguration = subform
+                        .getTaskConfiguration();
                 LOG.info("taskConfiguration: {}", taskConfiguration);
-                newTask.setTaskConfiguration(taskConfiguration);
-                if (cf instanceof ClassicRobotTaskConfigurationForm) {
-                }
+                // newTask.setTaskConfiguration(taskConfiguration);
+                // if (cf instanceof ClassicRobotTaskConfigurationForm) {
+                // }
                 try {
-                    MyVaadinApplication.getModel().addTask(newTask);
+                    TaskInfoBean taskInfoBean = new TaskInfoBean();
+                    taskInfoBean.setTaskConfiguration(taskConfiguration);
+                    MyVaadinApplication.getModel().addTask(taskInfoBean);
                 } catch (TaskExistsException e) {
                     LOG.error("", e);
                 } catch (TaskModelException e) {
