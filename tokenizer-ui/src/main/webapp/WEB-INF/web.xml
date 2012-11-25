@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
 >
 <!-- 
 
@@ -15,20 +15,30 @@ https://vaadin.com/forum/-/message_boards/view_message/778033
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee    http://java.sun.com/xml/ns/j2ee/web-app_2.5.xsd">
  -->
-  <display-name>Vaadin Web Application</display-name>
-  <context-param>
-    <description>Vaadin production mode</description>
-    <param-name>productionMode</param-name>
-    <param-value>false</param-value>
-  </context-param>
-  <servlet>
-    <description>AtmosphereServlet</description>
-    <servlet-name>AtmosphereServlet</servlet-name>
-    <servlet-class>org.atmosphere.cpr.AtmosphereServlet</servlet-class>
-    <init-param>
-      <param-name>org.atmosphere.disableOnStateEvent</param-name>
-      <param-value>true</param-value>
-    </init-param>
+    <display-name>Vaadin Web Application</display-name>
+    <listener>
+        <listener-class>
+            org.tokenizer.ui.TokenizerServletContextListener
+        </listener-class>
+    </listener>
+    <context-param>
+        <description>Vaadin production mode</description>
+        <param-name>productionMode</param-name>
+        <param-value>false</param-value>
+    </context-param>
+    <servlet>
+        <servlet-name>I18NServlet</servlet-name>
+        <servlet-class>org.vaadin.appfoundation.i18n.InternationalizationServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet>
+        <description>AtmosphereServlet</description>
+        <servlet-name>AtmosphereServlet</servlet-name>
+        <servlet-class>org.atmosphere.cpr.AtmosphereServlet</servlet-class>
+        <init-param>
+            <param-name>org.atmosphere.disableOnStateEvent</param-name>
+            <param-value>true</param-value>
+        </init-param>
 <!--     <init-param>
       <param-name>org.atmosphere.useNative</param-name>
       <param-value>true</param-value>
@@ -42,11 +52,11 @@ https://vaadin.com/forum/-/message_boards/view_message/778033
       <param-value>org.atmosphere.client.TrackMessageSizeInterceptor</param-value>
     </init-param>
  -->
-    <load-on-startup>1</load-on-startup>
-    <async-supported>true</async-supported>
-  </servlet>
-  <servlet>
-    <servlet-name>Vaadin Application Servlet</servlet-name>
+        <load-on-startup>1</load-on-startup>
+        <async-supported>true</async-supported>
+    </servlet>
+    <servlet>
+        <servlet-name>Vaadin Application Servlet</servlet-name>
 
 
 
@@ -60,39 +70,43 @@ https://vaadin.com/forum/-/message_boards/view_message/778033
 
 
  -->
-    <servlet-class>org.tokenizer.ui.MyVaadinServlet</servlet-class>
-    <init-param>
-      <description>Vaadin application class to start</description>
-      <param-name>application</param-name>
-      <param-value>org.tokenizer.ui.MyVaadinApplication</param-value>
-    </init-param>
-    <init-param>
-      <param-name>widgetset</param-name>
-      <param-value>org.tokenizer.ui.MyWidgetSet</param-value>
-    </init-param>
-    <init-param>
-      <description>This is optinal parameter that control the
+        <servlet-class>org.tokenizer.ui.MyVaadinServlet</servlet-class>
+        <init-param>
+            <description>Vaadin application class to start</description>
+            <param-name>application</param-name>
+            <param-value>org.tokenizer.ui.MyVaadinApplication</param-value>
+        </init-param>
+        <init-param>
+            <param-name>widgetset</param-name>
+            <param-value>org.tokenizer.ui.MyWidgetSet</param-value>
+        </init-param>
+        <init-param>
+            <description>This is optinal parameter that control the
       timeout before "Conection guard" is for end user. If you
       have lots of synchronous tasks that take long time, you might
       want to increase this value to avoid non-intentional red screens.
       Default value is 5 seconds.</description>
-      <param-name>connectionGuardTimeout</param-name>
-      <param-value>10</param-value>
-    </init-param>
-    <load-on-startup>2</load-on-startup>
+            <param-name>connectionGuardTimeout</param-name>
+            <param-value>10</param-value>
+        </init-param>
+        <load-on-startup>2</load-on-startup>
 
 <!-- 
 Additionally, any servlet filters that sit in front of the Atmosphere servlet must have the <async-supported>true</async-supported> element. 
 
 <async-supported>true</async-supported>
  -->
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>AtmosphereServlet</servlet-name>
-    <url-pattern>/UIDL/*</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>Vaadin Application Servlet</servlet-name>
-    <url-pattern>/*</url-pattern>
-  </servlet-mapping>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>AtmosphereServlet</servlet-name>
+        <url-pattern>/UIDL/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>Vaadin Application Servlet</servlet-name>
+        <url-pattern>/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>I18NServlet</servlet-name>
+        <url-pattern>/I18NServlet/*</url-pattern>
+    </servlet-mapping>
 </web-app>

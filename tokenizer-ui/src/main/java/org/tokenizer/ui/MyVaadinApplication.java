@@ -30,6 +30,11 @@ import org.tokenizer.ui.widgets.PersonForm;
 import org.tokenizer.ui.widgets.PersonList;
 import org.tokenizer.ui.widgets.SearchView;
 import org.tokenizer.ui.widgets.SharingOptions;
+import org.vaadin.appfoundation.authentication.SessionHandler;
+import org.vaadin.appfoundation.authorization.Permissions;
+import org.vaadin.appfoundation.authorization.jpa.JPAPermissionManager;
+import org.vaadin.appfoundation.i18n.Lang;
+import org.vaadin.appfoundation.view.ViewHandler;
 
 import com.vaadin.Application;
 import com.vaadin.data.Item;
@@ -56,8 +61,8 @@ public class MyVaadinApplication extends Application implements
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory
             .getLogger(MyVaadinApplication.class);
     private Window window;
-    private HorizontalSplitPanel horizontalSplit = new HorizontalSplitPanel();
-    private NavigationTree tree = new NavigationTree(this);
+    private final HorizontalSplitPanel horizontalSplit = new HorizontalSplitPanel();
+    private final NavigationTree tree = new NavigationTree(this);
     private ListView listView = null;
     private static ApplicationContext applicationContext = null;
 
@@ -78,6 +83,10 @@ public class MyVaadinApplication extends Application implements
 
     @Override
     public void init() {
+        SessionHandler.initialize(this);
+        ViewHandler.initialize(this);
+        Lang.initialize(this);
+        Permissions.initialize(this, new JPAPermissionManager());
         applicationContext = MyVaadinServlet.getApplicationContext();
         repository = (CrawlerHBaseRepository) applicationContext
                 .getBean("crawlerRepository");
@@ -103,9 +112,9 @@ public class MyVaadinApplication extends Application implements
 
     // private Button newContact = new Button("Add contact");
     // private Button search = new Button("Search");
-    private Button tasks = new Button("Show Tasks");
-    private Button newTask = new Button("Add New Task");
-    private Button crawledContent = new Button("Crawled Content");
+    private final Button tasks = new Button("Show Tasks");
+    private final Button newTask = new Button("Add New Task");
+    private final Button crawledContent = new Button("Crawled Content");
 
     public HorizontalLayout createToolbar() {
         HorizontalLayout lo = new HorizontalLayout();
@@ -156,7 +165,8 @@ public class MyVaadinApplication extends Application implements
         return this.sharingOptions;
     }
 
-    private PersonContainer dataSource = PersonContainer.createWithTestData();
+    private final PersonContainer dataSource = PersonContainer
+            .createWithTestData();
 
     public PersonContainer getDataSource() {
         return dataSource;
@@ -180,6 +190,7 @@ public class MyVaadinApplication extends Application implements
         return searchView;
     }
 
+    @Override
     public void buttonClick(ClickEvent event) {
         final Button source = event.getButton();
         // if (source == search) {
@@ -210,11 +221,9 @@ public class MyVaadinApplication extends Application implements
                     getTaskView().getTaskList().getValue());
             getTaskView().getTaskForm().setItemDataSource(item);
         }
-        
-        
-        
     }
 
+    @Override
     public void itemClick(ItemClickEvent event) {
         if (event.getSource() == tree) {
             Object itemId = event.getItemId();
