@@ -92,16 +92,13 @@ public class TaskForm extends Form implements ClickListener {
                 return;
             commit();
             if (newTaskMode) {
-                TaskConfigurationFormBase subform = taskConfigurationComponent
-                        .getTaskConfigurationField();
-                subform.commit();
-                TaskConfiguration taskConfiguration = subform
-                        .getTaskConfiguration();
-                LOG.info("taskConfiguration: {}", taskConfiguration);
-                // newTask.setTaskConfiguration(taskConfiguration);
-                // if (cf instanceof ClassicRobotTaskConfigurationForm) {
-                // }
                 try {
+                    TaskConfigurationFormBase subform = taskConfigurationComponent
+                            .getTaskConfigurationField();
+                    subform.commit();
+                    TaskConfiguration taskConfiguration = subform
+                            .getTaskConfiguration();
+                    LOG.info("taskConfiguration: {}", taskConfiguration);
                     TaskInfoBean taskInfoBean = new TaskInfoBean();
                     taskInfoBean.setTaskConfiguration(taskConfiguration);
                     MyVaadinApplication.getModel().addTask(taskInfoBean);
@@ -112,15 +109,14 @@ public class TaskForm extends Form implements ClickListener {
                 } catch (TaskValidityException e) {
                     LOG.error("", e);
                 }
-                // setItemDataSource(newTaskConfiguration);
                 newTaskMode = false;
             } else {
                 BeanItem<TaskInfoBean> item = (BeanItem<TaskInfoBean>) getItemDataSource();
                 TaskInfoBean task = item.getBean();
-                TaskInfoBean mutableTask = update(task);
-                Item item2 = app.getTaskView().getTaskList()
-                        .getItem(app.getTaskView().getTaskList().getValue());
-                setItemDataSource(item2);
+                taskConfigurationField.commit();
+                task.setTaskConfiguration(taskConfigurationField
+                        .getTaskConfiguration());
+                update(task);
             }
             setItemDataSource(this.attachedDataSource);
             setReadOnly(true);
