@@ -19,17 +19,10 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import org.apache.zookeeper.KeeperException;
-import org.lilyproject.util.Logs;
-import org.lilyproject.util.zookeeper.LeaderElection;
-import org.lilyproject.util.zookeeper.LeaderElectionCallback;
-import org.lilyproject.util.zookeeper.LeaderElectionSetupException;
 import org.lilyproject.util.zookeeper.ZooKeeperItf;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-//import org.tokenizer.core.http.FetchedResult;
 import org.tokenizer.core.http.FetcherUtils;
-//import org.tokenizer.core.http.SimpleHttpClient;
 import org.tokenizer.crawler.db.CrawlerHBaseRepository;
 import org.tokenizer.crawler.db.UrlRecord;
 import org.tokenizer.crawler.db.UrlScanner;
@@ -45,6 +38,8 @@ import crawlercommons.robots.BaseRobotRules;
 import crawlercommons.robots.BaseRobotsParser;
 import crawlercommons.robots.RobotUtils;
 import crawlercommons.robots.SimpleRobotRulesParser;
+//import org.tokenizer.core.http.FetchedResult;
+//import org.tokenizer.core.http.SimpleHttpClient;
 
 public class ClassicRobotTask extends AbstractTask {
     private static final Logger LOG = LoggerFactory
@@ -64,7 +59,8 @@ public class ClassicRobotTask extends AbstractTask {
         this.httpClient.setRedirectMode(RedirectMode.FOLLOW_ALL);
         this.robotFetcher = RobotUtils
                 .createFetcher(FetcherUtils.USER_AGENT, 1);
-        this.robotFetcher.setDefaultMaxContentSize(4 * 1024 * 1024);
+        this.robotFetcher.setDefaultMaxContentSize(1024 * 1024);
+        this.httpClient.setDefaultMaxContentSize(1024 * 1024);
         LOG.debug("Instance created");
     }
 
@@ -90,8 +86,9 @@ public class ClassicRobotTask extends AbstractTask {
                 crawlerRepository);
         for (UrlRecord urlRecord : urlScanner) {
             LOG.debug("urlRecord: {}", urlRecord);
-            if (urlRecord.getTimestamp() > 0)
+            if (urlRecord.getTimestamp() > 0) {
                 continue;
+            }
             LOG.debug("Trying URL: {}", urlRecord.getUrl());
             FetchedResult fetchedResult = PersistenceUtils.fetch(urlRecord,
                     crawlerRepository, robotRules, metricsCache, httpClient,
