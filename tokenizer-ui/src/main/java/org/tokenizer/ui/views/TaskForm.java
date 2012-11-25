@@ -17,6 +17,7 @@ package org.tokenizer.ui.views;
 
 import org.apache.zookeeper.KeeperException;
 import org.lilyproject.util.zookeeper.ZkLockException;
+import org.tokenizer.executor.engine.twitter.TweetCollectorTaskConfiguration;
 import org.tokenizer.executor.model.api.TaskConcurrentModificationException;
 import org.tokenizer.executor.model.api.TaskExistsException;
 import org.tokenizer.executor.model.api.TaskGeneralState;
@@ -25,6 +26,11 @@ import org.tokenizer.executor.model.api.TaskModelException;
 import org.tokenizer.executor.model.api.TaskNotFoundException;
 import org.tokenizer.executor.model.api.TaskUpdateException;
 import org.tokenizer.executor.model.api.TaskValidityException;
+import org.tokenizer.executor.model.configuration.ClassicRobotTaskConfiguration;
+import org.tokenizer.executor.model.configuration.HtmlSplitterTaskConfiguration;
+import org.tokenizer.executor.model.configuration.RssFetcherTaskConfiguration;
+import org.tokenizer.executor.model.configuration.SimpleMultithreadedFetcherTaskConfiguration;
+import org.tokenizer.executor.model.configuration.SitemapsFetcherTaskConfiguration;
 import org.tokenizer.executor.model.configuration.TaskConfiguration;
 import org.tokenizer.ui.MyVaadinApplication;
 
@@ -46,7 +52,9 @@ public class TaskForm extends Form implements ClickListener {
     private final Button edit = new Button("Edit", (ClickListener) this);
     // private TaskInfoBean newTask;
     private boolean newTaskMode = false;
-    private final TaskConfigurationComponent taskConfigurationComponent;
+    private TaskConfigurationComponent taskConfigurationComponent;
+    private TaskConfigurationFormBase taskConfigurationField;
+    private Item attachedDataSource = null;
 
     public TaskForm(MyVaadinApplication app) {
         this.app = app;
@@ -58,8 +66,8 @@ public class TaskForm extends Form implements ClickListener {
         footer.addComponent(edit);
         footer.setVisible(false);
         setFooter(footer);
-        taskConfigurationComponent = new TaskConfigurationComponent();
-        getLayout().addComponent(taskConfigurationComponent);
+        // taskConfigurationComponent = new TaskConfigurationComponent();
+        // getLayout().addComponent(taskConfigurationComponent);
         setReadOnly(true);
     }
 
@@ -70,7 +78,10 @@ public class TaskForm extends Form implements ClickListener {
         setItemDataSource(item);
         newTaskMode = true;
         setReadOnly(false);
-        requestRepaint();
+        if (taskConfigurationComponent == null) {
+            taskConfigurationComponent = new TaskConfigurationComponent();
+            getLayout().addComponent(taskConfigurationComponent);
+        }
     }
 
     @Override
@@ -111,24 +122,52 @@ public class TaskForm extends Form implements ClickListener {
                         .getItem(app.getTaskView().getTaskList().getValue());
                 setItemDataSource(item2);
             }
+            setItemDataSource(this.attachedDataSource);
             setReadOnly(true);
         } else if (source == cancel) {
             if (newTaskMode) {
                 newTaskMode = false;
-                setItemDataSource(null);
+                // setItemDataSource(null);
             } else {
                 discard();
             }
+            setItemDataSource(this.attachedDataSource);
             setReadOnly(true);
         } else if (source == edit) {
+            this.attachedDataSource = getItemDataSource();
             TaskInfoBean task2;
             try {
                 task2 = MyVaadinApplication.getModel().getMutableTask(
                         (String) getItemProperty("name").getValue());
-                BeanItem<TaskInfoBean> item = new BeanItem(task2, new String[] {
-                        "name", "generalState" });
+                BeanItem<TaskInfoBean> item = new BeanItem(task2,
+                        new String[] {});
                 setItemDataSource(item);
+                TaskConfiguration taskConfiguration = task2
+                        .getTaskConfiguration();
+                LOG.debug(taskConfiguration.toString());
+                if (taskConfiguration instanceof SitemapsFetcherTaskConfiguration) {
+                    taskConfigurationField = new SitemapsFetcherTaskConfigurationForm(
+                            taskConfiguration);
+                } else if (taskConfiguration instanceof HtmlSplitterTaskConfiguration) {
+                    taskConfigurationField = new HtmlSplitterTaskConfigurationForm(
+                            taskConfiguration);
+                } else if (taskConfiguration instanceof TweetCollectorTaskConfiguration) {
+                    taskConfigurationField = new TweetCollectorTaskConfigurationForm(
+                            taskConfiguration);
+                } else if (taskConfiguration instanceof ClassicRobotTaskConfiguration) {
+                    taskConfigurationField = new ClassicRobotTaskConfigurationForm(
+                            taskConfiguration);
+                } else if (taskConfiguration instanceof RssFetcherTaskConfiguration) {
+                    taskConfigurationField = new RssFetcherTaskConfigurationForm(
+                            taskConfiguration);
+                } else if (taskConfiguration instanceof SimpleMultithreadedFetcherTaskConfiguration) {
+                    taskConfigurationField = new SimpleMultithreadedFetcherTaskConfigurationForm(
+                            taskConfiguration);
+                }
                 setReadOnly(false);
+                if (taskConfigurationField != null) {
+                    getLayout().addComponent(taskConfigurationField);
+                }
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             } catch (KeeperException e) {
@@ -145,6 +184,9 @@ public class TaskForm extends Form implements ClickListener {
         if (newDataSource != null) {
             // super.setItemDataSource(newDataSource, orderedProperties);
             super.setItemDataSource(newDataSource);
+            if (this.attachedDataSource == null) {
+                this.attachedDataSource = newDataSource;
+            }
             setReadOnly(true);
             getFooter().setVisible(true);
         } else {
@@ -156,17 +198,15 @@ public class TaskForm extends Form implements ClickListener {
     @Override
     public void setReadOnly(boolean readOnly) {
         super.setReadOnly(readOnly);
-        LOG.info("" + getItemPropertyIds());
-        if (!readOnly && !newTaskMode) {
-            getField("name").setReadOnly(true);
-        }
-        taskConfigurationComponent.setVisible(!readOnly);
-        // if (readOnly)
-        // getLayout().removeComponent(taskConfigurationComponent);
-        // else getLayout().addComponent(taskConfigurationComponent);
         save.setVisible(!readOnly);
         cancel.setVisible(!readOnly);
         edit.setVisible(readOnly);
+        if (taskConfigurationComponent != null) {
+            getLayout().removeComponent(taskConfigurationComponent);
+        }
+        if (taskConfigurationField != null) {
+            getLayout().removeComponent(taskConfigurationField);
+        }
     }
 
     private TaskInfoBean update(TaskInfoBean task) {
