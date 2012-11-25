@@ -34,10 +34,6 @@ import com.vaadin.data.util.BeanItem;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.ComboBox;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.DefaultFieldFactory;
-import com.vaadin.ui.Field;
 import com.vaadin.ui.Form;
 import com.vaadin.ui.HorizontalLayout;
 
@@ -45,14 +41,13 @@ public class TaskForm extends Form implements ClickListener {
     private static final long serialVersionUID = 1L;
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory
             .getLogger(TaskForm.class);
-    private MyVaadinApplication app;
+    private final MyVaadinApplication app;
     private final Button save = new Button("Save", (ClickListener) this);
     private final Button cancel = new Button("Cancel", (ClickListener) this);
     private final Button edit = new Button("Edit", (ClickListener) this);
     private TaskInfoBean newTask;
     private boolean newTaskMode = false;
-    private final ComboBox state = new ComboBox("State");
-    private TaskConfigurationComponent taskConfigurationComponent;
+    private final TaskConfigurationComponent taskConfigurationComponent;
 
     @SuppressWarnings("serial")
     public TaskForm(MyVaadinApplication app) {
@@ -65,27 +60,22 @@ public class TaskForm extends Form implements ClickListener {
         footer.addComponent(edit);
         footer.setVisible(false);
         setFooter(footer);
-        state.setNewItemsAllowed(false);
-        state.setNullSelectionAllowed(false);
-        state.addItem(TaskGeneralState.START_REQUESTED);
-        state.addItem(TaskGeneralState.STOP_REQUESTED);
-        state.addItem(TaskGeneralState.DELETE_REQUESTED);
-        setFormFieldFactory(new DefaultFieldFactory() {
-            @Override
-            public Field createField(Item item, Object propertyId,
-                    Component uiContext) {
-                Field field = null;
-                if (propertyId.equals("name")) {
-                    field = super.createField(item, propertyId, uiContext);
-                } else if (propertyId.equals("generalState")) {
-                    field = state;
-                } else {
-                    field = super.createField(item, propertyId, uiContext);
-                }
-                LOG.trace("createField: {}", propertyId);
-                return field;
-            }
-        });
+        // setFormFieldFactory(new DefaultFieldFactory() {
+        // @Override
+        // public Field createField(Item item, Object propertyId,
+        // Component uiContext) {
+        // Field field = null;
+        // if (propertyId.equals("name")) {
+        // field = super.createField(item, propertyId, uiContext);
+        // } else if (propertyId.equals("generalState")) {
+        // field = state;
+        // } else {
+        // field = super.createField(item, propertyId, uiContext);
+        // }
+        // LOG.trace("createField: {}", propertyId);
+        // return field;
+        // }
+        // });
         taskConfigurationComponent = new TaskConfigurationComponent();
         getLayout().addComponent(taskConfigurationComponent);
         setReadOnly(true);
@@ -115,7 +105,7 @@ public class TaskForm extends Form implements ClickListener {
                         .getValue();
                 LOG.info("taskConfiguration: {}", taskConfiguration);
                 newTask.setTaskConfiguration(taskConfiguration);
-                if (cf instanceof ClassicRobotTaskConfigurationField) {
+                if (cf instanceof ClassicRobotTaskConfigurationForm) {
                 }
                 try {
                     MyVaadinApplication.getModel().addTask(newTask);

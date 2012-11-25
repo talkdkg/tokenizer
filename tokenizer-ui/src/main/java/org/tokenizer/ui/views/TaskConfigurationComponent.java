@@ -15,6 +15,7 @@
  */
 package org.tokenizer.ui.views;
 
+import org.tokenizer.executor.engine.twitter.TweetCollectorTaskConfiguration;
 import org.tokenizer.executor.model.configuration.ClassicRobotTaskConfiguration;
 import org.tokenizer.executor.model.configuration.HtmlSplitterTaskConfiguration;
 import org.tokenizer.executor.model.configuration.RssFetcherTaskConfiguration;
@@ -28,12 +29,9 @@ import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.VerticalLayout;
 
 public class TaskConfigurationComponent extends CustomComponent {
-    /**
-     * TDE-1 #close test 2 3 4 5 6
-     */
     private static final long serialVersionUID = 1L;
     private CustomField configurationField;
-    private VerticalLayout layout;
+    private final VerticalLayout layout;
 
     public CustomField getConfigurationField() {
         return configurationField;
@@ -66,8 +64,9 @@ public class TaskConfigurationComponent extends CustomComponent {
      */
     private Property.ValueChangeListener getTypeValueChangeListener() {
         return new Property.ValueChangeListener() {
-            private static final long serialVersionUID = 3228117666786809997L;
+            private static final long serialVersionUID = 31L;
 
+            @Override
             public void valueChange(ValueChangeEvent event) {
                 String selected = (String) event.getProperty().getValue();
                 System.out.println(selected);
@@ -75,29 +74,22 @@ public class TaskConfigurationComponent extends CustomComponent {
                     layout.removeComponent(configurationField);
                 }
                 if ("ClassicRobotTask".equals(selected)) {
-                    configurationField = new ClassicRobotTaskConfigurationField();
-                    ((ClassicRobotTaskConfigurationField) configurationField)
-                            .setInternalValue(new ClassicRobotTaskConfiguration());
-                    layout.addComponent(configurationField);
+                    configurationField = new ClassicRobotTaskConfigurationForm(
+                            new ClassicRobotTaskConfiguration());
                 } else if ("HtmlSplitterTask".equals(selected)) {
-                    configurationField = new HtmlSplitterTaskConfigurationField();
-                    ((HtmlSplitterTaskConfigurationField) configurationField)
-                            .setInternalValue(new HtmlSplitterTaskConfiguration());
-                    layout.addComponent(configurationField);
+                    configurationField = new HtmlSplitterTaskConfigurationForm(
+                            new HtmlSplitterTaskConfiguration());
                 } else if ("TweetCollectorTask".equals(selected)) {
-                    configurationField = new TweetCollectorTaskConfigurationField();
-                    ((TweetCollectorTaskConfigurationField) configurationField)
-                            .setInternalValue(new TweetCollectorTaskConfigurationField());
-                    layout.addComponent(configurationField);
+                    configurationField = new TweetCollectorTaskConfigurationForm(
+                            new TweetCollectorTaskConfiguration());
                 } else if ("RssFetcherTask".equals(selected)) {
-                    configurationField = new RssFetcherTaskConfigurationField();
-                    ((RssFetcherTaskConfigurationField) configurationField)
-                            .setInternalValue(new RssFetcherTaskConfiguration());
-                    layout.addComponent(configurationField);
+                    configurationField = new RssFetcherTaskConfigurationForm(
+                            new RssFetcherTaskConfiguration());
                 } else if ("SitemapsFetcherTask".equals(selected)) {
-                    configurationField = new SitemapsFetcherTaskConfigurationField();
-                    ((SitemapsFetcherTaskConfigurationField) configurationField)
-                            .setInternalValue(new SitemapsFetcherTaskConfiguration());
+                    configurationField = new SitemapsFetcherTaskConfigurationForm(
+                            new SitemapsFetcherTaskConfiguration());
+                }
+                if (configurationField != null) {
                     layout.addComponent(configurationField);
                 }
             }
