@@ -15,6 +15,8 @@
  */
 package org.tokenizer.ui;
 
+import javax.annotation.security.RolesAllowed;
+
 import org.springframework.context.ApplicationContext;
 import org.tokenizer.crawler.db.CrawlerHBaseRepository;
 import org.tokenizer.executor.model.api.WritableExecutorModel;
@@ -35,6 +37,8 @@ import org.vaadin.appfoundation.authorization.Permissions;
 import org.vaadin.appfoundation.authorization.jpa.JPAPermissionManager;
 import org.vaadin.appfoundation.i18n.Lang;
 import org.vaadin.appfoundation.view.ViewHandler;
+import org.xaloon.core.api.security.SecurityAuthorities;
+import org.xaloon.wicket.component.mount.annotation.MountPageGroup;
 
 import com.vaadin.Application;
 import com.vaadin.data.Item;
@@ -55,6 +59,8 @@ import com.vaadin.ui.Window.Notification;
 /**
  * The Application's "main" class
  */
+@MountPageGroup(value = "/ui", order = 1000)
+@RolesAllowed({ SecurityAuthorities.SYSTEM_ADMINISTRATOR })
 public class MyVaadinApplication extends Application implements
         Button.ClickListener, Property.ValueChangeListener, ItemClickListener {
     private static final long serialVersionUID = 1L;

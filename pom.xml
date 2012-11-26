@@ -37,7 +37,7 @@
         <version.rome>1.0</version.rome>
         <version.slf4j>1.6.4</version.slf4j>
         <version.solr>4.0.0</version.solr>
-        <version.spring>2.5.6</version.spring>
+        <version.spring>3.1.0.RELEASE</version.spring>
         <version.tagsoup>1.2.1</version.tagsoup>
         <version.tika>1.2</version.tika>
         <version.twitter4j>3.0.0-SNAPSHOT</version.twitter4j>
@@ -543,6 +543,24 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.kauriproject</groupId>
+            <artifactId>kauri-runtime</artifactId>
+            <exclusions>
+                <exclusion>
+                    <artifactId>core</artifactId>
+                    <groupId>org.eclipse.jdt</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>spring-aop</artifactId>
+                    <groupId>org.springframework</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>spring-core</artifactId>
+                    <groupId>org.springframework</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
     </dependencies>
     <build>

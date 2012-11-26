@@ -34,6 +34,7 @@
         <vaadin.version>6.8.4</vaadin.version>
         <vaadin.plugin.version>${vaadin.version}</vaadin.plugin.version>
         <version.dontpush>1.0.1</version.dontpush>
+        <xaloon.version>1.5.1</xaloon.version>
     
     <!-- 
     http://amanica.blogspot.ca/2010/04/vaadin-addons-and-maven-and-eclipse.html
@@ -99,12 +100,47 @@
     </pluginRepositories>
     <dependencies>
         <dependency>
+            <groupId>org.tokenizer</groupId>
+            <artifactId>wicket-web</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+    
+            <!-- xaloon DEPENDENCIES -->
+        <dependency>
+            <groupId>org.xaloon.core</groupId>
+            <artifactId>xaloon-core-jpa</artifactId>
+            <version>${xaloon.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.xaloon.wicket</groupId>
+            <artifactId>xaloon-wicket-components-resources</artifactId>
+            <version>${xaloon.version}</version>
+        </dependency>
+
+         <!-- xaloon plugins DEPENDENCIES -->
+        <dependency>
+            <groupId>org.xaloon.plugins</groupId>
+            <artifactId>xaloon-wicket-plugin-blog</artifactId>
+            <version>${xaloon.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.xaloon.plugins</groupId>
+            <artifactId>xaloon-wicket-plugin-google</artifactId>
+            <version>${xaloon.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.xaloon.plugins</groupId>
+            <artifactId>xaloon-wicket-plugin-authentication</artifactId>
+            <version>${xaloon.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.vaadin.addons</groupId>
             <artifactId>appfoundation</artifactId>
             <version>1.3.5</version>
         </dependency>
+
+        <!-- The XOM Dual Streaming/Tree API for Processing XML; LGPL; needed by AppFoundation Vaadin Addon -->
         <dependency>
-    <!-- The XOM Dual Streaming/Tree API for Processing XML; LGPL; needed by AppFoundation Vaadin Addon -->
             <groupId>xom</groupId>
             <artifactId>xom</artifactId>
             <version>1.2.5</version>
@@ -238,16 +274,6 @@
         <dependency>
             <groupId>org.kauriproject</groupId>
             <artifactId>kauri-util</artifactId>
-            <exclusions>
-                <exclusion>
-                    <artifactId>core</artifactId>
-                    <groupId>org.eclipse.jdt</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.kauriproject</groupId>
-            <artifactId>kauri-runtime</artifactId>
             <exclusions>
                 <exclusion>
                     <artifactId>core</artifactId>
