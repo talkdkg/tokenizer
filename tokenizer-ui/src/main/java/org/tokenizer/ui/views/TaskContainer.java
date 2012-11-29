@@ -44,7 +44,6 @@ public class TaskContainer extends IndexedContainer {
                 .getTasks(listener);
         addContainerProperty("name", String.class, "");
         addContainerProperty("type", String.class, "");
-        // addContainerProperty("taskConfiguration.tld", String.class, "");
         addContainerProperty("General State", String.class, "");
         addContainerProperty("ZkDataVersion", Long.class, 0);
         synchronized (app) {
@@ -54,8 +53,6 @@ public class TaskContainer extends IndexedContainer {
                         task.getTaskConfiguration().getName());
                 item.getItemProperty("type").setValue(
                         task.getTaskConfiguration().getClass().getSimpleName());
-                // item.getItemProperty("taskConfiguration.tld").setValue(
-                // task.getTaskConfiguration().getTld());
                 item.getItemProperty("General State").setValue(
                         task.getTaskConfiguration().getGeneralState());
                 item.getItemProperty("ZkDataVersion").setValue(
@@ -68,7 +65,6 @@ public class TaskContainer extends IndexedContainer {
                 }
                 LOG.debug("BeanItem: {}", item);
             }
-            // fireContainerPropertySetChange();
         }
     }
 
@@ -98,8 +94,6 @@ public class TaskContainer extends IndexedContainer {
                     item.getItemProperty("type").setValue(
                             newTask.getTaskConfiguration().getClass()
                                     .getSimpleName());
-                    // item.getItemProperty("taskConfiguration.tld").setValue(
-                    // newTask.getTaskConfiguration().getTld());
                     item.getItemProperty("General State").setValue(
                             newTask.getTaskConfiguration().getGeneralState());
                     item.getItemProperty("ZkDataVersion").setValue(
@@ -109,10 +103,10 @@ public class TaskContainer extends IndexedContainer {
                             newTask.getTaskConfiguration().getName());
                     getContainerProperty(taskName, "type").setValue(
                             newTask.getClass().getSimpleName());
-                    // getContainerProperty(taskName, "taskConfiguration.tld")
-                    // .setValue(newTask.getTaskConfiguration().getTld());
                     getContainerProperty(taskName, "General State").setValue(
                             newTask.getTaskConfiguration().getGeneralState());
+                    getContainerProperty(taskName, "ZkDataVersion").setValue(
+                            newTask.getZkDataVersion());
                     for (Map.Entry<String, Long> entry : newTask.getCounters()
                             .entrySet()) {
                         LOG.debug("Entry: {}", entry);
