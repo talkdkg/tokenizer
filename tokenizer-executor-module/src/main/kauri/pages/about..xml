@@ -1,7 +1,0 @@
-<?xml version="1.0"?>
-<html t:inherit="module:/templates/layout/layout.xml" xmlns:t="http://kauriproject.org/template">
-  <t:block name="main">
-    <h2>Services provided by '${sample_name}'</h2>
-    <h2>Future Enhancements</h2>
-  </t:block>
-</html>

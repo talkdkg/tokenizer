@@ -107,7 +107,7 @@ public class MyVaadinServlet extends
     // here, it is likely useful to copy you modifications there too.
     private File findLocalMavenRepository() {
         String homeDir = System.getProperty("user.home");
-        File mavenSettingsFile = new File(homeDir + "/.m2/settings.xml");
+        File mavenSettingsFile = new File(homeDir + "/.m2/sett ings.xml");
         if (mavenSettingsFile.exists()) {
             try {
                 DocumentBuilderFactory dbf = DocumentBuilderFactory
