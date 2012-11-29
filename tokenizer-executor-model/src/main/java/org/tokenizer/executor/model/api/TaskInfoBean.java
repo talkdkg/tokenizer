@@ -15,6 +15,7 @@
  */
 package org.tokenizer.executor.model.api;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,7 +25,7 @@ public class TaskInfoBean {
     private TaskConfiguration taskConfiguration;
     private int zkDataVersion = -1;
     private boolean immutable;
-    private long submitTime;
+    private long submitTime = new Date().getTime();
     private Map<String, Long> counters = new HashMap<String, Long>();
     private long metricsUpdateTimestamp;
 
@@ -38,6 +39,10 @@ public class TaskInfoBean {
 
     public long getSubmitTime() {
         return submitTime;
+    }
+
+    public Date getSubmitDate() {
+        return new Date(submitTime);
     }
 
     public void setSubmitTime(long submitTime) {

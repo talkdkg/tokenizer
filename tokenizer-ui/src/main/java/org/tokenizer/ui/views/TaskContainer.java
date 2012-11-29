@@ -35,6 +35,7 @@ public class TaskContainer extends IndexedContainer {
     private static final Logger LOG = LoggerFactory
             .getLogger(TaskContainer.class);
     MyVaadinApplication app;
+    private static final String TASK_SUBMISSON_DATE = "Task Submission Date";
 
     public TaskContainer(MyVaadinApplication app) {
         super();
@@ -44,6 +45,7 @@ public class TaskContainer extends IndexedContainer {
                 .getTasks(listener);
         addContainerProperty("name", String.class, "");
         addContainerProperty("type", String.class, "");
+        addContainerProperty(TASK_SUBMISSON_DATE, String.class, "");
         addContainerProperty("General State", String.class, "");
         addContainerProperty("ZkDataVersion", Long.class, 0);
         synchronized (app) {
@@ -53,6 +55,8 @@ public class TaskContainer extends IndexedContainer {
                         task.getTaskConfiguration().getName());
                 item.getItemProperty("type").setValue(
                         task.getTaskConfiguration().getClass().getSimpleName());
+                item.getItemProperty(TASK_SUBMISSON_DATE).setValue(
+                        task.getSubmitDate());
                 item.getItemProperty("General State").setValue(
                         task.getTaskConfiguration().getGeneralState());
                 item.getItemProperty("ZkDataVersion").setValue(
@@ -94,6 +98,8 @@ public class TaskContainer extends IndexedContainer {
                     item.getItemProperty("type").setValue(
                             newTask.getTaskConfiguration().getClass()
                                     .getSimpleName());
+                    item.getItemProperty(TASK_SUBMISSON_DATE).setValue(
+                            newTask.getSubmitDate());
                     item.getItemProperty("General State").setValue(
                             newTask.getTaskConfiguration().getGeneralState());
                     item.getItemProperty("ZkDataVersion").setValue(
