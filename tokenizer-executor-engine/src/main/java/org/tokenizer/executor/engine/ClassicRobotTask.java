@@ -87,6 +87,7 @@ public class ClassicRobotTask extends AbstractTask {
         for (UrlRecord urlRecord : urlScanner) {
             LOG.debug("urlRecord: {}", urlRecord);
             if (urlRecord.getTimestamp() > 0) {
+                LOG.debug("Already fetched...");
                 continue;
             }
             LOG.debug("Trying URL: {}", urlRecord.getUrl());

@@ -36,7 +36,6 @@ import org.kauriproject.runtime.repository.Maven2StyleArtifactRepository;
 import org.springframework.context.ApplicationContext;
 import org.tokenizer.core.context.ApplicationContextProvider;
 import org.w3c.dom.Document;
-import org.xaloon.core.api.security.SecurityAuthorities;
 
 import com.vaadin.Application;
 
@@ -94,10 +93,11 @@ public class MyVaadinServlet extends
         // TODO: uncomment to enable security
         // if (principal == null)
         // throw new ServletException("Access denied");
-        if (request.isUserInRole(SecurityAuthorities.AUTHENTICATED_USER)) {
-            // app.setUserRole(SecurityAuthorities.AUTHENTICATED_USER);
-        } else
-            throw new ServletException("Access denied");
+        // TODO: or uncomment this:
+        // if (request.isUserInRole(SecurityAuthorities.AUTHENTICATED_USER)) {
+        // // app.setUserRole(SecurityAuthorities.AUTHENTICATED_USER);
+        // } else
+        // throw new ServletException("Access denied");
         app.setUser(principal);
         app.setLogoutURL(request.getContextPath() + "/logout.jsp");
         return app;

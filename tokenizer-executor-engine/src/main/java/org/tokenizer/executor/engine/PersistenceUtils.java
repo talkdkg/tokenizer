@@ -16,8 +16,6 @@
 package org.tokenizer.executor.engine;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -130,23 +128,22 @@ public class PersistenceUtils {
             record.setTimestamp(System.currentTimeMillis());
             return null;
         } catch (BaseFetchException e) {
-            if (e.getMessage().contains("Aborted due to INTERRUPTED")) {
+            if (e.getMessage().contains("Aborted due to INTERRUPTED"))
                 throw new InterruptedException("Aborted...");
-            }
             // e.printStackTrace();
             // record.setHttpResponseCode(-2);
             record.setTimestamp(System.currentTimeMillis());
+            metricsCache.increment(MetricsCache.OTHER_ERRORS);
             return null;
         }
         record.setTimestamp(System.currentTimeMillis());
-        metricsCache.increment(MetricsCache.URL_ERROR_KEY);
         if (fetchedResult.getHttpStatus() >= 200
                 && fetchedResult.getHttpStatus() < 300) {
             metricsCache.increment(MetricsCache.TOTAL_RESPONSE_TIME_KEY,
                     System.currentTimeMillis() - start);
             metricsCache.increment(MetricsCache.URL_OK_KEY);
         } else {
-            metricsCache.increment(MetricsCache.OTHER_ERRORS);
+            metricsCache.increment(MetricsCache.URL_ERROR_KEY);
         }
         record.setHttpResponseCode(fetchedResult.getHttpStatus());
         return fetchedResult;
@@ -198,8 +195,9 @@ public class PersistenceUtils {
         Outlink[] outlinks = parsed.getOutlinks();
         for (Outlink outlink : outlinks) {
             String url = outlink.getToUrl();
-            if (!urlValidator.isValid(url))
+            if (!urlValidator.isValid(url)) {
                 continue;
+            }
             url = urlNormalizer.normalize(url);
             String host = UrlRecordDecoder.getHost(url);
             // This is definition of "domain restricted crawl" (vertical crawl):
@@ -208,8 +206,9 @@ public class PersistenceUtils {
                 continue;
             }
             // TODO: move it to repository; performance improvement trick:
-            if (cache.containsKey(url))
+            if (cache.containsKey(url)) {
                 continue;
+            }
             UrlRecord urlRecord = new UrlRecord();
             urlRecord.setUrl(url);
             try {
