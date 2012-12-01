@@ -34,21 +34,13 @@ import com.netflix.astyanax.thrift.ThriftFamilyFactory;
  */
 public class AppTest {
     private static Logger LOG = LoggerFactory.getLogger(AppTest.class);
-
     private static Keyspace keyspace;
     private static AstyanaxContext<Keyspace> keyspaceContext;
     private static EmbeddedCassandra cassandra;
-
     private static String TEST_CLUSTER_NAME = "bbm_sandbox";
     private static String TEST_KEYSPACE_NAME = "BbmChannelsUnitTests";
-    private static String SCHEDULER_NAME_CF_NAME = "SchedulerQueue";
-
     private static final String SEEDS = "localhost:9160";
-
     private static final long CASSANDRA_WAIT_TIME = 3000;
-    private static final int TTL = 20;
-    private static final int TIMEOUT = 10;
-
     private static ColumnFamily<String, UUID> CF_CHAT_SESSIONS = ColumnFamily
             .newColumnFamily("CHANNEL_CHAT_SESSIONS", StringSerializer.get(),
                     TimeUUIDSerializer.get());
@@ -65,26 +57,23 @@ public class AppTest {
     @BeforeClass
     public static void setup() throws Exception {
         System.out.println("TESTING THRIFT KEYSPACE");
-
         cassandra = new EmbeddedCassandra();
         cassandra.start();
-
         Thread.sleep(CASSANDRA_WAIT_TIME);
-
         createKeyspace();
     }
 
     @AfterClass
     public static void teardown() {
-        if (keyspaceContext != null)
+        if (keyspaceContext != null) {
             keyspaceContext.shutdown();
-
-        if (cassandra != null)
+        }
+        if (cassandra != null) {
             cassandra.stop();
+        }
     }
 
     public static void createKeyspace() throws ConnectionException {
-
         keyspaceContext = new AstyanaxContext.Builder()
                 .forCluster(TEST_CLUSTER_NAME)
                 .forKeyspace(TEST_KEYSPACE_NAME)
@@ -102,27 +91,20 @@ public class AppTest {
                                 .setSeeds(SEEDS))
                 .withConnectionPoolMonitor(new CountingConnectionPoolMonitor())
                 .buildKeyspace(ThriftFamilyFactory.getInstance());
-
         keyspaceContext.start();
-
         keyspace = keyspaceContext.getEntity();
-
         try {
             keyspace.dropKeyspace();
         } catch (Exception e) {
-
         }
-
         keyspace.createKeyspace(ImmutableMap
                 .<String, Object> builder()
                 .put("strategy_options",
                         ImmutableMap.<String, Object> builder()
                                 .put("replication_factor", "1").build())
                 .put("strategy_class", "SimpleStrategy").build());
-
         keyspace.createColumnFamily(CF_CHAT_SESSIONS, null);
         keyspace.createColumnFamily(CF_CHAT_SESSIONS_ARCHIVE, null);
-
         keyspace.createColumnFamily(
                 CF_SESSION_MESSAGES,
                 ImmutableMap
@@ -132,7 +114,6 @@ public class AppTest {
                         .put("comparator_type",
                                 "CompositeType(TimeUUIDType, IntegerType, UTF8Type)")
                         .build());
-
         keyspace.createColumnFamily(
                 CF_SESSION_MESSAGES_SENDER_IDX,
                 ImmutableMap
@@ -142,7 +123,6 @@ public class AppTest {
                         .put("comparator_type",
                                 "CompositeType(UTF8Type, IntegerType, TimeUUIDType)")
                         .build());
-
         KeyspaceDefinition ki = keyspaceContext.getEntity().describeKeyspace();
         System.out.println("Describe Keyspace: " + ki.getName());
     }
@@ -156,15 +136,12 @@ public class AppTest {
             LOG.info(field);
         }
         LOG.info(fieldNames.toString());
-
         System.out.println(fieldNames.toString());
-
         for (FieldMetadata field : def.getFieldsMetadata()) {
             System.out.println(field.getName() + " = "
                     + def.getFieldValue(field.getName()) + " ("
                     + field.getType() + ")");
         }
-
         for (ColumnFamilyDefinition cfDef : def.getColumnFamilyList()) {
             LOG.info("----------");
             for (FieldMetadata field : cfDef.getFieldsMetadata()) {
@@ -174,5 +151,4 @@ public class AppTest {
             }
         }
     }
-
 }

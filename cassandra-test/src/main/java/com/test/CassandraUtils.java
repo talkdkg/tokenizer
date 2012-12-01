@@ -54,16 +54,13 @@ public class CassandraUtils {
     private static ColumnFamily<UUID, Composite> CF_SESSION_MESSAGES_SENDER_IDX = new ColumnFamily<UUID, Composite>(
             "CHANNEL_CHAT_SESSION_MESSAGES_SENDER_IDX",
             TimeUUIDSerializer.get(), CompositeSerializer.get());
-
     private static Keyspace keyspace;
     private static AstyanaxContext<Keyspace> keyspaceContext;
 
     // private static EmbeddedCassandra cassandra;
     // private static AstyanaxContext<Cluster> clusterContext;
-
     // @BeforeClass
     public static void setup() throws ConnectionException, InterruptedException {
-
         // clusterContext = new AstyanaxContext.Builder()
         // .forCluster(TEST_CLUSTER_NAME)
         // .withAstyanaxConfiguration(
@@ -75,16 +72,12 @@ public class CassandraUtils {
         // .withConnectionPoolMonitor(new CountingConnectionPoolMonitor())
         // .buildCluster(ThriftFamilyFactory.getInstance());
         // clusterContext.start();
-
         // cassandra = new EmbeddedCassandra();
         // cassandra.start();
-
         createKeyspace();
-
     }
 
     public static void createKeyspace() throws ConnectionException {
-
         keyspaceContext = new AstyanaxContext.Builder()
                 .forCluster(TEST_CLUSTER_NAME)
                 .forKeyspace(TEST_KEYSPACE_NAME)
@@ -102,27 +95,20 @@ public class CassandraUtils {
                                 .setSeeds(SEEDS))
                 .withConnectionPoolMonitor(new CountingConnectionPoolMonitor())
                 .buildKeyspace(ThriftFamilyFactory.getInstance());
-
         keyspaceContext.start();
-
         keyspace = keyspaceContext.getEntity();
-
         try {
             keyspace.dropKeyspace();
         } catch (Exception e) {
-
         }
-
         keyspace.createKeyspace(ImmutableMap
                 .<String, Object> builder()
                 .put("strategy_options",
                         ImmutableMap.<String, Object> builder()
                                 .put("replication_factor", "1").build())
                 .put("strategy_class", "SimpleStrategy").build());
-
         keyspace.createColumnFamily(CF_CHAT_SESSIONS, null);
         keyspace.createColumnFamily(CF_CHAT_SESSIONS_ARCHIVE, null);
-
         keyspace.createColumnFamily(
                 CF_SESSION_MESSAGES,
                 ImmutableMap
@@ -132,7 +118,6 @@ public class CassandraUtils {
                         .put("comparator_type",
                                 "CompositeType(TimeUUIDType, IntegerType, UTF8Type)")
                         .build());
-
         keyspace.createColumnFamily(
                 CF_SESSION_MESSAGES_SENDER_IDX,
                 ImmutableMap
@@ -142,7 +127,6 @@ public class CassandraUtils {
                         .put("comparator_type",
                                 "CompositeType(UTF8Type, IntegerType, TimeUUIDType)")
                         .build());
-
         KeyspaceDefinition ki = keyspaceContext.getEntity().describeKeyspace();
         System.out.println("Describe Keyspace: " + ki.getName());
         getKeyspaceDefinition();
@@ -156,15 +140,12 @@ public class CassandraUtils {
             LOG.info(field);
         }
         LOG.info(fieldNames.toString());
-
         System.out.println(fieldNames.toString());
-
         for (FieldMetadata field : def.getFieldsMetadata()) {
             System.out.println(field.getName() + " = "
                     + def.getFieldValue(field.getName()) + " ("
                     + field.getType() + ")");
         }
-
         for (ColumnFamilyDefinition cfDef : def.getColumnFamilyList()) {
             LOG.info("----------");
             for (FieldMetadata field : cfDef.getFieldsMetadata()) {
@@ -270,21 +251,17 @@ public class CassandraUtils {
 
     public static List<UUID> getActiveChatSessions(String channelId,
             Date start, Date end) throws ConnectionException {
-
         OperationResult<ColumnList<UUID>> result = keyspace
                 .prepareQuery(CF_CHAT_SESSIONS)
                 .getKey(channelId)
                 .withColumnRange(
                         new RangeBuilder()
-
                                 .setStart(
                                         TimeUUIDUtils.getTimeUUID(start
                                                 .getTime()))
                                 .setEnd(TimeUUIDUtils.getTimeUUID(end.getTime()))
                                 .build()).execute();
-
         // .withColumnRange(range.build())
-
         ColumnList<UUID> columns = result.getResult();
         List<UUID> list = new ArrayList<UUID>();
         for (Column<UUID> uuid : columns) {
@@ -295,16 +272,14 @@ public class CassandraUtils {
 
     public static List<UUID> getActiveChatSessions(String channelId, Date start)
             throws ConnectionException {
-
         OperationResult<ColumnList<UUID>> result = keyspace
-                .prepareQuery(CF_CHAT_SESSIONS).getKey(channelId)
-                .withColumnRange(new RangeBuilder()
-
-                .setStart(TimeUUIDUtils.getTimeUUID(start.getTime())).build())
-                .execute();
-
+                .prepareQuery(CF_CHAT_SESSIONS)
+                .getKey(channelId)
+                .withColumnRange(
+                        new RangeBuilder().setStart(
+                                TimeUUIDUtils.getTimeUUID(start.getTime()))
+                                .build()).execute();
         // .withColumnRange(range.build())
-
         ColumnList<UUID> columns = result.getResult();
         List<UUID> list = new ArrayList<UUID>();
         for (Column<UUID> uuid : columns) {
@@ -315,9 +290,7 @@ public class CassandraUtils {
 
     public static List<Message> getMessages(ChatSession chatSession)
             throws ConnectionException {
-
         List<Message> list = new ArrayList<Message>();
-
         OperationResult<ColumnList<Composite>> result = keyspace
                 .prepareQuery(CF_SESSION_MESSAGES) //
                 .getKey(chatSession.getChatSessionUUID()) //
@@ -338,7 +311,6 @@ public class CassandraUtils {
             message.setSenderId(senderId);
             String text = column.getStringValue();
             message.setText(text);
-
             list.add(message);
         }
         return list;
@@ -346,28 +318,21 @@ public class CassandraUtils {
 
     public static List<Message> getMessageKeys(UUID channelId, String senderId,
             int start, int end) throws ConnectionException {
-
         CompositeSerializer cs = CompositeSerializer.get();
         ByteBuffer startBuffer = cs.toByteBuffer(new Composite(senderId, start,
                 null));
-
         ByteBuffer endBuffer = cs.toByteBuffer(new Composite(senderId, end,
                 null));
-
         OperationResult<ColumnList<Composite>> result = keyspace
                 .prepareQuery(CF_SESSION_MESSAGES_SENDER_IDX)
                 .getKey(channelId)
                 .withColumnRange(startBuffer, endBuffer, false,
                         Integer.MAX_VALUE).execute();
-
         // .withColumnRange(range.build())
-
         List<Message> messageKeys = new ArrayList<Message>();
-
         ColumnList<Composite> columns = result.getResult();
         for (Column<Composite> column : columns) {
             Composite name = column.getName();
-
             Message message = new Message();
             UUID messageUUID = TimeUUIDSerializer.get().fromByteBuffer(
                     (java.nio.ByteBuffer) name.get(2));
@@ -377,24 +342,18 @@ public class CassandraUtils {
                     .intValue();
             message.setSequenceNumber(sequenceNumber);
             message.setSenderId(senderId);
-
             messageKeys.add(message);
-
         }
         return messageKeys;
-
     }
 
     public static List<Message> getMessages(Collection<UUID> sessions)
             throws ConnectionException {
-
         List<Message> list = new ArrayList<Message>();
-
         OperationResult<Rows<UUID, Composite>> result = keyspace
                 .prepareQuery(CF_SESSION_MESSAGES) //
                 .getKeySlice(sessions.toArray(new UUID[sessions.size()])) //
                 .execute();
-
         for (Row<UUID, Composite> row : result.getResult()) {
             for (Column<Composite> column : row.getColumns()) {
                 Composite name = column.getName();
@@ -430,28 +389,34 @@ public class CassandraUtils {
 
     public static void updateMessageEventByUUID(UUID chatSessionUUID,
             final UUID uuid, MessageEvents event) throws ConnectionException {
-
         Composite start = new Composite(uuid, 0, "");
-
         Composite end = new Composite(uuid, Integer.MAX_VALUE, "");
-
         CompositeSerializer cs = CompositeSerializer.get();
         ByteBuffer startBuffer = cs.toByteBuffer(start);
         ByteBuffer endBuffer = cs.toByteBuffer(end);
-
         OperationResult<ColumnList<Composite>> result = keyspace
                 .prepareQuery(CF_SESSION_MESSAGES)
                 .getKey(chatSessionUUID)
                 .withColumnRange(startBuffer, endBuffer, false,
                         Integer.MAX_VALUE).execute();
-
         ColumnList<Composite> cells = result.getResult();
-
-        if (cells.size() > 1)
-            throw new RuntimeException("Expected: 0 or 1 cells per UUID");
-
+        if (cells.size() > 1) {
+            LOG.error("Expected: 1 cell per UUID: {}, size: {}", uuid,
+                    cells.size());
+            for (Column<Composite> column : cells) {
+                Composite name = column.getName();
+                UUID messageUUID = UUIDSerializer.get().fromByteBuffer(
+                        (java.nio.ByteBuffer) name.get(0));
+                Integer sequenceNumber = BigIntegerSerializer.get()
+                        .fromByteBuffer((java.nio.ByteBuffer) name.get(1))
+                        .intValue();
+                String senderId = StringSerializer.get().fromByteBuffer(
+                        (java.nio.ByteBuffer) name.get(2));
+                LOG.debug(messageUUID + "  sequenceNumber: {}, senderId: {}",
+                        sequenceNumber, senderId);
+            }
+        }
         Column<Composite> column = cells.iterator().next();
-
         Composite name = column.getName();
         UUID messageUUID = UUIDSerializer.get().fromByteBuffer(
                 (java.nio.ByteBuffer) name.get(0));
@@ -459,33 +424,25 @@ public class CassandraUtils {
                 .fromByteBuffer((java.nio.ByteBuffer) name.get(1)).intValue();
         String senderId = StringSerializer.get().fromByteBuffer(
                 (java.nio.ByteBuffer) name.get(2));
-
         MutationBatch m = keyspace.prepareMutationBatch();
         Composite cc = new Composite(senderId, sequenceNumber, messageUUID);
         keyspace.prepareColumnMutation(CF_SESSION_MESSAGES_SENDER_IDX,
                 chatSessionUUID, cc).putValue(event.ordinal(), null).execute();
-
     }
 
     public static List<Message> getMessagesByKeys(UUID sessionUUID,
             Collection<Message> messageKeys) throws ConnectionException {
-
         List<Message> list = new ArrayList<Message>();
-
         Collection<Composite> columns = new ArrayList<Composite>();
-
         for (Message messageKey : messageKeys) {
             Composite column = new Composite(messageKey.getUuid(),
                     messageKey.getSequenceNumber(), messageKey.getSenderId());
             columns.add(column);
-
         }
-
         OperationResult<ColumnList<Composite>> result = keyspace
                 .prepareQuery(CF_SESSION_MESSAGES) //
                 .getKey(sessionUUID) //
                 .withColumnSlice(columns).execute();
-
         ColumnList<Composite> cells = result.getResult();
         for (Column<Composite> column : cells) {
             Composite name = column.getName();
@@ -502,11 +459,8 @@ public class CassandraUtils {
             message.setSenderId(senderId);
             String text = column.getStringValue();
             message.setText(text);
-
             list.add(message);
-
             // LOG.debug(message.toString());
-
         }
         return list;
     }
@@ -516,8 +470,6 @@ public class CassandraUtils {
         MutationBatch m = keyspace.prepareMutationBatch();
         m.withRow(CF_SESSION_MESSAGES, sessionUUID).delete();
         m.withRow(CF_SESSION_MESSAGES_SENDER_IDX, sessionUUID).delete();
-
         m.execute();
     }
-
 }

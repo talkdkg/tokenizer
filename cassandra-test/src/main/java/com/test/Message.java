@@ -3,10 +3,9 @@ package com.test;
 import java.util.Date;
 import java.util.UUID;
 
-import com.netflix.astyanax.util.TimeUUIDUtils;
+import com.eaio.uuid.UUIDGen;
 
 public class Message {
-
     private UUID chatSessionUUID;
     private UUID uuid;
     private Date date;
@@ -19,7 +18,14 @@ public class Message {
     }
 
     public Message(final Date date) {
-        this.uuid = TimeUUIDUtils.getTimeUUID(date.getTime());
+        // this won't be unique key:
+        // this.uuid = TimeUUIDUtils.getTimeUUID(date.getTime());
+        long clockSeqAndNode = 0x8000000000000000L;
+        clockSeqAndNode |= (long) (Math.random() * 0x7FFFFFFF);
+        clockSeqAndNode |= (long) (Math.random() * 0x3FFF) << 48;
+        // perhaps it will be unique:
+        this.uuid = new java.util.UUID(UUIDGen.createTime(date.getTime()),
+                clockSeqAndNode);
         this.date = date;
     }
 
@@ -86,5 +92,4 @@ public class Message {
                 + ", sequenceNumber=" + sequenceNumber + ", text=" + text
                 + ", lastEvent=" + lastEvent + "]";
     }
-
 }
