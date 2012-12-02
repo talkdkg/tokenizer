@@ -16,12 +16,9 @@
 package org.tokenizer.ui;
 
 import java.io.File;
-import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.xpath.XPath;
@@ -34,13 +31,11 @@ import org.kauriproject.runtime.configuration.ConfManagerImpl;
 import org.kauriproject.runtime.repository.ArtifactRepository;
 import org.kauriproject.runtime.repository.Maven2StyleArtifactRepository;
 import org.springframework.context.ApplicationContext;
-import org.tokenizer.core.context.ApplicationContextProvider;
 import org.w3c.dom.Document;
-
-import com.vaadin.Application;
 
 public class MyVaadinServlet extends
         org.vaadin.dontpush.server.DontPushOzoneServlet {
+    // com.vaadin.terminal.gwt.server.ApplicationServlet {
     /**
      * 
      */
@@ -76,38 +71,21 @@ public class MyVaadinServlet extends
             settings.setDisableServerConnectors(true);
             runtime = new KauriRuntime(settings);
             runtime.start();
-            applicationContext = ApplicationContextProvider
+            applicationContext = runtime.getModuleById("executor")
                     .getApplicationContext();
+            // applicationContext = ApplicationContextProvider
+            // .getApplicationContext();
         } catch (Exception e) {
             throw new KauriServletInitializationException(
                     "Problem creating the Kauri Runtime.", e);
         }
     }
 
-    @Override
-    protected Application getNewApplication(HttpServletRequest request)
-            throws ServletException {
-        MyVaadinApplication app = (MyVaadinApplication) super
-                .getNewApplication(request);
-        Principal principal = request.getUserPrincipal();
-        // TODO: uncomment to enable security
-        // if (principal == null)
-        // throw new ServletException("Access denied");
-        // TODO: or uncomment this:
-        // if (request.isUserInRole(SecurityAuthorities.AUTHENTICATED_USER)) {
-        // // app.setUserRole(SecurityAuthorities.AUTHENTICATED_USER);
-        // } else
-        // throw new ServletException("Access denied");
-        app.setUser(principal);
-        app.setLogoutURL(request.getContextPath() + "/logout.jsp");
-        return app;
-    }
-
     // This method is duplicated in RuntimeCliLauncher, so if you modify it
     // here, it is likely useful to copy you modifications there too.
     private File findLocalMavenRepository() {
         String homeDir = System.getProperty("user.home");
-        File mavenSettingsFile = new File(homeDir + "/.m2/sett ings.xml");
+        File mavenSettingsFile = new File(homeDir + "/.m2/settings.xml");
         if (mavenSettingsFile.exists()) {
             try {
                 DocumentBuilderFactory dbf = DocumentBuilderFactory

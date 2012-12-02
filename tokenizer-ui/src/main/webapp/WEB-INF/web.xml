@@ -8,15 +8,15 @@
         <param-name>contextConfigLocation</param-name>
         <param-value>
             classpath*:META-INF/spring-context.xml,
-            classpath*:META-INF/xaloon-security-context.xml,
+            classpath*:META-INF/test-security-context.xml,
             classpath*:META-INF/entitymanager.xml,
-            classpath*:META-INF/infrastructure-context.xml,
-            classpath*:main/kauri/spring/services.xml
+            classpath*:META-INF/infrastructure-context.xml
         </param-value>
     </context-param>
     <filter>
         <filter-name>springSecurityFilterChain</filter-name>
         <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+        <async-supported>true</async-supported>
     </filter>
     <filter-mapping>
         <filter-name>springSecurityFilterChain</filter-name>
@@ -25,6 +25,7 @@
     <filter>
         <filter-name>wicket-filter</filter-name>
         <filter-class>org.apache.wicket.protocol.http.WicketFilter</filter-class>
+        <async-supported>true</async-supported>
         <init-param>
             <param-name>applicationFactoryClassName</param-name>
             <param-value>org.apache.wicket.spring.SpringWebApplicationFactory</param-value>
@@ -36,7 +37,7 @@
     </filter>
     <filter-mapping>
         <filter-name>wicket-filter</filter-name>
-        <url-pattern>/w/*</url-pattern>
+        <url-pattern>/*</url-pattern>
     </filter-mapping>
     <listener>
         <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
@@ -57,11 +58,6 @@
         <param-value>false</param-value>
     </context-param>
     <servlet>
-        <servlet-name>I18NServlet</servlet-name>
-        <servlet-class>org.vaadin.appfoundation.i18n.InternationalizationServlet</servlet-class>
-        <load-on-startup>1</load-on-startup>
-    </servlet>
-    <servlet>
         <description>AtmosphereServlet</description>
         <servlet-name>AtmosphereServlet</servlet-name>
         <servlet-class>org.atmosphere.cpr.AtmosphereServlet</servlet-class>
@@ -69,7 +65,18 @@
             <param-name>org.atmosphere.disableOnStateEvent</param-name>
             <param-value>true</param-value>
         </init-param>
-<!--     <init-param>
+ <!--        <init-param>
+            <param-name>org.atmosphere.useWebSocket</param-name>
+            <param-value>true</param-value>
+        </init-param>
+ -->
+        <load-on-startup>1</load-on-startup>
+        <async-supported>true</async-supported>
+    </servlet>
+
+
+ 
+ <!--     <init-param>
       <param-name>org.atmosphere.useNative</param-name>
       <param-value>true</param-value>
     </init-param>
@@ -82,12 +89,13 @@
       <param-value>org.atmosphere.client.TrackMessageSizeInterceptor</param-value>
     </init-param>
  -->
-        <load-on-startup>1</load-on-startup>
-        <async-supported>true</async-supported>
-    </servlet>
     <servlet>
-        <servlet-name>Vaadin Application Servlet</servlet-name>
+        <servlet-name>MyVaadinServlet</servlet-name>
         <servlet-class>org.tokenizer.ui.MyVaadinServlet</servlet-class>
+
+        
+<!--         <servlet-class>com.vaadin.terminal.gwt.server.ApplicationServlet</servlet-class>
+ -->
         <init-param>
             <description>Vaadin application class to start</description>
             <param-name>application</param-name>
@@ -106,7 +114,11 @@
             <param-name>connectionGuardTimeout</param-name>
             <param-value>15</param-value>
         </init-param>
-        <load-on-startup>0</load-on-startup>
+ <!--        <init-param>
+            <param-name>disable-xsrf-protection</param-name>
+            <param-value>true</param-value>
+        </init-param>
+ -->       <load-on-startup>0</load-on-startup>
 
 <!-- 
 Additionally, any servlet filters that sit in front of the Atmosphere servlet must have the <async-supported>true</async-supported> element. 
@@ -119,14 +131,15 @@ Additionally, any servlet filters that sit in front of the Atmosphere servlet mu
         <url-pattern>/UIDL/*</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>Vaadin Application Servlet</servlet-name>
+        <servlet-name>MyVaadinServlet</servlet-name>
         <url-pattern>/*</url-pattern>
     </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>I18NServlet</servlet-name>
-        <url-pattern>/I18NServlet/*</url-pattern>
+     <servlet-mapping>
+        <servlet-name>MyVaadinServlet</servlet-name>
+        <url-pattern>/VAADIN/*</url-pattern>
     </servlet-mapping>
+
     <welcome-file-list>
-        <welcome-file></welcome-file>
+        <welcome-file>/index</welcome-file>
     </welcome-file-list>
 </web-app>

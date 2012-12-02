@@ -15,8 +15,6 @@
  */
 package org.tokenizer.ui;
 
-import javax.annotation.security.RolesAllowed;
-
 import org.springframework.context.ApplicationContext;
 import org.tokenizer.crawler.db.CrawlerHBaseRepository;
 import org.tokenizer.executor.model.api.WritableExecutorModel;
@@ -32,13 +30,6 @@ import org.tokenizer.ui.widgets.PersonForm;
 import org.tokenizer.ui.widgets.PersonList;
 import org.tokenizer.ui.widgets.SearchView;
 import org.tokenizer.ui.widgets.SharingOptions;
-import org.vaadin.appfoundation.authentication.SessionHandler;
-import org.vaadin.appfoundation.authorization.Permissions;
-import org.vaadin.appfoundation.authorization.jpa.JPAPermissionManager;
-import org.vaadin.appfoundation.i18n.Lang;
-import org.vaadin.appfoundation.view.ViewHandler;
-import org.xaloon.core.api.security.SecurityAuthorities;
-import org.xaloon.wicket.component.mount.annotation.MountPageGroup;
 
 import com.vaadin.Application;
 import com.vaadin.data.Item;
@@ -59,8 +50,6 @@ import com.vaadin.ui.Window.Notification;
 /**
  * The Application's "main" class
  */
-@MountPageGroup(value = "/ui", order = 1000)
-@RolesAllowed({ SecurityAuthorities.SYSTEM_ADMINISTRATOR })
 public class MyVaadinApplication extends Application implements
         Button.ClickListener, Property.ValueChangeListener, ItemClickListener {
     private static final long serialVersionUID = 1L;
@@ -89,10 +78,10 @@ public class MyVaadinApplication extends Application implements
 
     @Override
     public void init() {
-        SessionHandler.initialize(this);
-        ViewHandler.initialize(this);
-        Lang.initialize(this);
-        Permissions.initialize(this, new JPAPermissionManager());
+        // repository = Configuration.get().getBeanLocatorAdapter()
+        // .getBean("crawlerRepository", CrawlerHBaseRepository.class);
+        // model = Configuration.get().getBeanLocatorAdapter()
+        // .getBean("executorModel", WritableExecutorModel.class);
         applicationContext = MyVaadinServlet.getApplicationContext();
         repository = (CrawlerHBaseRepository) applicationContext
                 .getBean("crawlerRepository");

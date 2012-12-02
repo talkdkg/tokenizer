@@ -15,15 +15,9 @@
  */
 package org.tokenizer.ui;
 
-import java.util.Properties;
-
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
-
-import org.vaadin.appfoundation.authentication.util.PasswordUtil;
-import org.vaadin.appfoundation.authentication.util.UserUtil;
-import org.vaadin.appfoundation.persistence.facade.FacadeFactory;
 
 public class TokenizerServletContextListener implements ServletContextListener {
     ServletContext context;
@@ -31,28 +25,6 @@ public class TokenizerServletContextListener implements ServletContextListener {
     @Override
     public void contextInitialized(ServletContextEvent arg0) {
         System.out.println("Context Created");
-        // Create your translation files and load them into the i18n servlet:
-        // File file = new File(path);
-        // InternationalizationServlet.loadTranslations(file);
-        try {
-            // Register facade
-            FacadeFactory.registerFacade("tokenizer-ui", true);
-            // Set the salt for passwords
-            Properties prop = new Properties();
-            prop.setProperty("password.salt", "pfew4‰‰#fawef@53424fsd");
-            PasswordUtil.setProperties(prop);
-            // Set the properties for the UserUtil
-            prop.setProperty("password.length.min", "4");
-            prop.setProperty("username.length.min", "4");
-            UserUtil.setProperties(prop);
-        } catch (InstantiationException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } finally {
-        }
     }
 
     @Override
