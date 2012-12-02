@@ -28,9 +28,9 @@ import org.tokenizer.ui.lists.UrlRecordList;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.util.ObjectProperty;
-import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
+import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.VerticalSplitPanel;
 
 public class CrawledContentView extends VerticalSplitPanel implements
@@ -38,11 +38,11 @@ public class CrawledContentView extends VerticalSplitPanel implements
     private static final long serialVersionUID = 1L;
     private static final Logger LOG = LoggerFactory
             .getLogger(CrawledContentView.class);
-    private MyVaadinApplication app;
-    private UrlRecordList urlRecordList;
-    private CrawlerHBaseRepository repository;
-    private Label htmlLabel;
-    private Label sourceLabel;
+    private final MyVaadinApplication app;
+    private final UrlRecordList urlRecordList;
+    private final CrawlerHBaseRepository repository;
+    private final Label htmlLabel;
+    private final Label sourceLabel;
 
     public CrawledContentView(MyVaadinApplication app) {
         this.app = app;
@@ -51,7 +51,7 @@ public class CrawledContentView extends VerticalSplitPanel implements
         setSizeFull();
         this.urlRecordList = new UrlRecordList(app);
         setFirstComponent(this.urlRecordList);
-        this.urlRecordList.addListener((Property.ValueChangeListener) this);
+        this.urlRecordList.addListener(this);
         this.htmlLabel = new Label();
         this.htmlLabel.setContentMode(Label.CONTENT_RAW);
         this.sourceLabel = new Label();
@@ -60,7 +60,8 @@ public class CrawledContentView extends VerticalSplitPanel implements
         htmlPanel.addComponent(this.htmlLabel);
         Panel sourcePanel = new Panel("Source");
         sourcePanel.addComponent(this.sourceLabel);
-        Accordion a = new Accordion();
+        // Accordion a = new Accordion();
+        TabSheet a = new TabSheet();
         a.addTab(htmlPanel);
         a.addTab(sourcePanel);
         setSecondComponent(a);

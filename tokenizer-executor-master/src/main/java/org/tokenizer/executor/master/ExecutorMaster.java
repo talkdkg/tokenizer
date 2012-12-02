@@ -160,7 +160,7 @@ public class ExecutorMaster {
                     if (event == null) {
                         continue;
                     }
-                    LOG.warn("Event received: {}", event.getType());
+                    LOG.debug("Event received: {}", event.getType());
                     if (stop || Thread.interrupted())
                         return;
                     int queueSize = eventQueue.size();
