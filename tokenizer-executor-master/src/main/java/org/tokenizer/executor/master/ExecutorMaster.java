@@ -50,17 +50,13 @@ public class ExecutorMaster {
             .getLogger(ExecutorMaster.class);
     private LeaderElection leaderElection;
     private final ZooKeeperItf zk;
-    private final ExecutorInfo executorInfo;
     private final WritableExecutorModel model;
     private final ExecutorModelListener listener = new MyListener();
     private final EventWorker eventWorker = new EventWorker();
 
-    public ExecutorMaster(ZooKeeperItf zk, WritableExecutorModel model,
-            String zkConnectString, int zkSessionTimeout,
-            ExecutorInfo executorInfo, String hostName) {
+    public ExecutorMaster(ZooKeeperItf zk, WritableExecutorModel model) {
         this.zk = zk;
         this.model = model;
-        this.executorInfo = executorInfo;
     }
 
     @PostConstruct
@@ -100,7 +96,6 @@ public class ExecutorMaster {
                                 .getTaskConfiguration().getName()));
             }
             LOG.info("Startup as Master successful.");
-            executorInfo.setMaster(true);
         }
 
         @Override
@@ -112,7 +107,6 @@ public class ExecutorMaster {
             // be released again)
             eventWorker.shutdown(false);
             LOG.info("Shutdown as Master successful.");
-            executorInfo.setMaster(false);
         }
     }
 
@@ -161,21 +155,14 @@ public class ExecutorMaster {
             long startedAt = System.currentTimeMillis();
             while (!stop && !Thread.interrupted()) {
                 try {
-                    ExecutorModelEvent event = null;
-                    while (!stop && event == null) {
-                        event = eventQueue.poll(1000, TimeUnit.MILLISECONDS);
+                    ExecutorModelEvent event = eventQueue.poll(10000,
+                            TimeUnit.MILLISECONDS);
+                    if (event == null) {
+                        continue;
                     }
-                    if (stop || event == null || Thread.interrupted())
+                    LOG.warn("Event received: {}", event.getType());
+                    if (stop || Thread.interrupted())
                         return;
-                    // Warn if the queue is getting large, but do not do this
-                    // just after
-                    // we started, because
-                    // on initial startup a fake update event is added for every
-                    // defined
-                    // index, which would lead
-                    // to this message always being printed on startup when more
-                    // than 10
-                    // indexes are defined.
                     int queueSize = eventQueue.size();
                     if (queueSize >= 10
                             && (System.currentTimeMillis() - startedAt > 5000)) {

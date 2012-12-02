@@ -109,9 +109,9 @@ public class ExecutorWorker {
         for (AbstractTask task : tasks.values()) {
             // although each task should be "daemon"... to be safe:
             task.stop();
-            LOG.warn("committing metrics for {}...", task.getTaskName());
-            task.getMetricsCache().commit();
-            LOG.warn("committed successfully {}.", task.getTaskName());
+            // LOG.warn("committing metrics for {}...", task.getTaskName());
+            // task.getMetricsCache().commit();
+            // LOG.warn("committed successfully {}.", task.getTaskName());
         }
     }
 

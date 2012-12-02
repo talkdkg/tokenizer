@@ -46,8 +46,10 @@ public abstract class AbstractTask implements Runnable, LeaderElectionCallback {
     }
 
     public abstract TaskConfiguration getTaskConfiguration();
-    public abstract void setTaskConfiguration(TaskConfiguration taskConfiguration);
-    
+
+    public abstract void setTaskConfiguration(
+            TaskConfiguration taskConfiguration);
+
     public AbstractTask(String taskName, ZooKeeperItf zk,
             CrawlerHBaseRepository crawlerRepository,
             WritableExecutorModel model, HostLocker hostLocker) {
@@ -71,9 +73,8 @@ public abstract class AbstractTask implements Runnable, LeaderElectionCallback {
 
     protected synchronized void shutdown() throws InterruptedException {
         LOG.warn("shutdown...");
-        if (!thread.isAlive()) {
+        if (!thread.isAlive())
             return;
-        }
         thread.interrupt();
         Logs.logThreadJoin(thread);
         thread.join();
@@ -107,13 +108,16 @@ public abstract class AbstractTask implements Runnable, LeaderElectionCallback {
     public void stop() {
         LOG.warn("stop...");
         try {
-            this.leaderElection.stop();
+            if (this.leaderElection != null) {
+                this.leaderElection.stop();
+            }
             this.leaderElection = null;
             shutdown();
             LOG.warn("Stopped.");
         } catch (InterruptedException e) {
-            if (thread != null)
+            if (thread != null) {
                 thread.interrupt();
+            }
             Thread.currentThread().interrupt();
             LOG.error("Interrupted while trying to stop Leader Election...", e);
         }
@@ -121,6 +125,7 @@ public abstract class AbstractTask implements Runnable, LeaderElectionCallback {
 
     protected abstract void process() throws InterruptedException, IOException;
 
+    @Override
     public void activateAsLeader() throws Exception {
         LOG.warn("activateAsLeader...");
         if (thread != null && thread.isAlive()) {
@@ -136,6 +141,7 @@ public abstract class AbstractTask implements Runnable, LeaderElectionCallback {
         }
     }
 
+    @Override
     public void deactivateAsLeader() throws Exception {
         LOG.warn("deactivateAsLeader...");
         shutdown();

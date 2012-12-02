@@ -73,8 +73,9 @@ public class MetricsCache {
      * Increments metrics with a given key <br/>
      * 
      * @param key
+     * @throws InterruptedException
      */
-    public synchronized void increment(String key) {
+    public synchronized void increment(String key) throws InterruptedException {
         increment(key, 1L);
     }
 
@@ -82,8 +83,10 @@ public class MetricsCache {
      * Increments metrics with a given key <br/>
      * 
      * @param key
+     * @throws InterruptedException
      */
-    public synchronized void increment(String key, long value) {
+    public synchronized void increment(String key, long value)
+            throws InterruptedException {
         Long count = cache.get(key);
         if (count == null) {
             count = 0L;
@@ -93,7 +96,7 @@ public class MetricsCache {
         commitIfTimedOut();
     }
 
-    private synchronized void commitIfTimedOut() {
+    private synchronized void commitIfTimedOut() throws InterruptedException {
         if (System.currentTimeMillis() >= lastCommitTimestamp + COMMIT_INTERVAL) {
             commit();
         }
@@ -107,17 +110,28 @@ public class MetricsCache {
      * TODO: inplement "finalize" which will flush a cache
      * 
      * @return
+     * @throws InterruptedException
      */
-    public synchronized boolean commit() {
+    public synchronized boolean commit() throws InterruptedException {
         LOG.info("Committing to ZooKeeper...");
         boolean success = false;
         long currentTimestamp = System.currentTimeMillis();
         String lock = null;
         try {
             lock = model.lockTask(taskName);
+        } catch (ZkLockException e1) {
+            LOG.debug(e1.getMessage());
+        } catch (TaskNotFoundException e1) {
+            LOG.debug(e1.getMessage());
+        } catch (KeeperException e1) {
+            LOG.debug(e1.getMessage());
+        } catch (TaskModelException e1) {
+            LOG.debug(e1.getMessage());
+        }
+        if (lock == null)
+            return false;
+        try {
             TaskInfoBean taskDefinition = model.getMutableTask(taskName);
-            if (taskDefinition.getTaskConfiguration().getGeneralState() == TaskGeneralState.DELETE_REQUESTED)
-                return true;
             for (String key : cache.keySet()) {
                 Long value = taskDefinition.getCounters().get(key);
                 if (value == null) {
@@ -137,11 +151,7 @@ public class MetricsCache {
             LOG.error("", e);
         } catch (TaskNotFoundException e) {
             LOG.warn("fetch {} not found...", taskName);
-        } catch (InterruptedException e) {
-            LOG.error("", e);
         } catch (KeeperException e) {
-            LOG.error("", e);
-        } catch (TaskModelException e) {
             LOG.error("", e);
         } catch (TaskConcurrentModificationException e) {
             LOG.error("", e);
