@@ -18,25 +18,14 @@ package org.tokenizer.ui;
 import org.springframework.context.ApplicationContext;
 import org.tokenizer.crawler.db.CrawlerHBaseRepository;
 import org.tokenizer.executor.model.api.WritableExecutorModel;
-import org.tokenizer.ui.data.PersonContainer;
-import org.tokenizer.ui.data.SearchFilter;
 import org.tokenizer.ui.views.CrawledContentView;
 import org.tokenizer.ui.views.TaskContainer;
 import org.tokenizer.ui.views.TaskView;
-import org.tokenizer.ui.widgets.HelpWindow;
-import org.tokenizer.ui.widgets.ListView;
-import org.tokenizer.ui.widgets.NavigationTree;
-import org.tokenizer.ui.widgets.PersonForm;
-import org.tokenizer.ui.widgets.PersonList;
-import org.tokenizer.ui.widgets.SearchView;
-import org.tokenizer.ui.widgets.SharingOptions;
 
 import com.vaadin.Application;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
-import com.vaadin.event.ItemClickEvent;
-import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.terminal.Sizeable;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -45,20 +34,17 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.HorizontalSplitPanel;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
-import com.vaadin.ui.Window.Notification;
 
 /**
  * The Application's "main" class
  */
 public class MyVaadinApplication extends Application implements
-        Button.ClickListener, Property.ValueChangeListener, ItemClickListener {
+        Button.ClickListener, Property.ValueChangeListener {
     private static final long serialVersionUID = 1L;
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory
             .getLogger(MyVaadinApplication.class);
     private Window window;
     private final HorizontalSplitPanel horizontalSplit = new HorizontalSplitPanel();
-    private final NavigationTree tree = new NavigationTree(this);
-    private ListView listView = null;
     private static ApplicationContext applicationContext = null;
 
     public static ApplicationContext getApplicationContext() {
@@ -130,43 +116,6 @@ public class MyVaadinApplication extends Application implements
         horizontalSplit.setSecondComponent(c);
     }
 
-    private PersonList personList = null;
-    private PersonForm personForm = null;
-
-    private ListView getListView() {
-        if (listView == null) {
-            personList = new PersonList(this);
-            personForm = new PersonForm(this);
-            listView = new ListView(personList, personForm);
-        }
-        return listView;
-    }
-
-    private HelpWindow helpWindow = null;
-
-    public HelpWindow getHelpWindow() {
-        if (this.helpWindow == null) {
-            this.helpWindow = new HelpWindow();
-        }
-        return this.helpWindow;
-    }
-
-    private SharingOptions sharingOptions = null;
-
-    public SharingOptions getSharingOptions() {
-        if (this.sharingOptions == null) {
-            this.sharingOptions = new SharingOptions();
-        }
-        return this.sharingOptions;
-    }
-
-    private final PersonContainer dataSource = PersonContainer
-            .createWithTestData();
-
-    public PersonContainer getDataSource() {
-        return dataSource;
-    }
-
     private TaskContainer taskContainer = null;
 
     public synchronized TaskContainer getTaskContainer() {
@@ -174,15 +123,6 @@ public class MyVaadinApplication extends Application implements
             taskContainer = new TaskContainer(this);
         }
         return this.taskContainer;
-    }
-
-    private SearchView searchView = null;
-
-    private SearchView getSearchView() {
-        if (searchView == null) {
-            searchView = new SearchView(this);
-        }
-        return searchView;
     }
 
     @Override
@@ -205,43 +145,11 @@ public class MyVaadinApplication extends Application implements
     @Override
     public void valueChange(ValueChangeEvent event) {
         Property property = event.getProperty();
-        if (property == personList) {
-            Item item = personList.getItem(personList.getValue());
-            if (item != personForm.getItemDataSource()) {
-                personForm.setItemDataSource(item);
-            }
-        }
         if (property == getTaskView().getTaskList()) {
             Item item = getTaskView().getTaskList().getItem(
                     getTaskView().getTaskList().getValue());
             getTaskView().getTaskForm().setItemDataSource(item);
         }
-    }
-
-    @Override
-    public void itemClick(ItemClickEvent event) {
-        if (event.getSource() == tree) {
-            Object itemId = event.getItemId();
-            if (itemId != null) {
-                if (NavigationTree.SHOW_ALL.equals(itemId)) {
-                    // clear previous filters
-                    getDataSource().removeAllContainerFilters();
-                    showListView();
-                } else if (NavigationTree.SEARCH.equals(itemId)) {
-                    showSearchView();
-                } else if (itemId instanceof SearchFilter) {
-                    search((SearchFilter) itemId);
-                }
-            }
-        }
-    }
-
-    private void showSearchView() {
-        setMainComponent(getSearchView());
-    }
-
-    private void showListView() {
-        setMainComponent(getListView());
     }
 
     private void showCrawledContentView() {
@@ -251,37 +159,9 @@ public class MyVaadinApplication extends Application implements
         // requestRepaint();
     }
 
-    private void addNewContact() {
-        showListView();
-        personForm.addContact();
-    }
-
     private void addNewTask() {
         getTaskView().getTaskForm().addTask();
         showTaskView();
-    }
-
-    public void search(SearchFilter searchFilter) {
-        // clear previous filters
-        getDataSource().removeAllContainerFilters();
-        // filter contacts with given filter
-        getDataSource().addContainerFilter(searchFilter.getPropertyId(),
-                searchFilter.getTerm(), true, false);
-        showListView();
-        getMainWindow().showNotification(
-                "Searched for " + searchFilter.getPropertyId() + "=*"
-                        + searchFilter.getTerm() + "*, found "
-                        + getDataSource().size() + " item(s).",
-                Notification.TYPE_TRAY_NOTIFICATION);
-        getMainWindow();
-    }
-
-    public void saveSearch(SearchFilter searchFilter) {
-        tree.addItem(searchFilter);
-        tree.setParent(searchFilter, NavigationTree.SEARCH);
-        tree.setChildrenAllowed(searchFilter, false);
-        tree.expandItem(NavigationTree.SEARCH);
-        tree.setValue(searchFilter);
     }
 
     private void showTaskView() {

@@ -78,10 +78,10 @@ public class TaskForm extends Form implements ClickListener {
         setItemDataSource(item);
         newTaskMode = true;
         setReadOnly(false);
-        if (taskConfigurationComponent == null) {
-            taskConfigurationComponent = new TaskConfigurationComponent();
-            getLayout().addComponent(taskConfigurationComponent);
-        }
+        // if (taskConfigurationComponent == null) {
+        taskConfigurationComponent = new TaskConfigurationComponent();
+        getLayout().addComponent(taskConfigurationComponent);
+        // }
     }
 
     @Override

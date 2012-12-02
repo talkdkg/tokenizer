@@ -118,7 +118,7 @@
       want to increase this value to avoid non-intentional red screens.
       Default value is 5 seconds.</description>
             <param-name>connectionGuardTimeout</param-name>
-            <param-value>15</param-value>
+            <param-value>60</param-value>
         </init-param>
  <!--        <init-param>
             <param-name>disable-xsrf-protection</param-name>

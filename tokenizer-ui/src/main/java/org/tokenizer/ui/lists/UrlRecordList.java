@@ -3,10 +3,8 @@ package org.tokenizer.ui.lists;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tokenizer.ui.MyVaadinApplication;
-import org.tokenizer.ui.data.PersonContainer;
 import org.tokenizer.ui.hbase.UrlContainer;
 
-import com.vaadin.data.Property;
 import com.vaadin.ui.Table;
 
 public class UrlRecordList extends Table {
@@ -22,7 +20,7 @@ public class UrlRecordList extends Table {
         // setColumnHeaders(PersonContainer.COL_HEADERS_ENGLISH);
         setSelectable(true);
         setImmediate(true);
-        addListener((Property.ValueChangeListener) app);
+        addListener(app);
         setNullSelectionAllowed(false);
         setColumnCollapsingAllowed(true);
         setColumnReorderingAllowed(true);
