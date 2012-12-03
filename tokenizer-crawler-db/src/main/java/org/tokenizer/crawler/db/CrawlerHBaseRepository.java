@@ -297,6 +297,7 @@ public class CrawlerHBaseRepository {
                 row = UrlRecordDecoder.encode("http://" + host + "/"
                         + MD5.MD5(xml));
                 LOG.warn("encoded: " + new String(row));
+                LOG.warn("xml: {}", xml);
                 Get get = new Get(row);
                 // TODO: implement simple cache & measure performance
                 // improvements
@@ -306,10 +307,7 @@ public class CrawlerHBaseRepository {
                 put.add(CrawlerHBaseSchema.XmlCf.DATA.bytes,
                         CrawlerHBaseSchema.XmlColumn.XML.bytes,
                         Bytes.toBytes(xml));
-                put.add(CrawlerHBaseSchema.XmlCf.DATA.bytes,
-                        CrawlerHBaseSchema.XmlColumn.HOST.bytes,
-                        Bytes.toBytes(host));
-                webpageTable.put(put);
+                xmlTable.put(put);
             } catch (UnsupportedEncodingException e) {
                 LOG.error(StringUtils.EMPTY, e);
             } catch (IOException e) {
@@ -329,31 +327,58 @@ public class CrawlerHBaseRepository {
             if (messageTable.exists(get))
                 return;
             Put put = new Put(row);
-            put.add(CrawlerHBaseSchema.MessageCf.DATA.bytes,
-                    CrawlerHBaseSchema.MessageColumn.AGE.bytes,
-                    Bytes.toBytes(messageRecord.getAge()));
-            put.add(CrawlerHBaseSchema.MessageCf.DATA.bytes,
-                    CrawlerHBaseSchema.MessageColumn.AUTHOR.bytes,
-                    Bytes.toBytes(messageRecord.getAuthor()));
-            put.add(CrawlerHBaseSchema.MessageCf.DATA.bytes,
-                    CrawlerHBaseSchema.MessageColumn.CONTENT.bytes,
-                    Bytes.toBytes(messageRecord.getContent()));
-            put.add(CrawlerHBaseSchema.MessageCf.DATA.bytes,
-                    CrawlerHBaseSchema.MessageColumn.DATE.bytes,
-                    Bytes.toBytes(messageRecord.getDate()));
-            put.add(CrawlerHBaseSchema.MessageCf.DATA.bytes,
-                    CrawlerHBaseSchema.MessageColumn.SEX.bytes,
-                    Bytes.toBytes(messageRecord.getSex()));
-            put.add(CrawlerHBaseSchema.MessageCf.DATA.bytes,
-                    CrawlerHBaseSchema.MessageColumn.TITLE.bytes,
-                    Bytes.toBytes(messageRecord.getTitle()));
-            put.add(CrawlerHBaseSchema.MessageCf.DATA.bytes,
-                    CrawlerHBaseSchema.MessageColumn.TOPIC.bytes,
-                    Bytes.toBytes(messageRecord.getTopic()));
-            put.add(CrawlerHBaseSchema.MessageCf.DATA.bytes,
-                    CrawlerHBaseSchema.MessageColumn.USER_RATING.bytes,
-                    Bytes.toBytes(messageRecord.getUserRating()));
-            messageTable.put(put);
+            boolean empty = true;
+            if (messageRecord.getAge() != null) {
+                put.add(CrawlerHBaseSchema.MessageCf.DATA.bytes,
+                        CrawlerHBaseSchema.MessageColumn.AGE.bytes,
+                        Bytes.toBytes(messageRecord.getAge()));
+                empty = false;
+            }
+            if (messageRecord.getAuthor() != null) {
+                put.add(CrawlerHBaseSchema.MessageCf.DATA.bytes,
+                        CrawlerHBaseSchema.MessageColumn.AUTHOR.bytes,
+                        Bytes.toBytes(messageRecord.getAuthor()));
+                empty = false;
+            }
+            if (messageRecord.getContent() != null) {
+                put.add(CrawlerHBaseSchema.MessageCf.DATA.bytes,
+                        CrawlerHBaseSchema.MessageColumn.CONTENT.bytes,
+                        Bytes.toBytes(messageRecord.getContent()));
+                empty = false;
+            }
+            if (messageRecord.getDate() != null) {
+                put.add(CrawlerHBaseSchema.MessageCf.DATA.bytes,
+                        CrawlerHBaseSchema.MessageColumn.DATE.bytes,
+                        Bytes.toBytes(messageRecord.getDate()));
+                empty = false;
+            }
+            if (messageRecord.getSex() != null) {
+                put.add(CrawlerHBaseSchema.MessageCf.DATA.bytes,
+                        CrawlerHBaseSchema.MessageColumn.SEX.bytes,
+                        Bytes.toBytes(messageRecord.getSex()));
+                empty = false;
+            }
+            if (messageRecord.getTitle() != null) {
+                put.add(CrawlerHBaseSchema.MessageCf.DATA.bytes,
+                        CrawlerHBaseSchema.MessageColumn.TITLE.bytes,
+                        Bytes.toBytes(messageRecord.getTitle()));
+                empty = false;
+            }
+            if (messageRecord.getTopic() != null) {
+                put.add(CrawlerHBaseSchema.MessageCf.DATA.bytes,
+                        CrawlerHBaseSchema.MessageColumn.TOPIC.bytes,
+                        Bytes.toBytes(messageRecord.getTopic()));
+                empty = false;
+            }
+            if (messageRecord.getUserRating() != null) {
+                put.add(CrawlerHBaseSchema.MessageCf.DATA.bytes,
+                        CrawlerHBaseSchema.MessageColumn.USER_RATING.bytes,
+                        Bytes.toBytes(messageRecord.getUserRating()));
+                empty = false;
+            }
+            if (!empty) {
+                messageTable.put(put);
+            }
         } catch (UnsupportedEncodingException e) {
             LOG.error(StringUtils.EMPTY, e);
         } catch (IOException e) {

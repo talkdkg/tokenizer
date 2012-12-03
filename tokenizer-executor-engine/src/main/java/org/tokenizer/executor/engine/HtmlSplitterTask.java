@@ -53,7 +53,7 @@ public class HtmlSplitterTask extends AbstractTask {
         UrlScanner urlScanner = new UrlScanner(taskConfiguration.getHost(),
                 crawlerRepository);
         for (UrlRecord urlRecord : urlScanner) {
-            LOG.trace("urlRecord: {}", urlRecord);
+            // LOG.trace("urlRecord: {}", urlRecord);
             if (urlRecord.getHttpResponseCode() != 200) {
                 continue;
             }

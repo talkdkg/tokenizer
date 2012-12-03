@@ -152,7 +152,7 @@ public class CrawlerHBaseSchema {
     }
 
     public static enum XmlColumn {
-        XML("xml"), HOST("host");
+        XML("xml");
         public final byte[] bytes;
         public final String name;
 

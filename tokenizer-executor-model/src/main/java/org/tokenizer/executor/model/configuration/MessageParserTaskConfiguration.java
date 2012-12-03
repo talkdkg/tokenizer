@@ -98,4 +98,14 @@ public class MessageParserTaskConfiguration extends TaskConfiguration {
     public void setUserRatingXPath(String userRatingXPath) {
         this.userRatingXPath = userRatingXPath;
     }
+
+    @Override
+    public String toString() {
+        return "MessageParserTaskConfiguration [host=" + host + ", topicXPath="
+                + topicXPath + ", authorXPath=" + authorXPath + ", ageXPath="
+                + ageXPath + ", sexXPath=" + sexXPath + ", titleXPath="
+                + titleXPath + ", contentXPath=" + contentXPath
+                + ", dateXPath=" + dateXPath + ", userRatingXPath="
+                + userRatingXPath + "]";
+    }
 }

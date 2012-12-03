@@ -1,4 +1,4 @@
-package org.tokenizer.engine.message;
+package org.tokenizer.executor.engine.message;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -44,56 +44,57 @@ public class MessageParserTask extends AbstractTask {
             WritableExecutorModel model, HostLocker hostLocker) {
         super(taskName, zk, crawlerRepository, model, hostLocker);
         this.taskConfiguration = (MessageParserTaskConfiguration) taskConfiguration;
+        LOG.error(this.taskConfiguration.toString());
         try {
             topicXPathExpression = new HXPathExpression(LocalXPathFactory
                     .newXPath().compile(this.taskConfiguration.getTopicXPath()));
         } catch (XPathExpressionException e) {
-            LOG.error("", e);
+            LOG.warn(e.getMessage());
         }
         try {
             authorXPathExpression = new HXPathExpression(LocalXPathFactory
                     .newXPath()
                     .compile(this.taskConfiguration.getAuthorXPath()));
         } catch (XPathExpressionException e) {
-            LOG.error("", e);
+            LOG.warn(e.getMessage());
         }
         try {
             ageXPathExpression = new HXPathExpression(LocalXPathFactory
                     .newXPath().compile(this.taskConfiguration.getAgeXPath()));
         } catch (XPathExpressionException e) {
-            LOG.error("", e);
+            LOG.warn(e.getMessage());
         }
         try {
             sexXPathExpression = new HXPathExpression(LocalXPathFactory
                     .newXPath().compile(this.taskConfiguration.getSexXPath()));
         } catch (XPathExpressionException e) {
-            LOG.error("", e);
+            LOG.warn(e.getMessage());
         }
         try {
             titleXPathExpression = new HXPathExpression(LocalXPathFactory
                     .newXPath().compile(this.taskConfiguration.getTitleXPath()));
         } catch (XPathExpressionException e) {
-            LOG.error("", e);
+            LOG.warn(e.getMessage());
         }
         try {
             contentXPathExpression = new HXPathExpression(LocalXPathFactory
                     .newXPath().compile(
                             this.taskConfiguration.getContentXPath()));
         } catch (XPathExpressionException e) {
-            LOG.error("", e);
+            LOG.warn(e.getMessage());
         }
         try {
             dateXPathExpression = new HXPathExpression(LocalXPathFactory
                     .newXPath().compile(this.taskConfiguration.getDateXPath()));
         } catch (XPathExpressionException e) {
-            LOG.error("", e);
+            LOG.warn(e.getMessage());
         }
         try {
             userRatingXPathExpression = new HXPathExpression(LocalXPathFactory
                     .newXPath().compile(
                             this.taskConfiguration.getUserRatingXPath()));
         } catch (XPathExpressionException e) {
-            LOG.error("", e);
+            LOG.warn(e.getMessage());
         }
         LOG.debug("Instance created");
     }
@@ -110,7 +111,7 @@ public class MessageParserTask extends AbstractTask {
         XmlRecordScanner xmlRecordScanner = new XmlRecordScanner(
                 taskConfiguration.getHost(), crawlerRepository);
         for (XmlRecord xmlRecord : xmlRecordScanner) {
-            LOG.trace("xmlRecord: {}", xmlRecord);
+            // LOG.trace("xmlRecord: {}", xmlRecord);
             try {
                 if (xmlRecord.getXml() == null) {
                     continue;
@@ -133,22 +134,22 @@ public class MessageParserTask extends AbstractTask {
         Node node = HtmlParser.parse(source);
         if (node == null)
             return null;
-        String topic = topicXPathExpression == null ? null
-                : topicXPathExpression.evalAsString(node);
-        String author = authorXPathExpression == null ? null
-                : authorXPathExpression.evalAsString(node);
-        String title = titleXPathExpression == null ? null
-                : titleXPathExpression.evalAsString(node);
-        String content = contentXPathExpression == null ? null
-                : contentXPathExpression.evalAsString(node);
-        String date = dateXPathExpression == null ? null : dateXPathExpression
-                .evalAsString(node);
-        String age = ageXPathExpression == null ? null : ageXPathExpression
-                .evalAsString(node);
-        String sex = sexXPathExpression == null ? null : sexXPathExpression
-                .evalAsString(node);
-        String userRating = userRatingXPathExpression == null ? null
-                : userRatingXPathExpression.evalAsString(node);
+        String topic = (topicXPathExpression == null ? null
+                : topicXPathExpression.evalAsString(node));
+        String author = (authorXPathExpression == null ? null
+                : authorXPathExpression.evalAsString(node));
+        String title = (titleXPathExpression == null ? null
+                : titleXPathExpression.evalAsString(node));
+        String content = (contentXPathExpression == null ? null
+                : contentXPathExpression.evalAsString(node));
+        String date = (dateXPathExpression == null ? null : dateXPathExpression
+                .evalAsString(node));
+        String age = (ageXPathExpression == null ? null : ageXPathExpression
+                .evalAsString(node));
+        String sex = (sexXPathExpression == null ? null : sexXPathExpression
+                .evalAsString(node));
+        String userRating = (userRatingXPathExpression == null ? null
+                : userRatingXPathExpression.evalAsString(node));
         MessageRecord messageRecord = new MessageRecord();
         messageRecord.setHost(xmlRecord.getHost());
         messageRecord.setTopic(topic);

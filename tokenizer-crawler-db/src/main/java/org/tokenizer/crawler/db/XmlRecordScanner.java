@@ -38,7 +38,7 @@ public class XmlRecordScanner extends AbstractHBaseRecordScanner<XmlRecord> {
         end[start.length] = (byte) 0xff;
         Scan scan = new Scan(start, end);
         try {
-            hbaseScanner = repository.getUrlTable().getScanner(scan);
+            hbaseScanner = repository.getXmlTable().getScanner(scan);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

@@ -1,7 +1,5 @@
 package org.tokenizer.crawler.db;
 
-import java.util.Arrays;
-
 import org.apache.hadoop.hbase.client.Result;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,6 +54,6 @@ public class XmlRecord {
     @Override
     public String toString() {
         return "XmlRecord [host=" + host + ", digest=" + digest + ", xml="
-                + Arrays.toString(xml) + "]";
+                + new String(xml) + "]";
     }
 }
