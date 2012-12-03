@@ -48,9 +48,17 @@ public class CrawlerHBaseSchema {
                 Compression.Algorithm.NONE.getName(), false, true,
                 HConstants.FOREVER, HColumnDescriptor.DEFAULT_BLOOMFILTER));
     }
+    private static final HTableDescriptor messageTableDescriptor;
+    static {
+        messageTableDescriptor = new HTableDescriptor(Table.MESSAGE.bytes);
+        messageTableDescriptor.addFamily(new HColumnDescriptor(
+                MessageCf.DATA.bytes, 1, Compression.Algorithm.NONE.getName(),
+                false, true, HConstants.FOREVER,
+                HColumnDescriptor.DEFAULT_BLOOMFILTER));
+    }
 
     public static enum Table {
-        WEBPAGE("webpage"), URL("url"), XML("xml");
+        WEBPAGE("webpage"), URL("url"), XML("xml"), MESSAGE("message");
         public final byte[] bytes;
         public final String name;
 
@@ -82,6 +90,29 @@ public class CrawlerHBaseSchema {
         public final String name;
 
         WebpageColumn(String name) {
+            this.name = name;
+            this.bytes = Bytes.toBytes(name);
+        }
+    }
+
+    public static enum MessageCf {
+        DATA("data");
+        public final byte[] bytes;
+        public final String name;
+
+        MessageCf(String name) {
+            this.name = name;
+            this.bytes = Bytes.toBytes(name);
+        }
+    }
+
+    public static enum MessageColumn {
+        TOPIC("topic"), DATE("date"), AUTHOR("author"), AGE("age"), SEX("sex"), TITLE(
+                "title"), CONTENT("content");
+        public final byte[] bytes;
+        public final String name;
+
+        MessageColumn(String name) {
             this.name = name;
             this.bytes = Bytes.toBytes(name);
         }
@@ -144,5 +175,10 @@ public class CrawlerHBaseSchema {
     public static HTableInterface getXmlTable(HBaseTableFactory tableFactory)
             throws IOException, InterruptedException {
         return tableFactory.getTable(xmlTableDescriptor, true);
+    }
+
+    public static HTableInterface getMessageTable(HBaseTableFactory tableFactory)
+            throws IOException, InterruptedException {
+        return tableFactory.getTable(messageTableDescriptor, true);
     }
 }

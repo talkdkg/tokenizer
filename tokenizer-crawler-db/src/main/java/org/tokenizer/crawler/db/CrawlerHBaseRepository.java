@@ -44,6 +44,7 @@ public class CrawlerHBaseRepository {
     private final HTableInterface urlTable;
     private final HTableInterface webpageTable;
     private final HTableInterface xmlTable;
+    private final HTableInterface messageTable;
     public static byte[] POSTFIX = new byte[] { 0 };
     public static final byte[] ZERO_LONG = Bytes.toBytes(0L);
     public static final byte[] ZERO_INT = Bytes.toBytes(0);
@@ -66,6 +67,7 @@ public class CrawlerHBaseRepository {
             urlTable = CrawlerHBaseSchema.getUrlTable(tableFactory);
             webpageTable = CrawlerHBaseSchema.getWebpageTable(tableFactory);
             xmlTable = CrawlerHBaseSchema.getXmlTable(tableFactory);
+            messageTable = CrawlerHBaseSchema.getMessageTable(tableFactory);
         } catch (IOException e) {
             throw new RuntimeException("Can't get access to tables", e);
         } catch (InterruptedException e) {
@@ -182,14 +184,16 @@ public class CrawlerHBaseRepository {
         try {
             resultScanner = this.urlTable.getScanner(scan);
             Result r = resultScanner.next();
-            if (r != null)
+            if (r != null) {
                 url = UrlRecordDecoder.decode(r.getRow());
+            }
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         } finally {
-            if (resultScanner != null)
+            if (resultScanner != null) {
                 resultScanner.close();
+            }
         }
         return url;
     }
@@ -212,15 +216,17 @@ public class CrawlerHBaseRepository {
                 String url = UrlRecordDecoder.decode(r.getRow());
                 urls.add(url);
                 i++;
-                if (i == count)
+                if (i == count) {
                     break;
+                }
             }
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         } finally {
-            if (rs != null)
+            if (rs != null) {
                 rs.close();
+            }
         }
         return urls;
     }
@@ -244,17 +250,20 @@ public class CrawlerHBaseRepository {
         urlRecord.setUrl(url);
         byte[] digest = result.getValue(CrawlerHBaseSchema.UrlCf.DATA.bytes,
                 CrawlerHBaseSchema.UrlColumn.DIGEST.bytes);
-        if (digest != null)
+        if (digest != null) {
             urlRecord.setDigest(digest);
+        }
         byte[] timestamp = result.getValue(CrawlerHBaseSchema.UrlCf.DATA.bytes,
                 CrawlerHBaseSchema.UrlColumn.TIMESTAMP.bytes);
-        if (timestamp != null)
+        if (timestamp != null) {
             urlRecord.setTimestamp(Bytes.toLong(timestamp));
+        }
         byte[] httpResponseCode = result.getValue(
                 CrawlerHBaseSchema.UrlCf.DATA.bytes,
                 CrawlerHBaseSchema.UrlColumn.HTTP_RESPONSE_CODE.bytes);
-        if (httpResponseCode != null)
+        if (httpResponseCode != null) {
             urlRecord.setHttpResponseCode(Bytes.toInt(httpResponseCode));
+        }
         return urlRecord;
     }
 
@@ -301,6 +310,46 @@ public class CrawlerHBaseRepository {
             } catch (IOException e) {
                 LOG.error(StringUtils.EMPTY, e);
             }
+        }
+    }
+
+    public void createMessage(MessageRecord messageRecord) {
+        byte[] row;
+        try {
+            row = UrlRecordDecoder.encode("http://" + messageRecord.getHost()
+                    + "/" + messageRecord.getDigest());
+            Get get = new Get(row);
+            // TODO: implement simple cache & measure performance
+            // improvements
+            if (messageTable.exists(get))
+                return;
+            Put put = new Put(row);
+            put.add(CrawlerHBaseSchema.MessageCf.DATA.bytes,
+                    CrawlerHBaseSchema.MessageColumn.AGE.bytes,
+                    Bytes.toBytes(messageRecord.getAge()));
+            put.add(CrawlerHBaseSchema.MessageCf.DATA.bytes,
+                    CrawlerHBaseSchema.MessageColumn.AUTHOR.bytes,
+                    Bytes.toBytes(messageRecord.getAuthor()));
+            put.add(CrawlerHBaseSchema.MessageCf.DATA.bytes,
+                    CrawlerHBaseSchema.MessageColumn.CONTENT.bytes,
+                    Bytes.toBytes(messageRecord.getContent()));
+            put.add(CrawlerHBaseSchema.MessageCf.DATA.bytes,
+                    CrawlerHBaseSchema.MessageColumn.DATE.bytes,
+                    Bytes.toBytes(messageRecord.getDate()));
+            put.add(CrawlerHBaseSchema.MessageCf.DATA.bytes,
+                    CrawlerHBaseSchema.MessageColumn.SEX.bytes,
+                    Bytes.toBytes(messageRecord.getSex()));
+            put.add(CrawlerHBaseSchema.MessageCf.DATA.bytes,
+                    CrawlerHBaseSchema.MessageColumn.TITLE.bytes,
+                    Bytes.toBytes(messageRecord.getTitle()));
+            put.add(CrawlerHBaseSchema.MessageCf.DATA.bytes,
+                    CrawlerHBaseSchema.MessageColumn.TOPIC.bytes,
+                    Bytes.toBytes(messageRecord.getTopic()));
+            messageTable.put(put);
+        } catch (UnsupportedEncodingException e) {
+            LOG.error(StringUtils.EMPTY, e);
+        } catch (IOException e) {
+            LOG.error(StringUtils.EMPTY, e);
         }
     }
 }

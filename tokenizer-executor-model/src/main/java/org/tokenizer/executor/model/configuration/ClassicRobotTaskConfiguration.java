@@ -33,58 +33,6 @@ public class ClassicRobotTaskConfiguration extends TaskConfiguration {
                 + webAddress + "]";
     }
 
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result
-                + ((agentName == null) ? 0 : agentName.hashCode());
-        result = prime * result
-                + ((emailAddress == null) ? 0 : emailAddress.hashCode());
-        result = prime * result + (followExternal ? 1231 : 1237);
-        result = prime * result + (followRedirects ? 1231 : 1237);
-        result = prime * result + ((host == null) ? 0 : host.hashCode());
-        result = prime * result
-                + ((webAddress == null) ? 0 : webAddress.hashCode());
-        return result;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        ClassicRobotTaskConfiguration other = (ClassicRobotTaskConfiguration) obj;
-        if (agentName == null) {
-            if (other.agentName != null)
-                return false;
-        } else if (!agentName.equals(other.agentName))
-            return false;
-        if (emailAddress == null) {
-            if (other.emailAddress != null)
-                return false;
-        } else if (!emailAddress.equals(other.emailAddress))
-            return false;
-        if (followExternal != other.followExternal)
-            return false;
-        if (followRedirects != other.followRedirects)
-            return false;
-        if (host == null) {
-            if (other.host != null)
-                return false;
-        } else if (!host.equals(other.host))
-            return false;
-        if (webAddress == null) {
-            if (other.webAddress != null)
-                return false;
-        } else if (!webAddress.equals(other.webAddress))
-            return false;
-        return true;
-    }
-
     public String getHost() {
         return host;
     }

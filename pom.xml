@@ -63,6 +63,7 @@
         <module>tokenizer-analysis</module>
         <module>tokenizer-twitter</module>
         <module>tokenizer-jpa</module>
+        <module>tokenizer-executor-engine-message</module>
     </modules>
     <repositories>
         <repository>
