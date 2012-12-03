@@ -289,9 +289,14 @@ public class CrawlerHBaseRepository {
 
     public void createXmlObjects(String[] xmlObjects, String host) {
         for (String xml : xmlObjects) {
+            if (xml == null || xml.length() == 0) {
+                continue;
+            }
             byte[] row;
             try {
-                row = MD5.digest(xml.getBytes("UTF-8"));
+                row = UrlRecordDecoder.encode("http://" + host + "/"
+                        + MD5.MD5(xml));
+                LOG.warn("encoded: " + new String(row));
                 Get get = new Get(row);
                 // TODO: implement simple cache & measure performance
                 // improvements
@@ -345,6 +350,9 @@ public class CrawlerHBaseRepository {
             put.add(CrawlerHBaseSchema.MessageCf.DATA.bytes,
                     CrawlerHBaseSchema.MessageColumn.TOPIC.bytes,
                     Bytes.toBytes(messageRecord.getTopic()));
+            put.add(CrawlerHBaseSchema.MessageCf.DATA.bytes,
+                    CrawlerHBaseSchema.MessageColumn.USER_RATING.bytes,
+                    Bytes.toBytes(messageRecord.getUserRating()));
             messageTable.put(put);
         } catch (UnsupportedEncodingException e) {
             LOG.error(StringUtils.EMPTY, e);

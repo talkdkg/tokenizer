@@ -41,5 +41,25 @@ Use generated commands under tokenizer/tokenizer-executor-admin-cli/target
 such as add-task, update-task, list-tasks
 
 
+XPath Samples:
+www.amazon.com splitter
+//table[@id='productReviews']//td/div
 
-Test: DE-2 #close
+userRating
+/div/div/span
+
+title
+/div/div/span[2]/b
+
+date
+/div/div/span[2]/nobr
+
+author
+/div/div[2]/div/div[2]/a/span
+
+topic
+/div/div[3]/b
+
+content
+/div
+

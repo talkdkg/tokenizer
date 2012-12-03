@@ -18,6 +18,7 @@ package org.tokenizer.ui.views;
 import org.tokenizer.executor.engine.twitter.TweetCollectorTaskConfiguration;
 import org.tokenizer.executor.model.configuration.ClassicRobotTaskConfiguration;
 import org.tokenizer.executor.model.configuration.HtmlSplitterTaskConfiguration;
+import org.tokenizer.executor.model.configuration.MessageParserTaskConfiguration;
 import org.tokenizer.executor.model.configuration.RssFetcherTaskConfiguration;
 import org.tokenizer.executor.model.configuration.SitemapsFetcherTaskConfiguration;
 
@@ -52,6 +53,7 @@ public class TaskConfigurationComponent extends CustomComponent {
         type.addItem("");
         type.addItem("ClassicRobotTask");
         type.addItem("HtmlSplitterTask");
+        type.addItem("MessageParserTask");
         type.addItem("TweetCollectorTask");
         type.addItem("SitemapsFetcherTask");
         type.addItem("RssFetcherTask");
@@ -78,6 +80,9 @@ public class TaskConfigurationComponent extends CustomComponent {
                 } else if ("HtmlSplitterTask".equals(selected)) {
                     taskConfigurationField = new HtmlSplitterTaskConfigurationForm(
                             new HtmlSplitterTaskConfiguration());
+                } else if ("MessageParserTask".equals(selected)) {
+                    taskConfigurationField = new MessageParserTaskConfigurationForm(
+                            new MessageParserTaskConfiguration());
                 } else if ("TweetCollectorTask".equals(selected)) {
                     taskConfigurationField = new TweetCollectorTaskConfigurationForm(
                             new TweetCollectorTaskConfiguration());

@@ -28,6 +28,7 @@ import org.tokenizer.executor.model.api.TaskUpdateException;
 import org.tokenizer.executor.model.api.TaskValidityException;
 import org.tokenizer.executor.model.configuration.ClassicRobotTaskConfiguration;
 import org.tokenizer.executor.model.configuration.HtmlSplitterTaskConfiguration;
+import org.tokenizer.executor.model.configuration.MessageParserTaskConfiguration;
 import org.tokenizer.executor.model.configuration.RssFetcherTaskConfiguration;
 import org.tokenizer.executor.model.configuration.SimpleMultithreadedFetcherTaskConfiguration;
 import org.tokenizer.executor.model.configuration.SitemapsFetcherTaskConfiguration;
@@ -146,6 +147,9 @@ public class TaskForm extends Form implements ClickListener {
                             taskConfiguration);
                 } else if (taskConfiguration instanceof HtmlSplitterTaskConfiguration) {
                     taskConfigurationField = new HtmlSplitterTaskConfigurationForm(
+                            taskConfiguration);
+                } else if (taskConfiguration instanceof MessageParserTaskConfiguration) {
+                    taskConfigurationField = new MessageParserTaskConfigurationForm(
                             taskConfiguration);
                 } else if (taskConfiguration instanceof TweetCollectorTaskConfiguration) {
                     taskConfigurationField = new TweetCollectorTaskConfigurationForm(

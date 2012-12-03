@@ -488,6 +488,11 @@
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
+                <artifactId>tokenizer-executor-engine-message</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
                 <artifactId>tokenizer-executor-engine-twitter</artifactId>
                 <version>${project.version}</version>
             </dependency>

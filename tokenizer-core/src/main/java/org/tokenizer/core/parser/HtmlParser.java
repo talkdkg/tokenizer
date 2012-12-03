@@ -111,16 +111,16 @@ class OutputFilter implements LSSerializerFilter {
     public short acceptNode(Node n) {
         if (n instanceof Element) {
             Element element = (Element) n;
-            if (element.getTagName().equals("span")
-                    || element.getTagName().equals("b")
-                    || element.getTagName().equals("a")) {
-                return NodeFilter.FILTER_SKIP;
-                // return NodeFilter.FILTER_REJECT;
-            }
+            // Commented out: <a>Fuad</a>Efendi will become FuadEfendi (without
+            // spaces) and we do not need that...
+            // if (element.getTagName().equals("span")
+            // || element.getTagName().equals("b")
+            // || element.getTagName().equals("a")) {
+            // return NodeFilter.FILTER_SKIP;
+            // }
             return NodeFilter.FILTER_ACCEPT;
-        } else {
+        } else
             return NodeFilter.FILTER_SKIP;
-        }
     }
 
     @Override

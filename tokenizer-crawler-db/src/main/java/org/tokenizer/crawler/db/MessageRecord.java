@@ -15,6 +15,7 @@ public class MessageRecord {
     private String sex;
     private String title;
     private String content;
+    private String userRating;
 
     public String getHost() {
         return host;
@@ -89,5 +90,21 @@ public class MessageRecord {
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public String getUserRating() {
+        return userRating;
+    }
+
+    public void setUserRating(String userRating) {
+        this.userRating = userRating;
+    }
+
+    @Override
+    public String toString() {
+        return "MessageRecord [host=" + host + ", digest=" + digest
+                + ", topic=" + topic + ", date=" + date + ", author=" + author
+                + ", age=" + age + ", sex=" + sex + ", title=" + title
+                + ", content=" + content + ", userRating=" + userRating + "]";
     }
 }

@@ -29,6 +29,7 @@ import org.apache.zookeeper.KeeperException;
 import org.lilyproject.util.zookeeper.LeaderElectionSetupException;
 import org.lilyproject.util.zookeeper.ZooKeeperItf;
 import org.tokenizer.crawler.db.CrawlerHBaseRepository;
+import org.tokenizer.engine.message.MessageParserTask;
 import org.tokenizer.executor.engine.AbstractTask;
 import org.tokenizer.executor.engine.ClassicRobotTask;
 import org.tokenizer.executor.engine.HostLocker;
@@ -47,6 +48,7 @@ import org.tokenizer.executor.model.api.TaskNotFoundException;
 import org.tokenizer.executor.model.api.WritableExecutorModel;
 import org.tokenizer.executor.model.configuration.ClassicRobotTaskConfiguration;
 import org.tokenizer.executor.model.configuration.HtmlSplitterTaskConfiguration;
+import org.tokenizer.executor.model.configuration.MessageParserTaskConfiguration;
 import org.tokenizer.executor.model.configuration.RssFetcherTaskConfiguration;
 import org.tokenizer.executor.model.configuration.SimpleMultithreadedFetcherTaskConfiguration;
 import org.tokenizer.executor.model.configuration.SitemapsFetcherTaskConfiguration;
@@ -212,6 +214,10 @@ public class ExecutorWorker {
                     executorModel, hostLocker);
         } else if (taskConfiguration instanceof HtmlSplitterTaskConfiguration) {
             task = new HtmlSplitterTask(taskInfo.getTaskConfiguration()
+                    .getName(), zk, taskConfiguration, repository,
+                    executorModel, hostLocker);
+        } else if (taskConfiguration instanceof MessageParserTaskConfiguration) {
+            task = new MessageParserTask(taskInfo.getTaskConfiguration()
                     .getName(), zk, taskConfiguration, repository,
                     executorModel, hostLocker);
         } else if (taskConfiguration instanceof TweetCollectorTaskConfiguration) {

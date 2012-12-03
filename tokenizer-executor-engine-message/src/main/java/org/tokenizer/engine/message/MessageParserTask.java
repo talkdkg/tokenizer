@@ -36,6 +36,7 @@ public class MessageParserTask extends AbstractTask {
     private HXPathExpression titleXPathExpression;
     private HXPathExpression contentXPathExpression;
     private HXPathExpression dateXPathExpression;
+    private HXPathExpression userRatingXPathExpression;
 
     public MessageParserTask(String taskName, ZooKeeperItf zk,
             TaskConfiguration taskConfiguration,
@@ -46,20 +47,51 @@ public class MessageParserTask extends AbstractTask {
         try {
             topicXPathExpression = new HXPathExpression(LocalXPathFactory
                     .newXPath().compile(this.taskConfiguration.getTopicXPath()));
+        } catch (XPathExpressionException e) {
+            LOG.error("", e);
+        }
+        try {
             authorXPathExpression = new HXPathExpression(LocalXPathFactory
                     .newXPath()
                     .compile(this.taskConfiguration.getAuthorXPath()));
+        } catch (XPathExpressionException e) {
+            LOG.error("", e);
+        }
+        try {
             ageXPathExpression = new HXPathExpression(LocalXPathFactory
                     .newXPath().compile(this.taskConfiguration.getAgeXPath()));
+        } catch (XPathExpressionException e) {
+            LOG.error("", e);
+        }
+        try {
             sexXPathExpression = new HXPathExpression(LocalXPathFactory
                     .newXPath().compile(this.taskConfiguration.getSexXPath()));
+        } catch (XPathExpressionException e) {
+            LOG.error("", e);
+        }
+        try {
             titleXPathExpression = new HXPathExpression(LocalXPathFactory
                     .newXPath().compile(this.taskConfiguration.getTitleXPath()));
+        } catch (XPathExpressionException e) {
+            LOG.error("", e);
+        }
+        try {
             contentXPathExpression = new HXPathExpression(LocalXPathFactory
                     .newXPath().compile(
                             this.taskConfiguration.getContentXPath()));
+        } catch (XPathExpressionException e) {
+            LOG.error("", e);
+        }
+        try {
             dateXPathExpression = new HXPathExpression(LocalXPathFactory
                     .newXPath().compile(this.taskConfiguration.getDateXPath()));
+        } catch (XPathExpressionException e) {
+            LOG.error("", e);
+        }
+        try {
+            userRatingXPathExpression = new HXPathExpression(LocalXPathFactory
+                    .newXPath().compile(
+                            this.taskConfiguration.getUserRatingXPath()));
         } catch (XPathExpressionException e) {
             LOG.error("", e);
         }
@@ -68,20 +100,23 @@ public class MessageParserTask extends AbstractTask {
 
     @Override
     protected void process() throws InterruptedException, IOException {
-        if (topicXPathExpression == null
-                || authorXPathExpression == null
-                ||
-                // ageXPathExpression == null ||
-                // sexXPathExpression == null ||
-                titleXPathExpression == null || contentXPathExpression == null
-                || dateXPathExpression == null)
+        if (topicXPathExpression == null && authorXPathExpression == null
+                && ageXPathExpression == null && sexXPathExpression == null
+                && userRatingXPathExpression == null
+                && titleXPathExpression == null
+                && contentXPathExpression == null
+                && dateXPathExpression == null)
             return;
         XmlRecordScanner xmlRecordScanner = new XmlRecordScanner(
                 taskConfiguration.getHost(), crawlerRepository);
         for (XmlRecord xmlRecord : xmlRecordScanner) {
             LOG.trace("xmlRecord: {}", xmlRecord);
             try {
+                if (xmlRecord.getXml() == null) {
+                    continue;
+                }
                 MessageRecord message = parse(xmlRecord);
+                LOG.trace(message.toString());
                 crawlerRepository.createMessage(message);
             } catch (XPathExpressionException e) {
                 LOG.error("", e);
@@ -98,15 +133,22 @@ public class MessageParserTask extends AbstractTask {
         Node node = HtmlParser.parse(source);
         if (node == null)
             return null;
-        String topic = topicXPathExpression.evalAsString(node);
-        String author = authorXPathExpression.evalAsString(node);
-        String title = titleXPathExpression.evalAsString(node);
-        String content = contentXPathExpression.evalAsString(node);
-        String date = dateXPathExpression.evalAsString(node);
+        String topic = topicXPathExpression == null ? null
+                : topicXPathExpression.evalAsString(node);
+        String author = authorXPathExpression == null ? null
+                : authorXPathExpression.evalAsString(node);
+        String title = titleXPathExpression == null ? null
+                : titleXPathExpression.evalAsString(node);
+        String content = contentXPathExpression == null ? null
+                : contentXPathExpression.evalAsString(node);
+        String date = dateXPathExpression == null ? null : dateXPathExpression
+                .evalAsString(node);
         String age = ageXPathExpression == null ? null : ageXPathExpression
                 .evalAsString(node);
         String sex = sexXPathExpression == null ? null : sexXPathExpression
                 .evalAsString(node);
+        String userRating = userRatingXPathExpression == null ? null
+                : userRatingXPathExpression.evalAsString(node);
         MessageRecord messageRecord = new MessageRecord();
         messageRecord.setHost(xmlRecord.getHost());
         messageRecord.setTopic(topic);
@@ -116,6 +158,7 @@ public class MessageParserTask extends AbstractTask {
         messageRecord.setDate(date);
         messageRecord.setAge(age);
         messageRecord.setSex(sex);
+        messageRecord.setUserRating(userRating);
         return messageRecord;
     }
 

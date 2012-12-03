@@ -108,7 +108,7 @@ public class CrawlerHBaseSchema {
 
     public static enum MessageColumn {
         TOPIC("topic"), DATE("date"), AUTHOR("author"), AGE("age"), SEX("sex"), TITLE(
-                "title"), CONTENT("content");
+                "title"), CONTENT("content"), USER_RATING("userRating");
         public final byte[] bytes;
         public final String name;
 

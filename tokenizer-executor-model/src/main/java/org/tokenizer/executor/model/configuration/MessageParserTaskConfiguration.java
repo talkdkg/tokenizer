@@ -25,6 +25,7 @@ public class MessageParserTaskConfiguration extends TaskConfiguration {
     private String titleXPath;
     private String contentXPath;
     private String dateXPath;
+    private String userRatingXPath;
 
     public String getHost() {
         return host;
@@ -88,5 +89,13 @@ public class MessageParserTaskConfiguration extends TaskConfiguration {
 
     public void setDateXPath(String dateXPath) {
         this.dateXPath = dateXPath;
+    }
+
+    public String getUserRatingXPath() {
+        return userRatingXPath;
+    }
+
+    public void setUserRatingXPath(String userRatingXPath) {
+        this.userRatingXPath = userRatingXPath;
     }
 }
