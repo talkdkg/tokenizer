@@ -4,12 +4,14 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
 
 import org.lilyproject.util.zookeeper.ZooKeeperItf;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tokenizer.core.parser.HtmlParser;
 import org.tokenizer.core.util.xml.HXPathExpression;
 import org.tokenizer.core.util.xml.LocalXPathFactory;
 import org.tokenizer.crawler.db.CrawlerHBaseRepository;
@@ -21,8 +23,9 @@ import org.tokenizer.executor.engine.HostLocker;
 import org.tokenizer.executor.model.api.WritableExecutorModel;
 import org.tokenizer.executor.model.configuration.MessageParserTaskConfiguration;
 import org.tokenizer.executor.model.configuration.TaskConfiguration;
-import org.w3c.dom.Node;
+import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 public class MessageParserTask extends AbstractTask {
     private static final Logger LOG = LoggerFactory
@@ -44,7 +47,6 @@ public class MessageParserTask extends AbstractTask {
             WritableExecutorModel model, HostLocker hostLocker) {
         super(taskName, zk, crawlerRepository, model, hostLocker);
         this.taskConfiguration = (MessageParserTaskConfiguration) taskConfiguration;
-        LOG.error(this.taskConfiguration.toString());
         try {
             topicXPathExpression = new HXPathExpression(LocalXPathFactory
                     .newXPath().compile(this.taskConfiguration.getTopicXPath()));
@@ -121,17 +123,23 @@ public class MessageParserTask extends AbstractTask {
                 crawlerRepository.createMessage(message);
             } catch (XPathExpressionException e) {
                 LOG.error("", e);
+            } catch (ParserConfigurationException e) {
+                LOG.error("", e);
+            } catch (SAXException e) {
+                LOG.error("", e);
             }
-            //
-            // taskConfiguration.getHost());
         }
     }
 
     public MessageRecord parse(XmlRecord xmlRecord)
-            throws XPathExpressionException {
+            throws XPathExpressionException, ParserConfigurationException,
+            SAXException, IOException {
         InputStream is = new ByteArrayInputStream(xmlRecord.getXml());
         InputSource source = new InputSource(is);
-        Node node = HtmlParser.parse(source);
+        // Node node = HtmlParser.parse(source);
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        DocumentBuilder db = dbf.newDocumentBuilder();
+        Document node = db.parse(source);
         if (node == null)
             return null;
         String topic = (topicXPathExpression == null ? null
