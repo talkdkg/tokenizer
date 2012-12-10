@@ -16,9 +16,7 @@
  * limitations under the License.
  */
  -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
->
+ <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <properties>
         <version.astyanax>1.0.4-SNAPSHOT</version.astyanax>
         <version.base64>2.3.8</version.base64>
@@ -42,6 +40,17 @@
         <version.tagsoup>1.2.1</version.tagsoup>
         <version.tika>1.2</version.tika>
         <version.twitter4j>3.0.0-SNAPSHOT</version.twitter4j>
+
+<!-- copied from tokenizer-ui -->
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <addonBaseName>dontpush-addon</addonBaseName>
+        <vaadin.version>6.8.4</vaadin.version>
+        <vaadin.plugin.version>${vaadin.version}</vaadin.plugin.version>
+        <version.dontpush>1.0.1</version.dontpush>
+        <xaloon.version>1.5.1</xaloon.version>
+
+        <!-- http://amanica.blogspot.ca/2010/04/vaadin-addons-and-maven-and-eclipse.html -->
+        <vaadin-widgets-dir>src/main/webapp/VAADIN/widgetsets</vaadin-widgets-dir>
     </properties>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.tokenizer</groupId>
@@ -50,7 +59,6 @@
     <packaging>pom</packaging>
     <name>Kauri application: tokenizer</name>
     <modules>
-        <module>tokenizer-analysis</module>
         <module>tokenizer-core</module>
         <module>tokenizer-dist</module>
         <module>tokenizer-crawler-db</module>
@@ -60,13 +68,12 @@
         <module>tokenizer-executor-engine-twitter</module>
         <module>tokenizer-executor-master</module>
         <module>tokenizer-executor-model</module>
-        <module>tokenizer-executor-module</module>
         <module>tokenizer-executor-worker</module>
         <module>tokenizer-twitter</module>
         <module>tokenizer-jpa</module>
         <module>tokenizer-ui</module>
         <module>wicket</module>
-    </modules>
+  </modules>
     <repositories>
         <repository>
             <id>default</id>
@@ -130,107 +137,6 @@
                 <groupId>com.netflix.astyanax</groupId>
                 <artifactId>astyanax</artifactId>
                 <version>${version.astyanax}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.hbase</groupId>
-                <artifactId>hbase</artifactId>
-                <version>${version.hbase}</version>
-                <exclusions>
-          <!-- We use the log4j binding for slf4j instead of the simple one -->
-                    <exclusion>
-                        <groupId>org.slf4j</groupId>
-                        <artifactId>slf4j-simple</artifactId>
-                    </exclusion>
-          <!-- We use a more recent Avro in Lily (which has a different groupId). -->
-                    <exclusion>
-                        <groupId>org.apache.avro</groupId>
-                        <artifactId>avro</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.apache.avro</groupId>
-                        <artifactId>avro-ipc</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.mortbay.jetty</groupId>
-                        <artifactId>jsp-2.1</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.mortbay.jetty</groupId>
-                        <artifactId>jsp-api-2.1</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <artifactId>jetty</artifactId>
-                        <groupId>org.mortbay.jetty</groupId>
-                    </exclusion>
-                    <exclusion>
-                        <artifactId>jetty-util</artifactId>
-                        <groupId>org.mortbay.jetty</groupId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.mortbay.jetty</groupId>
-                        <artifactId>servlet-api-2.5</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.apache.httpcomponents</groupId>
-                        <artifactId>httpclient</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.apache.httpcomponents</groupId>
-                        <artifactId>httpcore</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.codehaus.jackson</groupId>
-                        <artifactId>jackson-core-asl</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.codehaus.jackson</groupId>
-                        <artifactId>jackson-mapper-asl</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.codehaus.jackson</groupId>
-                        <artifactId>jackson-jaxrs</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.codehaus.jackson</groupId>
-                        <artifactId>jackson-xc</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.hadoop</groupId>
-                <artifactId>hadoop-core</artifactId>
-                <version>${version.hadoop}</version>
-                <optional>true</optional>
-                <exclusions>
-                    <exclusion>
-                        <artifactId>jetty</artifactId>
-                        <groupId>org.mortbay.jetty</groupId>
-                    </exclusion>
-                    <exclusion>
-                        <artifactId>jetty-util</artifactId>
-                        <groupId>org.mortbay.jetty</groupId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>hsqldb</groupId>
-                        <artifactId>hsqldb</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>net.sf.kosmosfs</groupId>
-                        <artifactId>kfs</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.eclipse.jdt</groupId>
-                        <artifactId>core</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>net.java.dev.jets3t</groupId>
-                        <artifactId>jets3t</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>oro</groupId>
-                        <artifactId>oro</artifactId>
-                    </exclusion>
-                </exclusions>
             </dependency>
             <dependency>
                 <groupId>javax.ws.rs</groupId>
@@ -516,6 +422,11 @@
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>tokenizer-executor-worker</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>wicket-web</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
