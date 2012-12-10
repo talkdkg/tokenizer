@@ -1,7 +1,5 @@
 package org.tokenizer.crawler.db;
 
-import java.util.List;
-
 import com.netflix.astyanax.connectionpool.exceptions.ConnectionException;
 
 public interface CrawlerRepository {
@@ -31,19 +29,32 @@ public interface CrawlerRepository {
     public void insertIfNotExists(WebpageRecord webpageRecord)
             throws ConnectionException;
 
+    public void updateSplitAttemptCounter(final WebpageRecord webpageRecord)
+            throws ConnectionException;
+
     public WebpageRecord getWebpageRecord(byte[] digest)
             throws ConnectionException;
 
-    public List<WebpageRecord> listWebpageRecords(String host, int start,
-            int rows, boolean splitterProcessFinished)
+    public WebpageRecords listWebpageRecords(final String host,
+            final int splitAttemptCounter, final int defaultPageSize)
             throws ConnectionException;
 
-    public void insertIfNotExist(List<XmlRecord> xmlRecords)
+    public int countWebpageRecords(final String host,
+            final int splitAttemptCounter) throws ConnectionException;
+
+    public void insertIfNotExist(final XmlRecord xmlRecord)
             throws ConnectionException;
 
-    public List<XmlRecord> listXmlRecords(String host, int start, int rows,
-            boolean parserProcessFinished) throws ConnectionException;
+    public void updateParseAttemptCounter(final XmlRecord xmlRecord)
+            throws ConnectionException;
+
+    public XmlRecords listXmlRecords(final String host,
+            final int parseAttemptCounter, final int defaultPageSize)
+            throws ConnectionException;
 
     public void insertIfNotExists(MessageRecord messageRecord)
+            throws ConnectionException;
+
+    public int countXmlRecords(final String host, final int parseAttemptCounter)
             throws ConnectionException;
 }

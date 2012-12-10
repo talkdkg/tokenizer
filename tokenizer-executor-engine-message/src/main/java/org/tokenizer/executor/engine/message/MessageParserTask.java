@@ -3,7 +3,6 @@ package org.tokenizer.executor.engine.message;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -13,11 +12,13 @@ import javax.xml.xpath.XPathExpressionException;
 import org.lilyproject.util.zookeeper.ZooKeeperItf;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tokenizer.core.util.HttpUtils;
 import org.tokenizer.core.util.xml.HXPathExpression;
 import org.tokenizer.core.util.xml.LocalXPathFactory;
 import org.tokenizer.crawler.db.CrawlerRepository;
 import org.tokenizer.crawler.db.MessageRecord;
 import org.tokenizer.crawler.db.XmlRecord;
+import org.tokenizer.crawler.db.XmlRecords;
 import org.tokenizer.executor.engine.AbstractTask;
 import org.tokenizer.executor.engine.HostLocker;
 import org.tokenizer.executor.model.api.WritableExecutorModel;
@@ -44,10 +45,10 @@ public class MessageParserTask extends AbstractTask {
     private HXPathExpression dateXPathExpression;
     private HXPathExpression userRatingXPathExpression;
 
-    public MessageParserTask(String taskName, ZooKeeperItf zk,
-            TaskConfiguration taskConfiguration,
-            CrawlerRepository crawlerRepository, WritableExecutorModel model,
-            HostLocker hostLocker) {
+    public MessageParserTask(final String taskName, final ZooKeeperItf zk,
+            final TaskConfiguration taskConfiguration,
+            final CrawlerRepository crawlerRepository,
+            final WritableExecutorModel model, final HostLocker hostLocker) {
         super(taskName, zk, crawlerRepository, model, hostLocker);
         this.taskConfiguration = (MessageParserTaskConfiguration) taskConfiguration;
         try {
@@ -113,14 +114,12 @@ public class MessageParserTask extends AbstractTask {
                 && contentXPathExpression == null
                 && dateXPathExpression == null)
             return;
-        List<XmlRecord> xmlRecords = crawlerRepository.listXmlRecords(
-                taskConfiguration.getHost(), 0, 100, false);
+        int parseAttemptCounter = 0;
+        XmlRecords xmlRecords = crawlerRepository.listXmlRecords(
+                taskConfiguration.getHost(), parseAttemptCounter, 100);
         for (XmlRecord xmlRecord : xmlRecords) {
-            // LOG.trace("xmlRecord: {}", xmlRecord);
+            LOG.trace("xmlRecord: {}", xmlRecord);
             try {
-                if (xmlRecord.getXml() == null) {
-                    continue;
-                }
                 MessageRecord message = parse(xmlRecord);
                 LOG.trace(message.toString());
                 crawlerRepository.insertIfNotExists(message);
@@ -136,10 +135,10 @@ public class MessageParserTask extends AbstractTask {
         }
     }
 
-    public MessageRecord parse(XmlRecord xmlRecord)
+    public MessageRecord parse(final XmlRecord xmlRecord)
             throws XPathExpressionException, ParserConfigurationException,
             SAXException, IOException {
-        InputStream is = new ByteArrayInputStream(xmlRecord.getXml());
+        InputStream is = new ByteArrayInputStream(xmlRecord.getContent());
         InputSource source = new InputSource(is);
         // Node node = HtmlParser.parse(source);
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -163,12 +162,11 @@ public class MessageParserTask extends AbstractTask {
                 .evalAsString(node));
         String userRating = (userRatingXPathExpression == null ? null
                 : userRatingXPathExpression.evalAsString(node));
-        MessageRecord messageRecord = new MessageRecord();
+        MessageRecord messageRecord = new MessageRecord(author, title, content);
         messageRecord.setHost(xmlRecord.getHost());
+        messageRecord.setHostInverted(HttpUtils.getHostInverted(xmlRecord
+                .getHost()));
         messageRecord.setTopic(topic);
-        messageRecord.setAuthor(author);
-        messageRecord.setTitle(title);
-        messageRecord.setContent(content);
         messageRecord.setDate(date);
         messageRecord.setAge(age);
         messageRecord.setSex(sex);
@@ -182,7 +180,7 @@ public class MessageParserTask extends AbstractTask {
     }
 
     @Override
-    public void setTaskConfiguration(TaskConfiguration taskConfiguration) {
+    public void setTaskConfiguration(final TaskConfiguration taskConfiguration) {
         this.taskConfiguration = (MessageParserTaskConfiguration) taskConfiguration;
     }
 }

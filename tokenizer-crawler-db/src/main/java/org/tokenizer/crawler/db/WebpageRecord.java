@@ -15,25 +15,25 @@
  */
 package org.tokenizer.crawler.db;
 
+import java.util.Arrays;
 import java.util.Date;
 
+import org.tokenizer.core.util.HttpUtils;
 import org.tokenizer.core.util.MD5;
 
 public class WebpageRecord {
 
-    private static final byte[] EMPTY_ARRAY = new byte[0];
-    private static final String EMPTY_STRING = "";
-    private static final Date EMPTY_DATE = new Date(0);
-    private byte[] digest = EMPTY_ARRAY;
-    private String url = EMPTY_STRING;
-    private String host = EMPTY_STRING;
-    private byte[] hostInverted = EMPTY_ARRAY;
-    private Date timestamp = EMPTY_DATE;
-    private String charset = EMPTY_STRING;
-    private byte[] content = EMPTY_ARRAY;
+    private byte[] digest = DefaultValues.EMPTY_ARRAY;
+    private String url = DefaultValues.EMPTY_STRING;
+    private String host = DefaultValues.EMPTY_STRING;
+    private byte[] hostInverted = DefaultValues.EMPTY_ARRAY;
+    private Date timestamp = DefaultValues.EMPTY_DATE;
+    private String charset = DefaultValues.EMPTY_STRING;
+    private byte[] content = DefaultValues.EMPTY_ARRAY;
     private int splitAttemptCounter = 0;
 
-    public WebpageRecord(final byte[] content) {
+    public WebpageRecord(final String host, final byte[] content) {
+        setHost(host);
         this.content = content;
         this.digest = MD5.digest(content);
     }
@@ -60,36 +60,33 @@ public class WebpageRecord {
         this.url = url;
     }
 
-    public String getCharset() {
-        return charset;
-    }
-
-    public void setCharset(final String charset) {
-        this.charset = charset;
-    }
-
-    public byte[] getContent() {
-        return content;
-    }
-
-    public void setContent(final byte[] content) {
-        this.content = content;
-    }
-
-    public byte[] getDigest() {
-        return digest;
-    }
-
     public String getHost() {
         return host;
     }
 
     public void setHost(final String host) {
         this.host = host;
+        this.hostInverted = HttpUtils.getHostInverted(host);
     }
 
-    public void setDigest(final byte[] digest) {
-        this.digest = digest;
+    public byte[] getHostInverted() {
+        return hostInverted;
+    }
+
+    public Date getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(final Date timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    public String getCharset() {
+        return charset;
+    }
+
+    public void setCharset(final String charset) {
+        this.charset = charset;
     }
 
     public int getSplitAttemptCounter() {
@@ -100,19 +97,20 @@ public class WebpageRecord {
         this.splitAttemptCounter = splitAttemptCounter;
     }
 
-    public byte[] getHostInverted() {
-        return hostInverted;
+    public byte[] getDigest() {
+        return digest;
     }
 
-    public void setHostInverted(final byte[] hostInverted) {
-        this.hostInverted = hostInverted;
+    public byte[] getContent() {
+        return content;
     }
 
-    public Date getTimestamp() {
-        return timestamp;
-    }
-
-    public void setTimestamp(final Date timestamp) {
-        this.timestamp = timestamp;
+    @Override
+    public String toString() {
+        return "WebpageRecord [digest=" + Arrays.toString(digest) + ", url="
+                + url + ", host=" + host + ", hostInverted="
+                + Arrays.toString(hostInverted) + ", timestamp=" + timestamp
+                + ", charset=" + charset + ", splitAttemptCounter="
+                + splitAttemptCounter + "]";
     }
 }

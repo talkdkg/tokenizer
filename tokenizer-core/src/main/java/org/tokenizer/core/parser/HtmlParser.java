@@ -29,10 +29,11 @@ import org.xml.sax.SAXNotSupportedException;
 import org.xml.sax.XMLReader;
 
 public class HtmlParser {
+
     private static final LSSerializerFilter defaultLSSerializerFilter = new OutputFilter();
     private static final Logger LOG = LoggerFactory.getLogger(HtmlParser.class);
 
-    public static Document parse(InputSource inputSource) {
+    public static Document parse(final InputSource inputSource) {
         try {
             XMLReader reader = new Parser();
             reader.setFeature(Parser.namespacesFeature, false);
@@ -59,11 +60,11 @@ public class HtmlParser {
         return null;
     }
 
-    public static String format(Node node) {
+    public static String format(final Node node) {
         return format(node, defaultLSSerializerFilter);
     }
 
-    public static String format(Node node, LSSerializerFilter filter) {
+    public static String format(final Node node, final LSSerializerFilter filter) {
         try {
             DOMImplementationRegistry registry = DOMImplementationRegistry
                     .newInstance();
@@ -71,8 +72,8 @@ public class HtmlParser {
                     .getDOMImplementation("LS");
             LSSerializer writer = impl.createLSSerializer();
             writer.setFilter(filter);
-            writer.getDomConfig().setParameter("format-pretty-print",
-                    Boolean.TRUE);
+            // writer.getDomConfig().setParameter("format-pretty-print",
+            // Boolean.TRUE);
             LSOutput output = impl.createLSOutput();
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             output.setByteStream(out);
@@ -107,8 +108,9 @@ public class HtmlParser {
 }
 
 class OutputFilter implements LSSerializerFilter {
+
     @Override
-    public short acceptNode(Node n) {
+    public short acceptNode(final Node n) {
         if (n instanceof Element) {
             Element element = (Element) n;
             // Commented out: <a>Fuad</a>Efendi will become FuadEfendi (without

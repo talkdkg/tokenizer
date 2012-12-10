@@ -7,46 +7,56 @@ import org.tokenizer.core.util.MD5;
 public class XmlRecord {
 
     private static final Logger LOG = LoggerFactory.getLogger(XmlRecord.class);
-    private String host;
-    private String digest;
-    private byte[] xml;
+    private byte[] digest = DefaultValues.EMPTY_ARRAY;
+    private String host = DefaultValues.EMPTY_STRING;
+    private byte[] hostInverted = DefaultValues.EMPTY_ARRAY;
+    private byte[] content = DefaultValues.EMPTY_ARRAY;
+    private int parseAttemptCounter = 0;
 
-    public XmlRecord() {
+    public XmlRecord(final byte[] content) {
+        this.content = content;
+        this.digest = MD5.digest(content);
     }
 
-    public XmlRecord(String host, byte[] xml) {
+    public XmlRecord(final byte[] digest, final String host,
+            final byte[] hostInverted, final byte[] content,
+            final int parseAttemptCounter) {
+        this.digest = digest;
         this.host = host;
-        this.xml = xml;
-        this.digest = MD5.MD5(xml);
+        this.hostInverted = hostInverted;
+        this.content = content;
+        this.parseAttemptCounter = parseAttemptCounter;
     }
 
     public String getHost() {
         return host;
     }
 
-    public void setHost(String host) {
+    public void setHost(final String host) {
         this.host = host;
     }
 
-    public byte[] getXml() {
-        return xml;
+    public byte[] getHostInverted() {
+        return hostInverted;
     }
 
-    public void setXml(byte[] xml) {
-        this.xml = xml;
+    public void setHostInverted(final byte[] hostInverted) {
+        this.hostInverted = hostInverted;
     }
 
-    public String getDigest() {
+    public int getParseAttemptCounter() {
+        return parseAttemptCounter;
+    }
+
+    public void setParseAttemptCounter(final int parseAttemptCounter) {
+        this.parseAttemptCounter = parseAttemptCounter;
+    }
+
+    public byte[] getDigest() {
         return digest;
     }
 
-    public void setDigest(String digest) {
-        this.digest = digest;
-    }
-
-    @Override
-    public String toString() {
-        return "XmlRecord [host=" + host + ", digest=" + digest + ", xml="
-                + new String(xml) + "]";
+    public byte[] getContent() {
+        return content;
     }
 }

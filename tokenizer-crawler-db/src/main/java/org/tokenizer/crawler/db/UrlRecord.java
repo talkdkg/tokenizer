@@ -26,17 +26,14 @@ public class UrlRecord {
 
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory
             .getLogger(UrlRecord.class);
-    private static final byte[] EMPTY_ARRAY = new byte[0];
-    private static final String EMPTY_STRING = "";
-    private static final Date EMPTY_DATE = new Date(0);
-    private byte[] digest = EMPTY_ARRAY;
-    private String url = EMPTY_STRING;
-    private String host = EMPTY_STRING;
-    private byte[] hostInverted = EMPTY_ARRAY;
-    private Date timestamp = EMPTY_DATE;
+    private byte[] digest = DefaultValues.EMPTY_ARRAY;
+    private String url = DefaultValues.EMPTY_STRING;
+    private String host = DefaultValues.EMPTY_STRING;
+    private byte[] hostInverted = DefaultValues.EMPTY_ARRAY;
+    private Date timestamp = DefaultValues.EMPTY_DATE;
     private int fetchAttemptCounter = 0;
     private int httpResponseCode = 0;
-    private byte[] webpageDigest = EMPTY_ARRAY;
+    private byte[] webpageDigest = DefaultValues.EMPTY_ARRAY;
 
     public UrlRecord(final String url) {
         this.url = url;
@@ -63,52 +60,12 @@ public class UrlRecord {
         this.webpageDigest = webpageDigest;
     }
 
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(final String url) {
-        this.url = url;
-    }
-
     public Date getTimestamp() {
         return timestamp;
     }
 
     public void setTimestamp(final Date timestamp) {
         this.timestamp = timestamp;
-    }
-
-    public int getHttpResponseCode() {
-        return httpResponseCode;
-    }
-
-    public void setHttpResponseCode(final int httpResponseCode) {
-        this.httpResponseCode = httpResponseCode;
-    }
-
-    public byte[] getDigest() {
-        return digest;
-    }
-
-    public void setDigest(final byte[] digest) {
-        this.digest = digest;
-    }
-
-    public String getHost() {
-        return host;
-    }
-
-    public void setHost(final String host) {
-        this.host = host;
-    }
-
-    public byte[] getHostInverted() {
-        return hostInverted;
-    }
-
-    public void setHostInverted(final byte[] hostInverted) {
-        this.hostInverted = hostInverted;
     }
 
     public int getFetchAttemptCounter() {
@@ -119,12 +76,36 @@ public class UrlRecord {
         this.fetchAttemptCounter = fetchAttemptCounter;
     }
 
+    public int getHttpResponseCode() {
+        return httpResponseCode;
+    }
+
+    public void setHttpResponseCode(final int httpResponseCode) {
+        this.httpResponseCode = httpResponseCode;
+    }
+
     public byte[] getWebpageDigest() {
         return webpageDigest;
     }
 
     public void setWebpageDigest(final byte[] webpageDigest) {
         this.webpageDigest = webpageDigest;
+    }
+
+    public byte[] getDigest() {
+        return digest;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public String getHost() {
+        return host;
+    }
+
+    public byte[] getHostInverted() {
+        return hostInverted;
     }
 
     @Override

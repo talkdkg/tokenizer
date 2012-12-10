@@ -14,16 +14,16 @@ import com.netflix.astyanax.model.ColumnList;
 import com.netflix.astyanax.model.Row;
 import com.netflix.astyanax.model.Rows;
 
-public class UrlRecords extends AbstractCollection<UrlRecord> implements
-        Iterable<UrlRecord>, Iterator<UrlRecord> {
+public class WebpageRecords extends AbstractCollection<WebpageRecord> implements
+        Iterable<WebpageRecord>, Iterator<WebpageRecord> {
 
-    private static Logger LOG = LoggerFactory.getLogger(UrlRecords.class);
+    private static Logger LOG = LoggerFactory.getLogger(WebpageRecords.class);
     private final Execution<Rows<byte[], String>> query;
     private Rows<byte[], String> rows = null;
     private Iterator<Row<byte[], String>> iterator = null;
     private int count = 0;
 
-    public UrlRecords(final int count,
+    public WebpageRecords(final int count,
             final Execution<Rows<byte[], String>> query) {
         this.query = query;
         this.count = count;
@@ -31,15 +31,12 @@ public class UrlRecords extends AbstractCollection<UrlRecord> implements
     }
 
     @Override
-    public Iterator<UrlRecord> iterator() {
+    public Iterator<WebpageRecord> iterator() {
         return this;
     }
 
-    int hasNextCount = 0;
-
     @Override
     public boolean hasNext() {
-        LOG.trace("hasNext() called... {}", ++hasNextCount);
         if (iterator.hasNext())
             return true;
         else {
@@ -50,11 +47,8 @@ public class UrlRecords extends AbstractCollection<UrlRecord> implements
         return true;
     }
 
-    int nextCount = 0;
-
     @Override
-    public UrlRecord next() {
-        LOG.trace("next() called... {}", ++nextCount);
+    public WebpageRecord next() {
         Row<byte[], String> row = null;
         if (iterator.hasNext()) {
             row = iterator.next();
@@ -66,14 +60,13 @@ public class UrlRecords extends AbstractCollection<UrlRecord> implements
         String host = columns.getStringValue("host", null);
         byte[] hostInverted = columns.getByteArrayValue("hostInverted", null);
         Date timestamp = columns.getDateValue("timestamp", null);
-        int fetchAttemptCounter = columns.getIntegerValue(
-                "fetchAttemptCounter", null);
-        int httpResponseCode = columns
-                .getIntegerValue("httpResponseCode", null);
-        byte[] webpageDigest = columns.getByteArrayValue("webpageDigest", null);
-        UrlRecord urlRecord = new UrlRecord(digest, url, host, hostInverted,
-                timestamp, fetchAttemptCounter, httpResponseCode, webpageDigest);
-        return urlRecord;
+        String charset = columns.getStringValue("charset", null);
+        byte[] content = columns.getByteArrayValue("content", null);
+        int splitAttemptCounter = columns.getIntegerValue(
+                "splitAttemptCounter", null);
+        WebpageRecord webpageRecord = new WebpageRecord(digest, url, host,
+                hostInverted, timestamp, charset, content, splitAttemptCounter);
+        return webpageRecord;
     }
 
     @Override
@@ -86,10 +79,7 @@ public class UrlRecords extends AbstractCollection<UrlRecord> implements
         return this.count;
     }
 
-    int nextPageCount = 0;
-
     private void nextPage() {
-        LOG.trace("nextPage() called... {}", ++nextPageCount);
         try {
             this.rows = query.execute().getResult();
             this.iterator = rows.iterator();

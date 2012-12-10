@@ -86,6 +86,7 @@ public class CrawledContentView extends VerticalSplitPanel implements
                 WebpageRecord webpage = null;
                 try {
                     webpage = repository.getWebpageRecord(digest);
+                    LOG.warn("webpage: {}", webpage);
                 } catch (ConnectionException e1) {
                     // TODO Auto-generated catch block
                     e1.printStackTrace();

@@ -3,12 +3,12 @@ package org.tokenizer.crawler.db;
 import java.io.UnsupportedEncodingException;
 import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 
 import javax.annotation.PostConstruct;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tokenizer.core.util.HttpUtils;
 import org.tokenizer.core.util.MD5;
 
 import com.google.common.collect.ImmutableMap;
@@ -86,149 +86,281 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
         // keyspace.dropKeyspace();
         // } catch (Exception e) {
         // }
-        KeyspaceDefinition ki = null;
+        KeyspaceDefinition def = null;
         try {
-            ki = keyspace.describeKeyspace();
+            def = keyspace.describeKeyspace();
         } catch (BadRequestException e) {
         }
-        if (ki != null) {
-            System.out.println("Describe Keyspace: " + ki.getName());
-            getKeyspaceDefinition();
-            return;
+        if (def == null) {
+            keyspace.createKeyspace(ImmutableMap
+                    .<String, Object> builder()
+                    .put("strategy_options",
+                            ImmutableMap.<String, Object> builder()
+                                    .put("replication_factor", "1").build())
+                    .put("strategy_class", "SimpleStrategy").build());
         }
-        keyspace.createKeyspace(ImmutableMap
-                .<String, Object> builder()
-                .put("strategy_options",
-                        ImmutableMap.<String, Object> builder()
-                                .put("replication_factor", "1").build())
-                .put("strategy_class", "SimpleStrategy").build());
-        keyspace.createColumnFamily(
-                CF_URL_RECORDS,
-                ImmutableMap
-                        .<String, Object> builder()
-                        .put("default_validation_class", "AsciiType")
-                        .put("key_validation_class", "BytesType")
-                        .put("column_metadata",
-                                ImmutableMap
-                                        .<String, Object> builder()
-                                        .put("url",
-                                                ImmutableMap
-                                                        .<String, Object> builder()
-                                                        .put("validation_class",
-                                                                "AsciiType")
-                                                        .build())
-                                        .put("host",
-                                                ImmutableMap
-                                                        .<String, Object> builder()
-                                                        .put("validation_class",
-                                                                "AsciiType")
-                                                        .build())
-                                        .put("hostInverted",
-                                                ImmutableMap
-                                                        .<String, Object> builder()
-                                                        .put("validation_class",
-                                                                "BytesType")
-                                                        .put("index_name",
-                                                                "URL_hostInverted")
-                                                        .put("index_type",
-                                                                "KEYS").build())
-                                        .put("timestamp",
-                                                ImmutableMap
-                                                        .<String, Object> builder()
-                                                        .put("validation_class",
-                                                                "DateType")
-                                                        .build())
-                                        .put("fetchAttemptCounter",
-                                                ImmutableMap
-                                                        .<String, Object> builder()
-                                                        .put("validation_class",
-                                                                "IntegerType")
-                                                        .put("index_name",
-                                                                "URL_fetchAttemptCounter")
-                                                        .put("index_type",
-                                                                "KEYS").build())
-                                        .put("httpResponseCode",
-                                                ImmutableMap
-                                                        .<String, Object> builder()
-                                                        .put("validation_class",
-                                                                "IntegerType")
-                                                        .put("index_name",
-                                                                "URL_httpResponseCode")
-                                                        .put("index_type",
-                                                                "KEYS").build())
-                                        .put("webpageDigest",
-                                                ImmutableMap
-                                                        .<String, Object> builder()
-                                                        .put("validation_class",
-                                                                "BytesType")
-                                                        .build()).build())
-                        .build());
-        //
-        keyspace.createColumnFamily(
-                CF_WEBPAGE_RECORDS,
-                ImmutableMap
-                        .<String, Object> builder()
-                        .put("default_validation_class", "BytesType")
-                        .put("key_validation_class", "BytesType")
-                        .put("compression_options",
-                                ImmutableMap
-                                        .<String, Object> builder()
-                                        .put("sstable_compression",
-                                                "SnappyCompressor")
-                                        .put("chunk_length_kb", "64").build())
-                        // "{sstable_compression:SnappyCompressor, chunk_length_kb:64}")
-                        .put("column_metadata",
-                                ImmutableMap
-                                        .<String, Object> builder()
-                                        .put("url",
-                                                ImmutableMap
-                                                        .<String, Object> builder()
-                                                        .put("validation_class",
-                                                                "AsciiType")
-                                                        .build())
-                                        .put("host",
-                                                ImmutableMap
-                                                        .<String, Object> builder()
-                                                        .put("validation_class",
-                                                                "AsciiType")
-                                                        .build())
-                                        .put("hostInverted",
-                                                ImmutableMap
-                                                        .<String, Object> builder()
-                                                        .put("validation_class",
-                                                                "BytesType")
-                                                        .put("index_name",
-                                                                "WEBPAGE_hostInverted")
-                                                        .put("index_type",
-                                                                "KEYS").build())
-                                        .put("timestamp",
-                                                ImmutableMap
-                                                        .<String, Object> builder()
-                                                        .put("validation_class",
-                                                                "DateType")
-                                                        .build())
-                                        .put("charset",
-                                                ImmutableMap
-                                                        .<String, Object> builder()
-                                                        .put("validation_class",
-                                                                "AsciiType")
-                                                        .build())
-                                        .put("content",
-                                                ImmutableMap
-                                                        .<String, Object> builder()
-                                                        .put("validation_class",
-                                                                "BytesType")
-                                                        .build())
-                                        .put("splitAttemptCounter",
-                                                ImmutableMap
-                                                        .<String, Object> builder()
-                                                        .put("validation_class",
-                                                                "IntegerType")
-                                                        .put("WEBPAGE_index_name",
-                                                                "splitAttemptCounter")
-                                                        .put("index_type",
-                                                                "KEYS").build())
-                                        .build()).build());
+        if (def.getColumnFamily("URL_RECORDS") == null) {
+            keyspace.createColumnFamily(
+                    CF_URL_RECORDS,
+                    ImmutableMap
+                            .<String, Object> builder()
+                            .put("default_validation_class", "AsciiType")
+                            .put("key_validation_class", "BytesType")
+                            .put("column_metadata",
+                                    ImmutableMap
+                                            .<String, Object> builder()
+                                            .put("url",
+                                                    ImmutableMap
+                                                            .<String, Object> builder()
+                                                            .put("validation_class",
+                                                                    "AsciiType")
+                                                            .build())
+                                            .put("host",
+                                                    ImmutableMap
+                                                            .<String, Object> builder()
+                                                            .put("validation_class",
+                                                                    "AsciiType")
+                                                            .build())
+                                            .put("hostInverted",
+                                                    ImmutableMap
+                                                            .<String, Object> builder()
+                                                            .put("validation_class",
+                                                                    "BytesType")
+                                                            .put("index_name",
+                                                                    "URL_hostInverted")
+                                                            .put("index_type",
+                                                                    "KEYS")
+                                                            .build())
+                                            .put("timestamp",
+                                                    ImmutableMap
+                                                            .<String, Object> builder()
+                                                            .put("validation_class",
+                                                                    "DateType")
+                                                            .build())
+                                            .put("fetchAttemptCounter",
+                                                    ImmutableMap
+                                                            .<String, Object> builder()
+                                                            .put("validation_class",
+                                                                    "Int32Type")
+                                                            .put("index_name",
+                                                                    "URL_fetchAttemptCounter")
+                                                            .put("index_type",
+                                                                    "KEYS")
+                                                            .build())
+                                            .put("httpResponseCode",
+                                                    ImmutableMap
+                                                            .<String, Object> builder()
+                                                            .put("validation_class",
+                                                                    "Int32Type")
+                                                            .put("index_name",
+                                                                    "URL_httpResponseCode")
+                                                            .put("index_type",
+                                                                    "KEYS")
+                                                            .build())
+                                            .put("webpageDigest",
+                                                    ImmutableMap
+                                                            .<String, Object> builder()
+                                                            .put("validation_class",
+                                                                    "BytesType")
+                                                            .build()).build())
+                            .build());
+        }
+        if (def.getColumnFamily("WEBPAGE_RECORDS") == null) {
+            keyspace.createColumnFamily(
+                    CF_WEBPAGE_RECORDS,
+                    ImmutableMap
+                            .<String, Object> builder()
+                            .put("default_validation_class", "BytesType")
+                            .put("key_validation_class", "BytesType")
+                            .put("compression_options",
+                                    ImmutableMap
+                                            .<String, Object> builder()
+                                            .put("sstable_compression",
+                                                    "SnappyCompressor")
+                                            .put("chunk_length_kb", "64")
+                                            .build())
+                            // "{sstable_compression:SnappyCompressor, chunk_length_kb:64}")
+                            .put("column_metadata",
+                                    ImmutableMap
+                                            .<String, Object> builder()
+                                            .put("url",
+                                                    ImmutableMap
+                                                            .<String, Object> builder()
+                                                            .put("validation_class",
+                                                                    "AsciiType")
+                                                            .build())
+                                            .put("host",
+                                                    ImmutableMap
+                                                            .<String, Object> builder()
+                                                            .put("validation_class",
+                                                                    "AsciiType")
+                                                            .build())
+                                            .put("hostInverted",
+                                                    ImmutableMap
+                                                            .<String, Object> builder()
+                                                            .put("validation_class",
+                                                                    "BytesType")
+                                                            .put("index_name",
+                                                                    "WEBPAGE_hostInverted")
+                                                            .put("index_type",
+                                                                    "KEYS")
+                                                            .build())
+                                            .put("timestamp",
+                                                    ImmutableMap
+                                                            .<String, Object> builder()
+                                                            .put("validation_class",
+                                                                    "DateType")
+                                                            .build())
+                                            .put("charset",
+                                                    ImmutableMap
+                                                            .<String, Object> builder()
+                                                            .put("validation_class",
+                                                                    "AsciiType")
+                                                            .build())
+                                            .put("content",
+                                                    ImmutableMap
+                                                            .<String, Object> builder()
+                                                            .put("validation_class",
+                                                                    "BytesType")
+                                                            .build())
+                                            .put("splitAttemptCounter",
+                                                    ImmutableMap
+                                                            .<String, Object> builder()
+                                                            .put("validation_class",
+                                                                    "Int32Type")
+                                                            .put("index_name",
+                                                                    "WEBPAGE_splitAttemptCounter")
+                                                            .put("index_type",
+                                                                    "KEYS")
+                                                            .build()).build())
+                            .build());
+        }
+        // ////////////
+        // XML Records
+        // ////////////
+        if (def.getColumnFamily("XML_RECORDS") == null) {
+            keyspace.createColumnFamily(
+                    CF_XML_RECORDS,
+                    ImmutableMap
+                            .<String, Object> builder()
+                            .put("default_validation_class", "BytesType")
+                            .put("key_validation_class", "BytesType")
+                            .put("column_metadata",
+                                    ImmutableMap
+                                            .<String, Object> builder()
+                                            .put("host",
+                                                    ImmutableMap
+                                                            .<String, Object> builder()
+                                                            .put("validation_class",
+                                                                    "AsciiType")
+                                                            .build())
+                                            .put("hostInverted",
+                                                    ImmutableMap
+                                                            .<String, Object> builder()
+                                                            .put("validation_class",
+                                                                    "BytesType")
+                                                            .put("index_name",
+                                                                    "XML_hostInverted")
+                                                            .put("index_type",
+                                                                    "KEYS")
+                                                            .build())
+                                            .put("content",
+                                                    ImmutableMap
+                                                            .<String, Object> builder()
+                                                            .put("validation_class",
+                                                                    "BytesType")
+                                                            .build())
+                                            .put("parseAttemptCounter",
+                                                    ImmutableMap
+                                                            .<String, Object> builder()
+                                                            .put("validation_class",
+                                                                    "Int32Type")
+                                                            .put("index_name",
+                                                                    "XML_parseAttemptCounter")
+                                                            .put("index_type",
+                                                                    "KEYS")
+                                                            .build()).build())
+                            .build());
+        }
+        // //////////
+        // Message Records
+        // //////////
+        if (def.getColumnFamily("MESSAGE_RECORDS") == null) {
+            keyspace.createColumnFamily(
+                    CF_MESSAGE_RECORDS,
+                    ImmutableMap
+                            .<String, Object> builder()
+                            .put("default_validation_class", "UTF8Type")
+                            .put("key_validation_class", "BytesType")
+                            .put("column_metadata",
+                                    ImmutableMap
+                                            .<String, Object> builder()
+                                            .put("host",
+                                                    ImmutableMap
+                                                            .<String, Object> builder()
+                                                            .put("validation_class",
+                                                                    "AsciiType")
+                                                            .build())
+                                            .put("hostInverted",
+                                                    ImmutableMap
+                                                            .<String, Object> builder()
+                                                            .put("validation_class",
+                                                                    "BytesType")
+                                                            .put("index_name",
+                                                                    "MESSAGE_hostInverted")
+                                                            .put("index_type",
+                                                                    "KEYS")
+                                                            .build())
+                                            .put("topic",
+                                                    ImmutableMap
+                                                            .<String, Object> builder()
+                                                            .put("validation_class",
+                                                                    "UTF8Type")
+                                                            .build())
+                                            .put("date",
+                                                    ImmutableMap
+                                                            .<String, Object> builder()
+                                                            .put("validation_class",
+                                                                    "UTF8Type")
+                                                            .build())
+                                            .put("author",
+                                                    ImmutableMap
+                                                            .<String, Object> builder()
+                                                            .put("validation_class",
+                                                                    "UTF8Type")
+                                                            .build())
+                                            .put("age",
+                                                    ImmutableMap
+                                                            .<String, Object> builder()
+                                                            .put("validation_class",
+                                                                    "UTF8Type")
+                                                            .build())
+                                            .put("sex",
+                                                    ImmutableMap
+                                                            .<String, Object> builder()
+                                                            .put("validation_class",
+                                                                    "UTF8Type")
+                                                            .build())
+                                            .put("title",
+                                                    ImmutableMap
+                                                            .<String, Object> builder()
+                                                            .put("validation_class",
+                                                                    "UTF8Type")
+                                                            .build())
+                                            .put("content",
+                                                    ImmutableMap
+                                                            .<String, Object> builder()
+                                                            .put("validation_class",
+                                                                    "UTF8Type")
+                                                            .build())
+                                            .put("userRating",
+                                                    ImmutableMap
+                                                            .<String, Object> builder()
+                                                            .put("validation_class",
+                                                                    "UTF8Type")
+                                                            .build()).build())
+                            .build());
+        }
         KeyspaceDefinition ki2 = keyspaceContext.getEntity().describeKeyspace();
         System.out.println("Describe Keyspace: " + ki2.getName());
         getKeyspaceDefinition();
@@ -345,6 +477,26 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
     }
 
     @Override
+    public void updateSplitAttemptCounter(final WebpageRecord webpageRecord)
+            throws ConnectionException {
+        MutationBatch m = keyspace.prepareMutationBatch();
+        m.withRow(CF_WEBPAGE_RECORDS, webpageRecord.getDigest()).putColumn(
+                "splitAttemptCounter", webpageRecord.getSplitAttemptCounter(),
+                null);
+        m.execute();
+    }
+
+    @Override
+    public void updateParseAttemptCounter(final XmlRecord xmlRecord)
+            throws ConnectionException {
+        MutationBatch m = keyspace.prepareMutationBatch();
+        m.withRow(CF_XML_RECORDS, xmlRecord.getDigest())
+                .putColumn("parseAttemptCounter",
+                        xmlRecord.getParseAttemptCounter(), null);
+        m.execute();
+    }
+
+    @Override
     public WebpageRecord getWebpageRecord(final byte[] digest)
             throws ConnectionException {
         OperationResult<ColumnList<String>> result = keyspace
@@ -356,39 +508,93 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
         Date timestamp = columns.getDateValue("timestamp", null);
         String charset = columns.getStringValue("charset", null);
         byte[] content = columns.getByteArrayValue("content", null);
+        // /
         int splitAttemptCounter = columns.getIntegerValue(
-                "splitAttemptCounter", null);
+                "splitAttemptCounter", 0);
+        // /
         WebpageRecord webpageRecord = new WebpageRecord(digest, url, host,
                 hostInverted, timestamp, charset, content, splitAttemptCounter);
         return webpageRecord;
     }
 
     @Override
-    public List<WebpageRecord> listWebpageRecords(final String host,
-            final int start, final int rows,
-            final boolean splitterProcessFinished) throws ConnectionException {
-        // TODO Auto-generated method stub
-        return null;
+    public WebpageRecords listWebpageRecords(final String host,
+            final int splitAttemptCounter, final int defaultPageSize)
+            throws ConnectionException {
+        IndexQuery<byte[], String> query = keyspace
+                .prepareQuery(CF_WEBPAGE_RECORDS).searchWithIndex()
+                .setRowLimit(defaultPageSize).autoPaginateRows(true)
+                .addExpression().whereColumn("hostInverted").equals()
+                .value(HttpUtils.getHostInverted(host)).addExpression()
+                .whereColumn("splitAttemptCounter").equals()
+                .value(splitAttemptCounter);
+        return new WebpageRecords(
+                countWebpageRecords(host, splitAttemptCounter), query);
     }
 
     @Override
-    public void insertIfNotExist(final List<XmlRecord> xmlRecords)
+    public void insertIfNotExist(final XmlRecord xmlRecord)
             throws ConnectionException {
-        // TODO Auto-generated method stub
+        OperationResult<ColumnList<String>> result = keyspace
+                .prepareQuery(CF_XML_RECORDS).getKey(xmlRecord.getDigest())
+                .execute();
+        if (result.getResult().isEmpty()) {
+            insert(xmlRecord);
+        }
+    }
+
+    private void insert(final XmlRecord xmlRecord) throws ConnectionException {
+        MutationBatch m = keyspace.prepareMutationBatch();
+        m.withRow(CF_MESSAGE_RECORDS, xmlRecord.getDigest())
+                .putColumn("host", xmlRecord.getHost(), null)
+                .putColumn("hostInverted", xmlRecord.getHostInverted(), null)
+                .putColumn("content", xmlRecord.getContent(), null)
+                .putColumn("parseAttemptCounter",
+                        xmlRecord.getParseAttemptCounter(), null);
+        m.execute();
     }
 
     @Override
-    public List<XmlRecord> listXmlRecords(final String host, final int start,
-            final int rows, final boolean parserProcessFinished)
+    public XmlRecords listXmlRecords(final String host,
+            final int parseAttemptCounter, final int defaultPageSize)
             throws ConnectionException {
-        // TODO Auto-generated method stub
-        return null;
+        IndexQuery<byte[], String> query = keyspace
+                .prepareQuery(CF_XML_RECORDS).searchWithIndex()
+                .setRowLimit(defaultPageSize).autoPaginateRows(true)
+                .addExpression().whereColumn("hostInverted").equals()
+                .value(HttpUtils.getHostInverted(host)).addExpression()
+                .whereColumn("parseAttemptCounter").equals()
+                .value(parseAttemptCounter);
+        return new XmlRecords(countXmlRecords(host, parseAttemptCounter), query);
     }
 
     @Override
     public void insertIfNotExists(final MessageRecord messageRecord)
             throws ConnectionException {
-        // TODO Auto-generated method stub
+        OperationResult<ColumnList<String>> result = keyspace
+                .prepareQuery(CF_MESSAGE_RECORDS)
+                .getKey(messageRecord.getDigest()).execute();
+        if (result.getResult().isEmpty()) {
+            insert(messageRecord);
+        }
+    }
+
+    private void insert(final MessageRecord messageRecord)
+            throws ConnectionException {
+        MutationBatch m = keyspace.prepareMutationBatch();
+        m.withRow(CF_MESSAGE_RECORDS, messageRecord.getDigest())
+                .putColumn("host", messageRecord.getHost(), null)
+                .putColumn("hostInverted", messageRecord.getHostInverted(),
+                        null)
+                .putColumn("topic", messageRecord.getTopic(), null)
+                .putColumn("date", messageRecord.getDate(), null)
+                .putColumn("author", messageRecord.getAuthor(), null)
+                .putColumn("age", messageRecord.getAge(), null)
+                .putColumn("sex", messageRecord.getSex(), null)
+                .putColumn("title", messageRecord.getTitle(), null)
+                .putColumn("content", messageRecord.getContent(), null)
+                .putColumn("userRating", messageRecord.getUserRating(), null);
+        m.execute();
     }
 
     @Override
@@ -411,7 +617,6 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
         double timeTaken = (System.nanoTime() - nanoStart) / (1e9);
         LOG.debug("Time taken to fetch " + counter + " rows is " + ""
                 + timeTaken + " seconds.");
-        System.out.println("" + 1e9);
         return counter;
     }
 
@@ -431,7 +636,6 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
         double timeTaken = (System.nanoTime() - nanoStart) / (1e9);
         LOG.debug("Time taken to fetch " + counter + " rows is " + ""
                 + timeTaken + " seconds.");
-        System.out.println("" + 1e9);
         return counter;
     }
 
@@ -439,19 +643,19 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
             UnsupportedEncodingException {
         CrawlerRepositoryCassandraImpl o = new CrawlerRepositoryCassandraImpl();
         o.setup();
-        UrlRecord home = new UrlRecord("http://www.amazon.com");
+        UrlRecord home = new UrlRecord("http://www.tokenizer.ca");
         o.insertIfNotExists(home);
         OperationResult<ColumnList<String>> result = keyspace
                 .prepareQuery(CF_URL_RECORDS)
-                .getKey(MD5.digest("http://www.amazon.com".getBytes("US-ASCII")))
-                .execute();
+                .getKey(MD5.digest("http://www.tokenizer.ca"
+                        .getBytes("US-ASCII"))).execute();
         ColumnList<String> columns = result.getResult();
         String url = columns.getStringValue("url", null);
         OperationResult<ColumnList<String>> result2 = keyspace
                 .prepareQuery(CF_URL_RECORDS).getKey(home.getDigest())
                 .execute();
         ColumnList<String> columns2 = result2.getResult();
-        String url2 = columns.getStringValue("url", null);
+        String url2 = columns2.getStringValue("url", null);
         System.out.println(url + " " + url2 + " " + o.countUrlRecords());
     }
 
@@ -464,5 +668,50 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
                 .addExpression().whereColumn("httpResponseCode").equals()
                 .value(httpResponseCode);
         return new UrlRecords(countUrlRecords(httpResponseCode), query);
+    }
+
+    @Override
+    public int countWebpageRecords(final String host,
+            final int splitAttemptCounter) throws ConnectionException {
+        LOG.trace(
+                "countWebpageRecords called... host: {}, splitAttemptCounter: {}",
+                host, splitAttemptCounter);
+        double nanoStart = System.nanoTime();
+        OperationResult<Rows<byte[], String>> rows = keyspace
+                .prepareQuery(CF_WEBPAGE_RECORDS).searchWithIndex()
+                .setRowLimit(10000).autoPaginateRows(true).addExpression()
+                .whereColumn("hostInverted").equals()
+                .value(HttpUtils.getHostInverted(host)).addExpression()
+                .whereColumn("splitAttemptCounter").equals()
+                .value(splitAttemptCounter).execute();
+        int counter = 0;
+        for (Row<byte[], String> row : rows.getResult()) {
+            counter++;
+        }
+        double timeTaken = (System.nanoTime() - nanoStart) / (1e9);
+        LOG.debug("Time taken to fetch " + counter + " Webpage records is "
+                + "" + timeTaken + " seconds.");
+        return counter;
+    }
+
+    @Override
+    public int countXmlRecords(final String host, final int parseAttemptCounter)
+            throws ConnectionException {
+        double nanoStart = System.nanoTime();
+        OperationResult<Rows<byte[], String>> rows = keyspace
+                .prepareQuery(CF_XML_RECORDS).searchWithIndex()
+                .setRowLimit(10000).autoPaginateRows(true).addExpression()
+                .whereColumn("hostInverted").equals()
+                .value(HttpUtils.getHostInverted(host)).addExpression()
+                .whereColumn("parseAttemptCounter").equals()
+                .value(parseAttemptCounter).execute();
+        int counter = 0;
+        for (Row<byte[], String> row : rows.getResult()) {
+            counter++;
+        }
+        double timeTaken = (System.nanoTime() - nanoStart) / (1e9);
+        LOG.debug("Time taken to fetch " + counter + " XML records is " + ""
+                + timeTaken + " seconds.");
+        return counter;
     }
 }
