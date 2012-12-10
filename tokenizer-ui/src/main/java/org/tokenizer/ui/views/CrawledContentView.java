@@ -19,12 +19,13 @@ import java.io.UnsupportedEncodingException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tokenizer.crawler.db.CrawlerHBaseRepository;
+import org.tokenizer.crawler.db.CrawlerRepository;
 import org.tokenizer.crawler.db.UrlRecord;
 import org.tokenizer.crawler.db.WebpageRecord;
 import org.tokenizer.ui.MyVaadinApplication;
 import org.tokenizer.ui.lists.UrlRecordList;
 
+import com.netflix.astyanax.connectionpool.exceptions.ConnectionException;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.util.ObjectProperty;
@@ -35,16 +36,17 @@ import com.vaadin.ui.VerticalSplitPanel;
 
 public class CrawledContentView extends VerticalSplitPanel implements
         Property.ValueChangeListener {
+
     private static final long serialVersionUID = 1L;
     private static final Logger LOG = LoggerFactory
             .getLogger(CrawledContentView.class);
     private final MyVaadinApplication app;
     private final UrlRecordList urlRecordList;
-    private final CrawlerHBaseRepository repository;
+    private final CrawlerRepository repository;
     private final Label htmlLabel;
     private final Label sourceLabel;
 
-    public CrawledContentView(MyVaadinApplication app) {
+    public CrawledContentView(final MyVaadinApplication app) {
         this.app = app;
         this.repository = app.getRepository();
         setCaption("Crawled Content");
@@ -69,12 +71,11 @@ public class CrawledContentView extends VerticalSplitPanel implements
     }
 
     @Override
-    public void valueChange(ValueChangeEvent event) {
+    public void valueChange(final ValueChangeEvent event) {
         Property property = event.getProperty();
         if (property == this.urlRecordList) {
             Object itemId = this.urlRecordList.getValue();
-            String url = (String) itemId;
-            UrlRecord urlRecord = repository.getUrlRecord(url);
+            UrlRecord urlRecord = (UrlRecord) itemId;
             if (urlRecord.getHttpResponseCode() != 200) {
                 Property htmlProp = new ObjectProperty<String>("<h1>N/A</h1>",
                         String.class);
@@ -82,11 +83,19 @@ public class CrawledContentView extends VerticalSplitPanel implements
                 this.sourceLabel.setPropertyDataSource(htmlProp);
             } else {
                 byte[] digest = urlRecord.getDigest();
-                WebpageRecord webpage = repository.getWebpageRecord(digest);
-                String html;
+                WebpageRecord webpage = null;
                 try {
-                    html = new String(webpage.getContent(),
-                            webpage.getCharset());
+                    webpage = repository.getWebpageRecord(digest);
+                } catch (ConnectionException e1) {
+                    // TODO Auto-generated catch block
+                    e1.printStackTrace();
+                }
+                String html = null;
+                try {
+                    if (webpage != null) {
+                        html = new String(webpage.getContent(),
+                                webpage.getCharset());
+                    }
                 } catch (UnsupportedEncodingException e) {
                     LOG.error("", e);
                     html = e.getMessage();

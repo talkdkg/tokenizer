@@ -90,6 +90,12 @@
             <groupId>com.google.gdata</groupId>
             <artifactId>gdata-photos-2.0</artifactId>
             <version>1.41.5</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>google-collections</artifactId>
+                    <groupId>com.google.collections</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
     </dependencies>
     <build>

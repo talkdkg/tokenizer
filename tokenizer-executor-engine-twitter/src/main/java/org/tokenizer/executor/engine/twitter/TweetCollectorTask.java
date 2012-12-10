@@ -33,7 +33,7 @@ import org.lilyproject.util.zookeeper.ZooKeeperItf;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tokenizer.core.TokenizerConfig;
-import org.tokenizer.crawler.db.CrawlerHBaseRepository;
+import org.tokenizer.crawler.db.CrawlerRepository;
 import org.tokenizer.executor.engine.AbstractTask;
 import org.tokenizer.executor.engine.HostLocker;
 import org.tokenizer.executor.engine.twitter.db.StatusVO;
@@ -52,7 +52,10 @@ import twitter4j.TwitterStream;
 import twitter4j.TwitterStreamFactory;
 import twitter4j.auth.AccessToken;
 
+import com.netflix.astyanax.connectionpool.exceptions.ConnectionException;
+
 public class TweetCollectorTask extends AbstractTask {
+
     private static final Logger LOG = LoggerFactory
             .getLogger(TweetCollectorTask.class);
     private final Twitter twitter;
@@ -78,8 +81,8 @@ public class TweetCollectorTask extends AbstractTask {
 
     public TweetCollectorTask(String taskName, ZooKeeperItf zk,
             TaskConfiguration taskConfiguration,
-            CrawlerHBaseRepository crawlerRepository,
-            WritableExecutorModel model, HostLocker hostLocker) {
+            CrawlerRepository crawlerRepository, WritableExecutorModel model,
+            HostLocker hostLocker) {
         super(taskName, zk, crawlerRepository, model, hostLocker);
         this.taskConfiguration = (TweetCollectorTaskConfiguration) taskConfiguration;
         BufferedReader bufferedReader = new BufferedReader(new StringReader(
@@ -125,6 +128,7 @@ public class TweetCollectorTask extends AbstractTask {
         TwitterStream stream = new TwitterStreamFactory().getInstance(twitter
                 .getAuthorization());
         stream.addListener(new StatusListener() {
+
             @Override
             public void onStatus(Status status) {
                 if (isEmpty(status.getUser().getScreenName()))
@@ -180,7 +184,7 @@ public class TweetCollectorTask extends AbstractTask {
     }
 
     @Override
-    protected void process() throws InterruptedException, IOException {
+    protected void process() throws InterruptedException, ConnectionException {
         if (stream == null) {
             try {
                 stream = streamingTwitter(input, queue);

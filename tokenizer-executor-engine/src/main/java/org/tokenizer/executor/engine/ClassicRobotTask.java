@@ -23,12 +23,14 @@ import org.lilyproject.util.zookeeper.ZooKeeperItf;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tokenizer.core.http.FetcherUtils;
-import org.tokenizer.crawler.db.CrawlerHBaseRepository;
+import org.tokenizer.crawler.db.CrawlerRepository;
 import org.tokenizer.crawler.db.UrlRecord;
-import org.tokenizer.crawler.db.UrlScanner;
+import org.tokenizer.crawler.db.UrlRecords;
 import org.tokenizer.executor.model.api.WritableExecutorModel;
 import org.tokenizer.executor.model.configuration.ClassicRobotTaskConfiguration;
 import org.tokenizer.executor.model.configuration.TaskConfiguration;
+
+import com.netflix.astyanax.connectionpool.exceptions.ConnectionException;
 
 import crawlercommons.fetcher.FetchedResult;
 import crawlercommons.fetcher.http.BaseHttpFetcher;
@@ -38,10 +40,9 @@ import crawlercommons.robots.BaseRobotRules;
 import crawlercommons.robots.BaseRobotsParser;
 import crawlercommons.robots.RobotUtils;
 import crawlercommons.robots.SimpleRobotRulesParser;
-//import org.tokenizer.core.http.FetchedResult;
-//import org.tokenizer.core.http.SimpleHttpClient;
 
 public class ClassicRobotTask extends AbstractTask {
+
     private static final Logger LOG = LoggerFactory
             .getLogger(ClassicRobotTask.class);
     private final SimpleHttpFetcher httpClient;
@@ -49,10 +50,10 @@ public class ClassicRobotTask extends AbstractTask {
     BaseRobotRules robotRules = null;
     private ClassicRobotTaskConfiguration taskConfiguration;
 
-    public ClassicRobotTask(String taskName, ZooKeeperItf zk,
-            TaskConfiguration taskConfiguration,
-            CrawlerHBaseRepository crawlerRepository,
-            WritableExecutorModel model, HostLocker hostLocker) {
+    public ClassicRobotTask(final String taskName, final ZooKeeperItf zk,
+            final TaskConfiguration taskConfiguration,
+            final CrawlerRepository crawlerRepository,
+            final WritableExecutorModel model, final HostLocker hostLocker) {
         super(taskName, zk, crawlerRepository, model, hostLocker);
         this.taskConfiguration = (ClassicRobotTaskConfiguration) taskConfiguration;
         this.httpClient = new SimpleHttpFetcher(FetcherUtils.USER_AGENT);
@@ -71,32 +72,24 @@ public class ClassicRobotTask extends AbstractTask {
      * @throws IOException
      */
     @Override
-    protected void process() throws InterruptedException, IOException {
+    protected void process() throws InterruptedException, ConnectionException {
         refreshRobotRules();
-        String url = "http://" + taskConfiguration.getHost();
-        UrlRecord home = new UrlRecord();
-        home.setUrl(url);
-        // create if it doesn't exist
-        try {
-            crawlerRepository.create(home);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        UrlScanner urlScanner = new UrlScanner(taskConfiguration.getHost(),
-                crawlerRepository);
-        for (UrlRecord urlRecord : urlScanner) {
-            LOG.debug("urlRecord: {}", urlRecord);
-            if (urlRecord.getTimestamp() > 0) {
-                LOG.debug("Already fetched...");
-                continue;
-            }
-            LOG.debug("Trying URL: {}", urlRecord.getUrl());
+        UrlRecord home = new UrlRecord("http://" + taskConfiguration.getHost()
+                + "/");
+        crawlerRepository.insertIfNotExists(home);
+        UrlRecords urlRecords = crawlerRepository.listUrlRecords(
+                taskConfiguration.getHost(), 0, 100);
+        for (UrlRecord urlRecord : urlRecords) {
+            LOG.debug("Trying URL: {}", urlRecord);
             FetchedResult fetchedResult = PersistenceUtils.fetch(urlRecord,
                     crawlerRepository, robotRules, metricsCache, httpClient,
                     taskConfiguration.getHost());
             LOG.debug("Result: {} {}", urlRecord.getUrl(),
                     urlRecord.getHttpResponseCode());
         }
+        // to prevent spin loop in case if collection is empty:
+        LOG.warn("sleeping 10 seconds...");
+        Thread.currentThread().sleep(10000);
     }
 
     /**
@@ -123,7 +116,7 @@ public class ClassicRobotTask extends AbstractTask {
     }
 
     @Override
-    public void setTaskConfiguration(TaskConfiguration taskConfiguration) {
+    public void setTaskConfiguration(final TaskConfiguration taskConfiguration) {
         this.taskConfiguration = (ClassicRobotTaskConfiguration) taskConfiguration;
     }
 }

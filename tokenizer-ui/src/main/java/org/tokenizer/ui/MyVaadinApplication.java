@@ -16,7 +16,7 @@
 package org.tokenizer.ui;
 
 import org.springframework.context.ApplicationContext;
-import org.tokenizer.crawler.db.CrawlerHBaseRepository;
+import org.tokenizer.crawler.db.CrawlerRepository;
 import org.tokenizer.executor.model.api.WritableExecutorModel;
 import org.tokenizer.ui.views.CrawledContentView;
 import org.tokenizer.ui.views.TaskContainer;
@@ -40,6 +40,7 @@ import com.vaadin.ui.Window;
  */
 public class MyVaadinApplication extends Application implements
         Button.ClickListener, Property.ValueChangeListener {
+
     private static final long serialVersionUID = 1L;
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory
             .getLogger(MyVaadinApplication.class);
@@ -51,10 +52,10 @@ public class MyVaadinApplication extends Application implements
         return applicationContext;
     }
 
-    private static CrawlerHBaseRepository repository;
+    private static CrawlerRepository repository;
     private static WritableExecutorModel model;
 
-    public static CrawlerHBaseRepository getRepository() {
+    public static CrawlerRepository getRepository() {
         return repository;
     }
 
@@ -69,10 +70,10 @@ public class MyVaadinApplication extends Application implements
         // model = Configuration.get().getBeanLocatorAdapter()
         // .getBean("executorModel", WritableExecutorModel.class);
         applicationContext = MyVaadinServlet.getApplicationContext();
-        repository = (CrawlerHBaseRepository) applicationContext
-                .getBean("crawlerRepository");
         model = (WritableExecutorModel) applicationContext
                 .getBean("executorModel");
+        repository = (CrawlerRepository) applicationContext
+                .getBean("crawlerRepository");
         buildMainLayout();
     }
 
@@ -112,7 +113,7 @@ public class MyVaadinApplication extends Application implements
         return lo;
     }
 
-    private synchronized void setMainComponent(Component c) {
+    private synchronized void setMainComponent(final Component c) {
         horizontalSplit.setSecondComponent(c);
     }
 
@@ -126,7 +127,7 @@ public class MyVaadinApplication extends Application implements
     }
 
     @Override
-    public void buttonClick(ClickEvent event) {
+    public void buttonClick(final ClickEvent event) {
         final Button source = event.getButton();
         // if (source == search) {
         // showSearchView();
@@ -143,7 +144,7 @@ public class MyVaadinApplication extends Application implements
     }
 
     @Override
-    public void valueChange(ValueChangeEvent event) {
+    public void valueChange(final ValueChangeEvent event) {
         Property property = event.getProperty();
         if (property == getTaskView().getTaskList()) {
             Item item = getTaskView().getTaskList().getItem(

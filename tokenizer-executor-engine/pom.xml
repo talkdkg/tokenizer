@@ -29,16 +29,6 @@
   <artifactId>tokenizer-executor-engine</artifactId>
   <dependencies>
     <dependency>
-      <groupId>org.apache.hbase</groupId>
-      <artifactId>hbase</artifactId>
-      <exclusions>
-        <exclusion>
-          <artifactId>httpcore</artifactId>
-          <groupId>org.apache.httpcomponents</groupId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
       <groupId>org.tokenizer</groupId>
       <artifactId>tokenizer-core</artifactId>
       <exclusions>

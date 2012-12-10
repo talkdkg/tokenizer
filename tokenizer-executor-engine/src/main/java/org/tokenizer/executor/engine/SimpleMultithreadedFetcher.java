@@ -15,7 +15,6 @@
  */
 package org.tokenizer.executor.engine;
 
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -29,10 +28,12 @@ import org.lilyproject.util.zookeeper.ZooKeeperItf;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tokenizer.core.http.FetcherUtils;
-import org.tokenizer.crawler.db.CrawlerHBaseRepository;
+import org.tokenizer.crawler.db.CrawlerRepository;
 import org.tokenizer.executor.model.api.WritableExecutorModel;
 import org.tokenizer.executor.model.configuration.SimpleMultithreadedFetcherTaskConfiguration;
 import org.tokenizer.executor.model.configuration.TaskConfiguration;
+
+import com.netflix.astyanax.connectionpool.exceptions.ConnectionException;
 
 import crawlercommons.fetcher.http.BaseHttpFetcher;
 import crawlercommons.fetcher.http.SimpleHttpFetcher;
@@ -42,13 +43,14 @@ import crawlercommons.robots.RobotUtils;
 import crawlercommons.robots.SimpleRobotRulesParser;
 
 public class SimpleMultithreadedFetcher extends AbstractTask {
+
     private static final Logger LOG = LoggerFactory
             .getLogger(SimpleMultithreadedFetcher.class);
     /** used for generic retrieval */
     private final SimpleHttpFetcher simpleHttpClient;
     /** for robots.txt and sitemaps */
     private final BaseHttpFetcher baseFetcher;
-    private Set<String> hosts = Collections
+    private final Set<String> hosts = Collections
             .synchronizedSet(new HashSet<String>());
     private boolean stop = false;
     private static final int MAX_THREADS = 64;
@@ -57,8 +59,7 @@ public class SimpleMultithreadedFetcher extends AbstractTask {
     private SimpleMultithreadedFetcherTaskConfiguration taskConfiguration;
 
     public SimpleMultithreadedFetcher(String taskName, ZooKeeperItf zk,
-            TaskConfiguration taskConfiguration,
-            CrawlerHBaseRepository repository,
+            TaskConfiguration taskConfiguration, CrawlerRepository repository,
             WritableExecutorModel fetcherModel, HostLocker hostLocker) {
         super(taskName, zk, repository, fetcherModel, hostLocker);
         this.taskConfiguration = (SimpleMultithreadedFetcherTaskConfiguration) taskConfiguration;
@@ -79,8 +80,9 @@ public class SimpleMultithreadedFetcher extends AbstractTask {
         // task
         // explicitly over time
         for (int i = 1; i < MAX_THREADS; i++) {
-            if (i > hosts.size())
+            if (i > hosts.size()) {
                 break;
+            }
             Thread thread = new Thread(new MyFetcherThread(),
                     "MyFetcherThread[" + i + "]");
             threads.add(thread);
@@ -113,8 +115,9 @@ public class SimpleMultithreadedFetcher extends AbstractTask {
         try {
             HostsMonitorThread monitor = new HostsMonitorThread();
             monitor.start();
-            while (hosts.isEmpty())
+            while (hosts.isEmpty()) {
                 Thread.currentThread().sleep(1000);
+            }
         } catch (Throwable e) {
             LOG.error("", e);
             return false;
@@ -128,13 +131,15 @@ public class SimpleMultithreadedFetcher extends AbstractTask {
     }
 
     private class MyFetcherThread implements Runnable {
+
         @Override
         public void run() {
             while (!stop) {
                 for (String host : hosts) {
                     try {
-                        if (hostLocker.exists(host))
+                        if (hostLocker.exists(host)) {
                             continue;
+                        }
                     } catch (HostLockException e) {
                         LOG.error("", e);
                         continue;
@@ -146,8 +151,9 @@ public class SimpleMultithreadedFetcher extends AbstractTask {
                         continue;
                     }
                     try {
-                        if (!hostLocker.lock(host))
+                        if (!hostLocker.lock(host)) {
                             continue;
+                        }
                     } catch (HostLockException e) {
                         LOG.error("", e);
                         continue;
@@ -170,6 +176,7 @@ public class SimpleMultithreadedFetcher extends AbstractTask {
     }
 
     public class HostsMonitorThread extends Thread {
+
         @Override
         public void run() {
             try {
@@ -192,7 +199,7 @@ public class SimpleMultithreadedFetcher extends AbstractTask {
     }
 
     @Override
-    protected void process() throws InterruptedException, IOException {
+    protected void process() throws InterruptedException, ConnectionException {
         // TODO Auto-generated method stub
     }
 

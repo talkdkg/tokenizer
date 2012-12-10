@@ -15,8 +15,8 @@
  */
 package org.tokenizer.executor.engine;
 
-import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,11 +35,11 @@ import org.tokenizer.core.urls.SimpleUrlNormalizer;
 import org.tokenizer.core.urls.SimpleUrlValidator;
 import org.tokenizer.core.util.HttpUtils;
 import org.tokenizer.core.util.ParserPolicy;
-import org.tokenizer.crawler.db.CrawlerHBaseRepository;
+import org.tokenizer.crawler.db.CrawlerRepository;
 import org.tokenizer.crawler.db.UrlRecord;
-import org.tokenizer.crawler.db.UrlRecordDecoder;
 import org.tokenizer.crawler.db.WebpageRecord;
 
+import com.netflix.astyanax.connectionpool.exceptions.ConnectionException;
 import com.sun.syndication.feed.synd.SyndCategory;
 import com.sun.syndication.feed.synd.SyndEntry;
 
@@ -50,13 +50,15 @@ import crawlercommons.fetcher.http.SimpleHttpFetcher;
 import crawlercommons.robots.BaseRobotRules;
 
 public class PersistenceUtils {
+
     private static final Logger LOG = LoggerFactory
             .getLogger(PersistenceUtils.class);
 
     public static FetchedResult fetch(UrlRecord urlRecord,
-            CrawlerHBaseRepository repository, BaseRobotRules baseRobotRules,
+            CrawlerRepository repository, BaseRobotRules baseRobotRules,
             MetricsCache metricsCache, SimpleHttpFetcher simpleHttpClient,
-            String hostConstraint) throws InterruptedException, IOException {
+            String hostConstraint) throws ConnectionException,
+            InterruptedException {
         metricsCache.increment(MetricsCache.URL_TOTAL_KEY);
         if (!checkRobotRules(urlRecord, repository, baseRobotRules,
                 metricsCache))
@@ -76,47 +78,37 @@ public class PersistenceUtils {
     }
 
     public static WebpageRecord update(FetchedResult fetchedResult,
-            UrlRecord urlRecord, CrawlerHBaseRepository repository,
-            MetricsCache metricsCache) throws InterruptedException {
-        long start = System.currentTimeMillis();
-        WebpageRecord webpageRecord = new WebpageRecord();
+            UrlRecord urlRecord, CrawlerRepository repository,
+            MetricsCache metricsCache) throws InterruptedException,
+            ConnectionException {
+        WebpageRecord webpageRecord = new WebpageRecord(
+                fetchedResult.getContent());
         String charset = CharsetUtils.clean(HttpUtils
                 .getCharsetFromContentType(fetchedResult.getContentType()));
         webpageRecord.setCharset(charset);
-        webpageRecord.setContent(fetchedResult.getContent());
         webpageRecord.setTimestamp(urlRecord.getTimestamp());
         webpageRecord.setUrl(urlRecord.getUrl());
-        try {
-            repository.create(webpageRecord);
-        } catch (IOException e) {
-            metricsCache.increment(MetricsCache.UPDATES_COUNT);
-            metricsCache.increment(MetricsCache.UPDATES_TIME,
-                    System.currentTimeMillis() - start);
-            LOG.error("", e);
-        }
+        repository.insertIfNotExists(webpageRecord);
         return webpageRecord;
     }
 
     public static boolean checkRobotRules(UrlRecord urlRecord,
-            CrawlerHBaseRepository repository, BaseRobotRules baseRobotRules,
-            MetricsCache metricsCache) throws InterruptedException {
+            CrawlerRepository repository, BaseRobotRules baseRobotRules,
+            MetricsCache metricsCache) throws InterruptedException,
+            ConnectionException {
         String url = urlRecord.getUrl();
         if (!baseRobotRules.isAllowed(url)) {
             urlRecord.setHttpResponseCode(-1);
-            urlRecord.setTimestamp(System.currentTimeMillis());
-            try {
-                repository.update(urlRecord);
-                metricsCache.increment(MetricsCache.URL_ROBOTS_KEY);
-            } catch (IOException e) {
-                LOG.error("", e);
-            }
+            urlRecord.setTimestamp(new Date());
+            repository.update(urlRecord);
+            metricsCache.increment(MetricsCache.URL_ROBOTS_KEY);
             return false;
         }
         return true;
     }
 
     public static FetchedResult fetch(UrlRecord record,
-            CrawlerHBaseRepository repository, MetricsCache metricsCache,
+            CrawlerRepository repository, MetricsCache metricsCache,
             SimpleHttpFetcher simpleHttpClient) throws InterruptedException {
         String url = record.getUrl();
         FetchedResult fetchedResult = null;
@@ -125,18 +117,18 @@ public class PersistenceUtils {
             fetchedResult = simpleHttpClient.get(url, null);
         } catch (HttpFetchException e) {
             record.setHttpResponseCode(((HttpFetchException) e).getHttpStatus());
-            record.setTimestamp(System.currentTimeMillis());
+            record.setTimestamp(new Date());
             return null;
         } catch (BaseFetchException e) {
             if (e.getMessage().contains("Aborted due to INTERRUPTED"))
                 throw new InterruptedException("Aborted...");
             // e.printStackTrace();
             // record.setHttpResponseCode(-2);
-            record.setTimestamp(System.currentTimeMillis());
+            record.setTimestamp(new Date());
             metricsCache.increment(MetricsCache.OTHER_ERRORS);
             return null;
         }
-        record.setTimestamp(System.currentTimeMillis());
+        record.setTimestamp(new Date());
         if (fetchedResult.getHttpStatus() >= 200
                 && fetchedResult.getHttpStatus() < 300) {
             metricsCache.increment(MetricsCache.TOTAL_RESPONSE_TIME_KEY,
@@ -150,7 +142,7 @@ public class PersistenceUtils {
     }
 
     public static void injectIfNotExists(SyndEntry entry,
-            CrawlerHBaseRepository repository, MetricsCache metricsCache)
+            CrawlerRepository repository, MetricsCache metricsCache)
             throws InterruptedException {
         // TODO:
         // record = repository.create(record);
@@ -158,7 +150,7 @@ public class PersistenceUtils {
     }
 
     private static void createRecord(SyndEntry entry,
-            CrawlerHBaseRepository repository) throws InterruptedException {
+            CrawlerRepository repository) throws InterruptedException {
         // TODO: not implemented yet
         String url = entry.getLink().trim();
         List<SyndCategory> categories = entry.getCategories();
@@ -180,6 +172,7 @@ public class PersistenceUtils {
     @SuppressWarnings("serial")
     private static Map<String, String> cache = new LinkedHashMap<String, String>(
             MAX_ENTRIES + 1, .75F, true) {
+
         public boolean removeEldestEntry(@SuppressWarnings("rawtypes")
         Map.Entry eldest) {
             return size() > MAX_ENTRIES;
@@ -187,8 +180,8 @@ public class PersistenceUtils {
     };
 
     private static boolean parse(FetchedResult fetchedResult,
-            CrawlerHBaseRepository repository, String hostConstraint)
-            throws InterruptedException {
+            CrawlerRepository repository, String hostConstraint)
+            throws InterruptedException, ConnectionException {
         ParserPolicy parserPolicy = new ParserPolicy(MAX_PARSE_DURATION);
         SimpleParser parser = new SimpleParser(parserPolicy);
         ParsedDatum parsed = parser.parse(fetchedResult);
@@ -199,7 +192,10 @@ public class PersistenceUtils {
                 continue;
             }
             url = urlNormalizer.normalize(url);
-            String host = UrlRecordDecoder.getHost(url);
+            String host = HttpUtils.getHost(url);
+            if (HttpUtils.EMPTY_STRING.equals(host)) {
+                continue;
+            }
             // This is definition of "domain restricted crawl" (vertical crawl):
             if (!hostConstraint.equals(host)) {
                 LOG.debug("extrenal host ignored: {}, URL: {}", host, url);
@@ -209,13 +205,8 @@ public class PersistenceUtils {
             if (cache.containsKey(url)) {
                 continue;
             }
-            UrlRecord urlRecord = new UrlRecord();
-            urlRecord.setUrl(url);
-            try {
-                repository.create(urlRecord);
-            } catch (Exception e) {
-                LOG.error("", e);
-            }
+            UrlRecord urlRecord = new UrlRecord(url);
+            repository.insertIfNotExists(urlRecord);
             cache.put(url, null);
         }
         return true;

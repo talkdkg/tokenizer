@@ -15,8 +15,6 @@
  */
 package org.tokenizer.executor.engine;
 
-import java.io.IOException;
-
 import org.apache.zookeeper.KeeperException;
 import org.lilyproject.util.Logs;
 import org.lilyproject.util.zookeeper.LeaderElection;
@@ -25,16 +23,19 @@ import org.lilyproject.util.zookeeper.LeaderElectionSetupException;
 import org.lilyproject.util.zookeeper.ZooKeeperItf;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tokenizer.crawler.db.CrawlerHBaseRepository;
+import org.tokenizer.crawler.db.CrawlerRepository;
 import org.tokenizer.executor.model.api.WritableExecutorModel;
 import org.tokenizer.executor.model.configuration.TaskConfiguration;
 
+import com.netflix.astyanax.connectionpool.exceptions.ConnectionException;
+
 public abstract class AbstractTask implements Runnable, LeaderElectionCallback {
+
     private static final Logger LOG = LoggerFactory
             .getLogger(AbstractTask.class);
     protected final String taskName;
     protected final ZooKeeperItf zk;
-    protected final CrawlerHBaseRepository crawlerRepository;
+    protected final CrawlerRepository crawlerRepository;
     protected final WritableExecutorModel model;
     protected final HostLocker hostLocker;
     protected final MetricsCache metricsCache;
@@ -51,8 +52,8 @@ public abstract class AbstractTask implements Runnable, LeaderElectionCallback {
             TaskConfiguration taskConfiguration);
 
     public AbstractTask(String taskName, ZooKeeperItf zk,
-            CrawlerHBaseRepository crawlerRepository,
-            WritableExecutorModel model, HostLocker hostLocker) {
+            CrawlerRepository crawlerRepository, WritableExecutorModel model,
+            HostLocker hostLocker) {
         this.taskName = taskName;
         this.zk = zk;
         this.crawlerRepository = crawlerRepository;
@@ -88,8 +89,13 @@ public abstract class AbstractTask implements Runnable, LeaderElectionCallback {
                 process();
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+            } catch (ConnectionException e) {
+                LOG.error("Repository unavailable; sleeping 60 seconds...", e);
+                try {
+                    Thread.sleep(60000);
+                } catch (InterruptedException e1) {
+                    Thread.currentThread().interrupt();
+                }
             }
         }
     }
@@ -123,7 +129,8 @@ public abstract class AbstractTask implements Runnable, LeaderElectionCallback {
         }
     }
 
-    protected abstract void process() throws InterruptedException, IOException;
+    protected abstract void process() throws InterruptedException,
+            ConnectionException;
 
     @Override
     public void activateAsLeader() throws Exception {

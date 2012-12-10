@@ -20,6 +20,7 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
 >
     <properties>
+        <version.astyanax>1.0.4-SNAPSHOT</version.astyanax>
         <version.base64>2.3.8</version.base64>
         <version.crawler-commons>0.2-SNAPSHOT</version.crawler-commons>
         <version.eclipselink>2.4.1</version.eclipselink>
@@ -123,6 +124,11 @@
                         <artifactId>tika-core</artifactId>
                     </exclusion>
                 </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>com.netflix.astyanax</groupId>
+                <artifactId>astyanax</artifactId>
+                <version>${version.astyanax}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.hbase</groupId>

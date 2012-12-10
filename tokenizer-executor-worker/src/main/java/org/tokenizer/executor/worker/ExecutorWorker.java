@@ -28,7 +28,7 @@ import javax.annotation.PreDestroy;
 import org.apache.zookeeper.KeeperException;
 import org.lilyproject.util.zookeeper.LeaderElectionSetupException;
 import org.lilyproject.util.zookeeper.ZooKeeperItf;
-import org.tokenizer.crawler.db.CrawlerHBaseRepository;
+import org.tokenizer.crawler.db.CrawlerRepository;
 import org.tokenizer.executor.engine.AbstractTask;
 import org.tokenizer.executor.engine.ClassicRobotTask;
 import org.tokenizer.executor.engine.HostLocker;
@@ -61,10 +61,11 @@ import org.tokenizer.executor.model.configuration.TaskConfiguration;
  * Worker does not shut down the tasks when the ZooKeeper connection is lost.
  */
 public class ExecutorWorker {
+
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory
             .getLogger(ExecutorWorker.class);
     private final WritableExecutorModel executorModel;
-    private final CrawlerHBaseRepository repository;
+    private final CrawlerRepository repository;
     private final ZooKeeperItf zk;
     private final ExecutorModelListener listener = new MyListener();
     private final BlockingQueue<ExecutorModelEvent> eventQueue = new LinkedBlockingQueue<ExecutorModelEvent>();
@@ -74,7 +75,7 @@ public class ExecutorWorker {
     private final HostLocker hostLocker;
 
     public ExecutorWorker(WritableExecutorModel executorModel, ZooKeeperItf zk,
-            CrawlerHBaseRepository repository) throws IOException,
+            CrawlerRepository repository) throws IOException,
             TaskNotFoundException, InterruptedException, KeeperException {
         this.executorModel = executorModel;
         this.zk = zk;
@@ -118,6 +119,7 @@ public class ExecutorWorker {
     }
 
     private class MyListener implements ExecutorModelListener {
+
         @Override
         public void process(ExecutorModelEvent event) {
             LOG.debug("Event: {}", event.getType());
@@ -131,6 +133,7 @@ public class ExecutorWorker {
     }
 
     private class EventWorker implements Runnable {
+
         @Override
         public void run() {
             LOG.info("Starting EventWorker thread...");

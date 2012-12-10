@@ -16,6 +16,7 @@
 package org.tokenizer.executor.engine;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -25,25 +26,28 @@ import org.lilyproject.util.zookeeper.ZooKeeperItf;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tokenizer.core.http.FetcherUtils;
-import org.tokenizer.crawler.db.CrawlerHBaseRepository;
+import org.tokenizer.crawler.db.CrawlerRepository;
 import org.tokenizer.executor.engine.RssFetcherTask.FetcherEventListenerImpl;
 import org.tokenizer.executor.model.api.WritableExecutorModel;
 import org.tokenizer.executor.model.configuration.RssFetcherTaskConfiguration;
 import org.tokenizer.executor.model.configuration.TaskConfiguration;
 
-import com.google.common.cache.Cache;
+import com.netflix.astyanax.connectionpool.exceptions.ConnectionException;
 import com.sun.syndication.feed.synd.SyndEntry;
 import com.sun.syndication.feed.synd.SyndFeed;
 import com.sun.syndication.fetcher.FeedFetcher;
 import com.sun.syndication.fetcher.FetcherEvent;
+import com.sun.syndication.fetcher.FetcherException;
 import com.sun.syndication.fetcher.FetcherListener;
 import com.sun.syndication.fetcher.impl.FeedFetcherCache;
 import com.sun.syndication.fetcher.impl.HashMapFeedInfoCache;
 import com.sun.syndication.fetcher.impl.HttpURLFeedFetcher;
+import com.sun.syndication.io.FeedException;
 
 import crawlercommons.fetcher.http.SimpleHttpFetcher;
 
 public class RssFetcherTask extends AbstractTask {
+
     private static final Logger LOG = LoggerFactory
             .getLogger(RssFetcherTask.class);
     SimpleHttpFetcher simpleHttpClient = new SimpleHttpFetcher(
@@ -53,8 +57,7 @@ public class RssFetcherTask extends AbstractTask {
     private RssFetcherTaskConfiguration taskConfiguration;
 
     public RssFetcherTask(String taskName, ZooKeeperItf zk,
-            TaskConfiguration taskConfiguration,
-            CrawlerHBaseRepository repository,
+            TaskConfiguration taskConfiguration, CrawlerRepository repository,
             WritableExecutorModel fetcherModel, HostLocker hostLocker) {
         super(taskName, zk, repository, fetcherModel, hostLocker);
         this.taskConfiguration = (RssFetcherTaskConfiguration) taskConfiguration;
@@ -65,6 +68,7 @@ public class RssFetcherTask extends AbstractTask {
     }
 
     class FetcherEventListenerImpl implements FetcherListener {
+
         /**
          * @see com.sun.syndication.fetcher.FetcherListener#fetcherEvent(com.sun.syndication.fetcher.FetcherEvent)
          */
@@ -88,8 +92,9 @@ public class RssFetcherTask extends AbstractTask {
     }
 
     @Override
-    protected void process() throws InterruptedException, IOException {
+    protected void process() throws InterruptedException, ConnectionException {
         for (String seed : taskConfiguration.getSeeds()) {
+            // try {
             try {
                 URL feedUrl = new URL(seed);
                 LOG.info("Retrieving feed " + feedUrl);
@@ -98,13 +103,20 @@ public class RssFetcherTask extends AbstractTask {
                 LOG.info(feedUrl + " has a title: " + feed.getTitle()
                         + " and contains " + feed.getEntries().size()
                         + " entries.");
-            } catch (Throwable e) {
-                LOG.error("Error with {} {}", seed, e.getMessage());
+            } catch (MalformedURLException e) {
+                LOG.error("", e);
+            } catch (IOException e) {
+                LOG.error("", e);
+            } catch (FeedException e) {
+                LOG.error("", e);
+            } catch (FetcherException e) {
+                LOG.error("", e);
             }
         }
     }
 
     static class Cache<K, V> extends LinkedHashMap<K, V> {
+
         private final int capacity;
 
         public Cache(int capacity) {

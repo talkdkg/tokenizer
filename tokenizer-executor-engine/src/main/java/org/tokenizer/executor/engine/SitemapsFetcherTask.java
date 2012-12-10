@@ -24,10 +24,12 @@ import org.lilyproject.util.zookeeper.ZooKeeperItf;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tokenizer.core.http.FetcherUtils;
-import org.tokenizer.crawler.db.CrawlerHBaseRepository;
+import org.tokenizer.crawler.db.CrawlerRepository;
 import org.tokenizer.executor.model.api.WritableExecutorModel;
 import org.tokenizer.executor.model.configuration.SitemapsFetcherTaskConfiguration;
 import org.tokenizer.executor.model.configuration.TaskConfiguration;
+
+import com.netflix.astyanax.connectionpool.exceptions.ConnectionException;
 
 import crawlercommons.fetcher.BaseFetchException;
 import crawlercommons.fetcher.FetchedResult;
@@ -44,6 +46,7 @@ import crawlercommons.sitemaps.SiteMapURL;
 import crawlercommons.sitemaps.UnknownFormatException;
 
 public class SitemapsFetcherTask extends AbstractTask {
+
     private static final Logger LOG = LoggerFactory
             .getLogger(SitemapsFetcherTask.class);
     private boolean stop;
@@ -53,10 +56,10 @@ public class SitemapsFetcherTask extends AbstractTask {
 
     public SitemapsFetcherTask(String taskName, ZooKeeperItf zk,
             TaskConfiguration fetcherConfiguration,
-            CrawlerHBaseRepository repository,
-            WritableExecutorModel fetcherModel, HostLocker hostLocker) {
+            CrawlerRepository repository, WritableExecutorModel fetcherModel,
+            HostLocker hostLocker) {
         super(taskName, zk, repository, fetcherModel, hostLocker);
-        this.taskConfiguration = (SitemapsFetcherTaskConfiguration) taskConfiguration;
+        this.taskConfiguration = taskConfiguration;
     }
 
     @Override
@@ -76,9 +79,8 @@ public class SitemapsFetcherTask extends AbstractTask {
     public void run() {
         while (!stop && !Thread.interrupted()) {
             try {
-                if (stop || Thread.interrupted()) {
+                if (stop || Thread.interrupted())
                     return;
-                }
                 processFetch();
                 Thread.sleep(DELAY);
             } catch (InterruptedException e) {
@@ -148,9 +150,9 @@ public class SitemapsFetcherTask extends AbstractTask {
                     result = fetcher.get(sitemapUrl);
                 } catch (BaseFetchException e) {
                     // TODO: this is stupid... I am forced:
-                    if (e.getMessage().contains("Aborted due to INTERRUPTED")) {
+                    if (e.getMessage().contains("Aborted due to INTERRUPTED"))
                         throw new InterruptedException();
-                    } else {
+                    else {
                         LOG.error("", e);
                         continue;
                     }
@@ -187,7 +189,7 @@ public class SitemapsFetcherTask extends AbstractTask {
     }
 
     @Override
-    protected void process() throws InterruptedException, IOException {
+    protected void process() throws InterruptedException, ConnectionException {
         // TODO Auto-generated method stub
     }
 

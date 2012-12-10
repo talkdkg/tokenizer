@@ -3,6 +3,7 @@ package org.tokenizer.executor.engine.message;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -14,10 +15,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tokenizer.core.util.xml.HXPathExpression;
 import org.tokenizer.core.util.xml.LocalXPathFactory;
-import org.tokenizer.crawler.db.CrawlerHBaseRepository;
+import org.tokenizer.crawler.db.CrawlerRepository;
 import org.tokenizer.crawler.db.MessageRecord;
 import org.tokenizer.crawler.db.XmlRecord;
-import org.tokenizer.crawler.db.XmlRecordScanner;
 import org.tokenizer.executor.engine.AbstractTask;
 import org.tokenizer.executor.engine.HostLocker;
 import org.tokenizer.executor.model.api.WritableExecutorModel;
@@ -27,7 +27,10 @@ import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+import com.netflix.astyanax.connectionpool.exceptions.ConnectionException;
+
 public class MessageParserTask extends AbstractTask {
+
     private static final Logger LOG = LoggerFactory
             .getLogger(MessageParserTask.class);
     MessageParserTaskConfiguration taskConfiguration;
@@ -43,8 +46,8 @@ public class MessageParserTask extends AbstractTask {
 
     public MessageParserTask(String taskName, ZooKeeperItf zk,
             TaskConfiguration taskConfiguration,
-            CrawlerHBaseRepository crawlerRepository,
-            WritableExecutorModel model, HostLocker hostLocker) {
+            CrawlerRepository crawlerRepository, WritableExecutorModel model,
+            HostLocker hostLocker) {
         super(taskName, zk, crawlerRepository, model, hostLocker);
         this.taskConfiguration = (MessageParserTaskConfiguration) taskConfiguration;
         try {
@@ -102,7 +105,7 @@ public class MessageParserTask extends AbstractTask {
     }
 
     @Override
-    protected void process() throws InterruptedException, IOException {
+    protected void process() throws InterruptedException, ConnectionException {
         if (topicXPathExpression == null && authorXPathExpression == null
                 && ageXPathExpression == null && sexXPathExpression == null
                 && userRatingXPathExpression == null
@@ -110,9 +113,9 @@ public class MessageParserTask extends AbstractTask {
                 && contentXPathExpression == null
                 && dateXPathExpression == null)
             return;
-        XmlRecordScanner xmlRecordScanner = new XmlRecordScanner(
-                taskConfiguration.getHost(), crawlerRepository);
-        for (XmlRecord xmlRecord : xmlRecordScanner) {
+        List<XmlRecord> xmlRecords = crawlerRepository.listXmlRecords(
+                taskConfiguration.getHost(), 0, 100, false);
+        for (XmlRecord xmlRecord : xmlRecords) {
             // LOG.trace("xmlRecord: {}", xmlRecord);
             try {
                 if (xmlRecord.getXml() == null) {
@@ -120,12 +123,14 @@ public class MessageParserTask extends AbstractTask {
                 }
                 MessageRecord message = parse(xmlRecord);
                 LOG.trace(message.toString());
-                crawlerRepository.createMessage(message);
+                crawlerRepository.insertIfNotExists(message);
             } catch (XPathExpressionException e) {
                 LOG.error("", e);
             } catch (ParserConfigurationException e) {
                 LOG.error("", e);
             } catch (SAXException e) {
+                LOG.error("", e);
+            } catch (IOException e) {
                 LOG.error("", e);
             }
         }

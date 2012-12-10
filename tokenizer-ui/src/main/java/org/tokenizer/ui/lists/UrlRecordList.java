@@ -3,7 +3,6 @@ package org.tokenizer.ui.lists;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tokenizer.ui.MyVaadinApplication;
-import org.tokenizer.ui.hbase.UrlContainer;
 
 import com.vaadin.ui.Table;
 
