@@ -413,7 +413,7 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
                         urlRecord.getFetchAttemptCounter(), null)
                 .putColumn("httpResponseCode", urlRecord.getHttpResponseCode(),
                         null)
-                .putColumn("webpageDigest", urlRecord.getDigest(), null);
+                .putColumn("webpageDigest", urlRecord.getWebpageDigest(), null);
         m.execute();
     }
 

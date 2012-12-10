@@ -5,11 +5,9 @@ import org.junit.BeforeClass;
 
 import com.netflix.astyanax.connectionpool.exceptions.ConnectionException;
 
-
 public class CrawlerRepositoryCassandraImplTest {
 
     private static CrawlerRepository repository;
-
 
     @BeforeClass
     public static void setup() throws Exception {
@@ -18,11 +16,9 @@ public class CrawlerRepositoryCassandraImplTest {
         repository = repo;
     }
 
-
     @AfterClass
     public static void teardown() {
     }
-
 
     // @Test
     public void genericTest() {
@@ -40,30 +36,26 @@ public class CrawlerRepositoryCassandraImplTest {
         }
     }
 
-
     // @Test
     public void webpageListTest() {
         try {
-            // WebpageRecords webpageRecords = repository.listWebpageRecords(
-            // "www.amazon.com", 0, 10);
-            // int i = 0;
-            // for (WebpageRecord webpageRecord : webpageRecords) {
-            // System.out.println(++i);
-            // System.out.println(webpageRecord);
-            // }
-            // System.out.println(webpageRecords.size());
-            byte[] digest = {94, -8, 99, 81, 102, -103, 95, 81, -69, -43, -62, 106, -60, 69, 42, -77};
+            WebpageRecords webpageRecords = repository.listWebpageRecords(
+                    "www.tokenizer.ca", 0, 10);
+            int i = 0;
+            for (WebpageRecord webpageRecord : webpageRecords) {
+                System.out.println(++i);
+                System.out.println(webpageRecord);
+            }
+            System.out.println(webpageRecords.size());
+            byte[] digest = { 5, 62, 10, 12, 23, 66, -77, -118, -1, 92, -47,
+                    -20, 18, 23, -123, 114 };
             WebpageRecord webpageRecord = repository.getWebpageRecord(digest);
-            System.out.println(webpageRecord);
-            byte[] digest2 = {-82, 8, 96, 115, 16, -112, 117, 85, 121, -56, -6, 66, -97, -69, -92, 68};
-            webpageRecord = repository.getWebpageRecord(digest2);
-            System.out.println(webpageRecord);
+            System.out.println("webpageRecord:\n" + webpageRecord);
         } catch (ConnectionException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
-
 
     // @Test
     public void webpageCounterTest() {
