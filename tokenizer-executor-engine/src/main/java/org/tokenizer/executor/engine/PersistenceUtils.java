@@ -72,17 +72,6 @@ public class PersistenceUtils {
             return null;
         }
         parse(fetchedResult, repository, hostConstraint);
-        WebpageRecord webpageRecord = update(fetchedResult, urlRecord,
-                repository, metricsCache);
-        urlRecord.setWebpageDigest(webpageRecord.getDigest());
-        repository.update(urlRecord);
-        return fetchedResult;
-    }
-
-    public static WebpageRecord update(final FetchedResult fetchedResult,
-            final UrlRecord urlRecord, final CrawlerRepository repository,
-            final MetricsCache metricsCache) throws InterruptedException,
-            ConnectionException {
         WebpageRecord webpageRecord = new WebpageRecord(urlRecord.getHost(),
                 fetchedResult.getContent());
         String charset = CharsetUtils.clean(HttpUtils
@@ -91,11 +80,11 @@ public class PersistenceUtils {
         webpageRecord.setTimestamp(urlRecord.getTimestamp());
         webpageRecord.setUrl(urlRecord.getUrl());
         // webpageRecord.setTimestamp(new Date());
-        LOG.debug("webpageRecord: {}", webpageRecord);
+        LOG.warn("refreshing webpageRecord: {}", webpageRecord);
         repository.insertIfNotExists(webpageRecord);
         urlRecord.setWebpageDigest(webpageRecord.getDigest());
         repository.update(urlRecord);
-        return webpageRecord;
+        return fetchedResult;
     }
 
     public static boolean checkRobotRules(final UrlRecord urlRecord,

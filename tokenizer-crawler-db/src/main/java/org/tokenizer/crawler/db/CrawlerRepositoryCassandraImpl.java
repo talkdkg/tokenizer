@@ -502,6 +502,8 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
         OperationResult<ColumnList<String>> result = keyspace
                 .prepareQuery(CF_WEBPAGE_RECORDS).getKey(digest).execute();
         ColumnList<String> columns = result.getResult();
+        if (columns.isEmpty())
+            return null;
         String url = columns.getStringValue("url", null);
         String host = columns.getStringValue("host", null);
         byte[] hostInverted = columns.getByteArrayValue("hostInverted", null);

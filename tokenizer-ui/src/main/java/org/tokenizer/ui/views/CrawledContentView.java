@@ -82,10 +82,11 @@ public class CrawledContentView extends VerticalSplitPanel implements
                 this.htmlLabel.setPropertyDataSource(htmlProp);
                 this.sourceLabel.setPropertyDataSource(htmlProp);
             } else {
-                byte[] digest = urlRecord.getDigest();
+                byte[] digest = urlRecord.getWebpageDigest();
                 WebpageRecord webpage = null;
                 try {
                     webpage = repository.getWebpageRecord(digest);
+                    LOG.warn("urlRecord: {}", urlRecord);
                     LOG.warn("webpage: {}", webpage);
                 } catch (ConnectionException e1) {
                     // TODO Auto-generated catch block
