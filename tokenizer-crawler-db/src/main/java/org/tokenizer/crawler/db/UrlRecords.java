@@ -23,6 +23,8 @@ public class UrlRecords extends AbstractCollection<UrlRecord> implements
     private Iterator<Row<byte[], String>> iterator = null;
     private int count = 0;
 
+    private final boolean emptyPage = false;
+
     public UrlRecords(final int count,
             final Execution<Rows<byte[], String>> query) {
         this.query = query;
@@ -35,28 +37,13 @@ public class UrlRecords extends AbstractCollection<UrlRecord> implements
         return this;
     }
 
-    int hasNextCount = 0;
-
-    @Override
-    public boolean hasNext() {
-        LOG.trace("hasNext() called... {}", ++hasNextCount);
-        if (iterator.hasNext())
-            return true;
-        else {
-            nextPage();
-        }
-        if (rows.isEmpty())
-            return false;
-        return true;
-    }
-
     int nextCount = 0;
 
     @Override
     public UrlRecord next() {
         LOG.trace("next() called... {}", ++nextCount);
         Row<byte[], String> row = null;
-        if (iterator.hasNext()) {
+        if (hasNext()) {
             row = iterator.next();
         } else
             throw new NoSuchElementException("No more elements!");
@@ -86,15 +73,29 @@ public class UrlRecords extends AbstractCollection<UrlRecord> implements
         return this.count;
     }
 
+    int hasNextCount = 0;
+
+    @Override
+    public boolean hasNext() {
+        LOG.trace("hasNext() called... {}", ++hasNextCount);
+        if (!rows.isEmpty() && iterator.hasNext())
+            return true;
+        else
+            return nextPage();
+    }
+
     int nextPageCount = 0;
 
-    private void nextPage() {
-        LOG.trace("nextPage() called... {}", ++nextPageCount);
+    private boolean nextPage() {
+        nextPageCount++;
+        LOG.trace("nextPage() called... {}", nextPageCount);
         try {
             this.rows = query.execute().getResult();
-            this.iterator = rows.iterator();
         } catch (ConnectionException e) {
-            LOG.error("", e);
+            LOG.warn("", e);
+            return false;
         }
+        this.iterator = rows.iterator();
+        return (!rows.isEmpty());
     }
 }
