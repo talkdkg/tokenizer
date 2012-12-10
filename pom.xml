@@ -50,21 +50,22 @@
     <packaging>pom</packaging>
     <name>Kauri application: tokenizer</name>
     <modules>
+        <module>tokenizer-analysis</module>
         <module>tokenizer-core</module>
+        <module>tokenizer-dist</module>
         <module>tokenizer-crawler-db</module>
         <module>tokenizer-executor-admin-cli</module>
         <module>tokenizer-executor-engine</module>
+        <module>tokenizer-executor-engine-message</module>
         <module>tokenizer-executor-engine-twitter</module>
         <module>tokenizer-executor-master</module>
         <module>tokenizer-executor-model</module>
         <module>tokenizer-executor-module</module>
         <module>tokenizer-executor-worker</module>
-        <module>tokenizer-ui</module>
-        <module>tokenizer-dist</module>
-        <module>tokenizer-analysis</module>
         <module>tokenizer-twitter</module>
         <module>tokenizer-jpa</module>
-        <module>tokenizer-executor-engine-message</module>
+        <module>tokenizer-ui</module>
+        <module>wicket</module>
     </modules>
     <repositories>
         <repository>
