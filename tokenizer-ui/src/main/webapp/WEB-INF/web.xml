@@ -14,8 +14,11 @@
             classpath*:META-INF/infrastructure-context.xml
         </param-value>
  -->
+ 
+ 
+ 
         <param-value>
-            classpath*:META-INF/tokenizer-executor-module.xml
+            classpath*:META-INF/tokenizer-executor-context.xml
         </param-value>
 
     </context-param>
