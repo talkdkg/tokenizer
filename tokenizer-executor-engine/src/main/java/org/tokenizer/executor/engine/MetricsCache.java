@@ -41,11 +41,13 @@ import org.tokenizer.executor.model.api.WritableExecutorModel;
  * 
  */
 public class MetricsCache {
+
     private static final Logger LOG = LoggerFactory
             .getLogger(MetricsCache.class);
     private static final long COMMIT_INTERVAL = 1 * 1000L;
     public static final String URL_ROBOTS_KEY = "robots.txt restricted";
     public static final String URL_TOTAL_KEY = "URLs processed total";
+    public static final String XML_TOTAL_KEY = "XML snippets created total";
     public static final String URL_OK_KEY = "URLs fetched successfully HTTP total count";
     public static final String URL_INJECTED = "URLs injected";
     public static final String TOTAL_RESPONSE_TIME_KEY = "URLs fetched successfully HTTP total time (ms)";
@@ -63,7 +65,7 @@ public class MetricsCache {
     private final String taskName;
     private final WritableExecutorModel model;
 
-    public MetricsCache(String taskName, WritableExecutorModel model) {
+    public MetricsCache(final String taskName, final WritableExecutorModel model) {
         this.taskName = taskName;
         this.model = model;
         this.lastCommitTimestamp = System.currentTimeMillis();
@@ -75,7 +77,8 @@ public class MetricsCache {
      * @param key
      * @throws InterruptedException
      */
-    public synchronized void increment(String key) throws InterruptedException {
+    public synchronized void increment(final String key)
+            throws InterruptedException {
         increment(key, 1L);
     }
 
@@ -85,7 +88,7 @@ public class MetricsCache {
      * @param key
      * @throws InterruptedException
      */
-    public synchronized void increment(String key, long value)
+    public synchronized void increment(final String key, final long value)
             throws InterruptedException {
         Long count = cache.get(key);
         if (count == null) {

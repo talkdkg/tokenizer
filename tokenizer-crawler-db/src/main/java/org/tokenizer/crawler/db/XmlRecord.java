@@ -1,5 +1,8 @@
 package org.tokenizer.crawler.db;
 
+import java.io.UnsupportedEncodingException;
+import java.util.Arrays;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tokenizer.core.util.MD5;
@@ -58,5 +61,19 @@ public class XmlRecord {
 
     public byte[] getContent() {
         return content;
+    }
+
+    @Override
+    public String toString() {
+        try {
+            return "XmlRecord [digest=" + Arrays.toString(digest) + ", host="
+                    + host + ", hostInverted=" + Arrays.toString(hostInverted)
+                    + ", content=" + (new String(content, "UTF-8"))
+                    + ", parseAttemptCounter=" + parseAttemptCounter + "]";
+        } catch (UnsupportedEncodingException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            return null;
+        }
     }
 }

@@ -35,18 +35,6 @@ public class XmlRecords extends AbstractCollection<XmlRecord> implements
     }
 
     @Override
-    public boolean hasNext() {
-        if (iterator.hasNext())
-            return true;
-        else {
-            nextPage();
-        }
-        if (rows.isEmpty())
-            return false;
-        return true;
-    }
-
-    @Override
     public XmlRecord next() {
         Row<byte[], String> row = null;
         if (iterator.hasNext()) {
@@ -75,12 +63,22 @@ public class XmlRecords extends AbstractCollection<XmlRecord> implements
         return this.count;
     }
 
-    private void nextPage() {
+    @Override
+    public boolean hasNext() {
+        if (!rows.isEmpty() && iterator.hasNext())
+            return true;
+        else
+            return nextPage();
+    }
+
+    private boolean nextPage() {
         try {
             this.rows = query.execute().getResult();
-            this.iterator = rows.iterator();
         } catch (ConnectionException e) {
-            LOG.error("", e);
+            LOG.warn("", e);
+            return false;
         }
+        this.iterator = rows.iterator();
+        return (!rows.isEmpty());
     }
 }

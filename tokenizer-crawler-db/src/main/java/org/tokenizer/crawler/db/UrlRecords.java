@@ -22,7 +22,6 @@ public class UrlRecords extends AbstractCollection<UrlRecord> implements
     private Rows<byte[], String> rows = null;
     private Iterator<Row<byte[], String>> iterator = null;
     private int count = 0;
-
     private final boolean emptyPage = false;
 
     public UrlRecords(final int count,
@@ -37,11 +36,8 @@ public class UrlRecords extends AbstractCollection<UrlRecord> implements
         return this;
     }
 
-    int nextCount = 0;
-
     @Override
     public UrlRecord next() {
-        LOG.trace("next() called... {}", ++nextCount);
         Row<byte[], String> row = null;
         if (hasNext()) {
             row = iterator.next();
@@ -73,22 +69,15 @@ public class UrlRecords extends AbstractCollection<UrlRecord> implements
         return this.count;
     }
 
-    int hasNextCount = 0;
-
     @Override
     public boolean hasNext() {
-        LOG.trace("hasNext() called... {}", ++hasNextCount);
         if (!rows.isEmpty() && iterator.hasNext())
             return true;
         else
             return nextPage();
     }
 
-    int nextPageCount = 0;
-
     private boolean nextPage() {
-        nextPageCount++;
-        LOG.trace("nextPage() called... {}", nextPageCount);
         try {
             this.rows = query.execute().getResult();
         } catch (ConnectionException e) {

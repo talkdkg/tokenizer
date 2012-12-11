@@ -80,7 +80,7 @@ public class PersistenceUtils {
         webpageRecord.setTimestamp(urlRecord.getTimestamp());
         webpageRecord.setUrl(urlRecord.getUrl());
         // webpageRecord.setTimestamp(new Date());
-        LOG.warn("refreshing webpageRecord: {}", webpageRecord);
+        LOG.trace("refreshing webpageRecord: {}", webpageRecord);
         repository.insertIfNotExists(webpageRecord);
         urlRecord.setWebpageDigest(webpageRecord.getDigest());
         repository.update(urlRecord);

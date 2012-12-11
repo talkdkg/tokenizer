@@ -62,9 +62,17 @@ public class HtmlSplitterTask extends AbstractTask {
         for (WebpageRecord webpageRecord : webpageRecords) {
             List<XmlRecord> xmlRecords = parse(webpageRecord);
             for (XmlRecord xmlRecord : xmlRecords) {
+                LOG.warn("xmlRecord: {}", xmlRecord);
                 crawlerRepository.insertIfNotExist(xmlRecord);
+                metricsCache.increment(MetricsCache.XML_TOTAL_KEY);
             }
+            webpageRecord.setSplitAttemptCounter(1);
+            crawlerRepository.updateSplitAttemptCounter(webpageRecord);
+            metricsCache.increment(MetricsCache.URL_TOTAL_KEY);
         }
+        // to prevent spin loop in case if collection is empty:
+        LOG.warn("sleeping 10 seconds...");
+        Thread.currentThread().sleep(10000);
     }
 
     public List<XmlRecord> parse(final WebpageRecord page) {
