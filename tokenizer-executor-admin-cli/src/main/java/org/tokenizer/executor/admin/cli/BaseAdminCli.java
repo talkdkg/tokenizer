@@ -25,19 +25,17 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.io.FileUtils;
-import org.lilyproject.cli.BaseZkCliTool;
-import org.lilyproject.util.Version;
-import org.lilyproject.util.io.Closer;
-import org.lilyproject.util.zookeeper.StateWatchingZooKeeper;
-import org.lilyproject.util.zookeeper.ZooKeeperItf;
+import org.tokenizer.core.cli.BaseZkCliTool;
 import org.tokenizer.executor.model.api.TaskGeneralState;
-import org.tokenizer.executor.model.api.TaskValidityException;
 import org.tokenizer.executor.model.api.WritableExecutorModel;
 import org.tokenizer.executor.model.configuration.TaskConfiguration;
-import org.tokenizer.executor.model.configuration.TaskConfigurationException;
 import org.tokenizer.executor.model.impl.ExecutorModelImpl;
+import org.tokenizer.util.io.Closer;
+import org.tokenizer.util.zookeeper.StateWatchingZooKeeper;
+import org.tokenizer.util.zookeeper.ZooKeeperItf;
 
 public abstract class BaseAdminCli extends BaseZkCliTool {
+
     protected Option forceOption;
     protected Option nameOption;
     protected Option configurationOption;
@@ -76,33 +74,6 @@ public abstract class BaseAdminCli extends BaseZkCliTool {
     }
 
     @Override
-    protected void reportThrowable(Throwable throwable) {
-        if (throwable instanceof TaskValidityException) {
-            System.out.println("ATTENTION");
-            System.out.println("---------");
-            System.out
-                    .println("The task could not be created or updated because:");
-            printExceptionMessages(throwable);
-        } else {
-            super.reportThrowable(throwable);
-        }
-    }
-
-    protected static void printExceptionMessages(Throwable throwable) {
-        Throwable cause = throwable;
-        while (cause != null) {
-            String prefix = "";
-            if (cause instanceof TaskValidityException) {
-                prefix = "Task definition: ";
-            } else if (cause instanceof TaskConfigurationException) {
-                prefix = "Task configuration: ";
-            }
-            System.out.println(prefix + cause.getMessage());
-            cause = cause.getCause();
-        }
-    }
-
-    @Override
     public List<Option> getOptions() {
         List<Option> options = super.getOptions();
         options.add(forceOption);
@@ -111,12 +82,11 @@ public abstract class BaseAdminCli extends BaseZkCliTool {
 
     @Override
     protected String getVersion() {
-        return Version.readVersion("org.tokenizer",
-                "tokenizer-executor-admin-cli");
+        return "1.0";
     }
 
     @Override
-    protected int processOptions(CommandLine cmd) throws Exception {
+    protected int processOptions(final CommandLine cmd) throws Exception {
         int result = super.processOptions(cmd);
         if (result != 0)
             return result;
@@ -178,7 +148,7 @@ public abstract class BaseAdminCli extends BaseZkCliTool {
     }
 
     @Override
-    public int run(CommandLine cmd) throws Exception {
+    public int run(final CommandLine cmd) throws Exception {
         int result = super.run(cmd);
         if (result != 0)
             return result;
@@ -188,7 +158,7 @@ public abstract class BaseAdminCli extends BaseZkCliTool {
     }
 
     @SuppressWarnings("rawtypes")
-    private String getStates(Enum[] values) {
+    private String getStates(final Enum[] values) {
         StringBuilder builder = new StringBuilder();
         for (Enum value : values) {
             if (builder.length() > 0) {

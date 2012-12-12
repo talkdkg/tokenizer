@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.zookeeper.KeeperException;
-import org.lilyproject.util.zookeeper.ZooKeeperItf;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tokenizer.core.http.FetcherUtils;
@@ -32,6 +31,7 @@ import org.tokenizer.crawler.db.CrawlerRepository;
 import org.tokenizer.executor.model.api.WritableExecutorModel;
 import org.tokenizer.executor.model.configuration.SimpleMultithreadedFetcherTaskConfiguration;
 import org.tokenizer.executor.model.configuration.TaskConfiguration;
+import org.tokenizer.util.zookeeper.ZooKeeperItf;
 
 import com.netflix.astyanax.connectionpool.exceptions.ConnectionException;
 

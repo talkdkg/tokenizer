@@ -16,16 +16,16 @@
 package org.tokenizer.executor.engine;
 
 import org.apache.zookeeper.KeeperException;
-import org.lilyproject.util.Logs;
-import org.lilyproject.util.zookeeper.LeaderElection;
-import org.lilyproject.util.zookeeper.LeaderElectionCallback;
-import org.lilyproject.util.zookeeper.LeaderElectionSetupException;
-import org.lilyproject.util.zookeeper.ZooKeeperItf;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tokenizer.crawler.db.CrawlerRepository;
 import org.tokenizer.executor.model.api.WritableExecutorModel;
 import org.tokenizer.executor.model.configuration.TaskConfiguration;
+import org.tokenizer.util.Logs;
+import org.tokenizer.util.zookeeper.LeaderElection;
+import org.tokenizer.util.zookeeper.LeaderElectionCallback;
+import org.tokenizer.util.zookeeper.LeaderElectionSetupException;
+import org.tokenizer.util.zookeeper.ZooKeeperItf;
 
 import com.netflix.astyanax.connectionpool.exceptions.ConnectionException;
 

@@ -16,7 +16,6 @@
 package org.tokenizer.ui.views;
 
 import org.apache.zookeeper.KeeperException;
-import org.lilyproject.util.zookeeper.ZkLockException;
 import org.tokenizer.executor.engine.twitter.TweetCollectorTaskConfiguration;
 import org.tokenizer.executor.model.api.TaskConcurrentModificationException;
 import org.tokenizer.executor.model.api.TaskExistsException;
@@ -34,6 +33,7 @@ import org.tokenizer.executor.model.configuration.SimpleMultithreadedFetcherTask
 import org.tokenizer.executor.model.configuration.SitemapsFetcherTaskConfiguration;
 import org.tokenizer.executor.model.configuration.TaskConfiguration;
 import org.tokenizer.ui.MyVaadinApplication;
+import org.tokenizer.util.zookeeper.ZkLockException;
 
 import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanItem;

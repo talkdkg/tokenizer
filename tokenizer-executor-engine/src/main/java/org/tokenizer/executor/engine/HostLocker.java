@@ -21,11 +21,11 @@ import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.ZooDefs;
 import org.apache.zookeeper.data.Stat;
-import org.lilyproject.util.zookeeper.ZkUtil;
-import org.lilyproject.util.zookeeper.ZooKeeperItf;
-import org.lilyproject.util.zookeeper.ZooKeeperOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tokenizer.util.zookeeper.ZkUtil;
+import org.tokenizer.util.zookeeper.ZooKeeperItf;
+import org.tokenizer.util.zookeeper.ZooKeeperOperation;
 
 public class HostLocker {
 

@@ -19,7 +19,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.lilyproject.util.ObjectUtils;
+import org.tokenizer.util.ObjectUtils;
 
 public class ActiveTaskInfo {
 

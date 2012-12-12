@@ -26,8 +26,6 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
 import org.apache.zookeeper.KeeperException;
-import org.lilyproject.util.zookeeper.LeaderElectionSetupException;
-import org.lilyproject.util.zookeeper.ZooKeeperItf;
 import org.tokenizer.crawler.db.CrawlerRepository;
 import org.tokenizer.executor.engine.AbstractTask;
 import org.tokenizer.executor.engine.ClassicRobotTask;
@@ -53,6 +51,8 @@ import org.tokenizer.executor.model.configuration.RssFetcherTaskConfiguration;
 import org.tokenizer.executor.model.configuration.SimpleMultithreadedFetcherTaskConfiguration;
 import org.tokenizer.executor.model.configuration.SitemapsFetcherTaskConfiguration;
 import org.tokenizer.executor.model.configuration.TaskConfiguration;
+import org.tokenizer.util.zookeeper.LeaderElectionSetupException;
+import org.tokenizer.util.zookeeper.ZooKeeperItf;
 
 /**
  * Worker is responsible for starting/stopping tasks.

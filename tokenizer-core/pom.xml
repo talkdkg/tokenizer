@@ -32,11 +32,6 @@
             <groupId>com.google.code.crawler-commons</groupId>
             <artifactId>crawler-commons-tmp</artifactId>
         </dependency>
-<!--     <dependency>
-      <groupId>org.apache.hadoop</groupId>
-      <artifactId>hadoop-common</artifactId>
-    </dependency>
- -->
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
@@ -54,11 +49,14 @@
             <artifactId>commons-lang</artifactId>
             <version>2.6</version>
         </dependency>
-<!--     <dependency>
-      <groupId>org.lilyproject</groupId>
-      <artifactId>lily-import</artifactId>
-    </dependency>
- -->
+        <dependency>
+            <groupId>org.codehaus.jackson</groupId>
+            <artifactId>jackson-core-asl</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.codehaus.jackson</groupId>
+            <artifactId>jackson-mapper-asl</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>

@@ -15,7 +15,7 @@
  */
 package org.tokenizer.executor.master;
 
-import org.lilyproject.util.Version;
+import org.tokenizer.util.Version;
 
 public class ExecutorInfoImpl implements ExecutorInfo {
   

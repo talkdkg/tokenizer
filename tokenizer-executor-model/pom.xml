@@ -16,43 +16,37 @@
  * limitations under the License.
  */
 -->
-<project
-	xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
 >
-	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<artifactId>tokenizer</artifactId>
-		<groupId>org.tokenizer</groupId>
-		<version>1.0-SNAPSHOT</version>
-		<relativePath>..</relativePath>
-	</parent>
-	<artifactId>tokenizer-executor-model</artifactId>
-	<dependencies>
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <artifactId>tokenizer</artifactId>
+        <groupId>org.tokenizer</groupId>
+        <version>1.0-SNAPSHOT</version>
+        <relativePath>..</relativePath>
+    </parent>
+    <artifactId>tokenizer-executor-model</artifactId>
+    <dependencies>
         <dependency>
             <groupId>org.tokenizer</groupId>
             <artifactId>tokenizer-core</artifactId>
         </dependency>
-		<dependency>
-			<groupId>org.lilyproject</groupId>
-			<artifactId>lily-zk-util</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.lilyproject</groupId>
-			<artifactId>lily-json-util</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.codehaus.jackson</groupId>
-			<artifactId>jackson-core-asl</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.codehaus.jackson</groupId>
-			<artifactId>jackson-mapper-asl</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>net.iharder</groupId>
-			<artifactId>base64</artifactId>
-		</dependency>
-	</dependencies>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>tokenizer-core-zk-util</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.codehaus.jackson</groupId>
+            <artifactId>jackson-core-asl</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.codehaus.jackson</groupId>
+            <artifactId>jackson-mapper-asl</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>net.iharder</groupId>
+            <artifactId>base64</artifactId>
+        </dependency>
+    </dependencies>
 </project>

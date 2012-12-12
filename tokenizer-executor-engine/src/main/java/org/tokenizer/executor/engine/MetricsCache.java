@@ -19,7 +19,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.zookeeper.KeeperException;
-import org.lilyproject.util.zookeeper.ZkLockException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tokenizer.executor.model.api.TaskConcurrentModificationException;
@@ -30,6 +29,7 @@ import org.tokenizer.executor.model.api.TaskNotFoundException;
 import org.tokenizer.executor.model.api.TaskUpdateException;
 import org.tokenizer.executor.model.api.TaskValidityException;
 import org.tokenizer.executor.model.api.WritableExecutorModel;
+import org.tokenizer.util.zookeeper.ZkLockException;
 
 /**
  * Thread safe instance of this class should be used as an attribute of

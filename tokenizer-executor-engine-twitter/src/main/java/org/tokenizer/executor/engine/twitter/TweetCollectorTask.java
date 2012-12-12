@@ -29,7 +29,6 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
 
-import org.lilyproject.util.zookeeper.ZooKeeperItf;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tokenizer.core.TokenizerConfig;
@@ -39,6 +38,7 @@ import org.tokenizer.executor.engine.HostLocker;
 import org.tokenizer.executor.engine.twitter.db.StatusVO;
 import org.tokenizer.executor.model.api.WritableExecutorModel;
 import org.tokenizer.executor.model.configuration.TaskConfiguration;
+import org.tokenizer.util.zookeeper.ZooKeeperItf;
 
 import twitter4j.FilterQuery;
 import twitter4j.StallWarning;

@@ -16,19 +16,22 @@
  * limitations under the License.
  */
  -->
- <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+>
     <properties>
         <version.astyanax>1.0.4-SNAPSHOT</version.astyanax>
         <version.base64>2.3.8</version.base64>
         <version.crawler-commons>0.2-SNAPSHOT</version.crawler-commons>
+        <version.commons-cli>1.2</version.commons-cli>
+        <version.commons-io>2.4</version.commons-io>
         <version.eclipselink>2.4.1</version.eclipselink>
         <version.hadoop>1.0.3</version.hadoop>
         <version.hbase>0.94.1</version.hbase>
         <version.httpclient>4.2.2</version.httpclient>
-        <version.jackson>1.9.7</version.jackson>
+        <version.jackson>1.9.9</version.jackson>
         <version.jaxrs>1.0</version.jaxrs>
         <version.junit>4.10</version.junit>
-        <version.kauri>0.4-RC2</version.kauri>
         <version.lily>1.3</version.lily>
         <version.log4j>1.2.17</version.log4j>
         <version.mysql-connector-java>5.1.21</version.mysql-connector-java>
@@ -40,8 +43,8 @@
         <version.tagsoup>1.2.1</version.tagsoup>
         <version.tika>1.2</version.tika>
         <version.twitter4j>3.0.0-SNAPSHOT</version.twitter4j>
-
-<!-- copied from tokenizer-ui -->
+        <version.zookeeper>3.4.4</version.zookeeper>
+        <!-- copied from tokenizer-ui -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <addonBaseName>dontpush-addon</addonBaseName>
         <vaadin.version>6.8.4</vaadin.version>
@@ -57,7 +60,7 @@
     <artifactId>tokenizer</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
-    <name>Kauri application: tokenizer</name>
+    <name>Tokenizer: Distributed Executor</name>
     <modules>
         <module>tokenizer-core</module>
         <module>tokenizer-dist</module>
@@ -73,7 +76,8 @@
         <module>tokenizer-jpa</module>
         <module>tokenizer-ui</module>
         <module>wicket</module>
-  </modules>
+        <module>tokenizer-core-zk-util</module>
+    </modules>
     <repositories>
         <repository>
             <id>default</id>
@@ -89,36 +93,12 @@
             <url>http://maven.restlet.org/</url>
         </repository>
         <repository>
-            <id>kauri-deploy</id>
-            <url>http://kauriproject.org/maven/maven2/deploy</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-        <repository>
-            <id>lilyproject</id>
-            <name>Lily Maven repository</name>
-            <url>http://lilyproject.org/maven/maven2/deploy/</url>
-        </repository>
-        <repository>
             <id>EclipseLink Repo</id>
             <url>http://download.eclipse.org/rt/eclipselink/maven.repo</url>
             <name>EclipseLink Repo</name>
         </repository>
     </repositories>
     <pluginRepositories>
-        <pluginRepository>
-            <id>kauri-deploy</id>
-            <url>http://kauriproject.org/maven/maven2/deploy</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </pluginRepository>
-        <pluginRepository>
-            <id>lilyproject-plugins</id>
-            <name>Lily snapshot plugin repository</name>
-            <url>http://lilyproject.org/maven/maven2/deploy/</url>
-        </pluginRepository>
     </pluginRepositories>
     <dependencyManagement>
         <dependencies>
@@ -209,6 +189,11 @@
                 </exclusions>
             </dependency>
             <dependency>
+                <groupId>org.apache.zookeeper</groupId>
+                <artifactId>zookeeper</artifactId>
+                <version>${version.zookeeper}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.ccil.cowan.tagsoup</groupId>
                 <artifactId>tagsoup</artifactId>
                 <version>${version.tagsoup}</version>
@@ -222,116 +207,6 @@
                 <groupId>org.codehaus.jackson</groupId>
                 <artifactId>jackson-mapper-asl</artifactId>
                 <version>${version.jackson}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.kauriproject</groupId>
-                <artifactId>kauri-routing-api</artifactId>
-                <version>${version.kauri}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.kauriproject</groupId>
-                <artifactId>kauri-representationbuilder-api</artifactId>
-                <version>${version.kauri}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.kauriproject</groupId>
-                <artifactId>kauri-runtime</artifactId>
-                <version>${version.kauri}</version>
-                <exclusions>
-                    <exclusion>
-                        <artifactId>core</artifactId>
-                        <groupId>org.eclipse.jdt</groupId>
-                    </exclusion>
-                    <exclusion>
-                        <artifactId>org.restlet.ext.jetty</artifactId>
-                        <groupId>org.restlet.jse</groupId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>org.kauriproject</groupId>
-                <artifactId>kauri-util</artifactId>
-                <version>${version.kauri}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.lilyproject</groupId>
-                <artifactId>lily-cli-fw</artifactId>
-                <version>${version.lily}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.lilyproject</groupId>
-                <artifactId>lily-general-module</artifactId>
-                <version>${version.lily}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.lilyproject</groupId>
-                <artifactId>lily-hbase-client</artifactId>
-                <version>${version.lily}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.apache.hbase</groupId>
-                        <artifactId>hbase</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.apache.hadoop</groupId>
-                        <artifactId>hadoop-common</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.apache.hadoop</groupId>
-                        <artifactId>hadoop-core</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.apache.hadoop</groupId>
-                        <artifactId>hadoop-hdfs</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>org.lilyproject</groupId>
-                <artifactId>lily-hbase-util</artifactId>
-                <version>${version.lily}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.apache.hbase</groupId>
-                        <artifactId>hbase</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>org.lilyproject</groupId>
-                <artifactId>lily-hbaseindex-impl</artifactId>
-                <version>${version.lily}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.apache.hbase</groupId>
-                        <artifactId>hbase</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>org.lilyproject</groupId>
-                <artifactId>lily-import</artifactId>
-                <version>${version.lily}</version>
-                <exclusions>
-                    <exclusion>
-                        <artifactId>jetty</artifactId>
-                        <groupId>org.mortbay.jetty</groupId>
-                    </exclusion>
-                    <exclusion>
-                        <artifactId>jetty-util</artifactId>
-                        <groupId>org.mortbay.jetty</groupId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>org.lilyproject</groupId>
-                <artifactId>lily-json-util</artifactId>
-                <version>${version.lily}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.lilyproject</groupId>
-                <artifactId>lily-zk-util</artifactId>
-                <version>${version.lily}</version>
             </dependency>
             <dependency>
                 <groupId>org.restlet.gae</groupId>
@@ -387,6 +262,11 @@
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>tokenizer-core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>tokenizer-core-zk-util</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -449,6 +329,16 @@
                 <artifactId>twitter4j-stream</artifactId>
                 <version>${version.twitter4j}</version>
             </dependency>
+            <dependency>
+                <groupId>commons-cli</groupId>
+                <artifactId>commons-cli</artifactId>
+                <version>${version.commons-cli}</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-io</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>${version.commons-io}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
     <dependencies>
@@ -468,107 +358,14 @@
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.kauriproject</groupId>
-            <artifactId>kauri-runtime</artifactId>
-            <exclusions>
-                <exclusion>
-                    <artifactId>core</artifactId>
-                    <groupId>org.eclipse.jdt</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>spring-aop</artifactId>
-                    <groupId>org.springframework</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>spring-core</artifactId>
-                    <groupId>org.springframework</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>
     </dependencies>
     <build>
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
             </resource>
-            <resource>
-                <directory>src/main/kauri</directory>
-                <targetPath>KAURI-INF</targetPath>
-            </resource>
         </resources>
         <pluginManagement>
-            <plugins>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-compiler-plugin</artifactId>
-                    <version>2.0.2</version>
-                    <configuration>
-                        <source>1.5</source>
-                        <target>1.5</target>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.kauriproject</groupId>
-                    <artifactId>kauri-genclassloader-plugin</artifactId>
-                    <version>${version.kauri}</version>
-                    <executions>
-                        <execution>
-                            <phase>compile</phase>
-                            <goals>
-                                <goal>generate</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                </plugin>
-                <plugin>
-				<!-- 
-					http://wiki.eclipse.org/M2E_plugin_execution_not_covered
-				 -->
-                    <groupId>org.eclipse.m2e</groupId>
-                    <artifactId>lifecycle-mapping</artifactId>
-                    <version>1.0.0</version>
-                    <configuration>
-                        <lifecycleMappingMetadata>
-                            <pluginExecutions>
-                                <pluginExecution>
-                                    <pluginExecutionFilter>
-                                        <groupId>org.kauriproject</groupId>
-                                        <artifactId>kauri-genclassloader-plugin</artifactId>
-                                        <versionRange>[${version.kauri},)</versionRange>
-                                        <goals>
-                                            <goal>generate</goal>
-                                        </goals>
-                                    </pluginExecutionFilter>
-                                    <action>
-										<!-- <execute>
-											<runOnIncremental>false</runOnIncremental>
-										</execute> -->
-                                        <ignore/>
-                                    </action>
-                                </pluginExecution>
-                                <pluginExecution>
-                                    <pluginExecutionFilter>
-                                        <groupId>org.lilyproject</groupId>
-                                        <artifactId>lily-genscript-plugin</artifactId>
-                                        <versionRange>[${version.lily},)</versionRange>
-                                        <goals>
-                                            <goal>genscript</goal>
-                                        </goals>
-                                    </pluginExecutionFilter>
-                                    <action>
-<!-- 										<execute>
-											<runOnIncremental>false</runOnIncremental>
-										</execute>
- -->
-                                        <ignore/>
-                                    </action>
-                                </pluginExecution>
-                            </pluginExecutions>
-                        </lifecycleMappingMetadata>
-                    </configuration>
-                </plugin>
-            </plugins>
         </pluginManagement>
         <plugins>
             <plugin>
@@ -579,79 +376,6 @@
                     <target>1.6</target>
                     <compilerVersion>1.6</compilerVersion>
                     <encoding>UTF-8</encoding>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.kauriproject</groupId>
-                <artifactId>kauri-package-plugin</artifactId>
-                <version>${version.kauri}</version>
-                <inherited>false</inherited>
-                <configuration>
-                    <confDirectory>${basedir}/conf</confDirectory>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.lilyproject</groupId>
-                <artifactId>lily-genscript-plugin</artifactId>
-                <inherited>false</inherited>
-                <configuration>
-                    <scripts>
-                        <script>
-                            <basename>lily-server</basename>
-                            <mainClass>org.kauriproject.launcher.RuntimeCliLauncher</mainClass>
-                        </script>
-                    </scripts>
-                    <alternativeClasspath>
-                        <dependency>
-                            <groupId>org.kauriproject</groupId>
-                            <artifactId>kauri-runtime-launcher</artifactId>
-                            <version>${version.kauri}</version>
-                        </dependency>
-                    </alternativeClasspath>
-                    <includeProjectInClasspath>false</includeProjectInClasspath>
-                    <defaultCliArgs>
-                        <parameter>
-                            <platform>unix</platform>
-                            <mode>dist</mode>
-                            <value>--repository $M2_REPO --confdir
-                                $LILY_HOME/conf --log-configuration
-                                $LILY_HOME/lily-log4j.properties</value>
-                        </parameter>
-                        <parameter>
-                            <platform>windows</platform>
-                            <mode>dist</mode>
-                            <value>--repository "%M2_REPO%" --confdir
-                                "%LILY_HOME%\conf" --log-configuration
-                                "%LILY_HOME%\lily-log4j.properties"</value>
-                        </parameter>
-                    </defaultCliArgs>
-                    <defaultJvmArgs>
-                        <parameter>
-                            <platform>unix</platform>
-                            <mode>dist</mode>
-                            <value>-Dkauri.launcher.repository=$M2_REPO
-                                -Dlily.logdir=$LILY_HOME/logs</value>
-                        </parameter>
-                        <parameter>
-                            <platform>windows</platform>
-                            <mode>dist</mode>
-                            <value>-Dkauri.launcher.repository="%M2_REPO%"
-                                -Dlily.logdir="%LILY_HOME%\logs"</value>
-                        </parameter>
-                    </defaultJvmArgs>
-                    <beforeJavaHook>
-                        <parameter>
-                            <platform>unix</platform>
-                            <mode>dev</mode>
-                            <value> # Enable JMX access
-                                LILY_JMX_OPTIONS="-Dcom.sun.management.jmxremote.ssl=false
-                                -Dcom.sun.management.jmxremote.authenticate=false
-                                -Dcom.sun.management.jmxremote.port=10202"
-                                LILY_JAVA_OPTIONS="$LILY_JAVA_OPTIONS
-                                $LILY_JMX_OPTIONS" 
-                            </value>
-                        </parameter>
-                    </beforeJavaHook>
                 </configuration>
             </plugin>
         </plugins>

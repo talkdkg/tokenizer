@@ -31,13 +31,13 @@
 	<artifactId>tokenizer-executor-master</artifactId>
 	<dependencies>
 		<dependency>
-			<groupId>org.lilyproject</groupId>
-			<artifactId>lily-zk-util</artifactId>
-		</dependency>
-		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>tokenizer-core</artifactId>
 		</dependency>
+       <dependency>
+			<groupId>${project.groupId}</groupId>
+            <artifactId>tokenizer-core-zk-util</artifactId>
+        </dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>tokenizer-executor-model</artifactId>

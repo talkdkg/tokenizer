@@ -16,7 +16,7 @@
 package org.tokenizer.executor.model.api;
 
 import org.apache.zookeeper.KeeperException;
-import org.lilyproject.util.zookeeper.ZkLockException;
+import org.tokenizer.util.zookeeper.ZkLockException;
 
 public interface WritableExecutorModel extends ExecutorModel {
 

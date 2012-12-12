@@ -25,11 +25,6 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
 import org.apache.zookeeper.KeeperException;
-import org.lilyproject.util.Logs;
-import org.lilyproject.util.zookeeper.LeaderElection;
-import org.lilyproject.util.zookeeper.LeaderElectionCallback;
-import org.lilyproject.util.zookeeper.LeaderElectionSetupException;
-import org.lilyproject.util.zookeeper.ZooKeeperItf;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tokenizer.executor.model.api.ExecutorModelEvent;
@@ -39,6 +34,11 @@ import org.tokenizer.executor.model.api.TaskGeneralState;
 import org.tokenizer.executor.model.api.TaskInfoBean;
 import org.tokenizer.executor.model.api.TaskNotFoundException;
 import org.tokenizer.executor.model.api.WritableExecutorModel;
+import org.tokenizer.util.Logs;
+import org.tokenizer.util.zookeeper.LeaderElection;
+import org.tokenizer.util.zookeeper.LeaderElectionCallback;
+import org.tokenizer.util.zookeeper.LeaderElectionSetupException;
+import org.tokenizer.util.zookeeper.ZooKeeperItf;
 
 /**
  * Responsible for delete existing task; only one single Master node should be

@@ -39,12 +39,6 @@ import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.ZooDefs;
 import org.apache.zookeeper.data.Stat;
-import org.lilyproject.util.Logs;
-import org.lilyproject.util.zookeeper.ZkLock;
-import org.lilyproject.util.zookeeper.ZkLockException;
-import org.lilyproject.util.zookeeper.ZkUtil;
-import org.lilyproject.util.zookeeper.ZooKeeperItf;
-import org.lilyproject.util.zookeeper.ZooKeeperOperation;
 import org.tokenizer.executor.model.api.ExecutorModelEvent;
 import org.tokenizer.executor.model.api.ExecutorModelEventType;
 import org.tokenizer.executor.model.api.ExecutorModelListener;
@@ -57,6 +51,12 @@ import org.tokenizer.executor.model.api.TaskNotFoundException;
 import org.tokenizer.executor.model.api.TaskUpdateException;
 import org.tokenizer.executor.model.api.TaskValidityException;
 import org.tokenizer.executor.model.api.WritableExecutorModel;
+import org.tokenizer.util.Logs;
+import org.tokenizer.util.zookeeper.ZkLock;
+import org.tokenizer.util.zookeeper.ZkLockException;
+import org.tokenizer.util.zookeeper.ZkUtil;
+import org.tokenizer.util.zookeeper.ZooKeeperItf;
+import org.tokenizer.util.zookeeper.ZooKeeperOperation;
 
 public class ExecutorModelImpl implements WritableExecutorModel {
     private final static Log LOG = LogFactory.getLog(ExecutorModelImpl.class);
