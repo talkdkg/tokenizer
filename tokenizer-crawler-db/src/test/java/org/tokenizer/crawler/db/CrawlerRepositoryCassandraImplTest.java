@@ -7,7 +7,7 @@ import com.netflix.astyanax.connectionpool.exceptions.ConnectionException;
 
 public class CrawlerRepositoryCassandraImplTest {
 
-    private static CrawlerRepository repository;
+    private static CrawlerRepositoryCassandraImpl repository;
 
     @BeforeClass
     public static void setup() throws Exception {
@@ -65,5 +65,20 @@ public class CrawlerRepositoryCassandraImplTest {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+    }
+
+    public static void main(final String[] args) throws Exception {
+        String host = "www.amazon.com";
+        int splitAttemptCounter = 0;
+        int defaultPageSize = 100;
+        CrawlerRepositoryCassandraImpl repo = new CrawlerRepositoryCassandraImpl();
+        repo.setSeeds("108.175.12.244:9160");
+        repo.setup();
+        repository = repo;
+        System.out.println(repository.countUrlRecords(0));
+        System.out.println(repository.countUrlRecords2());
+        System.out.println(repository.countWebpageRecords("www.amazon.com", 1));
+        repository.listWebpageRecords(host, splitAttemptCounter,
+                defaultPageSize);
     }
 }

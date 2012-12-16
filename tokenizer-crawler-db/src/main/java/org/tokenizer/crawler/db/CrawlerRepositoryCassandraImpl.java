@@ -3,7 +3,9 @@ package org.tokenizer.crawler.db;
 import java.io.UnsupportedEncodingException;
 import java.util.Collection;
 import java.util.Date;
+import java.util.concurrent.atomic.AtomicLong;
 
+import javax.annotation.Nullable;
 import javax.annotation.PostConstruct;
 
 import org.slf4j.Logger;
@@ -11,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.tokenizer.core.util.HttpUtils;
 import org.tokenizer.core.util.MD5;
 
+import com.google.common.base.Function;
 import com.google.common.collect.ImmutableMap;
 import com.netflix.astyanax.AstyanaxContext;
 import com.netflix.astyanax.ExceptionCallback;
@@ -33,6 +36,7 @@ import com.netflix.astyanax.model.Row;
 import com.netflix.astyanax.model.Rows;
 import com.netflix.astyanax.query.AllRowsQuery;
 import com.netflix.astyanax.query.IndexQuery;
+import com.netflix.astyanax.recipes.reader.AllRowsReader;
 import com.netflix.astyanax.serializers.BytesArraySerializer;
 import com.netflix.astyanax.serializers.StringSerializer;
 import com.netflix.astyanax.thrift.ThriftFamilyFactory;
@@ -43,7 +47,7 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
             .getLogger(CrawlerRepositoryCassandraImpl.class);
     private final String clusterName = "WEB_CRAWL_CLUSTER";
     private final String keyspaceName = "WEB_CRAWL_KEYSPACE";
-    private final String seeds = "localhost:9160";
+    private String seeds = "localhost:9160";
     private static final ColumnFamily<byte[], String> CF_URL_RECORDS = ColumnFamily
             .newColumnFamily("URL_RECORDS", BytesArraySerializer.get(),
                     StringSerializer.get());
@@ -63,7 +67,7 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
                     StringSerializer.get());
 
     @PostConstruct
-    public void setup() throws ConnectionException {
+    public void setup() throws ConnectionException, InterruptedException {
         keyspaceContext = new AstyanaxContext.Builder()
                 .forCluster(clusterName)
                 .forKeyspace(keyspaceName)
@@ -641,8 +645,29 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
         return counter;
     }
 
+    public long countUrlRecords2() throws Exception {
+        final AtomicLong counter = new AtomicLong(0);
+        double nanoStart = System.nanoTime();
+        boolean result = new AllRowsReader.Builder<byte[], String>(keyspace,
+                CF_URL_RECORDS)
+                .forEachRow(new Function<Row<byte[], String>, Boolean>() {
+
+                    @Override
+                    public Boolean apply(@Nullable
+                    final Row<byte[], String> row) {
+                        counter.incrementAndGet();
+                        // LOG.info("Got a row: " + row.getKey().toString());
+                        return true;
+                    }
+                }).build().call();
+        double timeTaken = (System.nanoTime() - nanoStart) / (1e9);
+        LOG.debug("Time taken to fetch " + counter + " rows is " + ""
+                + timeTaken + " seconds.");
+        return counter.get();
+    }
+
     public static void main(final String[] args) throws ConnectionException,
-            UnsupportedEncodingException {
+            UnsupportedEncodingException, InterruptedException {
         CrawlerRepositoryCassandraImpl o = new CrawlerRepositoryCassandraImpl();
         o.setup();
         UrlRecord home = new UrlRecord("http://www.tokenizer.ca");
@@ -687,9 +712,10 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
                 .whereColumn("splitAttemptCounter").equals()
                 .value(splitAttemptCounter).execute();
         int counter = 0;
-        for (Row<byte[], String> row : rows.getResult()) {
-            counter++;
-        }
+        // for (Row<byte[], String> row : rows.getResult()) {
+        // counter++;
+        // }
+        counter = rows.getResult().size();
         double timeTaken = (System.nanoTime() - nanoStart) / (1e9);
         LOG.debug("Time taken to fetch " + counter + " Webpage records is "
                 + "" + timeTaken + " seconds.");
@@ -715,5 +741,9 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
         LOG.debug("Time taken to fetch " + counter + " XML records is " + ""
                 + timeTaken + " seconds.");
         return counter;
+    }
+
+    public void setSeeds(final String seeds) {
+        this.seeds = seeds;
     }
 }
