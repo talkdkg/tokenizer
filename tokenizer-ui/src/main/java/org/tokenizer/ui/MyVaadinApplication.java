@@ -47,6 +47,8 @@ public class MyVaadinApplication extends Application implements
     private Window window;
     private final HorizontalSplitPanel horizontalSplit = new HorizontalSplitPanel();
     private static ApplicationContext applicationContext = null;
+    private String selectedHost = "www.amazon.com";
+    private int selectedHttpResponseCode = 200;
 
     public static ApplicationContext getApplicationContext() {
         return applicationContext;
@@ -185,5 +187,21 @@ public class MyVaadinApplication extends Application implements
             crawledContentView = new CrawledContentView(this);
         }
         return crawledContentView;
+    }
+
+    public String getSelectedHost() {
+        return selectedHost;
+    }
+
+    public void setSelectedHost(final String selectedHost) {
+        this.selectedHost = selectedHost;
+    }
+
+    public int getSelectedHttpResponseCode() {
+        return selectedHttpResponseCode;
+    }
+
+    public void setSelectedHttpResponseCode(final int selectedHttpResponseCode) {
+        this.selectedHttpResponseCode = selectedHttpResponseCode;
     }
 }

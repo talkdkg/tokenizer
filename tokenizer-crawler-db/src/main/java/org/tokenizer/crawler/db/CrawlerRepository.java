@@ -1,60 +1,66 @@
 package org.tokenizer.crawler.db;
 
+import java.util.List;
+
 import com.netflix.astyanax.connectionpool.exceptions.ConnectionException;
 
 public interface CrawlerRepository {
 
     // public void insert(UrlRecord urlRecord) throws ConnectionException;
-    public void insertIfNotExists(UrlRecord urlRecord)
+    void insertIfNotExists(UrlRecord urlRecord) throws ConnectionException;
+
+    void update(UrlRecord urlRecord) throws ConnectionException;
+
+    UrlRecords listUrlRecords(int defaultPageSize) throws ConnectionException;
+
+    UrlRecords listUrlRecords(int httpResponseCode, int defaultPageSize)
             throws ConnectionException;
 
-    public void update(UrlRecord urlRecord) throws ConnectionException;
-
-    public UrlRecords listUrlRecords(int defaultPageSize)
+    UrlRecords listUrlRecords(String host, int defaultPageSize)
             throws ConnectionException;
 
-    public UrlRecords listUrlRecords(int httpResponseCode, int defaultPageSize)
-            throws ConnectionException;
-
-    public UrlRecords listUrlRecords(String host, int defaultPageSize)
-            throws ConnectionException;
-
-    public UrlRecords listUrlRecords(String host, int httpResponseCode,
+    UrlRecords listUrlRecords(String host, int httpResponseCode,
             int defaultPageSize) throws ConnectionException;
 
-    public int countUrlRecords() throws ConnectionException;
-
-    public int countUrlRecords(int httpResponseCode) throws ConnectionException;
-
-    public void insertIfNotExists(WebpageRecord webpageRecord)
+    List<UrlRecord> listUrlRecords(final byte[][] keys)
             throws ConnectionException;
 
-    public void updateSplitAttemptCounter(final WebpageRecord webpageRecord)
+    int countUrlRecords() throws ConnectionException;
+
+    int countUrlRecords(final int httpResponseCode) throws ConnectionException;
+
+    int countUrlRecords(final String host, final int httpResponseCode)
             throws ConnectionException;
 
-    public WebpageRecord getWebpageRecord(byte[] digest)
+    void insertIfNotExists(WebpageRecord webpageRecord)
             throws ConnectionException;
 
-    public WebpageRecords listWebpageRecords(final String host,
+    void updateSplitAttemptCounter(final WebpageRecord webpageRecord)
+            throws ConnectionException;
+
+    WebpageRecord getWebpageRecord(byte[] digest) throws ConnectionException;
+
+    WebpageRecords listWebpageRecords(final String host,
             final int splitAttemptCounter, final int defaultPageSize)
             throws ConnectionException;
 
-    public int countWebpageRecords(final String host,
-            final int splitAttemptCounter) throws ConnectionException;
-
-    public void insertIfNotExist(final XmlRecord xmlRecord)
+    int countWebpageRecords(final String host, final int splitAttemptCounter)
             throws ConnectionException;
 
-    public void updateParseAttemptCounter(final XmlRecord xmlRecord)
+    void insertIfNotExist(final XmlRecord xmlRecord) throws ConnectionException;
+
+    void updateParseAttemptCounter(final XmlRecord xmlRecord)
             throws ConnectionException;
 
-    public XmlRecords listXmlRecords(final String host,
-            final int parseAttemptCounter, final int defaultPageSize)
+    XmlRecords listXmlRecords(final String host, final int parseAttemptCounter,
+            final int defaultPageSize) throws ConnectionException;
+
+    void insertIfNotExists(MessageRecord messageRecord)
             throws ConnectionException;
 
-    public void insertIfNotExists(MessageRecord messageRecord)
+    int countXmlRecords(final String host, final int parseAttemptCounter)
             throws ConnectionException;
 
-    public int countXmlRecords(final String host, final int parseAttemptCounter)
-            throws ConnectionException;
+    List<byte[]> loadUrlRecordRowKeys(final String host,
+            final int httpResponseCode) throws ConnectionException;
 }

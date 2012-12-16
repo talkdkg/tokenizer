@@ -72,13 +72,43 @@ public class CrawlerRepositoryCassandraImplTest {
         int splitAttemptCounter = 0;
         int defaultPageSize = 100;
         CrawlerRepositoryCassandraImpl repo = new CrawlerRepositoryCassandraImpl();
-        repo.setSeeds("108.175.12.244:9160");
+        repo.setSeeds("s001:9160");
         repo.setup();
         repository = repo;
         System.out.println(repository.countUrlRecords(0));
         System.out.println(repository.countUrlRecords2());
         System.out.println(repository.countWebpageRecords("www.amazon.com", 1));
-        repository.listWebpageRecords(host, splitAttemptCounter,
-                defaultPageSize);
+        // repository.listWebpageRecords(host, splitAttemptCounter,
+        // defaultPageSize);
+        // List<byte[]> rowKeys = repository.loadUrlRecordRowKeys();
+        // System.out.println(rowKeys.size());
+        // byte[][] bytes = new byte[rowKeys.size()][];
+        // int i = 0;
+        // for (byte[] rowKey : rowKeys) {
+        // bytes[i] = rowKey;
+        // i++;
+        // }
+        // byte[] b = new byte[16 * rowKeys.size()];
+        // i = 0;
+        // for (byte[] rowKey : rowKeys) {
+        // if (rowKey.length > 16)
+        // throw new RuntimeException("too high");
+        // for (int offset = 0; offset < 16; offset++) {
+        // b[i * 16 + offset] = rowKey[offset];
+        // }
+        // i++;
+        // }
+        // System.out.println("byte[][]: " + MemoryMeasurer.measureBytes(bytes)
+        // + " bytes");
+        // System.out.println("List<byte[]>: "
+        // + MemoryMeasurer.measureBytes(rowKeys) + " bytes");
+        // System.out.println("byte[][]: " + MemoryMeasurer.measureBytes(bytes)
+        // + " bytes");
+        // System.out.println("b[]: " + MemoryMeasurer.measureBytes(b) +
+        // " bytes");
+        // System.out.println("byte[8]: "
+        // + MemoryMeasurer.measureBytes(new byte[8]) + " bytes");
+        // System.out.println("byte[1][8]>: "
+        // + MemoryMeasurer.measureBytes(new byte[1][8]) + " bytes");
     }
 }

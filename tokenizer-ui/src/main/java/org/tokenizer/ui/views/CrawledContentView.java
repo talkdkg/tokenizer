@@ -23,6 +23,7 @@ import org.tokenizer.crawler.db.CrawlerRepository;
 import org.tokenizer.crawler.db.UrlRecord;
 import org.tokenizer.crawler.db.WebpageRecord;
 import org.tokenizer.ui.MyVaadinApplication;
+import org.tokenizer.ui.lists.UrlQuery;
 import org.tokenizer.ui.lists.UrlRecordList;
 
 import com.netflix.astyanax.connectionpool.exceptions.ConnectionException;
@@ -75,38 +76,28 @@ public class CrawledContentView extends VerticalSplitPanel implements
         Property property = event.getProperty();
         if (property == this.urlRecordList) {
             Object itemId = this.urlRecordList.getValue();
-            UrlRecord urlRecord = (UrlRecord) itemId;
-            if (urlRecord.getHttpResponseCode() != 200) {
-                Property htmlProp = new ObjectProperty<String>("<h1>N/A</h1>",
-                        String.class);
-                this.htmlLabel.setPropertyDataSource(htmlProp);
-                this.sourceLabel.setPropertyDataSource(htmlProp);
-            } else {
-                byte[] digest = urlRecord.getWebpageDigest();
-                WebpageRecord webpage = null;
-                try {
-                    webpage = repository.getWebpageRecord(digest);
-                    LOG.warn("urlRecord: {}", urlRecord);
-                    LOG.warn("webpage: {}", webpage);
-                } catch (ConnectionException e1) {
-                    // TODO Auto-generated catch block
-                    e1.printStackTrace();
-                }
-                String html = null;
-                try {
-                    if (webpage != null) {
-                        html = new String(webpage.getContent(),
-                                webpage.getCharset());
-                    }
-                } catch (UnsupportedEncodingException e) {
-                    LOG.error("", e);
-                    html = e.getMessage();
-                }
-                Property htmlProp = new ObjectProperty<String>(html,
-                        String.class);
-                this.htmlLabel.setPropertyDataSource(htmlProp);
-                this.sourceLabel.setPropertyDataSource(htmlProp);
+            byte[] digest = ((UrlRecord) this.urlRecordList
+                    .getContainerProperty(itemId, UrlQuery.URL_RECORD)
+                    .getValue()).getWebpageDigest();
+            WebpageRecord webpage = null;
+            try {
+                webpage = repository.getWebpageRecord(digest);
+            } catch (ConnectionException e) {
+                LOG.error("", e);
             }
+            String html = null;
+            try {
+                if (webpage != null) {
+                    html = new String(webpage.getContent(),
+                            webpage.getCharset());
+                }
+            } catch (UnsupportedEncodingException e) {
+                LOG.error("", e);
+                html = e.getMessage();
+            }
+            Property htmlProp = new ObjectProperty<String>(html, String.class);
+            this.htmlLabel.setPropertyDataSource(htmlProp);
+            this.sourceLabel.setPropertyDataSource(htmlProp);
         }
     }
 }

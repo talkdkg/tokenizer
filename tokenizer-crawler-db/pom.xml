@@ -47,5 +47,12 @@
             <artifactId>guava</artifactId>
             <version>11.0.2</version>
         </dependency>
+        <dependency>
+            <groupId>object-explorer</groupId>
+            <artifactId>object-explorer</artifactId>
+            <version>0.1</version>
+            <scope>system</scope>
+            <systemPath>/java/git/tokenizer/lib/object-explorer.jar</systemPath>
+        </dependency>
     </dependencies>
 </project>

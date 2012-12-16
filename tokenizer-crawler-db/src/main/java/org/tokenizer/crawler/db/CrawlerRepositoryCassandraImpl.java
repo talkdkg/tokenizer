@@ -1,8 +1,10 @@
 package org.tokenizer.crawler.db;
 
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
 import javax.annotation.Nullable;
@@ -40,6 +42,7 @@ import com.netflix.astyanax.recipes.reader.AllRowsReader;
 import com.netflix.astyanax.serializers.BytesArraySerializer;
 import com.netflix.astyanax.serializers.StringSerializer;
 import com.netflix.astyanax.thrift.ThriftFamilyFactory;
+import com.netflix.astyanax.util.RangeBuilder;
 
 public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
 
@@ -65,6 +68,7 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
     public static ColumnFamily<String, String> CF_STANDARD1 = ColumnFamily
             .newColumnFamily("Standard1", StringSerializer.get(),
                     StringSerializer.get());
+    private static final int MAX_ROWS = 10000;
 
     @PostConstruct
     public void setup() throws ConnectionException, InterruptedException {
@@ -102,6 +106,10 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
                             ImmutableMap.<String, Object> builder()
                                     .put("replication_factor", "1").build())
                     .put("strategy_class", "SimpleStrategy").build());
+            try {
+                def = keyspace.describeKeyspace();
+            } catch (BadRequestException e) {
+            }
         }
         if (def.getColumnFamily("URL_RECORDS") == null) {
             keyspace.createColumnFamily(
@@ -454,6 +462,20 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
     }
 
     @Override
+    public List<UrlRecord> listUrlRecords(final byte[][] keys)
+            throws ConnectionException {
+        double nanoStart = System.nanoTime();
+        OperationResult<Rows<byte[], String>> result = keyspace
+                .prepareQuery(CF_URL_RECORDS).getKeySlice(keys)
+                // .withColumnRange(new RangeBuilder().setLimit(10).build())
+                .execute();
+        double timeTaken = (System.nanoTime() - nanoStart) / (1e9);
+        LOG.debug("Time taken to fetch " + result.getResult().size()
+                + " URL records is " + "" + timeTaken + " seconds.");
+        return toUrlRecordList(result);
+    }
+
+    @Override
     public void insertIfNotExists(final WebpageRecord webpageRecord)
             throws ConnectionException {
         OperationResult<ColumnList<String>> result = keyspace
@@ -631,10 +653,17 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
             throws ConnectionException {
         double nanoStart = System.nanoTime();
         OperationResult<Rows<byte[], String>> rows = keyspace
-                .prepareQuery(CF_URL_RECORDS).searchWithIndex()
-                .setRowLimit(10000).autoPaginateRows(true).addExpression()
-                .whereColumn("httpResponseCode").equals()
-                .value(httpResponseCode).execute();
+                .prepareQuery(CF_URL_RECORDS)
+                .searchWithIndex()
+                .setRowLimit(MAX_ROWS)
+                .autoPaginateRows(false)
+                .addExpression()
+                .whereColumn("httpResponseCode")
+                .equals()
+                .value(httpResponseCode)
+                .withColumnRange(
+                        new RangeBuilder().setStart("").setLimit(0).build())
+                .execute();
         int counter = 0;
         for (Row<byte[], String> row : rows.getResult()) {
             counter++;
@@ -645,6 +674,43 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
         return counter;
     }
 
+    @Override
+    public int countUrlRecords(final String host, final int httpResponseCode)
+            throws ConnectionException {
+        double nanoStart = System.nanoTime();
+        OperationResult<Rows<byte[], String>> rows = keyspace
+                .prepareQuery(CF_URL_RECORDS)
+                .searchWithIndex()
+                .setRowLimit(MAX_ROWS)
+                .autoPaginateRows(false)
+                .addExpression()
+                .whereColumn("hostInverted")
+                .equals()
+                .value(HttpUtils.getHostInverted(host))
+                .addExpression()
+                .whereColumn("httpResponseCode")
+                .equals()
+                .value(httpResponseCode)
+                .withColumnRange(
+                        new RangeBuilder().setStart("").setLimit(0).build())
+                .execute();
+        int counter = 0;
+        for (Row<byte[], String> row : rows.getResult()) {
+            counter++;
+        }
+        double timeTaken = (System.nanoTime() - nanoStart) / (1e9);
+        LOG.debug("Time taken to fetch " + counter + " rows is " + ""
+                + timeTaken + " seconds.");
+        return counter;
+    }
+
+    /**
+     * This is super fast possibly because it is multithreaded. Unfortunately,
+     * iimplemented for all records (no index support).
+     * 
+     * @return
+     * @throws Exception
+     */
     public long countUrlRecords2() throws Exception {
         final AtomicLong counter = new AtomicLong(0);
         double nanoStart = System.nanoTime();
@@ -656,7 +722,6 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
                     public Boolean apply(@Nullable
                     final Row<byte[], String> row) {
                         counter.incrementAndGet();
-                        // LOG.info("Got a row: " + row.getKey().toString());
                         return true;
                     }
                 }).build().call();
@@ -745,5 +810,66 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
 
     public void setSeeds(final String seeds) {
         this.seeds = seeds;
+    }
+
+    @Override
+    public List<byte[]> loadUrlRecordRowKeys(final String host,
+            final int httpResponseCode) throws ConnectionException {
+        final List<byte[]> rowKeys = new ArrayList<byte[]>(MAX_ROWS);
+        double nanoStart = System.nanoTime();
+        OperationResult<Rows<byte[], String>> rows = keyspace
+                .prepareQuery(CF_URL_RECORDS)
+                .searchWithIndex()
+                .setRowLimit(MAX_ROWS)
+                .autoPaginateRows(false)
+                .addExpression()
+                .whereColumn("hostInverted")
+                .equals()
+                .value(HttpUtils.getHostInverted(host))
+                .addExpression()
+                .whereColumn("httpResponseCode")
+                .equals()
+                .value(httpResponseCode)
+                .withColumnRange(
+                        new RangeBuilder().setStart("").setLimit(0).build())
+                .execute();
+        for (Row<byte[], String> row : rows.getResult()) {
+            rowKeys.add(row.getKey());
+        }
+        double timeTaken = (System.nanoTime() - nanoStart) / (1e9);
+        LOG.debug("Time taken to fetch " + rowKeys.size() + " row keys is "
+                + "" + timeTaken + " seconds.");
+        return rowKeys;
+    }
+
+    public static UrlRecord toUrlRecord(final Row<byte[], String> row) {
+        ColumnList<String> columns = row.getColumns();
+        byte[] digest = row.getKey();
+        String url = columns.getStringValue("url", null);
+        String host = columns.getStringValue("host", null);
+        byte[] hostInverted = columns.getByteArrayValue("hostInverted", null);
+        Date timestamp = columns.getDateValue("timestamp", null);
+        int fetchAttemptCounter = 0;
+        try {
+            fetchAttemptCounter = columns.getIntegerValue(
+                    "fetchAttemptCounter", 0);
+        } catch (NullPointerException e) {
+            LOG.error("", e);
+        }
+        int httpResponseCode = columns.getIntegerValue("httpResponseCode", 0);
+        byte[] webpageDigest = columns.getByteArrayValue("webpageDigest",
+                new byte[0]);
+        UrlRecord urlRecord = new UrlRecord(digest, url, host, hostInverted,
+                timestamp, fetchAttemptCounter, httpResponseCode, webpageDigest);
+        return urlRecord;
+    }
+
+    public static List<UrlRecord> toUrlRecordList(
+            final OperationResult<Rows<byte[], String>> result) {
+        List<UrlRecord> list = new ArrayList<UrlRecord>();
+        for (Row<byte[], String> row : result.getResult()) {
+            list.add(toUrlRecord(row));
+        }
+        return list;
     }
 }
