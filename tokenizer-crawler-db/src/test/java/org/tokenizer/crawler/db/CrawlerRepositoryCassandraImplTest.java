@@ -1,12 +1,18 @@
 package org.tokenizer.crawler.db;
 
+import java.util.List;
+
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.netflix.astyanax.connectionpool.exceptions.ConnectionException;
 
 public class CrawlerRepositoryCassandraImplTest {
 
+    private static Logger LOG = LoggerFactory
+            .getLogger(CrawlerRepositoryCassandraImplTest.class);
     private static CrawlerRepositoryCassandraImpl repository;
 
     @BeforeClass
@@ -21,15 +27,21 @@ public class CrawlerRepositoryCassandraImplTest {
     }
 
     // @Test
-    public void genericTest() {
+    public void genericTest() throws Exception {
         try {
-            UrlRecords urlRecords = repository.listUrlRecords(200, 100);
+            List<UrlRecord> urlRecords = repository.listUrlRecords(
+                    "www.amazon.com", 0, 100);
+            urlRecords = repository.listUrlRecords("www.cnet.com", 0, 100);
+            urlRecords = repository.listUrlRecords("reviews.cnet.com", 0, 100);
+            urlRecords = repository.listUrlRecords("www.expertreviews.co.uk",
+                    0, 100);
             int i = 0;
-            for (UrlRecord urlRecord : urlRecords) {
-                System.out.println(++i);
-                System.out.println(urlRecord);
-            }
+            // for (UrlRecord urlRecord : urlRecords) {
+            // System.out.println(++i);
+            // System.out.println(urlRecord);
+            // }
             System.out.println(urlRecords.size());
+            // LOG.debug("total records: {}", repository.countUrlRecords2());
         } catch (ConnectionException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

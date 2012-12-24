@@ -19,7 +19,6 @@ import java.io.UnsupportedEncodingException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tokenizer.crawler.db.CrawlerRepository;
 import org.tokenizer.crawler.db.UrlRecord;
 import org.tokenizer.crawler.db.WebpageRecord;
 import org.tokenizer.ui.MyVaadinApplication;
@@ -30,44 +29,26 @@ import com.netflix.astyanax.connectionpool.exceptions.ConnectionException;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.util.ObjectProperty;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.VerticalSplitPanel;
 
-public class CrawledContentView extends VerticalSplitPanel implements
+public class TaskOutputView extends VerticalSplitPanel implements
         Property.ValueChangeListener {
 
     private static final long serialVersionUID = 1L;
     private static final Logger LOG = LoggerFactory
-            .getLogger(CrawledContentView.class);
+            .getLogger(TaskOutputView.class);
     private final MyVaadinApplication app;
     private final UrlRecordList urlRecordList;
-    private final CrawlerRepository repository;
-    private final Label htmlLabel;
-    private final Label sourceLabel;
+    private final CrawledContentTabSheet crawledContentTabSheet;
 
-    public CrawledContentView(final MyVaadinApplication app) {
+    public TaskOutputView(final MyVaadinApplication app) {
         this.app = app;
-        this.repository = app.getRepository();
-        setCaption("Crawled Content");
-        setSizeFull();
-        this.urlRecordList = new UrlRecordList(app);
-        setFirstComponent(this.urlRecordList);
-        this.urlRecordList.addListener(this);
-        this.htmlLabel = new Label();
-        this.htmlLabel.setContentMode(Label.CONTENT_RAW);
-        this.sourceLabel = new Label();
-        this.sourceLabel.setContentMode(Label.CONTENT_TEXT);
-        Panel htmlPanel = new Panel("HTML");
-        htmlPanel.addComponent(this.htmlLabel);
-        Panel sourcePanel = new Panel("Source");
-        sourcePanel.addComponent(this.sourceLabel);
-        // Accordion a = new Accordion();
-        TabSheet a = new TabSheet();
-        a.addTab(htmlPanel);
-        a.addTab(sourcePanel);
-        setSecondComponent(a);
+        setCaption("Task Output View");
+        urlRecordList = new UrlRecordList(app);
+        setFirstComponent(urlRecordList);
+        urlRecordList.addListener(this);
+        crawledContentTabSheet = new CrawledContentTabSheet(app);
+        setSecondComponent(crawledContentTabSheet);
         setSplitPosition(40);
     }
 
@@ -81,7 +62,8 @@ public class CrawledContentView extends VerticalSplitPanel implements
                     .getValue()).getWebpageDigest();
             WebpageRecord webpage = null;
             try {
-                webpage = repository.getWebpageRecord(digest);
+                webpage = MyVaadinApplication.getRepository().getWebpageRecord(
+                        digest);
             } catch (ConnectionException e) {
                 LOG.error("", e);
             }
@@ -96,8 +78,10 @@ public class CrawledContentView extends VerticalSplitPanel implements
                 html = e.getMessage();
             }
             Property htmlProp = new ObjectProperty<String>(html, String.class);
-            this.htmlLabel.setPropertyDataSource(htmlProp);
-            this.sourceLabel.setPropertyDataSource(htmlProp);
+            crawledContentTabSheet.getHtmlLabel().setPropertyDataSource(
+                    htmlProp);
+            crawledContentTabSheet.getSourceLabel().setPropertyDataSource(
+                    htmlProp);
         }
     }
 }

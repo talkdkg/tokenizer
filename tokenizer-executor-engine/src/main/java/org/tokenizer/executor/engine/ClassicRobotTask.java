@@ -18,13 +18,13 @@ package org.tokenizer.executor.engine;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tokenizer.core.http.FetcherUtils;
 import org.tokenizer.crawler.db.CrawlerRepository;
 import org.tokenizer.crawler.db.UrlRecord;
-import org.tokenizer.crawler.db.UrlRecords;
 import org.tokenizer.executor.model.api.WritableExecutorModel;
 import org.tokenizer.executor.model.configuration.ClassicRobotTaskConfiguration;
 import org.tokenizer.executor.model.configuration.TaskConfiguration;
@@ -49,6 +49,7 @@ public class ClassicRobotTask extends AbstractTask {
     private final BaseHttpFetcher robotFetcher;
     BaseRobotRules robotRules = null;
     private ClassicRobotTaskConfiguration taskConfiguration;
+    private static final int DEFAULT_MAX_THREADS = 1024;
 
     public ClassicRobotTask(final String taskName, final ZooKeeperItf zk,
             final TaskConfiguration taskConfiguration,
@@ -56,12 +57,14 @@ public class ClassicRobotTask extends AbstractTask {
             final WritableExecutorModel model, final HostLocker hostLocker) {
         super(taskName, zk, crawlerRepository, model, hostLocker);
         this.taskConfiguration = (ClassicRobotTaskConfiguration) taskConfiguration;
-        this.httpClient = new SimpleHttpFetcher(FetcherUtils.USER_AGENT);
-        this.httpClient.setRedirectMode(RedirectMode.FOLLOW_ALL);
-        this.robotFetcher = RobotUtils
-                .createFetcher(FetcherUtils.USER_AGENT, 1);
-        this.robotFetcher.setDefaultMaxContentSize(1024 * 1024);
-        this.httpClient.setDefaultMaxContentSize(1024 * 1024);
+        this.httpClient = new SimpleHttpFetcher(DEFAULT_MAX_THREADS,
+                FetcherUtils.USER_AGENT);
+        httpClient.setSocketTimeout(30000);
+        httpClient.setConnectionTimeout(30000);
+        httpClient.setRedirectMode(RedirectMode.FOLLOW_NONE);
+        httpClient.setDefaultMaxContentSize(1024 * 1024);
+        robotFetcher = RobotUtils.createFetcher(FetcherUtils.USER_AGENT, 1);
+        robotFetcher.setDefaultMaxContentSize(1024 * 1024);
         LOG.debug("Instance created");
     }
 
@@ -77,19 +80,22 @@ public class ClassicRobotTask extends AbstractTask {
         UrlRecord home = new UrlRecord("http://" + taskConfiguration.getHost()
                 + "/");
         crawlerRepository.insertIfNotExists(home);
-        UrlRecords urlRecords = crawlerRepository.listUrlRecords(
-                taskConfiguration.getHost(), 0, 100);
+        int httpResponseCode = 0;
+        int maxResults = 10000;
+        List<UrlRecord> urlRecords = crawlerRepository.listUrlRecords(
+                taskConfiguration.getHost(), httpResponseCode, maxResults);
         for (UrlRecord urlRecord : urlRecords) {
             LOG.debug("Trying URL: {}", urlRecord);
             FetchedResult fetchedResult = PersistenceUtils.fetch(urlRecord,
                     crawlerRepository, robotRules, metricsCache, httpClient,
                     taskConfiguration.getHost());
-            LOG.debug("Result: {} {}", urlRecord.getUrl(),
-                    urlRecord.getHttpResponseCode());
+            LOG.trace("Fetching Result: {} {}", urlRecord, fetchedResult);
         }
-        // to prevent spin loop in case if collection is empty:
-        LOG.warn("sleeping 10 seconds...");
-        Thread.currentThread().sleep(10000);
+        if (urlRecords == null || urlRecords.size() == 0) {
+            // to prevent spin loop in case if collection is empty:
+            LOG.warn("no URLs found with httpResponseCode == 0; sleeping 600 seconds...");
+            Thread.sleep(600000);
+        }
     }
 
     /**

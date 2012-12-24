@@ -34,6 +34,7 @@ import com.netflix.astyanax.ddl.KeyspaceDefinition;
 import com.netflix.astyanax.impl.AstyanaxConfigurationImpl;
 import com.netflix.astyanax.model.ColumnFamily;
 import com.netflix.astyanax.model.ColumnList;
+import com.netflix.astyanax.model.ConsistencyLevel;
 import com.netflix.astyanax.model.Row;
 import com.netflix.astyanax.model.Rows;
 import com.netflix.astyanax.query.AllRowsQuery;
@@ -50,7 +51,7 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
             .getLogger(CrawlerRepositoryCassandraImpl.class);
     private final String clusterName = "WEB_CRAWL_CLUSTER";
     private final String keyspaceName = "WEB_CRAWL_KEYSPACE";
-    private String seeds = "localhost:9160";
+    private String seeds = "127.0.0.1:9160";
     private static final ColumnFamily<byte[], String> CF_URL_RECORDS = ColumnFamily
             .newColumnFamily("URL_RECORDS", BytesArraySerializer.get(),
                     StringSerializer.get());
@@ -82,10 +83,10 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
                                         ConnectionPoolType.TOKEN_AWARE))
                 .withConnectionPoolConfiguration(
                         new ConnectionPoolConfigurationImpl(clusterName + "_"
-                                + keyspaceName).setSocketTimeout(30000)
-                                .setMaxTimeoutWhenExhausted(2000)
-                                .setMaxConnsPerHost(20).setInitConnsPerHost(10)
-                                .setSeeds(seeds))
+                                + keyspaceName).setSocketTimeout(600000)
+                                .setMaxTimeoutWhenExhausted(60000)
+                                .setMaxConnsPerHost(128)
+                                .setInitConnsPerHost(16).setSeeds(seeds))
                 .withConnectionPoolMonitor(new CountingConnectionPoolMonitor())
                 .buildKeyspace(ThriftFamilyFactory.getInstance());
         keyspaceContext.start();
@@ -132,6 +133,10 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
                                                             .<String, Object> builder()
                                                             .put("validation_class",
                                                                     "AsciiType")
+                                                            .put("index_name",
+                                                                    "URL_host")
+                                                            .put("index_type",
+                                                                    "KEYS")
                                                             .build())
                                             .put("hostInverted",
                                                     ImmutableMap
@@ -448,19 +453,103 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
         return new UrlRecords(countUrlRecords(), query);
     }
 
+    //@formatter:off
+    /*
     @Override
     public UrlRecords listUrlRecords(final String host,
             final int httpResponseCode, final int defaultPageSize)
             throws ConnectionException {
         IndexQuery<byte[], String> query = keyspace
                 .prepareQuery(CF_URL_RECORDS).searchWithIndex()
-                .setRowLimit(defaultPageSize).autoPaginateRows(true)
+                .setRowLimit(defaultPageSize).autoPaginateRows(false)
                 .addExpression().whereColumn("host").equals().value(host)
                 .addExpression().whereColumn("httpResponseCode").equals()
                 .value(httpResponseCode);
         return new UrlRecords(countUrlRecords(), query);
     }
+     */
+    //@formatter:on
+    @Override
+    public List<byte[]> loadUrlRecordRowKeys(final String host,
+            final int httpResponseCode) throws ConnectionException {
+        final List<byte[]> rowKeys = new ArrayList<byte[]>(MAX_ROWS);
+        double nanoStart = System.nanoTime();
+        OperationResult<Rows<byte[], String>> rows = keyspace
+                .prepareQuery(CF_URL_RECORDS)
+                .searchWithIndex()
+                .setRowLimit(MAX_ROWS)
+                .autoPaginateRows(false)
+                .addExpression()
+                .whereColumn("hostInverted")
+                .equals()
+                .value(HttpUtils.getHostInverted(host))
+                .addExpression()
+                .whereColumn("httpResponseCode")
+                .equals()
+                .value(httpResponseCode)
+                .withColumnRange(
+                        new RangeBuilder().setStart("").setLimit(0).build())
+                .execute();
+        for (Row<byte[], String> row : rows.getResult()) {
+            rowKeys.add(row.getKey());
+        }
+        double timeTaken = (System.nanoTime() - nanoStart) / (1e9);
+        LOG.debug("Time taken to fetch " + rowKeys.size() + " row keys is "
+                + "" + timeTaken + " seconds.");
+        return rowKeys;
+    }
 
+    //@formatter:off
+    @Override
+    public List<UrlRecord> listUrlRecords(final String host,
+            final int httpResponseCode, final int maxResults)
+            throws ConnectionException {
+        // byte[] hostInverted = HttpUtils.getHostInverted(host);
+        final List<UrlRecord> list = new ArrayList<UrlRecord>(maxResults);
+        double nanoStart = System.nanoTime();
+        IndexQuery<byte[], String> query  = keyspace
+                .prepareQuery(CF_URL_RECORDS)
+                .setConsistencyLevel(ConsistencyLevel.CL_ONE)
+                .searchWithIndex()
+                .setRowLimit(maxResults)
+                .autoPaginateRows(false)
+                .addExpression().whereColumn("httpResponseCode").equals().value(httpResponseCode)
+                .addExpression().whereColumn("host").equals().value(host);
+
+        OperationResult<Rows<byte[], String>> result;
+/*        
+        while (!(result = query.execute()).getResult().isEmpty()) {
+            for (Row<byte[], String> row : result.getResult()) {
+                UrlRecord urlRecord = toUrlRecord(row);
+                if (urlRecord.getHost().equals(host)) {
+                    list.add(urlRecord);
+                }
+                if (list.size() > maxResults) {
+                    break;
+                }
+            }
+            if (list.size() > maxResults) {
+                break;
+            }
+        }
+*/
+        
+        result = query.execute();
+        for (Row<byte[], String> row : result.getResult()) {
+            UrlRecord urlRecord = toUrlRecord(row);
+                list.add(urlRecord);
+        }
+        
+        if (LOG.isDebugEnabled()) {
+            double timeTaken = (System.nanoTime() - nanoStart) / (1e9);
+            LOG.debug("Time taken to fetch " + list.size() + " row keys is "
+                    + "" + timeTaken + " seconds, host: {}", host);
+        }
+        return list;
+    }
+    //formatter:on
+    
+    
     @Override
     public List<UrlRecord> listUrlRecords(final byte[][] keys)
             throws ConnectionException {
@@ -812,37 +901,7 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
         this.seeds = seeds;
     }
 
-    @Override
-    public List<byte[]> loadUrlRecordRowKeys(final String host,
-            final int httpResponseCode) throws ConnectionException {
-        final List<byte[]> rowKeys = new ArrayList<byte[]>(MAX_ROWS);
-        double nanoStart = System.nanoTime();
-        OperationResult<Rows<byte[], String>> rows = keyspace
-                .prepareQuery(CF_URL_RECORDS)
-                .searchWithIndex()
-                .setRowLimit(MAX_ROWS)
-                .autoPaginateRows(false)
-                .addExpression()
-                .whereColumn("hostInverted")
-                .equals()
-                .value(HttpUtils.getHostInverted(host))
-                .addExpression()
-                .whereColumn("httpResponseCode")
-                .equals()
-                .value(httpResponseCode)
-                .withColumnRange(
-                        new RangeBuilder().setStart("").setLimit(0).build())
-                .execute();
-        for (Row<byte[], String> row : rows.getResult()) {
-            rowKeys.add(row.getKey());
-        }
-        double timeTaken = (System.nanoTime() - nanoStart) / (1e9);
-        LOG.debug("Time taken to fetch " + rowKeys.size() + " row keys is "
-                + "" + timeTaken + " seconds.");
-        return rowKeys;
-    }
-
-    public static UrlRecord toUrlRecord(final Row<byte[], String> row) {
+    private static UrlRecord toUrlRecord(final Row<byte[], String> row) {
         ColumnList<String> columns = row.getColumns();
         byte[] digest = row.getKey();
         String url = columns.getStringValue("url", null);

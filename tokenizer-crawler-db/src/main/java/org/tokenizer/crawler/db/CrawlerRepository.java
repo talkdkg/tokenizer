@@ -19,8 +19,10 @@ public interface CrawlerRepository {
     UrlRecords listUrlRecords(String host, int defaultPageSize)
             throws ConnectionException;
 
-    UrlRecords listUrlRecords(String host, int httpResponseCode,
-            int defaultPageSize) throws ConnectionException;
+    // UrlRecords listUrlRecords(String host, int httpResponseCode,
+    // int defaultPageSize) throws ConnectionException;
+    List<UrlRecord> listUrlRecords(String host, int httpResponseCode,
+            int maxResults) throws ConnectionException;
 
     List<UrlRecord> listUrlRecords(final byte[][] keys)
             throws ConnectionException;

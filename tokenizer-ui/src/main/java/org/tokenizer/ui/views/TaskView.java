@@ -20,21 +20,23 @@ import org.tokenizer.ui.MyVaadinApplication;
 import com.vaadin.ui.VerticalSplitPanel;
 
 public class TaskView extends VerticalSplitPanel {
+
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory
             .getLogger(TaskView.class);
     private static final long serialVersionUID = 1L;
-    private MyVaadinApplication app;
-    private TaskList taskList;
-    private TaskForm taskForm;
+    private final MyVaadinApplication app;
+    private final TaskList taskList;
+    // private final TaskForm taskForm;
+    TaskResultsTabSheet taskResultsTabSheet;
 
-    public TaskView(MyVaadinApplication app) {
+    public TaskView(final MyVaadinApplication app) {
         this.app = app;
         this.taskList = new TaskList(app);
-        this.taskForm = new TaskForm(app);
+        // this.taskForm = new TaskForm(app);
+        this.taskResultsTabSheet = new TaskResultsTabSheet(app);
         setCaption("Distributed Executor: Tasks");
-        setSizeFull();
         setFirstComponent(this.taskList);
-        setSecondComponent(this.taskForm);
+        setSecondComponent(this.taskResultsTabSheet);
         setSplitPosition(40);
     }
 
@@ -43,6 +45,6 @@ public class TaskView extends VerticalSplitPanel {
     }
 
     public TaskForm getTaskForm() {
-        return taskForm;
+        return taskResultsTabSheet.getTaskForm();
     }
 }

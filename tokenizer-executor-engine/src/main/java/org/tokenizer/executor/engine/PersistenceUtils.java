@@ -46,6 +46,7 @@ import com.sun.syndication.feed.synd.SyndEntry;
 import crawlercommons.fetcher.BaseFetchException;
 import crawlercommons.fetcher.FetchedResult;
 import crawlercommons.fetcher.HttpFetchException;
+import crawlercommons.fetcher.RedirectFetchException;
 import crawlercommons.fetcher.http.SimpleHttpFetcher;
 import crawlercommons.robots.BaseRobotRules;
 
@@ -112,6 +113,30 @@ public class PersistenceUtils {
         long start = System.currentTimeMillis();
         try {
             fetchedResult = simpleHttpClient.get(url, null);
+        } catch (RedirectFetchException e) {
+            String redirectedUrl = e.getRedirectedUrl();
+            LOG.debug("Redirected to {}", redirectedUrl);
+            record.setHttpResponseCode(e.getHttpStatusCode());
+            record.setTimestamp(new Date());
+            metricsCache.increment(MetricsCache.REDIRECT_COUNT);
+            String normalizedRedirectedUrl = urlNormalizer
+                    .normalize(redirectedUrl);
+            String redirectedHost = HttpUtils.getHost(normalizedRedirectedUrl);
+            if (record.getHost().equals(redirectedHost)) {
+                UrlRecord urlRecord = new UrlRecord(normalizedRedirectedUrl);
+                try {
+                    repository.insertIfNotExists(urlRecord);
+                } catch (ConnectionException e1) {
+                    LOG.error(
+                            "repository not available... sleeping 60 seconds",
+                            e);
+                    Thread.sleep(60000);
+                }
+            } else {
+                LOG.debug("redirected extrenal host ignored: {}",
+                        normalizedRedirectedUrl);
+            }
+            return null;
         } catch (HttpFetchException e) {
             record.setHttpResponseCode(e.getHttpStatus());
             record.setTimestamp(new Date());

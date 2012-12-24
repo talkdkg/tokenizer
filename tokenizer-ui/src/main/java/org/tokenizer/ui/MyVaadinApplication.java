@@ -18,15 +18,14 @@ package org.tokenizer.ui;
 import org.springframework.context.ApplicationContext;
 import org.tokenizer.crawler.db.CrawlerRepository;
 import org.tokenizer.executor.model.api.WritableExecutorModel;
-import org.tokenizer.ui.views.CrawledContentView;
 import org.tokenizer.ui.views.TaskContainer;
+import org.tokenizer.ui.views.TaskOutputView;
 import org.tokenizer.ui.views.TaskView;
 
 import com.vaadin.Application;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
-import com.vaadin.terminal.Sizeable;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Component;
@@ -46,6 +45,7 @@ public class MyVaadinApplication extends Application implements
             .getLogger(MyVaadinApplication.class);
     private Window window;
     private final HorizontalSplitPanel horizontalSplit = new HorizontalSplitPanel();
+    VerticalLayout layout;
     private static ApplicationContext applicationContext = null;
     private String selectedHost = "www.amazon.com";
     private int selectedHttpResponseCode = 200;
@@ -81,25 +81,21 @@ public class MyVaadinApplication extends Application implements
 
     private void buildMainLayout() {
         window = new Window("Vertical Search");
+        window.setSizeFull();
         setMainWindow(window);
         setTheme("runo");
-        VerticalLayout layout = new VerticalLayout();
+        layout = new VerticalLayout();
         layout.setSizeFull();
         layout.addComponent(createToolbar());
-        layout.addComponent(horizontalSplit);
-        layout.setExpandRatio(horizontalSplit, 1);
-        horizontalSplit.setSplitPosition(200, Sizeable.UNITS_PIXELS);
-        // horizontalSplit.setFirstComponent(tree);
         getMainWindow().setContent(layout);
-        // setMainComponent(getListView());
     }
 
     // private Button newContact = new Button("Add contact");
     // private Button search = new Button("Search");
     private final Button tasks = new Button("Show Tasks");
     private final Button newTask = new Button("Add New Task");
-    private final Button crawledContent = new Button("Crawled Content");
 
+    // private final Button crawledContent = new Button("Crawled Content");
     public HorizontalLayout createToolbar() {
         HorizontalLayout lo = new HorizontalLayout();
         // lo.addComponent(newContact);
@@ -108,15 +104,24 @@ public class MyVaadinApplication extends Application implements
         // newContact.addListener((Button.ClickListener) this);
         lo.addComponent(tasks);
         lo.addComponent(newTask);
-        lo.addComponent(crawledContent);
+        // lo.addComponent(crawledContent);
         tasks.addListener((Button.ClickListener) this);
         newTask.addListener((Button.ClickListener) this);
-        crawledContent.addListener((Button.ClickListener) this);
+        // crawledContent.addListener((Button.ClickListener) this);
         return lo;
     }
 
+    Component current = null;
+
     private synchronized void setMainComponent(final Component c) {
-        horizontalSplit.setSecondComponent(c);
+        // horizontalSplit.setSecondComponent(c);
+        if (current != null) {
+            layout.removeComponent(current);
+        }
+        layout.addComponent(c);
+        c.setSizeFull();
+        layout.setExpandRatio(c, 1);
+        current = c;
     }
 
     private TaskContainer taskContainer = null;
@@ -140,8 +145,8 @@ public class MyVaadinApplication extends Application implements
             showTaskView();
         } else if (source == newTask) {
             addNewTask();
-        } else if (source == crawledContent) {
-            showCrawledContentView();
+            // } else if (source == crawledContent) {
+            // showCrawledContentView();
         }
     }
 
@@ -157,9 +162,6 @@ public class MyVaadinApplication extends Application implements
 
     private void showCrawledContentView() {
         setMainComponent(getCrawledContentView());
-        // removeComponent();
-        // container.requestRepaint(); // uncomment this to solve problem !
-        // requestRepaint();
     }
 
     private void addNewTask() {
@@ -180,11 +182,11 @@ public class MyVaadinApplication extends Application implements
         return taskView;
     }
 
-    CrawledContentView crawledContentView = null;
+    TaskOutputView crawledContentView = null;
 
-    public CrawledContentView getCrawledContentView() {
+    public TaskOutputView getCrawledContentView() {
         if (crawledContentView == null) {
-            crawledContentView = new CrawledContentView(this);
+            crawledContentView = new TaskOutputView(this);
         }
         return crawledContentView;
     }

@@ -44,6 +44,7 @@ import com.vaadin.ui.Form;
 import com.vaadin.ui.HorizontalLayout;
 
 public class TaskForm extends Form implements ClickListener {
+
     private static final long serialVersionUID = 1L;
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory
             .getLogger(TaskForm.class);
@@ -57,7 +58,8 @@ public class TaskForm extends Form implements ClickListener {
     private TaskConfigurationFormBase taskConfigurationField;
     private Item attachedDataSource = null;
 
-    public TaskForm(MyVaadinApplication app) {
+    public TaskForm(final MyVaadinApplication app) {
+        setCaption("Task Info");
         this.app = app;
         setWriteThrough(false);
         HorizontalLayout footer = new HorizontalLayout();
@@ -86,7 +88,7 @@ public class TaskForm extends Form implements ClickListener {
     }
 
     @Override
-    public void buttonClick(ClickEvent event) {
+    public void buttonClick(final ClickEvent event) {
         Button source = event.getButton();
         if (source == save) {
             if (!isValid())
@@ -179,7 +181,7 @@ public class TaskForm extends Form implements ClickListener {
     }
 
     @Override
-    public void setItemDataSource(Item newDataSource) {
+    public void setItemDataSource(final Item newDataSource) {
         newTaskMode = false;
         if (newDataSource != null) {
             // super.setItemDataSource(newDataSource, orderedProperties);
@@ -196,7 +198,7 @@ public class TaskForm extends Form implements ClickListener {
     }
 
     @Override
-    public void setReadOnly(boolean readOnly) {
+    public void setReadOnly(final boolean readOnly) {
         super.setReadOnly(readOnly);
         save.setVisible(!readOnly);
         cancel.setVisible(!readOnly);
@@ -209,7 +211,7 @@ public class TaskForm extends Form implements ClickListener {
         }
     }
 
-    private TaskInfoBean update(TaskInfoBean task) {
+    private TaskInfoBean update(final TaskInfoBean task) {
         String taskName = task.getTaskConfiguration().getName();
         String lock = lockTask(taskName);
         if (lock == null)
@@ -241,7 +243,7 @@ public class TaskForm extends Form implements ClickListener {
         return mutableTask;
     }
 
-    public static String lockTask(String taskName) {
+    public static String lockTask(final String taskName) {
         String lock = null;
         try {
             lock = MyVaadinApplication.getModel().lockTask(taskName);
@@ -259,7 +261,8 @@ public class TaskForm extends Form implements ClickListener {
         return lock;
     }
 
-    public static void unlockTask(String lock, TaskInfoBean mutableTask) {
+    public static void unlockTask(final String lock,
+            final TaskInfoBean mutableTask) {
         boolean ignoreMissing = mutableTask.getTaskConfiguration()
                 .getGeneralState() != null
                 && mutableTask.getTaskConfiguration().getGeneralState() == TaskGeneralState.DELETE_REQUESTED;
@@ -270,7 +273,7 @@ public class TaskForm extends Form implements ClickListener {
         }
     }
 
-    public static TaskInfoBean getMutableTask(String taskName) {
+    public static TaskInfoBean getMutableTask(final String taskName) {
         TaskInfoBean mutableTask = null;
         try {
             mutableTask = MyVaadinApplication.getModel().getMutableTask(
@@ -285,7 +288,8 @@ public class TaskForm extends Form implements ClickListener {
         return mutableTask;
     }
 
-    public static void updateTask(TaskInfoBean mutableTask, String lock) {
+    public static void updateTask(final TaskInfoBean mutableTask,
+            final String lock) {
         try {
             MyVaadinApplication.getModel().updateTask(mutableTask, lock);
         } catch (InterruptedException e) {

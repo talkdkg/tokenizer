@@ -60,6 +60,7 @@ public class MetricsCache {
     public static final String INJECTS_COUNT = "Total injects";
     public static final String SITEMAPS_PROCESSED = "sitemaps processed";
     public static final String SITEMAP_INDEXES_PROCESSED = "sitemap indexes processed";
+    public static final String REDIRECT_COUNT = "Redirect Count";
     private long lastCommitTimestamp;
     private final Map<String, Long> cache = new HashMap<String, Long>();
     private final String taskName;

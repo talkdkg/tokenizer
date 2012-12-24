@@ -71,7 +71,7 @@ public class UrlRecords extends AbstractCollection<UrlRecord> implements
 
     @Override
     public boolean hasNext() {
-        if (!rows.isEmpty() && iterator.hasNext())
+        if (rows != null && !rows.isEmpty() && iterator.hasNext())
             return true;
         else
             return nextPage();

@@ -69,7 +69,7 @@ public class WebpageRecords extends AbstractCollection<WebpageRecord> implements
 
     @Override
     public boolean hasNext() {
-        if (!rows.isEmpty() && iterator.hasNext())
+        if (rows != null && !rows.isEmpty() && iterator.hasNext())
             return true;
         else
             return nextPage();
