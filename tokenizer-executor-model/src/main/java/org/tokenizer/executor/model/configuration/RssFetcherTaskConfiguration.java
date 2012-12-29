@@ -19,6 +19,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 public class RssFetcherTaskConfiguration extends TaskConfiguration {
+
     private static final long serialVersionUID = 1L;
     private Set<String> seeds = new TreeSet<String>();
 
@@ -26,11 +27,16 @@ public class RssFetcherTaskConfiguration extends TaskConfiguration {
         return seeds;
     }
 
-    public void setSeeds(Set<String> seeds) {
+    public void setSeeds(final Set<String> seeds) {
         this.seeds = seeds;
     }
 
-    public void addSeed(String seed) {
+    public void addSeed(final String seed) {
         this.seeds.add(seed);
+    }
+
+    @Override
+    public String getImplementationName() {
+        return RssFetcherTaskConfiguration.class.getSimpleName();
     }
 }

@@ -24,6 +24,7 @@ import org.tokenizer.executor.model.api.TaskGeneralState;
  * 
  */
 public abstract class TaskConfiguration implements Serializable {
+
     private static final long serialVersionUID = 1L;
     private String name;
     private TaskGeneralState generalState = TaskGeneralState.START_REQUESTED;
@@ -32,7 +33,7 @@ public abstract class TaskConfiguration implements Serializable {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
     }
 
@@ -40,9 +41,11 @@ public abstract class TaskConfiguration implements Serializable {
         return generalState;
     }
 
-    public void setGeneralState(TaskGeneralState generalState) {
+    public void setGeneralState(final TaskGeneralState generalState) {
         this.generalState = generalState;
     }
+
+    public abstract String getImplementationName();
 
     @Override
     public final int hashCode() {
@@ -53,7 +56,7 @@ public abstract class TaskConfiguration implements Serializable {
     }
 
     @Override
-    public final boolean equals(Object obj) {
+    public final boolean equals(final Object obj) {
         if (this == obj)
             return true;
         if (obj == null)

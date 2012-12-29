@@ -109,6 +109,17 @@ public class HttpUtils {
         return inverted;
     }
 
+    public static String getHost(final byte[] hostInverted) {
+        try {
+            String hostInvertedString = new String(hostInverted, ASCII_CHARSET);
+            byte[] hostInvertedInverted = getHostInverted(hostInvertedString);
+            return new String(hostInvertedInverted, ASCII_CHARSET);
+        } catch (UnsupportedEncodingException e) {
+            LOG.error("", e);
+            return null;
+        }
+    }
+
     private static List<byte[]> getHostPartsInverted(final String host) {
         List<byte[]> parts = getHostParts(host);
         List<byte[]> partsInverted = new ArrayList<byte[]>();
@@ -153,5 +164,15 @@ public class HttpUtils {
             sb.append(arrayToString(array)).append(" ");
         }
         return sb.toString();
+    }
+
+    public static byte[] intToBytes(final int i) {
+        return new byte[] { (byte) (i >>> 24), (byte) (i >>> 16),
+                (byte) (i >>> 8), (byte) i };
+    }
+
+    public static int bytesToInt(final byte[] b) {
+        return b[3] & 0xFF | (b[2] & 0xFF) << 8 | (b[1] & 0xFF) << 16
+                | (b[0] & 0xFF) << 24;
     }
 }

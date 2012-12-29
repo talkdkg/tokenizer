@@ -18,22 +18,23 @@ public class UrlRecordList extends Table {
             .getLogger(UrlRecordList.class);
     private final ArrayList<Object> visibleColumnIds = new ArrayList<Object>();
     private final ArrayList<String> visibleColumnLabels = new ArrayList<String>();
+    private final MyVaadinApplication app;
+    private final LazyQueryContainer lazyQueryContainer;
 
     public UrlRecordList(final MyVaadinApplication app) {
+        this.app = app;
         setSizeFull();
-        UrlQueryFactory urlQueryFactory = new UrlQueryFactory(app,
-                app.getSelectedHost(), app.getSelectedHttpResponseCode());
-        LazyQueryContainer container = new LazyQueryContainer(urlQueryFactory,
-                false, 100);
-        container.addContainerProperty(UrlQuery.URL, String.class, "", true,
-                false);
-        container.addContainerProperty(UrlQuery.DATE, Date.class,
+        UrlQueryFactory urlQueryFactory = new UrlQueryFactory(app);
+        lazyQueryContainer = new LazyQueryContainer(urlQueryFactory, false, 100);
+        lazyQueryContainer.addContainerProperty(UrlQuery.URL, String.class, "",
+                true, false);
+        lazyQueryContainer.addContainerProperty(UrlQuery.DATE, Date.class,
                 UrlQuery.DEFAULT_DATE, true, false);
-        container.addContainerProperty(UrlQuery.HTTP_RESPONSE_CODE,
+        lazyQueryContainer.addContainerProperty(UrlQuery.HTTP_RESPONSE_CODE,
                 Integer.class, 0, true, false);
-        container.addContainerProperty(UrlQuery.URL_RECORD, UrlRecord.class,
-                null);
-        setContainerDataSource(container);
+        lazyQueryContainer.addContainerProperty(UrlQuery.URL_RECORD,
+                UrlRecord.class, null);
+        setContainerDataSource(lazyQueryContainer);
         visibleColumnIds.add(UrlQuery.URL);
         visibleColumnIds.add(UrlQuery.DATE);
         visibleColumnIds.add(UrlQuery.HTTP_RESPONSE_CODE);
@@ -48,5 +49,9 @@ public class UrlRecordList extends Table {
         setNullSelectionAllowed(false);
         setColumnCollapsingAllowed(true);
         setColumnReorderingAllowed(true);
+    }
+
+    public LazyQueryContainer getLazyQueryContainer() {
+        return lazyQueryContainer;
     }
 }

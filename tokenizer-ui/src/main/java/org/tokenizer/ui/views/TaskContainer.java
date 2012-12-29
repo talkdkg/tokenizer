@@ -31,13 +31,14 @@ import com.vaadin.data.Item;
 import com.vaadin.data.util.IndexedContainer;
 
 public class TaskContainer extends IndexedContainer {
+
     private static final long serialVersionUID = 1L;
     private static final Logger LOG = LoggerFactory
             .getLogger(TaskContainer.class);
     MyVaadinApplication app;
     private static final String TASK_SUBMISSON_DATE = "Task Submission Date";
 
-    public TaskContainer(MyVaadinApplication app) {
+    public TaskContainer(final MyVaadinApplication app) {
         super();
         this.app = app;
         ExecutorModelListener listener = new MyExecutorModelListener();
@@ -50,11 +51,11 @@ public class TaskContainer extends IndexedContainer {
         addContainerProperty("ZkDataVersion", Long.class, 0);
         synchronized (app) {
             for (TaskInfoBean task : tasks) {
-                Item item = addItem(task.getTaskConfiguration().getName());
+                Item item = addItem(task);
                 item.getItemProperty("name").setValue(
                         task.getTaskConfiguration().getName());
                 item.getItemProperty("type").setValue(
-                        task.getTaskConfiguration().getClass().getSimpleName());
+                        task.getTaskConfiguration().getImplementationName());
                 item.getItemProperty(TASK_SUBMISSON_DATE).setValue(
                         task.getSubmitDate());
                 item.getItemProperty("General State").setValue(
@@ -73,6 +74,7 @@ public class TaskContainer extends IndexedContainer {
     }
 
     private class MyExecutorModelListener implements ExecutorModelListener {
+
         @Override
         public void process(final ExecutorModelEvent event) {
             LOG.debug("Event::: {}", event.getType());
@@ -92,7 +94,7 @@ public class TaskContainer extends IndexedContainer {
                     return;
                 }
                 if (event.getType() == ExecutorModelEventType.TASK_ADDED) {
-                    Item item = addItem(taskName);
+                    Item item = addItem(newTask);
                     item.getItemProperty("name").setValue(
                             newTask.getTaskConfiguration().getName());
                     item.getItemProperty("type").setValue(
@@ -105,19 +107,19 @@ public class TaskContainer extends IndexedContainer {
                     item.getItemProperty("ZkDataVersion").setValue(
                             newTask.getZkDataVersion());
                 } else if (event.getType() == ExecutorModelEventType.TASK_UPDATED) {
-                    getContainerProperty(taskName, "name").setValue(
+                    getContainerProperty(newTask, "name").setValue(
                             newTask.getTaskConfiguration().getName());
-                    getContainerProperty(taskName, "type").setValue(
+                    getContainerProperty(newTask, "type").setValue(
                             newTask.getClass().getSimpleName());
-                    getContainerProperty(taskName, "General State").setValue(
+                    getContainerProperty(newTask, "General State").setValue(
                             newTask.getTaskConfiguration().getGeneralState());
-                    getContainerProperty(taskName, "ZkDataVersion").setValue(
+                    getContainerProperty(newTask, "ZkDataVersion").setValue(
                             newTask.getZkDataVersion());
                     for (Map.Entry<String, Long> entry : newTask.getCounters()
                             .entrySet()) {
                         LOG.debug("Entry: {}", entry);
                         if (propertyIds.contains(entry.getKey())) {
-                            getContainerProperty(taskName, entry.getKey())
+                            getContainerProperty(newTask, entry.getKey())
                                     .setValue(entry.getValue());
                         } else {
                             addContainerProperty(entry.getKey(), Long.class,

@@ -17,7 +17,6 @@ import org.tokenizer.core.util.xml.HXPathExpression;
 import org.tokenizer.core.util.xml.LocalXPathFactory;
 import org.tokenizer.crawler.db.CrawlerRepository;
 import org.tokenizer.crawler.db.WebpageRecord;
-import org.tokenizer.crawler.db.WebpageRecords;
 import org.tokenizer.crawler.db.XmlRecord;
 import org.tokenizer.executor.model.api.WritableExecutorModel;
 import org.tokenizer.executor.model.configuration.HtmlSplitterTaskConfiguration;
@@ -57,8 +56,9 @@ public class HtmlSplitterTask extends AbstractTask {
         if (splitterXPathExpression == null)
             return;
         int splitAttemptCounter = 0;
-        WebpageRecords webpageRecords = crawlerRepository.listWebpageRecords(
-                taskConfiguration.getHost(), splitAttemptCounter, 100);
+        List<WebpageRecord> webpageRecords = crawlerRepository
+                .listWebpageRecords(taskConfiguration.getHost(),
+                        splitAttemptCounter, 100);
         for (WebpageRecord webpageRecord : webpageRecords) {
             List<XmlRecord> xmlRecords = parse(webpageRecord);
             for (XmlRecord xmlRecord : xmlRecords) {

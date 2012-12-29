@@ -62,6 +62,7 @@ public class PersistenceUtils {
             final SimpleHttpFetcher simpleHttpClient,
             final String hostConstraint) throws ConnectionException,
             InterruptedException {
+        urlRecord.incrementFetchAttemptCounter();
         metricsCache.increment(MetricsCache.URL_TOTAL_KEY);
         if (!checkRobotRules(urlRecord, repository, baseRobotRules,
                 metricsCache))
@@ -153,7 +154,7 @@ public class PersistenceUtils {
         record.setTimestamp(new Date());
         if (fetchedResult.getHttpStatus() >= 200
                 && fetchedResult.getHttpStatus() < 300) {
-            metricsCache.increment(MetricsCache.TOTAL_RESPONSE_TIME_KEY,
+            metricsCache.increment(MetricsCache.TOTAL_HTTP_RESPONSE_TIME_MS,
                     System.currentTimeMillis() - start);
             metricsCache.increment(MetricsCache.URL_OK_KEY);
         } else {
@@ -208,6 +209,8 @@ public class PersistenceUtils {
         ParserPolicy parserPolicy = new ParserPolicy(MAX_PARSE_DURATION);
         SimpleParser parser = new SimpleParser(parserPolicy);
         ParsedDatum parsed = parser.parse(fetchedResult);
+        if (parsed == null)
+            return false;
         Outlink[] outlinks = parsed.getOutlinks();
         for (Outlink outlink : outlinks) {
             String url = outlink.getToUrl();

@@ -38,7 +38,7 @@ public class TaskOutputView extends VerticalSplitPanel implements
     private static final Logger LOG = LoggerFactory
             .getLogger(TaskOutputView.class);
     private final MyVaadinApplication app;
-    private final UrlRecordList urlRecordList;
+    private UrlRecordList urlRecordList;
     private final CrawledContentTabSheet crawledContentTabSheet;
 
     public TaskOutputView(final MyVaadinApplication app) {
@@ -83,5 +83,17 @@ public class TaskOutputView extends VerticalSplitPanel implements
             crawledContentTabSheet.getSourceLabel().setPropertyDataSource(
                     htmlProp);
         }
+    }
+
+    public UrlRecordList getUrlRecordList() {
+        return urlRecordList;
+    }
+
+    public synchronized void setUrlRecordList(
+            final UrlRecordList newUrlRecordList) {
+        newUrlRecordList.addListener(this);
+        replaceComponent(this.urlRecordList, newUrlRecordList);
+        this.urlRecordList = newUrlRecordList;
+        // this.urlRecordList.requestRepaintAll();
     }
 }

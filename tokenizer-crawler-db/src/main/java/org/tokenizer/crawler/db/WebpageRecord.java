@@ -39,17 +39,23 @@ public class WebpageRecord {
     }
 
     public WebpageRecord(final byte[] digest, final String url,
-            final String host, final byte[] hostInverted, final Date timestamp,
-            final String charset, final byte[] content,
-            final int splitAttemptCounter) {
+            final byte[] hostInverted_splitAttemptCounter,
+            final Date timestamp, final String charset, final byte[] content) {
         this.digest = digest;
         this.url = url;
-        this.host = host;
-        this.hostInverted = hostInverted;
+        byte[] splitAttemptCounterBytes = Arrays.copyOfRange(
+                hostInverted_splitAttemptCounter,
+                hostInverted_splitAttemptCounter.length - 4,
+                hostInverted_splitAttemptCounter.length);
+        this.splitAttemptCounter = HttpUtils
+                .bytesToInt(splitAttemptCounterBytes);
+        this.hostInverted = Arrays.copyOfRange(
+                hostInverted_splitAttemptCounter, 0,
+                hostInverted_splitAttemptCounter.length - 5);
+        this.host = HttpUtils.getHost(this.hostInverted);
         this.timestamp = timestamp;
         this.charset = charset;
         this.content = content;
-        this.splitAttemptCounter = splitAttemptCounter;
     }
 
     public String getUrl() {

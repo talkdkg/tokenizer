@@ -16,6 +16,7 @@
 package org.tokenizer.executor.model.configuration;
 
 public class ClassicRobotTaskConfiguration extends TaskConfiguration {
+
     private static final long serialVersionUID = 1L;
     private String host;
     private boolean followRedirects;
@@ -37,7 +38,7 @@ public class ClassicRobotTaskConfiguration extends TaskConfiguration {
         return host;
     }
 
-    public void setHost(String host) {
+    public void setHost(final String host) {
         this.host = host;
     }
 
@@ -45,7 +46,7 @@ public class ClassicRobotTaskConfiguration extends TaskConfiguration {
         return followRedirects;
     }
 
-    public void setFollowRedirects(boolean followRedirects) {
+    public void setFollowRedirects(final boolean followRedirects) {
         this.followRedirects = followRedirects;
     }
 
@@ -53,7 +54,7 @@ public class ClassicRobotTaskConfiguration extends TaskConfiguration {
         return followExternal;
     }
 
-    public void setFollowExternal(boolean followExternal) {
+    public void setFollowExternal(final boolean followExternal) {
         this.followExternal = followExternal;
     }
 
@@ -61,7 +62,7 @@ public class ClassicRobotTaskConfiguration extends TaskConfiguration {
         return agentName;
     }
 
-    public void setAgentName(String agentName) {
+    public void setAgentName(final String agentName) {
         this.agentName = agentName;
     }
 
@@ -69,7 +70,7 @@ public class ClassicRobotTaskConfiguration extends TaskConfiguration {
         return emailAddress;
     }
 
-    public void setEmailAddress(String emailAddress) {
+    public void setEmailAddress(final String emailAddress) {
         this.emailAddress = emailAddress;
     }
 
@@ -77,7 +78,12 @@ public class ClassicRobotTaskConfiguration extends TaskConfiguration {
         return webAddress;
     }
 
-    public void setWebAddress(String webAddress) {
+    public void setWebAddress(final String webAddress) {
         this.webAddress = webAddress;
+    }
+
+    @Override
+    public String getImplementationName() {
+        return ClassicRobotTaskConfiguration.class.getSimpleName();
     }
 }

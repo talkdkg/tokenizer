@@ -17,9 +17,13 @@ package org.tokenizer.ui;
 
 import org.springframework.context.ApplicationContext;
 import org.tokenizer.crawler.db.CrawlerRepository;
+import org.tokenizer.executor.model.api.TaskInfoBean;
 import org.tokenizer.executor.model.api.WritableExecutorModel;
+import org.tokenizer.executor.model.configuration.ClassicRobotTaskConfiguration;
+import org.tokenizer.executor.model.configuration.HtmlSplitterTaskConfiguration;
+import org.tokenizer.executor.model.configuration.MessageParserTaskConfiguration;
+import org.tokenizer.executor.model.configuration.TaskConfiguration;
 import org.tokenizer.ui.views.TaskContainer;
-import org.tokenizer.ui.views.TaskOutputView;
 import org.tokenizer.ui.views.TaskView;
 
 import com.vaadin.Application;
@@ -47,7 +51,7 @@ public class MyVaadinApplication extends Application implements
     private final HorizontalSplitPanel horizontalSplit = new HorizontalSplitPanel();
     VerticalLayout layout;
     private static ApplicationContext applicationContext = null;
-    private String selectedHost = "www.amazon.com";
+    private String selectedHost = null;
     private int selectedHttpResponseCode = 200;
 
     public static ApplicationContext getApplicationContext() {
@@ -67,10 +71,6 @@ public class MyVaadinApplication extends Application implements
 
     @Override
     public void init() {
-        // repository = Configuration.get().getBeanLocatorAdapter()
-        // .getBean("crawlerRepository", CrawlerHBaseRepository.class);
-        // model = Configuration.get().getBeanLocatorAdapter()
-        // .getBean("executorModel", WritableExecutorModel.class);
         applicationContext = MyVaadinServlet.getApplicationContext();
         model = (WritableExecutorModel) applicationContext
                 .getBean("executorModel");
@@ -90,24 +90,15 @@ public class MyVaadinApplication extends Application implements
         getMainWindow().setContent(layout);
     }
 
-    // private Button newContact = new Button("Add contact");
-    // private Button search = new Button("Search");
     private final Button tasks = new Button("Show Tasks");
     private final Button newTask = new Button("Add New Task");
 
-    // private final Button crawledContent = new Button("Crawled Content");
     public HorizontalLayout createToolbar() {
         HorizontalLayout lo = new HorizontalLayout();
-        // lo.addComponent(newContact);
-        // lo.addComponent(search);
-        // search.addListener((Button.ClickListener) this);
-        // newContact.addListener((Button.ClickListener) this);
         lo.addComponent(tasks);
         lo.addComponent(newTask);
-        // lo.addComponent(crawledContent);
         tasks.addListener((Button.ClickListener) this);
         newTask.addListener((Button.ClickListener) this);
-        // crawledContent.addListener((Button.ClickListener) this);
         return lo;
     }
 
@@ -136,17 +127,10 @@ public class MyVaadinApplication extends Application implements
     @Override
     public void buttonClick(final ClickEvent event) {
         final Button source = event.getButton();
-        // if (source == search) {
-        // showSearchView();
-        // } else if (source == newContact) {
-        // addNewContact();
-        // }
         if (source == tasks) {
             showTaskView();
         } else if (source == newTask) {
             addNewTask();
-            // } else if (source == crawledContent) {
-            // showCrawledContentView();
         }
     }
 
@@ -154,14 +138,28 @@ public class MyVaadinApplication extends Application implements
     public void valueChange(final ValueChangeEvent event) {
         Property property = event.getProperty();
         if (property == getTaskView().getTaskList()) {
-            Item item = getTaskView().getTaskList().getItem(
-                    getTaskView().getTaskList().getValue());
+            Object itemId = getTaskView().getTaskList().getValue();
+            Item item = getTaskView().getTaskList().getItem(itemId);
             getTaskView().getTaskForm().setItemDataSource(item);
+            TaskInfoBean taskInfoBean = (TaskInfoBean) itemId;
+            TaskConfiguration taskConfiguration = taskInfoBean
+                    .getTaskConfiguration();
+            if (taskConfiguration instanceof ClassicRobotTaskConfiguration) {
+                String host = ((ClassicRobotTaskConfiguration) taskConfiguration)
+                        .getHost();
+                setSelectedHost(host);
+            } else if (taskConfiguration instanceof HtmlSplitterTaskConfiguration) {
+                String host = ((ClassicRobotTaskConfiguration) taskConfiguration)
+                        .getHost();
+                setSelectedHost(host);
+            } else if (taskConfiguration instanceof MessageParserTaskConfiguration) {
+                String host = ((ClassicRobotTaskConfiguration) taskConfiguration)
+                        .getHost();
+                setSelectedHost(host);
+            }
+            getTaskView().getTaskOutputView().getUrlRecordList()
+                    .getLazyQueryContainer().refresh();
         }
-    }
-
-    private void showCrawledContentView() {
-        setMainComponent(getCrawledContentView());
     }
 
     private void addNewTask() {
@@ -182,21 +180,13 @@ public class MyVaadinApplication extends Application implements
         return taskView;
     }
 
-    TaskOutputView crawledContentView = null;
-
-    public TaskOutputView getCrawledContentView() {
-        if (crawledContentView == null) {
-            crawledContentView = new TaskOutputView(this);
-        }
-        return crawledContentView;
-    }
-
     public String getSelectedHost() {
         return selectedHost;
     }
 
     public void setSelectedHost(final String selectedHost) {
         this.selectedHost = selectedHost;
+        LOG.warn("selectedHost: {}", selectedHost);
     }
 
     public int getSelectedHttpResponseCode() {

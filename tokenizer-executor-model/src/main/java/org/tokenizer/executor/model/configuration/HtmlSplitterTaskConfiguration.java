@@ -16,6 +16,7 @@
 package org.tokenizer.executor.model.configuration;
 
 public class HtmlSplitterTaskConfiguration extends TaskConfiguration {
+
     private static final long serialVersionUID = 1L;
     private String xpath;
     private String host;
@@ -24,7 +25,7 @@ public class HtmlSplitterTaskConfiguration extends TaskConfiguration {
         return xpath;
     }
 
-    public void setXpath(String xpath) {
+    public void setXpath(final String xpath) {
         this.xpath = xpath;
     }
 
@@ -32,8 +33,13 @@ public class HtmlSplitterTaskConfiguration extends TaskConfiguration {
         return host;
     }
 
-    public void setHost(String host) {
+    public void setHost(final String host) {
         this.host = host;
+    }
+
+    @Override
+    public String getImplementationName() {
+        return HtmlSplitterTaskConfiguration.class.getSimpleName();
     }
 
     @Override

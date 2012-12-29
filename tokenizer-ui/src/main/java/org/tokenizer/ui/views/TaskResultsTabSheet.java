@@ -27,4 +27,8 @@ public class TaskResultsTabSheet extends TabSheet {
     public TaskForm getTaskForm() {
         return taskForm;
     }
+
+    public TaskOutputView getTaskOutputView() {
+        return taskOutputView;
+    }
 }

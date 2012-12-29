@@ -46,11 +46,12 @@ public class MetricsCache {
             .getLogger(MetricsCache.class);
     private static final long COMMIT_INTERVAL = 1 * 1000L;
     public static final String URL_ROBOTS_KEY = "robots.txt restricted";
-    public static final String URL_TOTAL_KEY = "URLs processed total";
-    public static final String XML_TOTAL_KEY = "XML snippets created total";
-    public static final String URL_OK_KEY = "URLs fetched successfully HTTP total count";
+    public static final String URL_TOTAL_KEY = "URLs processed";
+    public static final String XML_TOTAL_KEY = "XML created";
+    public static final String URL_OK_KEY = "URLs fetched";
     public static final String URL_INJECTED = "URLs injected";
-    public static final String TOTAL_RESPONSE_TIME_KEY = "URLs fetched successfully HTTP total time (ms)";
+    public static final String TOTAL_HTTP_RESPONSE_TIME_MS = "Total HTTP response time (ms)";
+    public static final String AVERAGE_HTTP_RESPONSE_TIME_MS = "Average HTTP response time (ms)";
     public static final String URL_ERROR_KEY = "URLs with fetch errors";
     public static final String OTHER_ERRORS = "other errors";
     public static final String TOTAL_MEAN_TIME_KEY = "total mean time (including HTTP, Lily, and Solr) (ms)";
@@ -143,6 +144,18 @@ public class MetricsCache {
                 }
                 value = value + cache.get(key);
                 taskDefinition.addCounter(key, value);
+                // it will update twice, and second update will be correct one:
+                if (key.equals(URL_OK_KEY)
+                        || key.equals(TOTAL_HTTP_RESPONSE_TIME_MS)) {
+                    Long count = taskDefinition.getCounters().get(URL_OK_KEY);
+                    Long time = taskDefinition.getCounters().get(
+                            TOTAL_HTTP_RESPONSE_TIME_MS);
+                    if (count != null && count > 0 && time != null) {
+                        Long average = (long) (time / count);
+                        taskDefinition.addCounter(
+                                AVERAGE_HTTP_RESPONSE_TIME_MS, average);
+                    }
+                }
             }
             taskDefinition.setMetricsUpdateTimestamp(currentTimestamp);
             model.updateTask(taskDefinition, lock);
@@ -227,5 +240,12 @@ public class MetricsCache {
             }
         }
         return success;
+    }
+
+    public static void main(final String[] args) {
+        Long count = new Long(684L);
+        Long time = new Long(455679L);
+        Long average = (time / count);
+        System.out.println("average: " + average + "   " + time / count);
     }
 }

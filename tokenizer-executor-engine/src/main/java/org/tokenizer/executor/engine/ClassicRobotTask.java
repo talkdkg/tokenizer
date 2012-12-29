@@ -80,10 +80,12 @@ public class ClassicRobotTask extends AbstractTask {
         UrlRecord home = new UrlRecord("http://" + taskConfiguration.getHost()
                 + "/");
         crawlerRepository.insertIfNotExists(home);
-        int httpResponseCode = 0;
-        int maxResults = 10000;
-        List<UrlRecord> urlRecords = crawlerRepository.listUrlRecords(
-                taskConfiguration.getHost(), httpResponseCode, maxResults);
+        int fetchAttemptCounter = 0;
+        int maxResults = 1000;
+        List<UrlRecord> urlRecords = crawlerRepository
+                .listUrlRecordsByFetchAttemptCounter(
+                        taskConfiguration.getHost(), fetchAttemptCounter,
+                        maxResults);
         for (UrlRecord urlRecord : urlRecords) {
             LOG.debug("Trying URL: {}", urlRecord);
             FetchedResult fetchedResult = PersistenceUtils.fetch(urlRecord,

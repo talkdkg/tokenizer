@@ -30,11 +30,11 @@ public class UrlQuery implements Query {
     private byte[] rowKeyBytes;
     private final MyVaadinApplication app;
 
-    public UrlQuery(final MyVaadinApplication app, final String host,
-            final int httpResponseCode) {
+    public UrlQuery(final MyVaadinApplication app) {
         this.app = app;
-        this.crawlerRepository = app.getRepository();
-        loadRowKeys(host, httpResponseCode);
+        this.crawlerRepository = MyVaadinApplication.getRepository();
+        loadRowKeys(app.getSelectedHost(), app.getSelectedHttpResponseCode());
+        // loadRowKeys("www.amazon.com", 200);
     }
 
     @Override
@@ -104,6 +104,7 @@ public class UrlQuery implements Query {
     }
 
     private void loadRowKeys(final String host, final int httpResponseCode) {
+        LOG.debug("Loading raw keys...");
         List<byte[]> rowKeyList;
         try {
             rowKeyList = crawlerRepository.loadUrlRecordRowKeys(host,

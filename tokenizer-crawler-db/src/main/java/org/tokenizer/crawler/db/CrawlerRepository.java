@@ -11,25 +11,17 @@ public interface CrawlerRepository {
 
     void update(UrlRecord urlRecord) throws ConnectionException;
 
-    UrlRecords listUrlRecords(int defaultPageSize) throws ConnectionException;
-
-    UrlRecords listUrlRecords(int httpResponseCode, int defaultPageSize)
-            throws ConnectionException;
-
-    UrlRecords listUrlRecords(String host, int defaultPageSize)
-            throws ConnectionException;
-
-    // UrlRecords listUrlRecords(String host, int httpResponseCode,
-    // int defaultPageSize) throws ConnectionException;
     List<UrlRecord> listUrlRecords(String host, int httpResponseCode,
             int maxResults) throws ConnectionException;
 
     List<UrlRecord> listUrlRecords(final byte[][] keys)
             throws ConnectionException;
 
-    int countUrlRecords() throws ConnectionException;
+    List<UrlRecord> listUrlRecordsByFetchAttemptCounter(final String host,
+            final int httpResponseCode, final int maxResults)
+            throws ConnectionException;
 
-    int countUrlRecords(final int httpResponseCode) throws ConnectionException;
+    int countUrlRecords() throws ConnectionException;
 
     int countUrlRecords(final String host, final int httpResponseCode)
             throws ConnectionException;
@@ -42,8 +34,8 @@ public interface CrawlerRepository {
 
     WebpageRecord getWebpageRecord(byte[] digest) throws ConnectionException;
 
-    WebpageRecords listWebpageRecords(final String host,
-            final int splitAttemptCounter, final int defaultPageSize)
+    List<WebpageRecord> listWebpageRecords(final String host,
+            final int splitAttemptCounter, final int maxResults)
             throws ConnectionException;
 
     int countWebpageRecords(final String host, final int splitAttemptCounter)

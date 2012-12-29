@@ -18,6 +18,7 @@ package org.tokenizer.executor.engine.twitter;
 import org.tokenizer.executor.model.configuration.TaskConfiguration;
 
 public class TweetCollectorTaskConfiguration extends TaskConfiguration {
+
     private static final long serialVersionUID = 1L;
     private String keywords;
 
@@ -25,7 +26,12 @@ public class TweetCollectorTaskConfiguration extends TaskConfiguration {
         return keywords;
     }
 
-    public void setKeywords(String keywords) {
+    public void setKeywords(final String keywords) {
         this.keywords = keywords;
+    }
+
+    @Override
+    public String getImplementationName() {
+        return TweetCollectorTaskConfiguration.class.getSimpleName();
     }
 }

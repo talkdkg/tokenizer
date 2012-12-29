@@ -47,4 +47,8 @@ public class TaskView extends VerticalSplitPanel {
     public TaskForm getTaskForm() {
         return taskResultsTabSheet.getTaskForm();
     }
+
+    public TaskOutputView getTaskOutputView() {
+        return taskResultsTabSheet.getTaskOutputView();
+    }
 }

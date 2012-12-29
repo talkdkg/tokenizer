@@ -16,6 +16,7 @@
 package org.tokenizer.executor.model.configuration;
 
 public class SitemapsFetcherTaskConfiguration extends TaskConfiguration {
+
     private static final long serialVersionUID = 1L;
     private String host;
 
@@ -23,7 +24,12 @@ public class SitemapsFetcherTaskConfiguration extends TaskConfiguration {
         return host;
     }
 
-    public void setHost(String host) {
+    public void setHost(final String host) {
         this.host = host;
+    }
+
+    @Override
+    public String getImplementationName() {
+        return SitemapsFetcherTaskConfiguration.class.getSimpleName();
     }
 }

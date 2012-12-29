@@ -16,6 +16,7 @@
 package org.tokenizer.executor.model.configuration;
 
 public class MessageParserTaskConfiguration extends TaskConfiguration {
+
     private static final long serialVersionUID = 1L;
     private String host;
     private String topicXPath;
@@ -31,7 +32,7 @@ public class MessageParserTaskConfiguration extends TaskConfiguration {
         return host;
     }
 
-    public void setHost(String host) {
+    public void setHost(final String host) {
         this.host = host;
     }
 
@@ -39,7 +40,7 @@ public class MessageParserTaskConfiguration extends TaskConfiguration {
         return topicXPath;
     }
 
-    public void setTopicXPath(String topicXPath) {
+    public void setTopicXPath(final String topicXPath) {
         this.topicXPath = topicXPath;
     }
 
@@ -47,7 +48,7 @@ public class MessageParserTaskConfiguration extends TaskConfiguration {
         return authorXPath;
     }
 
-    public void setAuthorXPath(String authorXPath) {
+    public void setAuthorXPath(final String authorXPath) {
         this.authorXPath = authorXPath;
     }
 
@@ -55,7 +56,7 @@ public class MessageParserTaskConfiguration extends TaskConfiguration {
         return ageXPath;
     }
 
-    public void setAgeXPath(String ageXPath) {
+    public void setAgeXPath(final String ageXPath) {
         this.ageXPath = ageXPath;
     }
 
@@ -63,7 +64,7 @@ public class MessageParserTaskConfiguration extends TaskConfiguration {
         return sexXPath;
     }
 
-    public void setSexXPath(String sexXPath) {
+    public void setSexXPath(final String sexXPath) {
         this.sexXPath = sexXPath;
     }
 
@@ -71,7 +72,7 @@ public class MessageParserTaskConfiguration extends TaskConfiguration {
         return titleXPath;
     }
 
-    public void setTitleXPath(String titleXPath) {
+    public void setTitleXPath(final String titleXPath) {
         this.titleXPath = titleXPath;
     }
 
@@ -79,7 +80,7 @@ public class MessageParserTaskConfiguration extends TaskConfiguration {
         return contentXPath;
     }
 
-    public void setContentXPath(String contentXPath) {
+    public void setContentXPath(final String contentXPath) {
         this.contentXPath = contentXPath;
     }
 
@@ -87,7 +88,7 @@ public class MessageParserTaskConfiguration extends TaskConfiguration {
         return dateXPath;
     }
 
-    public void setDateXPath(String dateXPath) {
+    public void setDateXPath(final String dateXPath) {
         this.dateXPath = dateXPath;
     }
 
@@ -95,8 +96,13 @@ public class MessageParserTaskConfiguration extends TaskConfiguration {
         return userRatingXPath;
     }
 
-    public void setUserRatingXPath(String userRatingXPath) {
+    public void setUserRatingXPath(final String userRatingXPath) {
         this.userRatingXPath = userRatingXPath;
+    }
+
+    @Override
+    public String getImplementationName() {
+        return MessageParserTaskConfiguration.class.getSimpleName();
     }
 
     @Override

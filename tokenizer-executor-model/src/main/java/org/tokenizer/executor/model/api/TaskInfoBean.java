@@ -22,6 +22,7 @@ import java.util.Map;
 import org.tokenizer.executor.model.configuration.TaskConfiguration;
 
 public class TaskInfoBean {
+
     private TaskConfiguration taskConfiguration;
     private int zkDataVersion = -1;
     private boolean immutable;
@@ -33,7 +34,7 @@ public class TaskInfoBean {
         return metricsUpdateTimestamp;
     }
 
-    public void setMetricsUpdateTimestamp(long metricsUpdateTimestamp) {
+    public void setMetricsUpdateTimestamp(final long metricsUpdateTimestamp) {
         this.metricsUpdateTimestamp = metricsUpdateTimestamp;
     }
 
@@ -45,7 +46,7 @@ public class TaskInfoBean {
         return new Date(submitTime);
     }
 
-    public void setSubmitTime(long submitTime) {
+    public void setSubmitTime(final long submitTime) {
         this.submitTime = submitTime;
     }
 
@@ -53,11 +54,11 @@ public class TaskInfoBean {
         return counters;
     }
 
-    public void setCounters(Map<String, Long> counters) {
+    public void setCounters(final Map<String, Long> counters) {
         this.counters = counters;
     }
 
-    public void addCounter(String key, Long value) {
+    public void addCounter(final String key, final Long value) {
         this.counters.put(key, value);
     }
 
@@ -65,7 +66,7 @@ public class TaskInfoBean {
         return zkDataVersion;
     }
 
-    public void setZkDataVersion(int zkDataVersion) {
+    public void setZkDataVersion(final int zkDataVersion) {
         checkIfMutable();
         this.zkDataVersion = zkDataVersion;
     }
@@ -83,7 +84,36 @@ public class TaskInfoBean {
         return taskConfiguration;
     }
 
-    public void setTaskConfiguration(TaskConfiguration taskConfiguration) {
+    public void setTaskConfiguration(final TaskConfiguration taskConfiguration) {
         this.taskConfiguration = taskConfiguration;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime
+                * result
+                + ((taskConfiguration == null) ? 0 : taskConfiguration
+                        .hashCode());
+        return result;
+    }
+
+    // this should compare by task name and implementation class only:
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        TaskInfoBean other = (TaskInfoBean) obj;
+        if (taskConfiguration == null) {
+            if (other.taskConfiguration != null)
+                return false;
+        } else if (!taskConfiguration.equals(other.taskConfiguration))
+            return false;
+        return true;
     }
 }
