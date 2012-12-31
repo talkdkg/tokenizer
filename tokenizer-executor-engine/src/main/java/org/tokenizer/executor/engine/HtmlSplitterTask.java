@@ -12,7 +12,6 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tokenizer.core.parser.HtmlParser;
-import org.tokenizer.core.util.HttpUtils;
 import org.tokenizer.core.util.xml.HXPathExpression;
 import org.tokenizer.core.util.xml.LocalXPathFactory;
 import org.tokenizer.crawler.db.CrawlerRepository;
@@ -55,24 +54,32 @@ public class HtmlSplitterTask extends AbstractTask {
     protected void process() throws InterruptedException, ConnectionException {
         if (splitterXPathExpression == null)
             return;
-        int splitAttemptCounter = 0;
         List<WebpageRecord> webpageRecords = crawlerRepository
                 .listWebpageRecords(taskConfiguration.getHost(),
-                        splitAttemptCounter, 100);
+                        taskConfiguration.getSplitAttemptCounter(), 100);
         for (WebpageRecord webpageRecord : webpageRecords) {
+            // yes, we encountered that when created dummy task with host=null:
+            if (webpageRecord == null) {
+                LOG.warn("webpageRecord is null, sleeping 60 seconds...");
+                Thread.sleep(60000);
+                continue;
+            }
+            LOG.debug("processing URL: {}", webpageRecord.getUrl());
             List<XmlRecord> xmlRecords = parse(webpageRecord);
             for (XmlRecord xmlRecord : xmlRecords) {
                 LOG.warn("xmlRecord: {}", xmlRecord);
                 crawlerRepository.insertIfNotExist(xmlRecord);
                 metricsCache.increment(MetricsCache.XML_TOTAL_KEY);
             }
-            webpageRecord.setSplitAttemptCounter(1);
+            webpageRecord.incrementSplitAttemptCounter();
             crawlerRepository.updateSplitAttemptCounter(webpageRecord);
             metricsCache.increment(MetricsCache.URL_TOTAL_KEY);
         }
-        // to prevent spin loop in case if collection is empty:
-        LOG.warn("sleeping 10 seconds...");
-        Thread.currentThread().sleep(10000);
+        // to prevent spin-loop in case if no records available:
+        if (webpageRecords == null || webpageRecords.size() == 0) {
+            LOG.warn("Sleeping 60 seconds...");
+            Thread.sleep(60000);
+        }
     }
 
     public List<XmlRecord> parse(final WebpageRecord page) {
@@ -81,6 +88,11 @@ public class HtmlSplitterTask extends AbstractTask {
 
     public List<XmlRecord> parse(final String host, final byte[] content,
             final String charset) {
+        try {
+            LOG.trace("Processing HTML: {}", new String(content, charset));
+        } catch (UnsupportedEncodingException e) {
+            LOG.error("", e);
+        }
         List<XmlRecord> results = new ArrayList<XmlRecord>();
         InputStream is = new ByteArrayInputStream(content);
         InputSource source = new InputSource(is);
@@ -97,18 +109,16 @@ public class HtmlSplitterTask extends AbstractTask {
         }
         for (Node node : nodes) {
             String xml = HtmlParser.format(node);
-            xml = xml.replaceAll("\\s+", " ");
             LOG.trace("XML Snippet Retrieved:\n{}", xml);
             XmlRecord record;
             try {
-                record = new XmlRecord(xml.getBytes("UTF-8"));
-                record.setHost(host);
-                record.setHostInverted(HttpUtils.getHostInverted(host));
+                record = new XmlRecord(host, xml.getBytes("UTF-8"));
             } catch (UnsupportedEncodingException e) {
                 LOG.error("", e);
                 return null;
             }
             results.add(record);
+            LOG.debug("XML record created: {}", record);
         }
         return results;
     }

@@ -31,8 +31,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import javax.annotation.PreDestroy;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.WatchedEvent;
@@ -60,7 +58,8 @@ import org.tokenizer.util.zookeeper.ZooKeeperOperation;
 
 public class ExecutorModelImpl implements WritableExecutorModel {
 
-    private final static Log LOG = LogFactory.getLog(ExecutorModelImpl.class);
+    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory
+            .getLogger(ExecutorModelImpl.class);
     private final ZooKeeperItf zk;
     /**
      * Cache of the tasks as they are stored in ZK. Updated based on ZK watcher
@@ -99,8 +98,7 @@ public class ExecutorModelImpl implements WritableExecutorModel {
     public void addTask(final TaskInfoBean task) throws TaskExistsException,
             TaskModelException, TaskValidityException {
         assertValid(task);
-        final String taskPath = EXECUTOR_COLLECTION_PATH + "/"
-                + task.getTaskConfiguration().getName();
+        final String taskPath = EXECUTOR_COLLECTION_PATH + "/" + task.getUuid();
         final byte[] data = TaskInfoBeanConverter.toJsonBytes(task);
         try {
             zk.retryOperation(new ZooKeeperOperation<String>() {
@@ -113,7 +111,7 @@ public class ExecutorModelImpl implements WritableExecutorModel {
                 }
             });
         } catch (KeeperException.NodeExistsException e) {
-            throw new TaskExistsException(task.getTaskConfiguration().getName());
+            throw new TaskExistsException(task.getUuid().toString());
         } catch (Exception e) {
             throw new TaskModelException("Error creating Task.", e);
         }
@@ -121,10 +119,6 @@ public class ExecutorModelImpl implements WritableExecutorModel {
 
     private void assertValid(final TaskInfoBean task)
             throws TaskValidityException {
-        if (task.getTaskConfiguration().getName() == null
-                || task.getTaskConfiguration().getName().length() == 0)
-            throw new TaskValidityException(
-                    "Name should not be null or zero-length");
         if (task.getTaskConfiguration() == null)
             throw new TaskValidityException("Configuration should not be null.");
         if (task.getTaskConfiguration().getGeneralState() == null)
@@ -144,17 +138,16 @@ public class ExecutorModelImpl implements WritableExecutorModel {
                 @Override
                 public Stat execute() throws KeeperException,
                         InterruptedException {
-                    return zk.setData(EXECUTOR_COLLECTION_PATH + "/"
-                            + task.getTaskConfiguration().getName(), newData,
-                            task.getZkDataVersion());
+                    return zk.setData(
+                            EXECUTOR_COLLECTION_PATH + "/" + task.getUuid(),
+                            newData, task.getZkDataVersion());
                 }
             });
         } catch (KeeperException.NoNodeException e) {
-            throw new TaskNotFoundException(task.getTaskConfiguration()
-                    .getName());
+            throw new TaskNotFoundException(task.getUuid().toString());
         } catch (KeeperException.BadVersionException e) {
-            throw new TaskConcurrentModificationException(task
-                    .getTaskConfiguration().getName());
+            throw new TaskConcurrentModificationException(task.getUuid()
+                    .toString());
         }
     }
 
@@ -168,8 +161,7 @@ public class ExecutorModelImpl implements WritableExecutorModel {
                     "You are not owner of the Task lock, your lock path is: "
                             + lock);
         assertValid(task);
-        TaskInfoBean currentTask = getMutableTask(task.getTaskConfiguration()
-                .getName());
+        TaskInfoBean currentTask = getMutableTask(task.getUuid().toString());
         if (currentTask.getTaskConfiguration().getGeneralState() == TaskGeneralState.DELETE_REQUESTED)
             throw new TaskUpdateException("Task in the state "
                     + task.getTaskConfiguration().getGeneralState()
@@ -394,9 +386,19 @@ public class ExecutorModelImpl implements WritableExecutorModel {
         } catch (KeeperException.NoNodeException e) {
             throw new TaskNotFoundException(taskName);
         }
-        TaskInfoBean task = new TaskInfoBean();
+        TaskInfoBean task = TaskInfoBeanConverter.fromJsonBytes(data);
         task.setZkDataVersion(stat.getVersion());
-        TaskInfoBeanConverter.fromJsonBytes(data, task);
+        if (forCache
+                && taskName.equals(task.getTaskConfiguration().getNameTemp())) {
+            LOG.warn("old task ZK definition found; upgrading");
+            try {
+                deleteTask(taskName);
+                addTask(task);
+            } catch (Exception e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
         return task;
     }
 

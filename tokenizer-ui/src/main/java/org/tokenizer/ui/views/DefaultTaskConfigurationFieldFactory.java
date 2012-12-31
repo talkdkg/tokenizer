@@ -22,8 +22,10 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.DefaultFieldFactory;
 import com.vaadin.ui.Field;
+import com.vaadin.ui.TextField;
 
 public class DefaultTaskConfigurationFieldFactory extends DefaultFieldFactory {
+
     private static final long serialVersionUID = 1L;
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory
             .getLogger(DefaultTaskConfigurationFieldFactory.class);
@@ -40,12 +42,19 @@ public class DefaultTaskConfigurationFieldFactory extends DefaultFieldFactory {
     }
 
     @Override
-    public Field createField(Item item, Object propertyId, Component uiContext) {
+    public Field createField(final Item item, final Object propertyId,
+            final Component uiContext) {
         Field field = null;
         if (propertyId.equals("name")) {
             field = super.createField(item, propertyId, uiContext);
         } else if (propertyId.equals("generalState")) {
             field = state;
+        } else if (propertyId.equals("xpath")) {
+            TextField textField = new TextField();
+            textField.setCaption("XPath");
+            textField.setWidth(400, Field.UNITS_PIXELS);
+            textField.setMaxLength(256);
+            field = textField;
         } else {
             field = super.createField(item, propertyId, uiContext);
         }

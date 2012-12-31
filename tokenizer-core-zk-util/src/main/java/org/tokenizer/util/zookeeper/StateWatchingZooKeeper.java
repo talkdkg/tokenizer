@@ -137,6 +137,9 @@ public class StateWatchingZooKeeper extends ZooKeeperImpl {
         super.shutdown();
         LOG.error(message);
         System.err.println(message);
+        LOG.error("Calling System.exit(1)!!!");
+        System.err.println("Calling System.exit(1)!!!");
+        System.out.println("Calling System.exit(1)!!!");
         System.exit(1);
     }
 
@@ -148,17 +151,25 @@ public class StateWatchingZooKeeper extends ZooKeeperImpl {
                 return;
             zkEventThread = Thread.currentThread();
             try {
-                if (event.getState() == Expired) {
-                    endProcess("ZooKeeper session expired, shutting down.");
-                } else if (event.getState() == Disconnected) {
-                    LOG.warn("Disconnected from ZooKeeper");
+                // if (event.getState() == Expired) {
+                // it will shutdown whole JVM using System.exit(1):
+                // endProcess("ZooKeeper session expired, shutting down.");
+                // } else if (event.getState() == Disconnected) {
+                if (event.getState() == Expired
+                        || event.getState() == Disconnected) {
+                    if (event.getState() == Disconnected) {
+                        LOG.warn("Disconnected from ZooKeeper");
+                    }
+                    if (event.getState() == Expired) {
+                        LOG.warn("ZooKeeper session expired");
+                    }
                     connected = false;
                     waitForZk();
                     if (stateWatcherThread != null) {
                         stateWatcherThread.interrupt();
                     }
                     stateWatcherThread = new Thread(new StateWatcher(),
-                            "LilyZkStateWatcher");
+                            "TokenizerZkStateWatcher");
                     stateWatcherThread.start();
                 } else if (event.getState() == SyncConnected) {
                     if (firstConnect) {

@@ -19,9 +19,9 @@ https://groups.google.com/forum/?hl=en&fromgroups#!forum/tokenizer-developers
 To build, execute:
   mvn install
 
-Then, deploy tokenizer-ui WAR file to Tomcat 7.0.32; it uses Vaadin, Atmosphere Framework, NIO, and HTML5 WebSockets.
+Then, deploy tokenizer-ui WAR file to Tomcat 7.0.32; it uses Vaadin, Atmosphere Framework, and HTML5 WebSockets.
 
-As a minimum, you need ZooKeeper and Cassandra vailable at localhost. Tokenizer CA is distributed engine: yopu can have as many JVMs as you want; everything is managed via ZooKeeper. For details, see WIKI.
+As a minimum, you need ZooKeeper and Cassandra available at localhost. Tokenizer CA is distributed engine: you can have as many JVMs as you want; everything is managed via ZooKeeper. You can have huge cluster of executors, plus Cassandra, and single management point: Tomcat-based UI (and, in a future, command line UI). For details, see WIKI.
 
 
 XPath Samples:

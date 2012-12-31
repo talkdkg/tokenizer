@@ -46,28 +46,15 @@ public class UrlRecord {
         }
     }
 
-    // public UrlRecord(final byte[] digest, final String url, final String
-    // host,
-    // final byte[] hostInverted, final Date timestamp,
-    // final int fetchAttemptCounter, final int httpResponseCode,
-    // final byte[] webpageDigest) {
-    // this.digest = digest;
-    // this.url = url;
-    // this.host = host;
-    // this.hostInverted = hostInverted;
-    // this.timestamp = timestamp;
-    // this.fetchAttemptCounter = fetchAttemptCounter;
-    // this.httpResponseCode = httpResponseCode;
-    // this.webpageDigest = webpageDigest;
-    // }
     public UrlRecord(final byte[] digest, final String url,
             final byte[] hostInverted_fetchAttemptCounter,
             final byte[] hostInverted_httpResponseCode, final Date timestamp,
             final byte[] webpageDigest) {
         this.digest = digest;
         this.url = url;
-        this.host = HttpUtils.getHost(url);
-        this.hostInverted = HttpUtils.getHostInverted(host);
+        this.hostInverted = Arrays.copyOfRange(hostInverted_httpResponseCode,
+                0, hostInverted_httpResponseCode.length - 5);
+        this.host = HttpUtils.getHost(hostInverted);
         byte[] fetchAttemptCounterBytes = Arrays.copyOfRange(
                 hostInverted_fetchAttemptCounter,
                 hostInverted_fetchAttemptCounter.length - 4,

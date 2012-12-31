@@ -3,6 +3,7 @@ package org.tokenizer.executor.engine.message;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -17,7 +18,6 @@ import org.tokenizer.core.util.xml.LocalXPathFactory;
 import org.tokenizer.crawler.db.CrawlerRepository;
 import org.tokenizer.crawler.db.MessageRecord;
 import org.tokenizer.crawler.db.XmlRecord;
-import org.tokenizer.crawler.db.XmlRecords;
 import org.tokenizer.executor.engine.AbstractTask;
 import org.tokenizer.executor.engine.HostLocker;
 import org.tokenizer.executor.model.api.WritableExecutorModel;
@@ -115,7 +115,7 @@ public class MessageParserTask extends AbstractTask {
                 && dateXPathExpression == null)
             return;
         int parseAttemptCounter = 0;
-        XmlRecords xmlRecords = crawlerRepository.listXmlRecords(
+        List<XmlRecord> xmlRecords = crawlerRepository.listXmlRecords(
                 taskConfiguration.getHost(), parseAttemptCounter, 100);
         for (XmlRecord xmlRecord : xmlRecords) {
             LOG.trace("xmlRecord: {}", xmlRecord);

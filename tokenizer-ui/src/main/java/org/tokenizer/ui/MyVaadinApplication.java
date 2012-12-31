@@ -149,11 +149,11 @@ public class MyVaadinApplication extends Application implements
                         .getHost();
                 setSelectedHost(host);
             } else if (taskConfiguration instanceof HtmlSplitterTaskConfiguration) {
-                String host = ((ClassicRobotTaskConfiguration) taskConfiguration)
+                String host = ((HtmlSplitterTaskConfiguration) taskConfiguration)
                         .getHost();
                 setSelectedHost(host);
             } else if (taskConfiguration instanceof MessageParserTaskConfiguration) {
-                String host = ((ClassicRobotTaskConfiguration) taskConfiguration)
+                String host = ((MessageParserTaskConfiguration) taskConfiguration)
                         .getHost();
                 setSelectedHost(host);
             }

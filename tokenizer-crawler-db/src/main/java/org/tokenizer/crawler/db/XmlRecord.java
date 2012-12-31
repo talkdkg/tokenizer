@@ -2,57 +2,63 @@ package org.tokenizer.crawler.db;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
+import java.util.Date;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tokenizer.core.util.HttpUtils;
 import org.tokenizer.core.util.MD5;
 
 public class XmlRecord {
 
     private static final Logger LOG = LoggerFactory.getLogger(XmlRecord.class);
     private byte[] digest = DefaultValues.EMPTY_ARRAY;
+    private Date timestamp = DefaultValues.EMPTY_DATE;
     private String host = DefaultValues.EMPTY_STRING;
     private byte[] hostInverted = DefaultValues.EMPTY_ARRAY;
     private byte[] content = DefaultValues.EMPTY_ARRAY;
     private int parseAttemptCounter = 0;
 
-    public XmlRecord(final byte[] content) {
+    public XmlRecord(final String host, final byte[] content) {
+        this.digest = MD5.digest(ArrayUtils.addAll(host.getBytes(), content));
+        this.host = host;
+        this.hostInverted = HttpUtils.getHostInverted(host);
+        this.timestamp = new Date();
         this.content = content;
-        this.digest = MD5.digest(content);
     }
 
-    public XmlRecord(final byte[] digest, final String host,
-            final byte[] hostInverted, final byte[] content,
-            final int parseAttemptCounter) {
+    public XmlRecord(final byte[] digest, final Date timestamp,
+            final byte[] hostInverted_parseAttemptCounter, final byte[] content) {
         this.digest = digest;
-        this.host = host;
-        this.hostInverted = hostInverted;
+        this.timestamp = timestamp;
+        this.hostInverted = Arrays.copyOfRange(
+                hostInverted_parseAttemptCounter, 0,
+                hostInverted_parseAttemptCounter.length - 5);
+        this.host = HttpUtils.getHost(host);
+        byte[] parseAttemptCounterBytes = Arrays.copyOfRange(
+                hostInverted_parseAttemptCounter,
+                hostInverted_parseAttemptCounter.length - 4,
+                hostInverted_parseAttemptCounter.length);
+        this.parseAttemptCounter = HttpUtils
+                .bytesToInt(parseAttemptCounterBytes);
         this.content = content;
-        this.parseAttemptCounter = parseAttemptCounter;
     }
 
     public String getHost() {
         return host;
     }
 
-    public void setHost(final String host) {
-        this.host = host;
-    }
-
     public byte[] getHostInverted() {
         return hostInverted;
-    }
-
-    public void setHostInverted(final byte[] hostInverted) {
-        this.hostInverted = hostInverted;
     }
 
     public int getParseAttemptCounter() {
         return parseAttemptCounter;
     }
 
-    public void setParseAttemptCounter(final int parseAttemptCounter) {
-        this.parseAttemptCounter = parseAttemptCounter;
+    public void incrementParseAttemptCounter() {
+        this.parseAttemptCounter++;
     }
 
     public byte[] getDigest() {
@@ -63,16 +69,20 @@ public class XmlRecord {
         return content;
     }
 
+    public Date getTimestamp() {
+        return timestamp;
+    }
+
     @Override
     public String toString() {
         try {
             return "XmlRecord [digest=" + Arrays.toString(digest) + ", host="
                     + host + ", hostInverted=" + Arrays.toString(hostInverted)
-                    + ", content=" + (new String(content, "UTF-8"))
-                    + ", parseAttemptCounter=" + parseAttemptCounter + "]";
+                    + ", timestamp=" + timestamp + ", content="
+                    + (new String(content, "UTF-8")) + ", parseAttemptCounter="
+                    + parseAttemptCounter + "]";
         } catch (UnsupportedEncodingException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            LOG.error("", e);
             return null;
         }
     }

@@ -46,6 +46,7 @@ import org.tokenizer.util.zookeeper.ZooKeeperItf;
  * 
  */
 public class ExecutorMaster {
+
     private static final Logger LOG = LoggerFactory
             .getLogger(ExecutorMaster.class);
     private LeaderElection leaderElection;
@@ -54,7 +55,8 @@ public class ExecutorMaster {
     private final ExecutorModelListener listener = new MyListener();
     private final EventWorker eventWorker = new EventWorker();
 
-    public ExecutorMaster(ZooKeeperItf zk, WritableExecutorModel model) {
+    public ExecutorMaster(final ZooKeeperItf zk,
+            final WritableExecutorModel model) {
         this.zk = zk;
         this.model = model;
     }
@@ -79,6 +81,7 @@ public class ExecutorMaster {
     }
 
     private class MyLeaderElectionCallback implements LeaderElectionCallback {
+
         @Override
         public void activateAsLeader() throws Exception {
             LOG.info("Starting up as Master.");
@@ -93,7 +96,7 @@ public class ExecutorMaster {
             for (TaskInfoBean taskDefinition : taskDefinitions) {
                 eventWorker.putEvent(new ExecutorModelEvent(
                         ExecutorModelEventType.TASK_UPDATED, taskDefinition
-                                .getTaskConfiguration().getName()));
+                                .getUuid().toString()));
             }
             LOG.info("Startup as Master successful.");
         }
@@ -111,11 +114,12 @@ public class ExecutorMaster {
     }
 
     private class EventWorker implements Runnable {
+
         private final BlockingQueue<ExecutorModelEvent> eventQueue = new LinkedBlockingQueue<ExecutorModelEvent>();
         private boolean stop;
         private Thread thread;
 
-        public synchronized void shutdown(boolean interrupt)
+        public synchronized void shutdown(final boolean interrupt)
                 throws InterruptedException {
             stop = true;
             eventQueue.clear();
@@ -142,7 +146,7 @@ public class ExecutorMaster {
             thread.start();
         }
 
-        public void putEvent(ExecutorModelEvent event)
+        public void putEvent(final ExecutorModelEvent event)
                 throws InterruptedException {
             if (stop)
                 throw new RuntimeException(
@@ -181,8 +185,8 @@ public class ExecutorMaster {
                         if (taskDefinition != null) {
                             if (taskDefinition.getTaskConfiguration()
                                     .getGeneralState() == TaskGeneralState.DELETE_REQUESTED) {
-                                model.deleteTask(taskDefinition
-                                        .getTaskConfiguration().getName());
+                                model.deleteTask(taskDefinition.getUuid()
+                                        .toString());
                                 continue;
                             }
                         }
@@ -199,8 +203,9 @@ public class ExecutorMaster {
     }
 
     private class MyListener implements ExecutorModelListener {
+
         @Override
-        public void process(ExecutorModelEvent event) {
+        public void process(final ExecutorModelEvent event) {
             try {
                 eventWorker.putEvent(event);
             } catch (InterruptedException e) {

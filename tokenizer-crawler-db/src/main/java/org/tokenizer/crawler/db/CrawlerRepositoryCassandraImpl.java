@@ -225,19 +225,17 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
                             .put("column_metadata",
                                     ImmutableMap
                                             .<String, Object> builder()
-                                            .put("host",
+                                            .put("timestamp",
                                                     ImmutableMap
                                                             .<String, Object> builder()
                                                             .put("validation_class",
-                                                                    "AsciiType")
+                                                                    "DateType")
                                                             .build())
-                                            .put("hostInverted",
+                                            .put("hostInverted_parseAttemptCounter",
                                                     ImmutableMap
                                                             .<String, Object> builder()
                                                             .put("validation_class",
                                                                     "BytesType")
-                                                            .put("index_name",
-                                                                    "XML_hostInverted")
                                                             .put("index_type",
                                                                     "KEYS")
                                                             .build())
@@ -246,16 +244,6 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
                                                             .<String, Object> builder()
                                                             .put("validation_class",
                                                                     "BytesType")
-                                                            .build())
-                                            .put("parseAttemptCounter",
-                                                    ImmutableMap
-                                                            .<String, Object> builder()
-                                                            .put("validation_class",
-                                                                    "Int32Type")
-                                                            .put("index_name",
-                                                                    "XML_parseAttemptCounter")
-                                                            .put("index_type",
-                                                                    "KEYS")
                                                             .build()).build())
                             .build());
         }
@@ -415,8 +403,8 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
             rowKeys.add(row.getKey());
         }
         double timeTaken = (System.nanoTime() - nanoStart) / (1e9);
-        LOG.debug("Time taken to fetch " + rowKeys.size() + " row keys is "
-                + "" + timeTaken + " seconds.");
+        LOG.debug("Time taken to fetch " + rowKeys.size()
+                + " URL Records row keys is " + timeTaken + " seconds.");
         return rowKeys;
     }
 
@@ -425,28 +413,29 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
             final int httpResponseCode, final int maxResults)
             throws ConnectionException {
         double nanoStart = System.nanoTime();
-        final List<UrlRecord> list = new ArrayList<UrlRecord>(maxResults);
         byte[] hostInverted = HttpUtils.getHostInverted(host);
         byte[] hostInverted_httpResponseCode = ArrayUtils.addAll(hostInverted,
                 HttpUtils.intToBytes(httpResponseCode));
+        //@formatter:off
         IndexQuery<byte[], String> query = keyspace
                 .prepareQuery(CF_URL_RECORDS)
-                .setConsistencyLevel(ConsistencyLevel.CL_ONE).searchWithIndex()
-                .setRowLimit(maxResults).autoPaginateRows(false)
-                .addExpression().whereColumn("hostInverted_httpResponseCode")
-                .equals().value(hostInverted_httpResponseCode);
-        OperationResult<Rows<byte[], String>> result;
-        result = query.execute();
-        for (Row<byte[], String> row : result.getResult()) {
-            UrlRecord urlRecord = toUrlRecord(row);
-            list.add(urlRecord);
-        }
+                .setConsistencyLevel(ConsistencyLevel.CL_ONE)
+                .searchWithIndex()
+                .setRowLimit(maxResults)
+                .autoPaginateRows(false)
+                .addExpression()
+                .whereColumn("hostInverted_httpResponseCode")
+                .equals()
+                .value(hostInverted_httpResponseCode);
+        //@formatter:on
+        OperationResult<Rows<byte[], String>> result = query.execute();
         if (LOG.isDebugEnabled()) {
             double timeTaken = (System.nanoTime() - nanoStart) / (1e9);
-            LOG.debug("Time taken to fetch " + list.size() + " row keys is "
-                    + "" + timeTaken + " seconds, host: {}", host);
+            LOG.debug("Time taken to fetch " + result.getResult().size()
+                    + " URL records is " + timeTaken + " seconds, host: {}",
+                    host);
         }
-        return list;
+        return toUrlRecordList(result);
     }
 
     @Override
@@ -454,30 +443,29 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
             final String host, final int fetchAttemptCounter,
             final int maxResults) throws ConnectionException {
         double nanoStart = System.nanoTime();
-        final List<UrlRecord> list = new ArrayList<UrlRecord>(maxResults);
         byte[] hostInverted = HttpUtils.getHostInverted(host);
         byte[] hostInverted_fetchAttemptCounter = ArrayUtils.addAll(
                 hostInverted, HttpUtils.intToBytes(fetchAttemptCounter));
+        //@formatter:off
         IndexQuery<byte[], String> query = keyspace
                 .prepareQuery(CF_URL_RECORDS)
-                .setConsistencyLevel(ConsistencyLevel.CL_ONE).searchWithIndex()
-                .setRowLimit(maxResults).autoPaginateRows(false)
+                .setConsistencyLevel(ConsistencyLevel.CL_ONE)
+                .searchWithIndex()
+                .setRowLimit(maxResults)
+                .autoPaginateRows(false)
                 .addExpression()
-                .whereColumn("hostInverted_fetchAttemptCounter").equals()
+                .whereColumn("hostInverted_fetchAttemptCounter")
+                .equals()
                 .value(hostInverted_fetchAttemptCounter);
-        OperationResult<Rows<byte[], String>> result;
-        result = query.execute();
-        for (Row<byte[], String> row : result.getResult()) {
-            UrlRecord urlRecord = toUrlRecord(row);
-            list.add(urlRecord);
-            LOG.debug("urlRecord added to the list: {}", urlRecord);
-        }
+        //@formatter:on
+        OperationResult<Rows<byte[], String>> result = query.execute();
         if (LOG.isDebugEnabled()) {
             double timeTaken = (System.nanoTime() - nanoStart) / (1e9);
-            LOG.debug("Time taken to fetch " + list.size() + " row keys is "
-                    + "" + timeTaken + " seconds, host: {}", host);
+            LOG.debug("Time taken to fetch " + result.getResult().size()
+                    + " URL records is " + timeTaken + " seconds, host: {}",
+                    host);
         }
-        return list;
+        return toUrlRecordList(result);
     }
 
     @Override
@@ -485,12 +473,10 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
             throws ConnectionException {
         double nanoStart = System.nanoTime();
         OperationResult<Rows<byte[], String>> result = keyspace
-                .prepareQuery(CF_URL_RECORDS).getKeySlice(keys)
-                // .withColumnRange(new RangeBuilder().setLimit(10).build())
-                .execute();
+                .prepareQuery(CF_URL_RECORDS).getKeySlice(keys).execute();
         double timeTaken = (System.nanoTime() - nanoStart) / (1e9);
         LOG.debug("Time taken to fetch " + result.getResult().size()
-                + " URL records is " + "" + timeTaken + " seconds.");
+                + " URL records is " + timeTaken + " seconds.");
         return toUrlRecordList(result);
     }
 
@@ -527,7 +513,9 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
             throws ConnectionException {
         MutationBatch m = keyspace.prepareMutationBatch();
         m.withRow(CF_WEBPAGE_RECORDS, webpageRecord.getDigest()).putColumn(
-                "splitAttemptCounter", webpageRecord.getSplitAttemptCounter(),
+                "hostInverted_splitAttemptCounter",
+                ArrayUtils.addAll(webpageRecord.getHostInverted(), HttpUtils
+                        .intToBytes(webpageRecord.getSplitAttemptCounter())),
                 null);
         m.execute();
     }
@@ -536,6 +524,7 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
     public void updateParseAttemptCounter(final XmlRecord xmlRecord)
             throws ConnectionException {
         MutationBatch m = keyspace.prepareMutationBatch();
+        // TODO: fix that
         m.withRow(CF_XML_RECORDS, xmlRecord.getDigest())
                 .putColumn("parseAttemptCounter",
                         xmlRecord.getParseAttemptCounter(), null);
@@ -555,21 +544,22 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
     public List<WebpageRecord> listWebpageRecords(final String host,
             final int splitAttemptCounter, final int maxResults)
             throws ConnectionException {
-        List<WebpageRecord> list = new ArrayList<WebpageRecord>();
-        IndexQuery<byte[], String> query = keyspace
-                .prepareQuery(CF_WEBPAGE_RECORDS).searchWithIndex()
-                .setRowLimit(maxResults).autoPaginateRows(false)
-                .addExpression().whereColumn("hostInverted").equals()
-                .value(HttpUtils.getHostInverted(host)).addExpression()
-                .whereColumn("splitAttemptCounter").equals()
-                .value(splitAttemptCounter);
-        OperationResult<Rows<byte[], String>> result;
-        result = query.execute();
-        for (Row<byte[], String> row : result.getResult()) {
-            WebpageRecord webpageRecord = toWebpageRecord(row);
-            list.add(webpageRecord);
-        }
-        return list;
+        byte[] hostInverted = HttpUtils.getHostInverted(host);
+        byte[] hostInverted_splitAttemptCounter = ArrayUtils.addAll(
+                hostInverted, HttpUtils.intToBytes(splitAttemptCounter));
+        //@formatter:off
+        IndexQuery<byte[], String> query = keyspace.prepareQuery(CF_WEBPAGE_RECORDS)
+                .searchWithIndex()
+                .setRowLimit(maxResults)
+                .autoPaginateRows(false)
+                .addExpression()
+                .whereColumn("hostInverted_splitAttemptCounter")
+                .equals()
+                .value(hostInverted_splitAttemptCounter);
+        // AllRowsQuery<byte[], String> query2  = keyspace.prepareQuery(CF_WEBPAGE_RECORDS).getAllRows().setRowLimit(maxResults);
+        //@formatter:on
+        OperationResult<Rows<byte[], String>> result = query.execute();
+        return toWebpageRecordList(result);
     }
 
     @Override
@@ -595,17 +585,33 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
     }
 
     @Override
-    public XmlRecords listXmlRecords(final String host,
-            final int parseAttemptCounter, final int defaultPageSize)
+    public List<XmlRecord> listXmlRecords(final String host,
+            final int parseAttemptCounter, final int maxResults)
             throws ConnectionException {
+        double nanoStart = System.nanoTime();
+        byte[] hostInverted = HttpUtils.getHostInverted(host);
+        byte[] hostInverted_parseAttemptCounter = ArrayUtils.addAll(
+                hostInverted, HttpUtils.intToBytes(parseAttemptCounter));
+        //@formatter:off
         IndexQuery<byte[], String> query = keyspace
-                .prepareQuery(CF_XML_RECORDS).searchWithIndex()
-                .setRowLimit(defaultPageSize).autoPaginateRows(true)
-                .addExpression().whereColumn("hostInverted").equals()
-                .value(HttpUtils.getHostInverted(host)).addExpression()
-                .whereColumn("parseAttemptCounter").equals()
-                .value(parseAttemptCounter);
-        return new XmlRecords(countXmlRecords(host, parseAttemptCounter), query);
+                .prepareQuery(CF_XML_RECORDS)
+                .setConsistencyLevel(ConsistencyLevel.CL_ONE)
+                .searchWithIndex()
+                .setRowLimit(maxResults)
+                .autoPaginateRows(false)
+                .addExpression()
+                .whereColumn("hostInverted_parseAttemptCounter")
+                .equals()
+                .value(hostInverted_parseAttemptCounter);
+        //@formatter:on
+        OperationResult<Rows<byte[], String>> result = query.execute();
+        if (LOG.isDebugEnabled()) {
+            double timeTaken = (System.nanoTime() - nanoStart) / (1e9);
+            LOG.debug("Time taken to fetch " + result.getResult().size()
+                    + " XML records is " + timeTaken + " seconds, host: {}",
+                    host);
+        }
+        return toXmlRecordList(result);
     }
 
     @Override
@@ -655,8 +661,8 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
             counter++;
         }
         double timeTaken = (System.nanoTime() - nanoStart) / (1e9);
-        LOG.debug("Time taken to fetch " + counter + " rows is " + ""
-                + timeTaken + " seconds.");
+        LOG.debug("Time taken to count " + counter + " rows is " + timeTaken
+                + " seconds.");
         return counter;
     }
 
@@ -685,8 +691,8 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
             counter++;
         }
         double timeTaken = (System.nanoTime() - nanoStart) / (1e9);
-        LOG.debug("Time taken to fetch " + counter + " rows is " + ""
-                + timeTaken + " seconds.");
+        LOG.debug("Time taken to count " + counter + " rows is " + timeTaken
+                + " seconds.");
         return counter;
     }
 
@@ -712,8 +718,8 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
                     }
                 }).build().call();
         double timeTaken = (System.nanoTime() - nanoStart) / (1e9);
-        LOG.debug("Time taken to fetch " + counter + " rows is " + ""
-                + timeTaken + " seconds.");
+        LOG.debug("Time taken to count " + counter + " rows is " + timeTaken
+                + " seconds.");
         return counter.get();
     }
 
@@ -757,8 +763,8 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
         // }
         counter = rows.getResult().size();
         double timeTaken = (System.nanoTime() - nanoStart) / (1e9);
-        LOG.debug("Time taken to fetch " + counter + " Webpage records is "
-                + "" + timeTaken + " seconds.");
+        LOG.debug("Time taken to count " + counter + " Webpage records is "
+                + timeTaken + " seconds.");
         return counter;
     }
 
@@ -778,7 +784,7 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
             counter++;
         }
         double timeTaken = (System.nanoTime() - nanoStart) / (1e9);
-        LOG.debug("Time taken to fetch " + counter + " XML records is " + ""
+        LOG.debug("Time taken to count " + counter + " XML records is "
                 + timeTaken + " seconds.");
         return counter;
     }
@@ -836,8 +842,53 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
         Date timestamp = columns.getDateValue("timestamp", null);
         String charset = columns.getStringValue("charset", null);
         byte[] content = columns.getByteArrayValue("content", null);
-        WebpageRecord webpageRecord = new WebpageRecord(digest, url,
-                hostInverted_splitAttemptCounter, timestamp, charset, content);
-        return webpageRecord;
+        if (hostInverted_splitAttemptCounter == null
+                || hostInverted_splitAttemptCounter.length < 5) {
+            LOG.error(
+                    "Incorrect hostInverted_splitAttemptCounter with size less than 5; url: {}",
+                    url);
+            // trying to recover from previously non-indexed field:
+            return new WebpageRecord(HttpUtils.getHost(url), url, timestamp,
+                    charset, content);
+        }
+        return new WebpageRecord(digest, url, hostInverted_splitAttemptCounter,
+                timestamp, charset, content);
+    }
+
+    private static List<WebpageRecord> toWebpageRecordList(
+            final OperationResult<Rows<byte[], String>> result) {
+        List<WebpageRecord> list = new ArrayList<WebpageRecord>();
+        for (Row<byte[], String> row : result.getResult()) {
+            list.add(toWebpageRecord(row));
+        }
+        return list;
+    }
+
+    private static XmlRecord toXmlRecord(final byte[] digest,
+            final ColumnList<String> columns) {
+        if (columns.isEmpty())
+            return null;
+        Date timestamp = columns.getDateValue("timestamp", null);
+        byte[] hostInverted_parseAttemptCounter = columns.getByteArrayValue(
+                "hostInverted_parseAttemptCounter", null);
+        byte[] content = columns.getByteArrayValue("content", null);
+        XmlRecord xmlRecord = new XmlRecord(digest, timestamp,
+                hostInverted_parseAttemptCounter, content);
+        return xmlRecord;
+    }
+
+    private static XmlRecord toXmlRecord(final Row<byte[], String> row) {
+        byte[] digest = row.getKey();
+        ColumnList<String> columns = row.getColumns();
+        return toXmlRecord(digest, columns);
+    }
+
+    private static List<XmlRecord> toXmlRecordList(
+            final OperationResult<Rows<byte[], String>> result) {
+        List<XmlRecord> list = new ArrayList<XmlRecord>();
+        for (Row<byte[], String> row : result.getResult()) {
+            list.add(toXmlRecord(row));
+        }
+        return list;
     }
 }

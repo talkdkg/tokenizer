@@ -24,18 +24,23 @@ import org.tokenizer.core.util.MD5;
 public class WebpageRecord {
 
     private byte[] digest = DefaultValues.EMPTY_ARRAY;
-    private String url = DefaultValues.EMPTY_STRING;
     private String host = DefaultValues.EMPTY_STRING;
+    private String url = DefaultValues.EMPTY_STRING;
     private byte[] hostInverted = DefaultValues.EMPTY_ARRAY;
     private Date timestamp = DefaultValues.EMPTY_DATE;
     private String charset = DefaultValues.EMPTY_STRING;
     private byte[] content = DefaultValues.EMPTY_ARRAY;
     private int splitAttemptCounter = 0;
 
-    public WebpageRecord(final String host, final byte[] content) {
-        setHost(host);
-        this.content = content;
+    public WebpageRecord(final String host, final String url,
+            final Date timestamp, final String charset, final byte[] content) {
         this.digest = MD5.digest(content);
+        this.host = host;
+        this.url = url;
+        this.hostInverted = HttpUtils.getHostInverted(host);
+        this.timestamp = timestamp;
+        this.charset = charset;
+        this.content = content;
     }
 
     public WebpageRecord(final byte[] digest, final String url,
@@ -62,17 +67,8 @@ public class WebpageRecord {
         return url;
     }
 
-    public void setUrl(final String url) {
-        this.url = url;
-    }
-
     public String getHost() {
         return host;
-    }
-
-    public void setHost(final String host) {
-        this.host = host;
-        this.hostInverted = HttpUtils.getHostInverted(host);
     }
 
     public byte[] getHostInverted() {
@@ -83,24 +79,16 @@ public class WebpageRecord {
         return timestamp;
     }
 
-    public void setTimestamp(final Date timestamp) {
-        this.timestamp = timestamp;
-    }
-
     public String getCharset() {
         return charset;
-    }
-
-    public void setCharset(final String charset) {
-        this.charset = charset;
     }
 
     public int getSplitAttemptCounter() {
         return splitAttemptCounter;
     }
 
-    public void setSplitAttemptCounter(final int splitAttemptCounter) {
-        this.splitAttemptCounter = splitAttemptCounter;
+    public void incrementSplitAttemptCounter() {
+        this.splitAttemptCounter++;
     }
 
     public byte[] getDigest() {

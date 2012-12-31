@@ -15,6 +15,8 @@
  */
 package org.tokenizer.ui.views;
 
+import java.util.UUID;
+
 import org.apache.zookeeper.KeeperException;
 import org.tokenizer.executor.engine.twitter.TweetCollectorTaskConfiguration;
 import org.tokenizer.executor.model.api.TaskConcurrentModificationException;
@@ -75,7 +77,8 @@ public class TaskForm extends Form implements ClickListener {
     }
 
     public void addTask() {
-        TaskInfoBean newTask = new TaskInfoBean();
+        UUID uuid = UUID.randomUUID();
+        TaskInfoBean newTask = new TaskInfoBean(uuid);
         String[] propertyIds = {};
         BeanItem<TaskInfoBean> item = new BeanItem(newTask, propertyIds);
         setItemDataSource(item);
@@ -102,7 +105,8 @@ public class TaskForm extends Form implements ClickListener {
                     TaskConfiguration taskConfiguration = subform
                             .getTaskConfiguration();
                     LOG.info("taskConfiguration: {}", taskConfiguration);
-                    TaskInfoBean taskInfoBean = new TaskInfoBean();
+                    UUID uuid = UUID.randomUUID();
+                    TaskInfoBean taskInfoBean = new TaskInfoBean(uuid);
                     taskInfoBean.setTaskConfiguration(taskConfiguration);
                     MyVaadinApplication.getModel().addTask(taskInfoBean);
                 } catch (TaskExistsException e) {
@@ -117,6 +121,8 @@ public class TaskForm extends Form implements ClickListener {
                 BeanItem<TaskInfoBean> item = (BeanItem<TaskInfoBean>) getItemDataSource();
                 TaskInfoBean task = item.getBean();
                 taskConfigurationField.commit();
+                LOG.debug("task configuration updated: {}",
+                        taskConfigurationField.getTaskConfiguration());
                 task.setTaskConfiguration(taskConfigurationField
                         .getTaskConfiguration());
                 update(task);
@@ -212,11 +218,11 @@ public class TaskForm extends Form implements ClickListener {
     }
 
     private TaskInfoBean update(final TaskInfoBean task) {
-        String taskName = task.getTaskConfiguration().getName();
-        String lock = lockTask(taskName);
+        String uuid = task.getUuid().toString();
+        String lock = lockTask(uuid);
         if (lock == null)
             return null;
-        TaskInfoBean mutableTask = getMutableTask(taskName);
+        TaskInfoBean mutableTask = getMutableTask(uuid);
         if (mutableTask == null)
             return null;
         boolean changes = false;
@@ -235,7 +241,7 @@ public class TaskForm extends Form implements ClickListener {
         }
         if (changes) {
             updateTask(mutableTask, lock);
-            LOG.debug("Task definition updated: " + taskName);
+            LOG.debug("Task definition updated: {}", uuid);
         } else {
             LOG.debug("Task already matches the specified settings, did not update it.");
         }

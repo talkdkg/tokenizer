@@ -16,36 +16,35 @@
 package org.tokenizer.executor.admin.cli;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.cli.CommandLine;
 import org.tokenizer.executor.model.api.TaskInfoBean;
-import org.tokenizer.executor.model.api.TaskInfoBeanComparator;
 
 public class ListTasksCli extends BaseAdminCli {
+
     @Override
     protected String getCmdName() {
         return "list-tasks";
     }
 
-    public static void main(String[] args) {
+    public static void main(final String[] args) {
         new ListTasksCli().start(args);
     }
 
     @Override
-    public int run(CommandLine cmd) throws Exception {
+    public int run(final CommandLine cmd) throws Exception {
         int result = super.run(cmd);
         if (result != 0)
             return result;
         List<TaskInfoBean> tasks = new ArrayList<TaskInfoBean>(model.getTasks());
-        Collections.sort(tasks, TaskInfoBeanComparator.INSTANCE);
+        // Collections.sort(tasks, TaskInfoBeanComparator.INSTANCE);
         System.out.println("Number of tasks: " + tasks.size());
         System.out.println();
         for (TaskInfoBean task : tasks) {
-            System.out.println(task.getTaskConfiguration().getName());
+            System.out.println(task.getUuid().toString());
             System.out.println("  + General state: "
                     + task.getTaskConfiguration().getGeneralState());
             System.out.println("  + Submitted: "

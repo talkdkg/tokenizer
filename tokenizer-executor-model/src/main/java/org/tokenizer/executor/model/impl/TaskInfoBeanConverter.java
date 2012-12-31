@@ -19,6 +19,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.UUID;
 
 import net.iharder.Base64;
 
@@ -30,10 +31,14 @@ import org.tokenizer.util.json.JsonFormat;
 import org.tokenizer.util.json.JsonUtil;
 
 public class TaskInfoBeanConverter {
+
+    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory
+            .getLogger(TaskInfoBeanConverter.class);
+
     private TaskInfoBeanConverter() {
     }
 
-    public static void fromJsonBytes(byte[] json, TaskInfoBean task) {
+    public static TaskInfoBean fromJsonBytes(final byte[] json) {
         ObjectNode node;
         try {
             node = (ObjectNode) JsonFormat
@@ -41,10 +46,10 @@ public class TaskInfoBeanConverter {
         } catch (IOException e) {
             throw new RuntimeException("Error parsing TaskDefinition JSON.", e);
         }
-        fromJson(node, task);
+        return fromJson(node);
     }
 
-    public static void fromJson(ObjectNode node, TaskInfoBean task) {
+    public static TaskInfoBean fromJson(final ObjectNode node) {
         byte[] configuration;
         try {
             String configurationAsString = JsonUtil.getString(node,
@@ -54,6 +59,18 @@ public class TaskInfoBeanConverter {
             throw new RuntimeException(e);
         }
         ObjectNode info = JsonUtil.getObject(node, "info");
+        String uuidString = JsonUtil.getString(info, "uuid", null);
+        UUID uuid = null;
+        if (uuidString != null) {
+            try {
+                uuid = UUID.fromString(uuidString);
+            } catch (IllegalArgumentException e) {
+            }
+        }
+        if (uuid == null) {
+            LOG.error("Task found with null UUID!");
+        }
+        TaskInfoBean task = new TaskInfoBean(uuid);
         task.setSubmitTime(JsonUtil.getLong(info, "submitTime"));
         ObjectNode countersNode = JsonUtil.getObject(info, "counters");
         Iterator<String> it = countersNode.getFieldNames();
@@ -67,9 +84,10 @@ public class TaskInfoBeanConverter {
         TaskConfiguration config = (TaskConfiguration) JavaSerializationUtils
                 .deserialize(configuration);
         task.setTaskConfiguration(config);
+        return task;
     }
 
-    public static byte[] toJsonBytes(TaskInfoBean task) {
+    public static byte[] toJsonBytes(final TaskInfoBean task) {
         try {
             return JsonFormat.serializeAsBytes(toJson(task));
         } catch (IOException e) {
@@ -78,7 +96,7 @@ public class TaskInfoBeanConverter {
         }
     }
 
-    public static ObjectNode toJson(TaskInfoBean task) {
+    public static ObjectNode toJson(final TaskInfoBean task) {
         ObjectNode node = JsonNodeFactory.instance.objectNode();
         String configurationAsString;
         configurationAsString = Base64.encodeBytes(JavaSerializationUtils
@@ -91,6 +109,7 @@ public class TaskInfoBeanConverter {
             countersNode.put(counter.getKey(), counter.getValue());
         }
         info.put("metricsUpdateTimestamp", task.getMetricsUpdateTimestamp());
+        info.put("uuid", task.getUuid().toString());
         return node;
     }
 }

@@ -27,6 +27,7 @@ import com.vaadin.ui.Form;
 import com.vaadin.ui.FormFieldFactory;
 
 public abstract class TaskConfigurationFormBase extends CustomField {
+
     private static final long serialVersionUID = 1L;
     private final Form taskConfigurationForm;
     private final TaskConfiguration taskConfiguration;
@@ -39,13 +40,13 @@ public abstract class TaskConfigurationFormBase extends CustomField {
         return taskConfigurationForm;
     }
 
-    public TaskConfigurationFormBase(TaskConfiguration taskConfiguration) {
+    public TaskConfigurationFormBase(final TaskConfiguration taskConfiguration) {
         super();
         this.taskConfiguration = taskConfiguration;
         taskConfigurationForm = new Form();
         taskConfigurationForm.setCaption("Task Configuration for "
                 + getType().getSimpleName());
-        taskConfigurationForm.setWriteThrough(false);
+        taskConfigurationForm.setWriteThrough(true);
         taskConfigurationForm.setFormFieldFactory(getFormFieldFactory());
         setCompositionRoot(taskConfigurationForm);
         BeanItem<TaskConfiguration> beanItem = new BeanItem<TaskConfiguration>(

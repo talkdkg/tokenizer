@@ -16,18 +16,20 @@
 package org.tokenizer.executor.admin.cli;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.tokenizer.executor.model.api.TaskInfoBean;
 
 public class AddTaskCli extends BaseAdminCli {
+
     @Override
     protected String getCmdName() {
         return "add-task";
     }
 
-    public static void main(String[] args) {
+    public static void main(final String[] args) {
         new AddTaskCli().start(args);
     }
 
@@ -45,11 +47,12 @@ public class AddTaskCli extends BaseAdminCli {
     }
 
     @Override
-    public int run(CommandLine cmd) throws Exception {
+    public int run(final CommandLine cmd) throws Exception {
         int result = super.run(cmd);
         if (result != 0)
             return result;
-        TaskInfoBean task = new TaskInfoBean();
+        UUID uuid = UUID.randomUUID();
+        TaskInfoBean task = new TaskInfoBean(uuid);
         task.setTaskConfiguration(taskConfiguration);
         if (generalState != null) {
             task.getTaskConfiguration().setGeneralState(generalState);

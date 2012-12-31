@@ -24,10 +24,14 @@ import java.io.Serializable;
 
 public class JavaSerializationUtils {
 
+    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory
+            .getLogger(JavaSerializationUtils.class);
+
     private JavaSerializationUtils() {
     }
 
-    public static byte[] serialize(Serializable object) {
+    public static byte[] serialize(final Serializable object) {
+        LOG.debug("Serializing object: {}", object.toString());
         ByteArrayOutputStream out = new ByteArrayOutputStream(128);
         ObjectOutputStream objstream;
         try {
@@ -40,13 +44,14 @@ public class JavaSerializationUtils {
         }
     }
 
-    public static Object deserialize(byte[] bytes) {
+    public static Object deserialize(final byte[] bytes) {
         ByteArrayInputStream in = new ByteArrayInputStream(bytes);
         ObjectInputStream objstream;
         try {
             objstream = new ObjectInputStream(in);
             Object object = objstream.readObject();
             objstream.close();
+            LOG.debug("Deserialized: {}", object.toString());
             return object;
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -54,5 +59,4 @@ public class JavaSerializationUtils {
             throw new RuntimeException(e);
         }
     }
-
 }

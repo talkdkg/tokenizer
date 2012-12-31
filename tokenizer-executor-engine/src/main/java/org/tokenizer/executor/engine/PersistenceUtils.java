@@ -74,15 +74,11 @@ public class PersistenceUtils {
             return null;
         }
         parse(fetchedResult, repository, hostConstraint);
-        WebpageRecord webpageRecord = new WebpageRecord(urlRecord.getHost(),
-                fetchedResult.getContent());
         String charset = CharsetUtils.clean(HttpUtils
                 .getCharsetFromContentType(fetchedResult.getContentType()));
-        webpageRecord.setCharset(charset);
-        webpageRecord.setTimestamp(urlRecord.getTimestamp());
-        webpageRecord.setUrl(urlRecord.getUrl());
-        // webpageRecord.setTimestamp(new Date());
-        LOG.trace("refreshing webpageRecord: {}", webpageRecord);
+        WebpageRecord webpageRecord = new WebpageRecord(urlRecord.getHost(),
+                urlRecord.getUrl(), urlRecord.getTimestamp(), charset,
+                fetchedResult.getContent());
         repository.insertIfNotExists(webpageRecord);
         urlRecord.setWebpageDigest(webpageRecord.getDigest());
         repository.update(urlRecord);

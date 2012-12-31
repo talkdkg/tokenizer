@@ -74,9 +74,10 @@ public class ExecutorWorker {
     /** will be shared between tasks; multithreaded access */
     private final HostLocker hostLocker;
 
-    public ExecutorWorker(WritableExecutorModel executorModel, ZooKeeperItf zk,
-            CrawlerRepository repository) throws IOException,
-            TaskNotFoundException, InterruptedException, KeeperException {
+    public ExecutorWorker(final WritableExecutorModel executorModel,
+            final ZooKeeperItf zk, final CrawlerRepository repository)
+            throws IOException, TaskNotFoundException, InterruptedException,
+            KeeperException {
         this.executorModel = executorModel;
         this.zk = zk;
         this.repository = repository;
@@ -94,7 +95,7 @@ public class ExecutorWorker {
             try {
                 eventQueue.put(new ExecutorModelEvent(
                         ExecutorModelEventType.TASK_ADDED, taskDefinition
-                                .getTaskConfiguration().getName()));
+                                .getUuid().toString()));
             } catch (InterruptedException e) {
                 eventWorkerThread.interrupt();
                 Thread.currentThread().interrupt();
@@ -121,7 +122,7 @@ public class ExecutorWorker {
     private class MyListener implements ExecutorModelListener {
 
         @Override
-        public void process(ExecutorModelEvent event) {
+        public void process(final ExecutorModelEvent event) {
             LOG.debug("Event: {}", event.getType());
             try {
                 eventQueue.put(event);
@@ -207,37 +208,31 @@ public class ExecutorWorker {
         }
     }
 
-    private AbstractTask createTask(TaskInfoBean taskInfo) {
+    private AbstractTask createTask(final TaskInfoBean taskInfo) {
         AbstractTask task = null;
         TaskConfiguration taskConfiguration = taskInfo.getTaskConfiguration();
         LOG.debug(taskConfiguration.toString());
         if (taskConfiguration instanceof SitemapsFetcherTaskConfiguration) {
-            task = new SitemapsFetcherTask(taskInfo.getTaskConfiguration()
-                    .getName(), zk, taskConfiguration, repository,
-                    executorModel, hostLocker);
+            task = new SitemapsFetcherTask(taskInfo.getUuid().toString(), zk,
+                    taskConfiguration, repository, executorModel, hostLocker);
         } else if (taskConfiguration instanceof HtmlSplitterTaskConfiguration) {
-            task = new HtmlSplitterTask(taskInfo.getTaskConfiguration()
-                    .getName(), zk, taskConfiguration, repository,
-                    executorModel, hostLocker);
+            task = new HtmlSplitterTask(taskInfo.getUuid().toString(), zk,
+                    taskConfiguration, repository, executorModel, hostLocker);
         } else if (taskConfiguration instanceof MessageParserTaskConfiguration) {
-            task = new MessageParserTask(taskInfo.getTaskConfiguration()
-                    .getName(), zk, taskConfiguration, repository,
-                    executorModel, hostLocker);
+            task = new MessageParserTask(taskInfo.getUuid().toString(), zk,
+                    taskConfiguration, repository, executorModel, hostLocker);
         } else if (taskConfiguration instanceof TweetCollectorTaskConfiguration) {
-            task = new TweetCollectorTask(taskInfo.getTaskConfiguration()
-                    .getName(), zk, taskConfiguration, repository,
-                    executorModel, hostLocker);
+            task = new TweetCollectorTask(taskInfo.getUuid().toString(), zk,
+                    taskConfiguration, repository, executorModel, hostLocker);
         } else if (taskConfiguration instanceof ClassicRobotTaskConfiguration) {
-            task = new ClassicRobotTask(taskInfo.getTaskConfiguration()
-                    .getName(), zk, taskConfiguration, repository,
-                    executorModel, hostLocker);
+            task = new ClassicRobotTask(taskInfo.getUuid().toString(), zk,
+                    taskConfiguration, repository, executorModel, hostLocker);
         } else if (taskConfiguration instanceof RssFetcherTaskConfiguration) {
-            task = new RssFetcherTask(
-                    taskInfo.getTaskConfiguration().getName(), zk,
+            task = new RssFetcherTask(taskInfo.getUuid().toString(), zk,
                     taskConfiguration, repository, executorModel, hostLocker);
         } else if (taskConfiguration instanceof SimpleMultithreadedFetcherTaskConfiguration) {
-            task = new SimpleMultithreadedFetcher(taskInfo
-                    .getTaskConfiguration().getName(), zk, taskConfiguration,
+            task = new SimpleMultithreadedFetcher(
+                    taskInfo.getUuid().toString(), zk, taskConfiguration,
                     repository, executorModel, hostLocker);
         }
         return task;

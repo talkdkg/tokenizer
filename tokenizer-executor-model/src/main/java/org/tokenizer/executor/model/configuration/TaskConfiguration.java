@@ -29,7 +29,11 @@ public abstract class TaskConfiguration implements Serializable {
     private String name;
     private TaskGeneralState generalState = TaskGeneralState.START_REQUESTED;
 
-    public String getName() {
+    // TODO: temporary commented out due to UUID migration
+    // public String getName() {
+    // return name;
+    // }
+    public String getNameTemp() {
         return name;
     }
 
@@ -48,7 +52,7 @@ public abstract class TaskConfiguration implements Serializable {
     public abstract String getImplementationName();
 
     @Override
-    public final int hashCode() {
+    public int hashCode() {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((name == null) ? 0 : name.hashCode());
@@ -56,7 +60,7 @@ public abstract class TaskConfiguration implements Serializable {
     }
 
     @Override
-    public final boolean equals(final Object obj) {
+    public boolean equals(final Object obj) {
         if (this == obj)
             return true;
         if (obj == null)

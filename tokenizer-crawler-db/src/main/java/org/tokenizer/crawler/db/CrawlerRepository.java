@@ -46,8 +46,9 @@ public interface CrawlerRepository {
     void updateParseAttemptCounter(final XmlRecord xmlRecord)
             throws ConnectionException;
 
-    XmlRecords listXmlRecords(final String host, final int parseAttemptCounter,
-            final int defaultPageSize) throws ConnectionException;
+    List<XmlRecord> listXmlRecords(final String host,
+            final int parseAttemptCounter, final int maxResults)
+            throws ConnectionException;
 
     void insertIfNotExists(MessageRecord messageRecord)
             throws ConnectionException;

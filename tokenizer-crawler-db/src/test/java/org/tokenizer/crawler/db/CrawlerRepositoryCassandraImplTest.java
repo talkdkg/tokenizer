@@ -27,6 +27,28 @@ public class CrawlerRepositoryCassandraImplTest {
     }
 
     // @Test
+    public void listWebpageRecordsTest() throws Exception {
+        try {
+            List<WebpageRecord> webpageRecords = repository.listWebpageRecords(
+                    "amazon.com", 0, 10);
+            for (WebpageRecord webpageRecord : webpageRecords) {
+                System.out.println(webpageRecord);
+            }
+        } catch (ConnectionException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // @Test
+    public void listXmlRecordsTest() throws Exception {
+        List<XmlRecord> xmlRecords = repository.listXmlRecords(
+                "www.amazon.com", 0, 100);
+        for (XmlRecord xmlRecord : xmlRecords) {
+            System.out.println(xmlRecord);
+        }
+    }
+
+    // @Test
     public void genericTest() throws Exception {
         try {
             List<UrlRecord> urlRecords = repository.listUrlRecords(

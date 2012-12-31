@@ -53,7 +53,7 @@ public class TaskContainer extends IndexedContainer {
             for (TaskInfoBean task : tasks) {
                 Item item = addItem(task);
                 item.getItemProperty("name").setValue(
-                        task.getTaskConfiguration().getName());
+                        task.getTaskConfiguration().getNameTemp());
                 item.getItemProperty("type").setValue(
                         task.getTaskConfiguration().getImplementationName());
                 item.getItemProperty(TASK_SUBMISSON_DATE).setValue(
@@ -96,7 +96,7 @@ public class TaskContainer extends IndexedContainer {
                 if (event.getType() == ExecutorModelEventType.TASK_ADDED) {
                     Item item = addItem(newTask);
                     item.getItemProperty("name").setValue(
-                            newTask.getTaskConfiguration().getName());
+                            newTask.getTaskConfiguration().getNameTemp());
                     item.getItemProperty("type").setValue(
                             newTask.getTaskConfiguration().getClass()
                                     .getSimpleName());
@@ -108,7 +108,7 @@ public class TaskContainer extends IndexedContainer {
                             newTask.getZkDataVersion());
                 } else if (event.getType() == ExecutorModelEventType.TASK_UPDATED) {
                     getContainerProperty(newTask, "name").setValue(
-                            newTask.getTaskConfiguration().getName());
+                            newTask.getTaskConfiguration().getNameTemp());
                     getContainerProperty(newTask, "type").setValue(
                             newTask.getClass().getSimpleName());
                     getContainerProperty(newTask, "General State").setValue(

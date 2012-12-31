@@ -18,6 +18,7 @@ package org.tokenizer.executor.model.api;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import org.tokenizer.executor.model.configuration.TaskConfiguration;
 
@@ -29,6 +30,15 @@ public class TaskInfoBean {
     private long submitTime = new Date().getTime();
     private Map<String, Long> counters = new HashMap<String, Long>();
     private long metricsUpdateTimestamp;
+    private final UUID uuid;
+
+    public TaskInfoBean(final UUID uuid) {
+        this.uuid = uuid;
+    }
+
+    public UUID getUuid() {
+        return uuid;
+    }
 
     public long getMetricsUpdateTimestamp() {
         return metricsUpdateTimestamp;
@@ -90,16 +100,9 @@ public class TaskInfoBean {
 
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime
-                * result
-                + ((taskConfiguration == null) ? 0 : taskConfiguration
-                        .hashCode());
-        return result;
+        return uuid.hashCode();
     }
 
-    // this should compare by task name and implementation class only:
     @Override
     public boolean equals(final Object obj) {
         if (this == obj)
@@ -109,11 +112,20 @@ public class TaskInfoBean {
         if (getClass() != obj.getClass())
             return false;
         TaskInfoBean other = (TaskInfoBean) obj;
-        if (taskConfiguration == null) {
-            if (other.taskConfiguration != null)
+        if (uuid == null) {
+            if (other.uuid != null)
                 return false;
-        } else if (!taskConfiguration.equals(other.taskConfiguration))
+        } else if (!uuid.equals(other.uuid))
             return false;
         return true;
+    }
+
+    @Override
+    public String toString() {
+        return "TaskInfoBean [taskConfiguration=" + taskConfiguration
+                + ", zkDataVersion=" + zkDataVersion + ", immutable="
+                + immutable + ", submitTime=" + submitTime + ", counters="
+                + counters + ", metricsUpdateTimestamp="
+                + metricsUpdateTimestamp + ", uuid=" + uuid + "]";
     }
 }
