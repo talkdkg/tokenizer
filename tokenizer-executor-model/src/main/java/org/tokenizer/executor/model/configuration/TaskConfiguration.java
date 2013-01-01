@@ -29,11 +29,7 @@ public abstract class TaskConfiguration implements Serializable {
     private String name;
     private TaskGeneralState generalState = TaskGeneralState.START_REQUESTED;
 
-    // TODO: temporary commented out due to UUID migration
-    // public String getName() {
-    // return name;
-    // }
-    public String getNameTemp() {
+    public String getName() {
         return name;
     }
 

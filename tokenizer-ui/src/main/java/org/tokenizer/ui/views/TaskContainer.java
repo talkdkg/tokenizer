@@ -56,7 +56,7 @@ public class TaskContainer extends IndexedContainer {
                 Item item = addItem(task.getUuid());
                 item.getItemProperty("uuid").setValue(task.getUuid());
                 item.getItemProperty("name").setValue(
-                        task.getTaskConfiguration().getNameTemp());
+                        task.getTaskConfiguration().getName());
                 item.getItemProperty("type").setValue(
                         task.getTaskConfiguration().getImplementationName());
                 item.getItemProperty(TASK_SUBMISSON_DATE).setValue(
@@ -99,7 +99,7 @@ public class TaskContainer extends IndexedContainer {
                     Item item = addItem(uuid);
                     item.getItemProperty("uuid").setValue(uuid);
                     item.getItemProperty("name").setValue(
-                            newTask.getTaskConfiguration().getNameTemp());
+                            newTask.getTaskConfiguration().getName());
                     item.getItemProperty("type").setValue(
                             newTask.getTaskConfiguration()
                                     .getImplementationName());
@@ -111,7 +111,7 @@ public class TaskContainer extends IndexedContainer {
                             newTask.getZkDataVersion());
                 } else if (event.getType() == ExecutorModelEventType.TASK_UPDATED) {
                     getContainerProperty(uuid, "name").setValue(
-                            newTask.getTaskConfiguration().getNameTemp());
+                            newTask.getTaskConfiguration().getName());
                     getContainerProperty(uuid, "type").setValue(
                             newTask.getTaskConfiguration()
                                     .getImplementationName());
