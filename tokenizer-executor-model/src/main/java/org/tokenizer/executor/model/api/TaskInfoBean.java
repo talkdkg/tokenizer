@@ -24,6 +24,8 @@ import org.tokenizer.executor.model.configuration.TaskConfiguration;
 
 public class TaskInfoBean {
 
+    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory
+            .getLogger(TaskInfoBean.class);
     private TaskConfiguration taskConfiguration;
     private int zkDataVersion = -1;
     private boolean immutable;
@@ -105,6 +107,9 @@ public class TaskInfoBean {
 
     @Override
     public boolean equals(final Object obj) {
+        LOG.error(
+                "TaskInfoBean.equals() called! Please use TaskConfiguration.equals() for configuration updates.",
+                new Exception());
         if (this == obj)
             return true;
         if (obj == null)

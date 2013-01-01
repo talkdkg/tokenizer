@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 import org.apache.zookeeper.KeeperException;
 import org.slf4j.Logger;
@@ -58,10 +59,13 @@ public class SimpleMultithreadedFetcher extends AbstractTask {
     private final static long HOSTS_REFRESH_DELAY = 60 * 60 * 1000L;
     private SimpleMultithreadedFetcherTaskConfiguration taskConfiguration;
 
-    public SimpleMultithreadedFetcher(String taskName, ZooKeeperItf zk,
-            TaskConfiguration taskConfiguration, CrawlerRepository repository,
-            WritableExecutorModel fetcherModel, HostLocker hostLocker) {
-        super(taskName, zk, repository, fetcherModel, hostLocker);
+    public SimpleMultithreadedFetcher(final UUID uuid,
+            final String friendlyName, final ZooKeeperItf zk,
+            final TaskConfiguration taskConfiguration,
+            final CrawlerRepository repository,
+            final WritableExecutorModel fetcherModel,
+            final HostLocker hostLocker) {
+        super(uuid, friendlyName, zk, repository, fetcherModel, hostLocker);
         this.taskConfiguration = (SimpleMultithreadedFetcherTaskConfiguration) taskConfiguration;
         this.simpleHttpClient = new SimpleHttpFetcher(FetcherUtils.USER_AGENT);
         this.baseFetcher = RobotUtils.createFetcher(FetcherUtils.USER_AGENT,
@@ -209,7 +213,7 @@ public class SimpleMultithreadedFetcher extends AbstractTask {
     }
 
     @Override
-    public void setTaskConfiguration(TaskConfiguration taskConfiguration) {
+    public void setTaskConfiguration(final TaskConfiguration taskConfiguration) {
         this.taskConfiguration = (SimpleMultithreadedFetcherTaskConfiguration) taskConfiguration;
     }
 }

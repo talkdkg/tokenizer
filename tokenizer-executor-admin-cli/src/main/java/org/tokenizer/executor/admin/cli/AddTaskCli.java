@@ -58,7 +58,7 @@ public class AddTaskCli extends BaseAdminCli {
             task.getTaskConfiguration().setGeneralState(generalState);
         }
         model.addTask(task);
-        System.out.println("Task created: " + taskName);
+        System.out.println("Task created: " + uuid);
         return 0;
     }
 }

@@ -23,12 +23,13 @@ import org.tokenizer.executor.model.api.TaskGeneralState;
 import org.tokenizer.executor.model.api.TaskInfoBean;
 
 public class UpdateTaskCli extends BaseAdminCli {
+
     @Override
     protected String getCmdName() {
         return "update-task";
     }
 
-    public static void main(String[] args) {
+    public static void main(final String[] args) {
         new UpdateTaskCli().start(args);
     }
 
@@ -45,17 +46,17 @@ public class UpdateTaskCli extends BaseAdminCli {
     }
 
     @Override
-    public int run(CommandLine cmd) throws Exception {
+    public int run(final CommandLine cmd) throws Exception {
         int result = super.run(cmd);
         if (result != 0)
             return result;
-        if (!model.hasTask(taskName)) {
-            System.out.println("Task does not exist: " + taskName);
+        if (!model.hasTask(uuid)) {
+            System.out.println("Task does not exist: " + uuid);
             return 1;
         }
-        String lock = model.lockTask(taskName);
+        String lock = model.lockTask(uuid);
         try {
-            TaskInfoBean task = model.getMutableTask(taskName);
+            TaskInfoBean task = model.getMutableTask(uuid);
             boolean changes = false;
             if (taskConfiguration != null
                     && !taskConfiguration.equals(task.getTaskConfiguration())) {
@@ -70,7 +71,7 @@ public class UpdateTaskCli extends BaseAdminCli {
             }
             if (changes) {
                 model.updateTask(task, lock);
-                System.out.println("Task definition updated: " + taskName);
+                System.out.println("Task definition updated: " + uuid);
             } else {
                 System.out
                         .println("Task already matches the specified settings, did not update it.");

@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
+import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,11 +52,11 @@ public class ClassicRobotTask extends AbstractTask {
     private ClassicRobotTaskConfiguration taskConfiguration;
     private static final int DEFAULT_MAX_THREADS = 1024;
 
-    public ClassicRobotTask(final String taskName, final ZooKeeperItf zk,
-            final TaskConfiguration taskConfiguration,
+    public ClassicRobotTask(final UUID uuid, final String friendlyName,
+            final ZooKeeperItf zk, final TaskConfiguration taskConfiguration,
             final CrawlerRepository crawlerRepository,
             final WritableExecutorModel model, final HostLocker hostLocker) {
-        super(taskName, zk, crawlerRepository, model, hostLocker);
+        super(uuid, friendlyName, zk, crawlerRepository, model, hostLocker);
         this.taskConfiguration = (ClassicRobotTaskConfiguration) taskConfiguration;
         this.httpClient = new SimpleHttpFetcher(DEFAULT_MAX_THREADS,
                 FetcherUtils.USER_AGENT);

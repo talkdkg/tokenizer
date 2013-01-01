@@ -21,12 +21,12 @@ import java.net.URL;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tokenizer.core.http.FetcherUtils;
 import org.tokenizer.crawler.db.CrawlerRepository;
-import org.tokenizer.executor.engine.RssFetcherTask.FetcherEventListenerImpl;
 import org.tokenizer.executor.model.api.WritableExecutorModel;
 import org.tokenizer.executor.model.configuration.RssFetcherTaskConfiguration;
 import org.tokenizer.executor.model.configuration.TaskConfiguration;
@@ -56,10 +56,12 @@ public class RssFetcherTask extends AbstractTask {
     static FeedFetcher feedFetcher = new HttpURLFeedFetcher(feedInfoCache);
     private RssFetcherTaskConfiguration taskConfiguration;
 
-    public RssFetcherTask(String taskName, ZooKeeperItf zk,
-            TaskConfiguration taskConfiguration, CrawlerRepository repository,
-            WritableExecutorModel fetcherModel, HostLocker hostLocker) {
-        super(taskName, zk, repository, fetcherModel, hostLocker);
+    public RssFetcherTask(final UUID uuid, final String friendlyName,
+            final ZooKeeperItf zk, final TaskConfiguration taskConfiguration,
+            final CrawlerRepository repository,
+            final WritableExecutorModel fetcherModel,
+            final HostLocker hostLocker) {
+        super(uuid, friendlyName, zk, repository, fetcherModel, hostLocker);
         this.taskConfiguration = (RssFetcherTaskConfiguration) taskConfiguration;
         RssFetcherTask.feedFetcher.setUserAgent(FetcherUtils.USER_AGENT
                 .getUserAgentString());
@@ -72,7 +74,8 @@ public class RssFetcherTask extends AbstractTask {
         /**
          * @see com.sun.syndication.fetcher.FetcherListener#fetcherEvent(com.sun.syndication.fetcher.FetcherEvent)
          */
-        public void fetcherEvent(FetcherEvent event) {
+        @Override
+        public void fetcherEvent(final FetcherEvent event) {
             String eventType = event.getEventType();
             if (FetcherEvent.EVENT_TYPE_FEED_POLLED.equals(eventType)) {
                 LOG.debug("EVENT: Feed Polled. URL = {}", event.getUrlString());
@@ -119,12 +122,13 @@ public class RssFetcherTask extends AbstractTask {
 
         private final int capacity;
 
-        public Cache(int capacity) {
+        public Cache(final int capacity) {
             super(capacity + 1, 1.1f, true);
             this.capacity = capacity;
         }
 
-        protected boolean removeEldestEntry(Map.Entry<K, V> eldest) {
+        @Override
+        protected boolean removeEldestEntry(final Map.Entry<K, V> eldest) {
             return size() > capacity;
         }
     }
@@ -132,9 +136,9 @@ public class RssFetcherTask extends AbstractTask {
     private static Cache<SyndEntry, String> cache = new Cache<SyndEntry, String>(
             16 * 1024);
 
-    private void process(SyndFeed feed) throws InterruptedException {
+    private void process(final SyndFeed feed) throws InterruptedException {
         @SuppressWarnings("unchecked")
-        List<SyndEntry> entries = (List<SyndEntry>) feed.getEntries();
+        List<SyndEntry> entries = feed.getEntries();
         for (SyndEntry entry : entries) {
             String test = cache.get(entry);
             if (test == null) {
@@ -154,7 +158,7 @@ public class RssFetcherTask extends AbstractTask {
     }
 
     @Override
-    public void setTaskConfiguration(TaskConfiguration taskConfiguration) {
+    public void setTaskConfiguration(final TaskConfiguration taskConfiguration) {
         this.taskConfiguration = (RssFetcherTaskConfiguration) taskConfiguration;
     }
 }

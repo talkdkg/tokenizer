@@ -91,12 +91,12 @@ public class ExecutorMaster {
             // that these will receive work.
             eventWorker.start();
             // jobStatusWatcher.start();
-            Collection<TaskInfoBean> taskDefinitions = model.getTasks(listener);
+            Collection<TaskInfoBean> taskInfoBeans = model.getTasks(listener);
             // push out fake events
-            for (TaskInfoBean taskDefinition : taskDefinitions) {
+            for (TaskInfoBean taskInfoBean : taskInfoBeans) {
                 eventWorker.putEvent(new ExecutorModelEvent(
-                        ExecutorModelEventType.TASK_UPDATED, taskDefinition
-                                .getUuid().toString()));
+                        ExecutorModelEventType.TASK_UPDATED, taskInfoBean
+                                .getUuid()));
             }
             LOG.info("Startup as Master successful.");
         }
@@ -177,16 +177,14 @@ public class ExecutorMaster {
                             || event.getType() == ExecutorModelEventType.TASK_UPDATED) {
                         TaskInfoBean taskDefinition = null;
                         try {
-                            taskDefinition = model.getTask(event
-                                    .getTaskDefinitionName());
+                            taskDefinition = model.getTask(event.getUuid());
                         } catch (TaskNotFoundException e) {
                             // ignore
                         }
                         if (taskDefinition != null) {
                             if (taskDefinition.getTaskConfiguration()
                                     .getGeneralState() == TaskGeneralState.DELETE_REQUESTED) {
-                                model.deleteTask(taskDefinition.getUuid()
-                                        .toString());
+                                model.deleteTask(taskDefinition.getUuid());
                                 continue;
                             }
                         }

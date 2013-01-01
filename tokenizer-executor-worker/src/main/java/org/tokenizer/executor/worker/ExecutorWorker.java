@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -70,7 +71,7 @@ public class ExecutorWorker {
     private final ExecutorModelListener listener = new MyListener();
     private final BlockingQueue<ExecutorModelEvent> eventQueue = new LinkedBlockingQueue<ExecutorModelEvent>();
     private Thread eventWorkerThread;
-    private final Map<String, AbstractTask> tasks = new HashMap<String, AbstractTask>();
+    private final Map<UUID, AbstractTask> tasks = new HashMap<UUID, AbstractTask>();
     /** will be shared between tasks; multithreaded access */
     private final HostLocker hostLocker;
 
@@ -95,7 +96,7 @@ public class ExecutorWorker {
             try {
                 eventQueue.put(new ExecutorModelEvent(
                         ExecutorModelEventType.TASK_ADDED, taskDefinition
-                                .getUuid().toString()));
+                                .getUuid()));
             } catch (InterruptedException e) {
                 eventWorkerThread.interrupt();
                 Thread.currentThread().interrupt();
@@ -150,20 +151,19 @@ public class ExecutorWorker {
                     LOG.debug("Event removed from queue: {}", event);
                     if (event.getType() == ExecutorModelEventType.TASK_ADDED) {
                         TaskInfoBean taskInfo = executorModel.getTask(event
-                                .getTaskDefinitionName());
+                                .getUuid());
                         AbstractTask task = createTask(taskInfo);
                         if (taskInfo.getTaskConfiguration().getGeneralState() == TaskGeneralState.START_REQUESTED) {
                             task.start();
                         }
-                        tasks.put(event.getTaskDefinitionName(), task);
+                        tasks.put(event.getUuid(), task);
                         continue;
                     } else if (event.getType() == ExecutorModelEventType.TASK_UPDATED) {
                         TaskInfoBean taskInfo = executorModel.getTask(event
-                                .getTaskDefinitionName());
+                                .getUuid());
                         TaskGeneralState taskGeneralState = taskInfo
                                 .getTaskConfiguration().getGeneralState();
-                        AbstractTask task = tasks.get(event
-                                .getTaskDefinitionName());
+                        AbstractTask task = tasks.get(event.getUuid());
                         boolean configurationChanged = !task
                                 .getTaskConfiguration().equals(
                                         taskInfo.getTaskConfiguration());
@@ -188,8 +188,8 @@ public class ExecutorWorker {
                         }
                     } else if (event.getType() == ExecutorModelEventType.TASK_REMOVED) {
                         LOG.debug("Task definition removed...");
-                        tasks.get(event.getTaskDefinitionName()).stop();
-                        tasks.remove(event.getTaskDefinitionName());
+                        tasks.get(event.getUuid()).stop();
+                        tasks.remove(event.getUuid());
                     }
                 } catch (InterruptedException e) {
                     LOG.warn("exiting...");
@@ -213,27 +213,33 @@ public class ExecutorWorker {
         TaskConfiguration taskConfiguration = taskInfo.getTaskConfiguration();
         LOG.debug(taskConfiguration.toString());
         if (taskConfiguration instanceof SitemapsFetcherTaskConfiguration) {
-            task = new SitemapsFetcherTask(taskInfo.getUuid().toString(), zk,
+            task = new SitemapsFetcherTask(taskInfo.getUuid(), taskInfo
+                    .getTaskConfiguration().getNameTemp(), zk,
                     taskConfiguration, repository, executorModel, hostLocker);
         } else if (taskConfiguration instanceof HtmlSplitterTaskConfiguration) {
-            task = new HtmlSplitterTask(taskInfo.getUuid().toString(), zk,
+            task = new HtmlSplitterTask(taskInfo.getUuid(), taskInfo
+                    .getTaskConfiguration().getNameTemp(), zk,
                     taskConfiguration, repository, executorModel, hostLocker);
         } else if (taskConfiguration instanceof MessageParserTaskConfiguration) {
-            task = new MessageParserTask(taskInfo.getUuid().toString(), zk,
+            task = new MessageParserTask(taskInfo.getUuid(), taskInfo
+                    .getTaskConfiguration().getNameTemp(), zk,
                     taskConfiguration, repository, executorModel, hostLocker);
         } else if (taskConfiguration instanceof TweetCollectorTaskConfiguration) {
-            task = new TweetCollectorTask(taskInfo.getUuid().toString(), zk,
+            task = new TweetCollectorTask(taskInfo.getUuid(), taskInfo
+                    .getTaskConfiguration().getNameTemp(), zk,
                     taskConfiguration, repository, executorModel, hostLocker);
         } else if (taskConfiguration instanceof ClassicRobotTaskConfiguration) {
-            task = new ClassicRobotTask(taskInfo.getUuid().toString(), zk,
+            task = new ClassicRobotTask(taskInfo.getUuid(), taskInfo
+                    .getTaskConfiguration().getNameTemp(), zk,
                     taskConfiguration, repository, executorModel, hostLocker);
         } else if (taskConfiguration instanceof RssFetcherTaskConfiguration) {
-            task = new RssFetcherTask(taskInfo.getUuid().toString(), zk,
+            task = new RssFetcherTask(taskInfo.getUuid(), taskInfo
+                    .getTaskConfiguration().getNameTemp(), zk,
                     taskConfiguration, repository, executorModel, hostLocker);
         } else if (taskConfiguration instanceof SimpleMultithreadedFetcherTaskConfiguration) {
-            task = new SimpleMultithreadedFetcher(
-                    taskInfo.getUuid().toString(), zk, taskConfiguration,
-                    repository, executorModel, hostLocker);
+            task = new SimpleMultithreadedFetcher(taskInfo.getUuid(), taskInfo
+                    .getTaskConfiguration().getNameTemp(), zk,
+                    taskConfiguration, repository, executorModel, hostLocker);
         }
         return task;
     }

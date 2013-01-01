@@ -15,11 +15,12 @@
  */
 package org.tokenizer.executor.model.api;
 
+import java.util.UUID;
+
 @SuppressWarnings("serial")
 public class TaskNotFoundException extends Exception {
 
-	public TaskNotFoundException(String name) {
-		super("TaskDefinition does not exist: " + name);
-	}
-
+    public TaskNotFoundException(final UUID uuid) {
+        super("TaskDefinition does not exist: " + uuid);
+    }
 }

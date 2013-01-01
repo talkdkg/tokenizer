@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import javax.xml.xpath.XPathExpressionException;
 
@@ -35,11 +36,11 @@ public class HtmlSplitterTask extends AbstractTask {
     // single thread only!
     private HXPathExpression splitterXPathExpression = null;
 
-    public HtmlSplitterTask(final String taskName, final ZooKeeperItf zk,
-            final TaskConfiguration taskConfiguration,
+    public HtmlSplitterTask(final UUID uuid, final String friendlyName,
+            final ZooKeeperItf zk, final TaskConfiguration taskConfiguration,
             final CrawlerRepository crawlerRepository,
             final WritableExecutorModel model, final HostLocker hostLocker) {
-        super(taskName, zk, crawlerRepository, model, hostLocker);
+        super(uuid, friendlyName, zk, crawlerRepository, model, hostLocker);
         this.taskConfiguration = (HtmlSplitterTaskConfiguration) taskConfiguration;
         try {
             splitterXPathExpression = new HXPathExpression(LocalXPathFactory

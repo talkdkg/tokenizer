@@ -20,6 +20,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.util.List;
+import java.util.UUID;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
@@ -42,7 +43,7 @@ public abstract class BaseAdminCli extends BaseZkCliTool {
     protected Option generalStateOption;
     protected Option buildStateOption;
     protected Option outputFileOption;
-    protected String taskName;
+    protected UUID uuid;
     protected TaskConfiguration taskConfiguration;
     protected String outputFileName;
     protected TaskGeneralState generalState;
@@ -91,7 +92,7 @@ public abstract class BaseAdminCli extends BaseZkCliTool {
         if (result != 0)
             return result;
         if (cmd.hasOption(nameOption.getOpt())) {
-            taskName = cmd.getOptionValue(nameOption.getOpt());
+            uuid = UUID.fromString(cmd.getOptionValue(nameOption.getOpt()));
         }
         if (cmd.hasOption(configurationOption.getOpt())) {
             File configurationFile = new File(

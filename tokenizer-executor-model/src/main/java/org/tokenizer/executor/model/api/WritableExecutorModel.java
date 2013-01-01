@@ -15,6 +15,8 @@
  */
 package org.tokenizer.executor.model.api;
 
+import java.util.UUID;
+
 import org.apache.zookeeper.KeeperException;
 import org.tokenizer.util.zookeeper.ZkLockException;
 
@@ -27,11 +29,11 @@ public interface WritableExecutorModel extends ExecutorModel {
      * Loads a task and returns it in a mutable way.
      * 
      * <p>
-     * This differs from {@link #getTask(String)} in that the returned
+     * This differs from {@link #getTask(UUID)} in that the returned
      * TaskInfoBean is mutable (updateable) and it is also freshly loaded from
      * storage.
      */
-    TaskInfoBean getMutableTask(String name) throws InterruptedException,
+    TaskInfoBean getMutableTask(UUID uuid) throws InterruptedException,
             KeeperException, TaskNotFoundException;
 
     /**
@@ -58,7 +60,7 @@ public interface WritableExecutorModel extends ExecutorModel {
             TaskNotFoundException, TaskConcurrentModificationException,
             TaskValidityException;
 
-    void deleteTask(final String taskName) throws TaskModelException;
+    void deleteTask(final UUID uuid) throws TaskModelException;
 
     /**
      * Takes a lock on this Task.
@@ -67,9 +69,8 @@ public interface WritableExecutorModel extends ExecutorModel {
      * Taking a lock can avoid concurrent modification exceptions when updating
      * the Task.
      */
-    String lockTask(String taskName) throws ZkLockException,
-            TaskNotFoundException, InterruptedException, KeeperException,
-            TaskModelException;
+    String lockTask(UUID uuid) throws ZkLockException, TaskNotFoundException,
+            InterruptedException, KeeperException, TaskModelException;
 
     void unlockTask(String lock) throws ZkLockException;
 
@@ -79,7 +80,7 @@ public interface WritableExecutorModel extends ExecutorModel {
      * Internal lock method; <b>this method is only intended for internal
      * Executor components</b>.
      */
-    String lockTaskInternal(String taskName, boolean checkDeleted)
+    String lockTaskInternal(UUID uuid, boolean checkDeleted)
             throws ZkLockException, TaskNotFoundException,
             InterruptedException, KeeperException, TaskModelException;
 }

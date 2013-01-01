@@ -22,33 +22,29 @@ import org.slf4j.LoggerFactory;
 import org.tokenizer.ui.MyVaadinApplication;
 
 import com.vaadin.data.Container;
-import com.vaadin.data.Property;
 import com.vaadin.ui.Table;
 
 public class TaskList extends Table implements
         Container.PropertySetChangeListener {
+
     private static final long serialVersionUID = 1L;
     private static final Logger LOG = LoggerFactory.getLogger(TaskList.class);
+    private TaskContainer taskContainer = null;
 
-    public TaskList(MyVaadinApplication app) {
+    public TaskList(final MyVaadinApplication app) {
         setSizeFull();
-        setContainerDataSource(app.getTaskContainer());
-        // setColumnHeaderMode(COLUMN_HEADER_MODE_EXPLICIT);
-        // setVisibleColumns(PersonContainer.NATURAL_COL_ORDER);
-        // setColumnHeaders(PersonContainer.COL_HEADERS_ENGLISH);
-        // setColumnCollapsingAllowed(true);
-        // setColumnReorderingAllowed(true);
+        taskContainer = new TaskContainer(app);
+        setContainerDataSource(taskContainer);
         setSelectable(true);
         setImmediate(true);
         setNullSelectionAllowed(false);
-        addListener((Property.ValueChangeListener) app);
-        app.getTaskContainer().addListener(
-                (Container.PropertySetChangeListener) this);
+        addListener(app);
+        taskContainer.addListener((Container.PropertySetChangeListener) this);
     }
 
     @Override
     public void containerPropertySetChange(
-            Container.PropertySetChangeEvent event) {
+            final Container.PropertySetChangeEvent event) {
         disableContentRefreshing();
         super.containerPropertySetChange(event);
         Collection<?> containerPropertyIds = getContainerDataSource()

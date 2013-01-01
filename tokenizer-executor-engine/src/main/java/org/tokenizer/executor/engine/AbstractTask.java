@@ -15,6 +15,8 @@
  */
 package org.tokenizer.executor.engine;
 
+import java.util.UUID;
+
 import org.apache.zookeeper.KeeperException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,7 +35,8 @@ public abstract class AbstractTask implements Runnable, LeaderElectionCallback {
 
     private static final Logger LOG = LoggerFactory
             .getLogger(AbstractTask.class);
-    protected final String taskName;
+    protected final UUID uuid;
+    protected final String friendlyName;
     protected final ZooKeeperItf zk;
     protected final CrawlerRepository crawlerRepository;
     protected final WritableExecutorModel model;
@@ -42,8 +45,12 @@ public abstract class AbstractTask implements Runnable, LeaderElectionCallback {
     protected Thread thread;
     protected LeaderElection leaderElection;
 
-    public String getTaskName() {
-        return taskName;
+    public UUID getUuid() {
+        return uuid;
+    }
+
+    public String getFriendlyName() {
+        return friendlyName;
     }
 
     public abstract TaskConfiguration getTaskConfiguration();
@@ -51,15 +58,16 @@ public abstract class AbstractTask implements Runnable, LeaderElectionCallback {
     public abstract void setTaskConfiguration(
             TaskConfiguration taskConfiguration);
 
-    public AbstractTask(String taskName, ZooKeeperItf zk,
-            CrawlerRepository crawlerRepository, WritableExecutorModel model,
-            HostLocker hostLocker) {
-        this.taskName = taskName;
+    public AbstractTask(final UUID uuid, final String friendlyName,
+            final ZooKeeperItf zk, final CrawlerRepository crawlerRepository,
+            final WritableExecutorModel model, final HostLocker hostLocker) {
+        this.uuid = uuid;
+        this.friendlyName = friendlyName;
         this.zk = zk;
         this.crawlerRepository = crawlerRepository;
         this.model = model;
         this.hostLocker = hostLocker;
-        this.metricsCache = new MetricsCache(taskName, model);
+        this.metricsCache = new MetricsCache(uuid, model);
         LOG.debug("Resetting; it will produce TASK_DEFINITION_UPDATED event");
         // this.metricsCache.reset();
     }
@@ -107,7 +115,7 @@ public abstract class AbstractTask implements Runnable, LeaderElectionCallback {
                     + this.getClass().getCanonicalName(),
                     "/org/tokenizer/executor/engine/"
                             + this.getClass().getCanonicalName() + "/"
-                            + this.taskName, this);
+                            + this.uuid, this);
         }
     }
 
@@ -141,7 +149,7 @@ public abstract class AbstractTask implements Runnable, LeaderElectionCallback {
             Logs.logThreadJoin(thread);
             thread.join();
         } else {
-            thread = new Thread(this, this.taskName);
+            thread = new Thread(this, uuid.toString() + ": " + friendlyName);
             thread.setDaemon(true);
             thread.start();
             LOG.warn("Activated as Leader.");

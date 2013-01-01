@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.UUID;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -45,11 +46,11 @@ public class MessageParserTask extends AbstractTask {
     private HXPathExpression dateXPathExpression;
     private HXPathExpression userRatingXPathExpression;
 
-    public MessageParserTask(final String taskName, final ZooKeeperItf zk,
-            final TaskConfiguration taskConfiguration,
+    public MessageParserTask(final UUID uuid, final String friendlyName,
+            final ZooKeeperItf zk, final TaskConfiguration taskConfiguration,
             final CrawlerRepository crawlerRepository,
             final WritableExecutorModel model, final HostLocker hostLocker) {
-        super(taskName, zk, crawlerRepository, model, hostLocker);
+        super(uuid, friendlyName, zk, crawlerRepository, model, hostLocker);
         this.taskConfiguration = (MessageParserTaskConfiguration) taskConfiguration;
         try {
             topicXPathExpression = new HXPathExpression(LocalXPathFactory

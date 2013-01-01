@@ -15,15 +15,16 @@
  */
 package org.tokenizer.ui;
 
+import java.util.UUID;
+
 import org.springframework.context.ApplicationContext;
 import org.tokenizer.crawler.db.CrawlerRepository;
-import org.tokenizer.executor.model.api.TaskInfoBean;
+import org.tokenizer.executor.model.api.TaskNotFoundException;
 import org.tokenizer.executor.model.api.WritableExecutorModel;
 import org.tokenizer.executor.model.configuration.ClassicRobotTaskConfiguration;
 import org.tokenizer.executor.model.configuration.HtmlSplitterTaskConfiguration;
 import org.tokenizer.executor.model.configuration.MessageParserTaskConfiguration;
 import org.tokenizer.executor.model.configuration.TaskConfiguration;
-import org.tokenizer.ui.views.TaskContainer;
 import org.tokenizer.ui.views.TaskView;
 
 import com.vaadin.Application;
@@ -115,15 +116,6 @@ public class MyVaadinApplication extends Application implements
         current = c;
     }
 
-    private TaskContainer taskContainer = null;
-
-    public synchronized TaskContainer getTaskContainer() {
-        if (taskContainer == null) {
-            taskContainer = new TaskContainer(this);
-        }
-        return this.taskContainer;
-    }
-
     @Override
     public void buttonClick(final ClickEvent event) {
         final Button source = event.getButton();
@@ -141,9 +133,14 @@ public class MyVaadinApplication extends Application implements
             Object itemId = getTaskView().getTaskList().getValue();
             Item item = getTaskView().getTaskList().getItem(itemId);
             getTaskView().getTaskForm().setItemDataSource(item);
-            TaskInfoBean taskInfoBean = (TaskInfoBean) itemId;
-            TaskConfiguration taskConfiguration = taskInfoBean
-                    .getTaskConfiguration();
+            UUID uuid = (UUID) itemId;
+            TaskConfiguration taskConfiguration;
+            try {
+                taskConfiguration = getModel().getTask(uuid)
+                        .getTaskConfiguration();
+            } catch (TaskNotFoundException e) {
+                return;
+            }
             if (taskConfiguration instanceof ClassicRobotTaskConfiguration) {
                 String host = ((ClassicRobotTaskConfiguration) taskConfiguration)
                         .getHost();
@@ -186,7 +183,7 @@ public class MyVaadinApplication extends Application implements
 
     public void setSelectedHost(final String selectedHost) {
         this.selectedHost = selectedHost;
-        LOG.warn("selectedHost: {}", selectedHost);
+        LOG.debug("selectedHost: {}", selectedHost);
     }
 
     public int getSelectedHttpResponseCode() {

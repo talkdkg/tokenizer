@@ -21,6 +21,7 @@ import java.io.StringReader;
 import java.util.Collection;
 import java.util.Queue;
 import java.util.TreeSet;
+import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -79,11 +80,11 @@ public class TweetCollectorTask extends AbstractTask {
     BlockingQueue<Status> queue;
     TwitterStream stream;
 
-    public TweetCollectorTask(String taskName, ZooKeeperItf zk,
-            TaskConfiguration taskConfiguration,
-            CrawlerRepository crawlerRepository, WritableExecutorModel model,
-            HostLocker hostLocker) {
-        super(taskName, zk, crawlerRepository, model, hostLocker);
+    public TweetCollectorTask(final UUID uuid, final String friendlyName,
+            final ZooKeeperItf zk, final TaskConfiguration taskConfiguration,
+            final CrawlerRepository crawlerRepository,
+            final WritableExecutorModel model, final HostLocker hostLocker) {
+        super(uuid, friendlyName, zk, crawlerRepository, model, hostLocker);
         this.taskConfiguration = (TweetCollectorTaskConfiguration) taskConfiguration;
         BufferedReader bufferedReader = new BufferedReader(new StringReader(
                 this.taskConfiguration.getKeywords()));
@@ -122,7 +123,7 @@ public class TweetCollectorTask extends AbstractTask {
         LOG.debug("Instance created");
     }
 
-    public TwitterStream streamingTwitter(Collection<String> track,
+    public TwitterStream streamingTwitter(final Collection<String> track,
             final Queue<Status> queue) throws TwitterException {
         String[] trackArray = track.toArray(new String[track.size()]);
         TwitterStream stream = new TwitterStreamFactory().getInstance(twitter
@@ -130,7 +131,7 @@ public class TweetCollectorTask extends AbstractTask {
         stream.addListener(new StatusListener() {
 
             @Override
-            public void onStatus(Status status) {
+            public void onStatus(final Status status) {
                 if (isEmpty(status.getUser().getScreenName()))
                     return;
                 if (!queue.offer(status)) {
@@ -141,27 +142,28 @@ public class TweetCollectorTask extends AbstractTask {
 
             @Override
             public void onDeletionNotice(
-                    StatusDeletionNotice statusDeletionNotice) {
+                    final StatusDeletionNotice statusDeletionNotice) {
                 LOG.warn("We do not support onDeletionNotice at the moment! Tweet id: "
                         + statusDeletionNotice.getStatusId());
             }
 
             @Override
-            public void onTrackLimitationNotice(int numberOfLimitedStatuses) {
+            public void onTrackLimitationNotice(
+                    final int numberOfLimitedStatuses) {
                 LOG.warn("onTrackLimitationNotice:" + numberOfLimitedStatuses);
             }
 
             @Override
-            public void onException(Exception ex) {
+            public void onException(final Exception ex) {
                 LOG.error("onException", ex);
             }
 
             @Override
-            public void onScrubGeo(long userId, long upToStatusId) {
+            public void onScrubGeo(final long userId, final long upToStatusId) {
             }
 
             @Override
-            public void onStallWarning(StallWarning warning) {
+            public void onStallWarning(final StallWarning warning) {
                 LOG.warn(warning.toString());
             }
         });
@@ -169,7 +171,7 @@ public class TweetCollectorTask extends AbstractTask {
         return stream;
     }
 
-    public static boolean isEmpty(String str) {
+    public static boolean isEmpty(final String str) {
         return str == null || str.isEmpty();
     }
 
@@ -179,7 +181,7 @@ public class TweetCollectorTask extends AbstractTask {
     }
 
     @Override
-    public void setTaskConfiguration(TaskConfiguration taskConfiguration) {
+    public void setTaskConfiguration(final TaskConfiguration taskConfiguration) {
         this.taskConfiguration = (TweetCollectorTaskConfiguration) taskConfiguration;
     }
 

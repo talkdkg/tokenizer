@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
+import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,11 +55,13 @@ public class SitemapsFetcherTask extends AbstractTask {
     private static final long DELAY = 4 * 3600 * 1000L;
     private SitemapsFetcherTaskConfiguration taskConfiguration;
 
-    public SitemapsFetcherTask(String taskName, ZooKeeperItf zk,
-            TaskConfiguration fetcherConfiguration,
-            CrawlerRepository repository, WritableExecutorModel fetcherModel,
-            HostLocker hostLocker) {
-        super(taskName, zk, repository, fetcherModel, hostLocker);
+    public SitemapsFetcherTask(final UUID uuid, final String friendlyName,
+            final ZooKeeperItf zk,
+            final TaskConfiguration fetcherConfiguration,
+            final CrawlerRepository repository,
+            final WritableExecutorModel fetcherModel,
+            final HostLocker hostLocker) {
+        super(uuid, friendlyName, zk, repository, fetcherModel, hostLocker);
         this.taskConfiguration = taskConfiguration;
     }
 
@@ -199,7 +202,7 @@ public class SitemapsFetcherTask extends AbstractTask {
     }
 
     @Override
-    public void setTaskConfiguration(TaskConfiguration taskConfiguration) {
+    public void setTaskConfiguration(final TaskConfiguration taskConfiguration) {
         this.taskConfiguration = (SitemapsFetcherTaskConfiguration) taskConfiguration;
     }
 }

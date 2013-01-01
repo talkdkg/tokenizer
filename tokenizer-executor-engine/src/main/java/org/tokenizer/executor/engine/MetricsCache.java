@@ -17,6 +17,7 @@ package org.tokenizer.executor.engine;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import org.apache.zookeeper.KeeperException;
 import org.slf4j.Logger;
@@ -64,11 +65,11 @@ public class MetricsCache {
     public static final String REDIRECT_COUNT = "Redirect Count";
     private long lastCommitTimestamp;
     private final Map<String, Long> cache = new HashMap<String, Long>();
-    private final String taskName;
+    private final UUID uuid;
     private final WritableExecutorModel model;
 
-    public MetricsCache(final String taskName, final WritableExecutorModel model) {
-        this.taskName = taskName;
+    public MetricsCache(final UUID uuid, final WritableExecutorModel model) {
+        this.uuid = uuid;
         this.model = model;
         this.lastCommitTimestamp = System.currentTimeMillis();
     }
@@ -112,7 +113,7 @@ public class MetricsCache {
      * subcounts to zero. <br/>
      * 
      * 
-     * TODO: inplement "finalize" which will flush a cache
+     * TODO: inplement "finalize" or "pre-destroy" which will flush the cache
      * 
      * @return
      * @throws InterruptedException
@@ -123,7 +124,7 @@ public class MetricsCache {
         long currentTimestamp = System.currentTimeMillis();
         String lock = null;
         try {
-            lock = model.lockTask(taskName);
+            lock = model.lockTask(uuid);
         } catch (ZkLockException e1) {
             LOG.debug(e1.getMessage());
         } catch (TaskNotFoundException e1) {
@@ -136,7 +137,7 @@ public class MetricsCache {
         if (lock == null)
             return false;
         try {
-            TaskInfoBean taskDefinition = model.getMutableTask(taskName);
+            TaskInfoBean taskDefinition = model.getMutableTask(uuid);
             for (String key : cache.keySet()) {
                 Long value = taskDefinition.getCounters().get(key);
                 if (value == null) {
@@ -167,7 +168,7 @@ public class MetricsCache {
         } catch (ZkLockException e) {
             LOG.error("", e);
         } catch (TaskNotFoundException e) {
-            LOG.warn("fetch {} not found...", taskName);
+            LOG.warn("task not found: {}", uuid);
         } catch (KeeperException e) {
             LOG.error("", e);
         } catch (TaskConcurrentModificationException e) {
@@ -203,8 +204,8 @@ public class MetricsCache {
         long currentTimestamp = System.currentTimeMillis();
         String lock = null;
         try {
-            lock = model.lockTask(taskName);
-            TaskInfoBean taskDefinition = model.getMutableTask(taskName);
+            lock = model.lockTask(uuid);
+            TaskInfoBean taskDefinition = model.getMutableTask(uuid);
             if (taskDefinition.getTaskConfiguration().getGeneralState() == TaskGeneralState.DELETE_REQUESTED)
                 return true;
             taskDefinition.getCounters().clear();
@@ -217,7 +218,7 @@ public class MetricsCache {
         } catch (ZkLockException e) {
             LOG.error("", e);
         } catch (TaskNotFoundException e) {
-            LOG.warn("task {} not found...", taskName);
+            LOG.warn("task not found: {}", uuid);
         } catch (InterruptedException e) {
             LOG.error("", e);
         } catch (KeeperException e) {

@@ -142,8 +142,9 @@ public class TaskForm extends Form implements ClickListener {
             this.attachedDataSource = getItemDataSource();
             TaskInfoBean task2;
             try {
-                task2 = MyVaadinApplication.getModel().getMutableTask(
-                        (String) getItemProperty("name").getValue());
+                UUID uuid = UUID.fromString((String) getItemProperty("uuid")
+                        .getValue());
+                task2 = MyVaadinApplication.getModel().getMutableTask(uuid);
                 BeanItem<TaskInfoBean> item = new BeanItem(task2,
                         new String[] {});
                 setItemDataSource(item);
@@ -218,7 +219,7 @@ public class TaskForm extends Form implements ClickListener {
     }
 
     private TaskInfoBean update(final TaskInfoBean task) {
-        String uuid = task.getUuid().toString();
+        UUID uuid = task.getUuid();
         String lock = lockTask(uuid);
         if (lock == null)
             return null;
@@ -249,14 +250,14 @@ public class TaskForm extends Form implements ClickListener {
         return mutableTask;
     }
 
-    public static String lockTask(final String taskName) {
+    public static String lockTask(final UUID uuid) {
         String lock = null;
         try {
-            lock = MyVaadinApplication.getModel().lockTask(taskName);
+            lock = MyVaadinApplication.getModel().lockTask(uuid);
         } catch (ZkLockException e) {
             LOG.error("", e);
         } catch (TaskNotFoundException e) {
-            LOG.warn("Task not found: {}", taskName);
+            LOG.warn("Task not found: {}", uuid);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         } catch (KeeperException e) {
@@ -279,11 +280,10 @@ public class TaskForm extends Form implements ClickListener {
         }
     }
 
-    public static TaskInfoBean getMutableTask(final String taskName) {
+    public static TaskInfoBean getMutableTask(final UUID uuid) {
         TaskInfoBean mutableTask = null;
         try {
-            mutableTask = MyVaadinApplication.getModel().getMutableTask(
-                    taskName);
+            mutableTask = MyVaadinApplication.getModel().getMutableTask(uuid);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         } catch (KeeperException e) {
