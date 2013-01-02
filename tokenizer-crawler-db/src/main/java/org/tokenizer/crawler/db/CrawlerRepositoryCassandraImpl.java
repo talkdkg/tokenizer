@@ -2,6 +2,7 @@ package org.tokenizer.crawler.db;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -22,6 +23,7 @@ import com.netflix.astyanax.AstyanaxContext;
 import com.netflix.astyanax.ExceptionCallback;
 import com.netflix.astyanax.Keyspace;
 import com.netflix.astyanax.MutationBatch;
+import com.netflix.astyanax.RowCallback;
 import com.netflix.astyanax.connectionpool.NodeDiscoveryType;
 import com.netflix.astyanax.connectionpool.OperationResult;
 import com.netflix.astyanax.connectionpool.exceptions.BadRequestException;
@@ -547,8 +549,11 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
         byte[] hostInverted = HttpUtils.getHostInverted(host);
         byte[] hostInverted_splitAttemptCounter = ArrayUtils.addAll(
                 hostInverted, HttpUtils.intToBytes(splitAttemptCounter));
+        LOG.debug(Arrays.toString(hostInverted_splitAttemptCounter));
         //@formatter:off
-        IndexQuery<byte[], String> query = keyspace.prepareQuery(CF_WEBPAGE_RECORDS)
+        IndexQuery<byte[], String> query = keyspace
+                .prepareQuery(CF_WEBPAGE_RECORDS)
+                .setConsistencyLevel(ConsistencyLevel.CL_ONE)
                 .searchWithIndex()
                 .setRowLimit(maxResults)
                 .autoPaginateRows(false)
@@ -556,7 +561,6 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
                 .whereColumn("hostInverted_splitAttemptCounter")
                 .equals()
                 .value(hostInverted_splitAttemptCounter);
-        // AllRowsQuery<byte[], String> query2  = keyspace.prepareQuery(CF_WEBPAGE_RECORDS).getAllRows().setRowLimit(maxResults);
         //@formatter:on
         OperationResult<Rows<byte[], String>> result = query.execute();
         return toWebpageRecordList(result);
@@ -848,8 +852,7 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
                     "Incorrect hostInverted_splitAttemptCounter with size less than 5; url: {}",
                     url);
             // trying to recover from previously non-indexed field:
-            return new WebpageRecord(HttpUtils.getHost(url), url, timestamp,
-                    charset, content);
+            return new WebpageRecord(url, timestamp, charset, content);
         }
         return new WebpageRecord(digest, url, hostInverted_splitAttemptCounter,
                 timestamp, charset, content);
@@ -890,5 +893,59 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
             list.add(toXmlRecord(row));
         }
         return list;
+    }
+
+    protected void reindex() {
+        final AtomicLong counter = new AtomicLong();
+        try {
+            ArrayList<String> columns = new ArrayList<String>();
+            columns.add("url");
+            //@formatter:off
+            keyspace
+                    .prepareQuery(CF_WEBPAGE_RECORDS)
+                    .getAllRows()
+                    .setRowLimit(100)
+                    .setRepeatLastToken(true)
+                    .withColumnSlice(columns)
+                    .executeWithCallback(new RowCallback<byte[], String>() {
+                        @Override
+                        public void success(final Rows<byte[], String> rows) {
+                            for (Row<byte[], String> row : rows) {
+                                String url = row.getColumns().getStringValue("url",null);
+                                String host = HttpUtils.getHost(url);
+                                byte[] hostInverted = HttpUtils.getHostInverted(host);
+
+                                byte[] hostInverted_splitAttemptCounter =  ArrayUtils.addAll(
+                                        hostInverted,
+                                        new byte[] {0,0,0,0});
+                                MutationBatch m = keyspace.prepareMutationBatch();
+                                m.withRow(CF_WEBPAGE_RECORDS, row.getKey())
+                                        .putColumn(
+                                                "hostInverted_splitAttemptCounter",
+                                                hostInverted_splitAttemptCounter, null);
+                                try {
+                                    m.execute();
+                                    counter.incrementAndGet();
+                                    if (counter.get() % 1000 == 0) {
+                                        LOG.warn("{} records reindexed...", counter.get());
+                                    }
+                                } catch (ConnectionException e) {
+                                    LOG.error("", e);
+                                }
+                                
+                            }
+                        }
+
+                        @Override
+                        public boolean failure(final ConnectionException e) {
+                            LOG.error(e.getMessage(), e);
+                            return false;
+                        }
+                    });
+            // @formatter:on
+        } catch (Exception e) {
+            LOG.error("", e);
+        }
+        LOG.warn("Total {} records reindexed... ", counter.get());
     }
 }

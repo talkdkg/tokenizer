@@ -30,7 +30,7 @@ public class CrawlerRepositoryCassandraImplTest {
     public void listWebpageRecordsTest() throws Exception {
         try {
             List<WebpageRecord> webpageRecords = repository.listWebpageRecords(
-                    "amazon.com", 0, 10);
+                    "www.amazon.com", 0, 10);
             for (WebpageRecord webpageRecord : webpageRecords) {
                 System.out.println(webpageRecord);
             }
@@ -81,46 +81,13 @@ public class CrawlerRepositoryCassandraImplTest {
     }
 
     public static void main(final String[] args) throws Exception {
-        String host = "www.amazon.com";
-        int splitAttemptCounter = 0;
-        int defaultPageSize = 100;
-        CrawlerRepositoryCassandraImpl repo = new CrawlerRepositoryCassandraImpl();
-        repo.setSeeds("s001:9160");
-        repo.setup();
-        repository = repo;
-        System.out.println(repository.countUrlRecords2());
-        System.out.println(repository.countWebpageRecords("www.amazon.com", 1));
-        // repository.listWebpageRecords(host, splitAttemptCounter,
-        // defaultPageSize);
-        // List<byte[]> rowKeys = repository.loadUrlRecordRowKeys();
-        // System.out.println(rowKeys.size());
-        // byte[][] bytes = new byte[rowKeys.size()][];
-        // int i = 0;
-        // for (byte[] rowKey : rowKeys) {
-        // bytes[i] = rowKey;
-        // i++;
-        // }
-        // byte[] b = new byte[16 * rowKeys.size()];
-        // i = 0;
-        // for (byte[] rowKey : rowKeys) {
-        // if (rowKey.length > 16)
-        // throw new RuntimeException("too high");
-        // for (int offset = 0; offset < 16; offset++) {
-        // b[i * 16 + offset] = rowKey[offset];
-        // }
-        // i++;
-        // }
-        // System.out.println("byte[][]: " + MemoryMeasurer.measureBytes(bytes)
-        // + " bytes");
-        // System.out.println("List<byte[]>: "
-        // + MemoryMeasurer.measureBytes(rowKeys) + " bytes");
-        // System.out.println("byte[][]: " + MemoryMeasurer.measureBytes(bytes)
-        // + " bytes");
-        // System.out.println("b[]: " + MemoryMeasurer.measureBytes(b) +
-        // " bytes");
-        // System.out.println("byte[8]: "
-        // + MemoryMeasurer.measureBytes(new byte[8]) + " bytes");
-        // System.out.println("byte[1][8]>: "
-        // + MemoryMeasurer.measureBytes(new byte[1][8]) + " bytes");
+        setup();
+        repository.reindex();
+        List<WebpageRecord> webpageRecords = repository.listWebpageRecords(
+                "www.amazon.com", 0, 1000);
+        LOG.debug("{} results found", webpageRecords.size());
+        for (WebpageRecord webpageRecord : webpageRecords) {
+            // System.out.println(webpageRecord);
+        }
     }
 }

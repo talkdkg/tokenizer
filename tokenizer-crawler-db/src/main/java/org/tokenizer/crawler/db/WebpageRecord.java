@@ -32,11 +32,11 @@ public class WebpageRecord {
     private byte[] content = DefaultValues.EMPTY_ARRAY;
     private int splitAttemptCounter = 0;
 
-    public WebpageRecord(final String host, final String url,
-            final Date timestamp, final String charset, final byte[] content) {
+    public WebpageRecord(final String url, final Date timestamp,
+            final String charset, final byte[] content) {
         this.digest = MD5.digest(content);
-        this.host = host;
         this.url = url;
+        this.host = HttpUtils.getHost(url);
         this.hostInverted = HttpUtils.getHostInverted(host);
         this.timestamp = timestamp;
         this.charset = charset;
@@ -54,10 +54,8 @@ public class WebpageRecord {
                 hostInverted_splitAttemptCounter.length);
         this.splitAttemptCounter = HttpUtils
                 .bytesToInt(splitAttemptCounterBytes);
-        this.hostInverted = Arrays.copyOfRange(
-                hostInverted_splitAttemptCounter, 0,
-                hostInverted_splitAttemptCounter.length - 5);
-        this.host = HttpUtils.getHost(this.hostInverted);
+        this.host = HttpUtils.getHost(url);
+        this.hostInverted = HttpUtils.getHostInverted(host);
         this.timestamp = timestamp;
         this.charset = charset;
         this.content = content;

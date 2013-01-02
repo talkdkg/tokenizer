@@ -109,17 +109,16 @@ public class HttpUtils {
         return inverted;
     }
 
-    public static String getHost(final byte[] hostInverted) {
-        try {
-            String hostInvertedString = new String(hostInverted, ASCII_CHARSET);
-            byte[] hostInvertedInverted = getHostInverted(hostInvertedString);
-            return new String(hostInvertedInverted, ASCII_CHARSET);
-        } catch (UnsupportedEncodingException e) {
-            LOG.error("", e);
-            return null;
-        }
-    }
-
+    // public static String getHost(final byte[] hostInverted) {
+    // try {
+    // String hostInvertedString = new String(hostInverted, ASCII_CHARSET);
+    // byte[] hostInvertedInverted = getHostInverted(hostInvertedString);
+    // return new String(hostInvertedInverted, ASCII_CHARSET);
+    // } catch (UnsupportedEncodingException e) {
+    // LOG.error("", e);
+    // return null;
+    // }
+    // }
     private static List<byte[]> getHostPartsInverted(final String host) {
         List<byte[]> parts = getHostParts(host);
         List<byte[]> partsInverted = new ArrayList<byte[]>();

@@ -52,9 +52,8 @@ public class UrlRecord {
             final byte[] webpageDigest) {
         this.digest = digest;
         this.url = url;
-        this.hostInverted = Arrays.copyOfRange(hostInverted_httpResponseCode,
-                0, hostInverted_httpResponseCode.length - 5);
-        this.host = HttpUtils.getHost(hostInverted);
+        this.host = HttpUtils.getHost(url);
+        this.hostInverted = HttpUtils.getHostInverted(host);
         byte[] fetchAttemptCounterBytes = Arrays.copyOfRange(
                 hostInverted_fetchAttemptCounter,
                 hostInverted_fetchAttemptCounter.length - 4,
