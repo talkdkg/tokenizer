@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.tokenizer.executor.model.impl;
+package org.tokenizer.util.io;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -45,6 +45,8 @@ public class JavaSerializationUtils {
     }
 
     public static Object deserialize(final byte[] bytes) {
+        if (bytes == null || bytes.length == 0)
+            return null;
         ByteArrayInputStream in = new ByteArrayInputStream(bytes);
         ObjectInputStream objstream;
         try {

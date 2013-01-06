@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tokenizer.core.util.HttpUtils;
 import org.tokenizer.core.util.MD5;
+import org.tokenizer.util.io.JavaSerializationUtils;
 
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableMap;
@@ -206,6 +207,12 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
                                                                     "AsciiType")
                                                             .build())
                                             .put("content",
+                                                    ImmutableMap
+                                                            .<String, Object> builder()
+                                                            .put("validation_class",
+                                                                    "BytesType")
+                                                            .build())
+                                            .put("xmlLinks",
                                                     ImmutableMap
                                                             .<String, Object> builder()
                                                             .put("validation_class",
@@ -505,20 +512,29 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
                                         .getSplitAttemptCounter())), null)
                 .putColumn("timestamp", webpageRecord.getTimestamp(), null)
                 .putColumn("charset", webpageRecord.getCharset(), null)
-                .putColumn("content", webpageRecord.getContent(), null);
+                .putColumn("content", webpageRecord.getContent(), null)
+                .putColumn(
+                        "xmlLinks",
+                        JavaSerializationUtils.serialize(webpageRecord
+                                .getXmlLinks()), null);
         m.execute();
         LOG.debug("webpageRecord inserted: {}", webpageRecord);
     }
 
     @Override
-    public void updateSplitAttemptCounter(final WebpageRecord webpageRecord)
-            throws ConnectionException {
+    public void updateSplitAttemptCounterAndLinks(
+            final WebpageRecord webpageRecord) throws ConnectionException {
         MutationBatch m = keyspace.prepareMutationBatch();
-        m.withRow(CF_WEBPAGE_RECORDS, webpageRecord.getDigest()).putColumn(
-                "hostInverted_splitAttemptCounter",
-                ArrayUtils.addAll(webpageRecord.getHostInverted(), HttpUtils
-                        .intToBytes(webpageRecord.getSplitAttemptCounter())),
-                null);
+        m.withRow(CF_WEBPAGE_RECORDS, webpageRecord.getDigest())
+                .putColumn(
+                        "hostInverted_splitAttemptCounter",
+                        ArrayUtils.addAll(webpageRecord.getHostInverted(),
+                                HttpUtils.intToBytes(webpageRecord
+                                        .getSplitAttemptCounter())), null)
+                .putColumn(
+                        "xmlLinks",
+                        JavaSerializationUtils.serialize(webpageRecord
+                                .getXmlLinks()), null);
         m.execute();
     }
 
@@ -846,16 +862,19 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
         Date timestamp = columns.getDateValue("timestamp", null);
         String charset = columns.getStringValue("charset", null);
         byte[] content = columns.getByteArrayValue("content", null);
+        byte[] xmlLinksSerialized = columns.getByteArrayValue("xmlLinks", null);
+        ArrayList<byte[]> xmlLinks = (ArrayList<byte[]>) JavaSerializationUtils
+                .deserialize(xmlLinksSerialized);
         if (hostInverted_splitAttemptCounter == null
                 || hostInverted_splitAttemptCounter.length < 5) {
             LOG.error(
                     "Incorrect hostInverted_splitAttemptCounter with size less than 5; url: {}",
                     url);
             // trying to recover from previously non-indexed field:
-            return new WebpageRecord(url, timestamp, charset, content);
+            return new WebpageRecord(url, timestamp, charset, content, xmlLinks);
         }
         return new WebpageRecord(digest, url, hostInverted_splitAttemptCounter,
-                timestamp, charset, content);
+                timestamp, charset, content, xmlLinks);
     }
 
     private static List<WebpageRecord> toWebpageRecordList(

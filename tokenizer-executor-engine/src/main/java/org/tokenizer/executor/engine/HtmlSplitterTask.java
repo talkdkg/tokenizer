@@ -71,9 +71,10 @@ public class HtmlSplitterTask extends AbstractTask {
                 LOG.warn("xmlRecord: {}", xmlRecord);
                 crawlerRepository.insertIfNotExist(xmlRecord);
                 metricsCache.increment(MetricsCache.XML_TOTAL_KEY);
+                webpageRecord.addXmlLink(xmlRecord.getDigest());
             }
             webpageRecord.incrementSplitAttemptCounter();
-            crawlerRepository.updateSplitAttemptCounter(webpageRecord);
+            crawlerRepository.updateSplitAttemptCounterAndLinks(webpageRecord);
             metricsCache.increment(MetricsCache.URL_TOTAL_KEY);
         }
         // to prevent spin-loop in case if no records available:

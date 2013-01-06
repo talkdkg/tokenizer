@@ -77,7 +77,8 @@ public class PersistenceUtils {
         String charset = CharsetUtils.clean(HttpUtils
                 .getCharsetFromContentType(fetchedResult.getContentType()));
         WebpageRecord webpageRecord = new WebpageRecord(urlRecord.getUrl(),
-                urlRecord.getTimestamp(), charset, fetchedResult.getContent());
+                urlRecord.getTimestamp(), charset, fetchedResult.getContent(),
+                null);
         repository.insertIfNotExists(webpageRecord);
         urlRecord.setWebpageDigest(webpageRecord.getDigest());
         repository.update(urlRecord);

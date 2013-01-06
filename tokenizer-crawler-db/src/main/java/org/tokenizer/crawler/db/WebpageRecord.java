@@ -15,6 +15,7 @@
  */
 package org.tokenizer.crawler.db;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 
@@ -23,6 +24,7 @@ import org.tokenizer.core.util.MD5;
 
 public class WebpageRecord {
 
+    private static final ArrayList<byte[]> EMPTY_ARRAYLIST = new ArrayList<byte[]>();
     private byte[] digest = DefaultValues.EMPTY_ARRAY;
     private String host = DefaultValues.EMPTY_STRING;
     private String url = DefaultValues.EMPTY_STRING;
@@ -31,9 +33,25 @@ public class WebpageRecord {
     private String charset = DefaultValues.EMPTY_STRING;
     private byte[] content = DefaultValues.EMPTY_ARRAY;
     private int splitAttemptCounter = 0;
+    private ArrayList<byte[]> xmlLinks = EMPTY_ARRAYLIST;
+
+    public ArrayList<byte[]> getXmlLinks() {
+        return xmlLinks;
+    }
+
+    public void setXmlLinks(final ArrayList<byte[]> xmlLinks) {
+        if (xmlLinks != null) {
+            this.xmlLinks = xmlLinks;
+        }
+    }
+
+    public void addXmlLink(final byte[] xmlLink) {
+        xmlLinks.add(xmlLink);
+    }
 
     public WebpageRecord(final String url, final Date timestamp,
-            final String charset, final byte[] content) {
+            final String charset, final byte[] content,
+            final ArrayList<byte[]> xmlLinks) {
         this.digest = MD5.digest(content);
         this.url = url;
         this.host = HttpUtils.getHost(url);
@@ -41,11 +59,15 @@ public class WebpageRecord {
         this.timestamp = timestamp;
         this.charset = charset;
         this.content = content;
+        if (xmlLinks != null) {
+            this.xmlLinks = xmlLinks;
+        }
     }
 
     public WebpageRecord(final byte[] digest, final String url,
             final byte[] hostInverted_splitAttemptCounter,
-            final Date timestamp, final String charset, final byte[] content) {
+            final Date timestamp, final String charset, final byte[] content,
+            final ArrayList<byte[]> xmlLinks) {
         this.digest = digest;
         this.url = url;
         byte[] splitAttemptCounterBytes = Arrays.copyOfRange(
@@ -59,6 +81,9 @@ public class WebpageRecord {
         this.timestamp = timestamp;
         this.charset = charset;
         this.content = content;
+        if (xmlLinks != null) {
+            this.xmlLinks = xmlLinks;
+        }
     }
 
     public String getUrl() {

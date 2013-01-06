@@ -27,6 +27,7 @@ import org.codehaus.jackson.node.JsonNodeFactory;
 import org.codehaus.jackson.node.ObjectNode;
 import org.tokenizer.executor.model.api.TaskInfoBean;
 import org.tokenizer.executor.model.configuration.TaskConfiguration;
+import org.tokenizer.util.io.JavaSerializationUtils;
 import org.tokenizer.util.json.JsonFormat;
 import org.tokenizer.util.json.JsonUtil;
 

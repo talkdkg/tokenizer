@@ -29,7 +29,7 @@ public interface CrawlerRepository {
     void insertIfNotExists(WebpageRecord webpageRecord)
             throws ConnectionException;
 
-    void updateSplitAttemptCounter(final WebpageRecord webpageRecord)
+    void updateSplitAttemptCounterAndLinks(final WebpageRecord webpageRecord)
             throws ConnectionException;
 
     WebpageRecord getWebpageRecord(byte[] digest) throws ConnectionException;
