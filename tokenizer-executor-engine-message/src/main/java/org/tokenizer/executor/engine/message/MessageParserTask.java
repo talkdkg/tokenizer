@@ -21,6 +21,7 @@ import org.tokenizer.crawler.db.MessageRecord;
 import org.tokenizer.crawler.db.XmlRecord;
 import org.tokenizer.executor.engine.AbstractTask;
 import org.tokenizer.executor.engine.HostLocker;
+import org.tokenizer.executor.engine.MetricsCache;
 import org.tokenizer.executor.model.api.WritableExecutorModel;
 import org.tokenizer.executor.model.configuration.MessageParserTaskConfiguration;
 import org.tokenizer.executor.model.configuration.TaskConfiguration;
@@ -115,15 +116,18 @@ public class MessageParserTask extends AbstractTask {
                 && contentXPathExpression == null
                 && dateXPathExpression == null)
             return;
-        int parseAttemptCounter = 0;
         List<XmlRecord> xmlRecords = crawlerRepository.listXmlRecords(
-                taskConfiguration.getHost(), parseAttemptCounter, 100);
+                taskConfiguration.getHost(),
+                taskConfiguration.getParseAttemptCounter(), 100);
         for (XmlRecord xmlRecord : xmlRecords) {
             LOG.trace("xmlRecord: {}", xmlRecord);
             try {
                 MessageRecord message = parse(xmlRecord);
                 LOG.trace(message.toString());
                 crawlerRepository.insertIfNotExists(message);
+                metricsCache.increment(MetricsCache.XML_TOTAL_KEY);
+                xmlRecord.incrementParseAttemptCounter();
+                crawlerRepository.updateParseAttemptCounter(xmlRecord);
             } catch (XPathExpressionException e) {
                 LOG.error("", e);
             } catch (ParserConfigurationException e) {
@@ -163,7 +167,8 @@ public class MessageParserTask extends AbstractTask {
                 .evalAsString(node));
         String userRating = (userRatingXPathExpression == null ? null
                 : userRatingXPathExpression.evalAsString(node));
-        MessageRecord messageRecord = new MessageRecord(author, title, content);
+        MessageRecord messageRecord = new MessageRecord(xmlRecord.getDigest(),
+                author, title, content);
         messageRecord.setHost(xmlRecord.getHost());
         messageRecord.setHostInverted(HttpUtils.getHostInverted(xmlRecord
                 .getHost()));

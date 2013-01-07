@@ -17,6 +17,7 @@ public class CrawledContentTabSheet extends TabSheet {
     private final Label htmlLabel;
     private final Label sourceLabel;
     private final Panel xmlPanel;
+    private final Panel messagePanel;
 
     public CrawledContentTabSheet(final MyVaadinApplication app) {
         this.app = app;
@@ -34,12 +35,11 @@ public class CrawledContentTabSheet extends TabSheet {
         sourcePanel.addComponent(sourceLabel);
         addTab(sourcePanel);
         // XML Snippets:
-        Label xmlLabel = new Label();
-        xmlLabel.setContentMode(Label.CONTENT_TEXT);
         xmlPanel = new Panel("XML Snippets");
-        xmlPanel.addComponent(xmlLabel);
-        xmlPanel.removeAllComponents();
         addTab(xmlPanel);
+        // Parsed XML:
+        messagePanel = new Panel("Parsed Messages");
+        addTab(messagePanel);
         setHeight(100, UNITS_PERCENTAGE);
     }
 
@@ -53,5 +53,9 @@ public class CrawledContentTabSheet extends TabSheet {
 
     public Panel getXmlPanel() {
         return xmlPanel;
+    }
+
+    public Panel getMessagePanel() {
+        return messagePanel;
     }
 }

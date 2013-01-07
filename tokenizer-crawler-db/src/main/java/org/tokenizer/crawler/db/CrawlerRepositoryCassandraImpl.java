@@ -542,10 +542,10 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
     public void updateParseAttemptCounter(final XmlRecord xmlRecord)
             throws ConnectionException {
         MutationBatch m = keyspace.prepareMutationBatch();
-        // TODO: fix that
-        m.withRow(CF_XML_RECORDS, xmlRecord.getDigest())
-                .putColumn("parseAttemptCounter",
-                        xmlRecord.getParseAttemptCounter(), null);
+        m.withRow(CF_XML_RECORDS, xmlRecord.getDigest()).putColumn(
+                "hostInverted_parseAttemptCounter",
+                ArrayUtils.addAll(xmlRecord.getHostInverted(), HttpUtils
+                        .intToBytes(xmlRecord.getParseAttemptCounter())), null);
         m.execute();
     }
 
@@ -653,6 +653,25 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
             throws ConnectionException {
         byte[][] keys = new byte[xmlLinks.size()][];
         return listXmlRecords(xmlLinks.toArray(keys));
+    }
+
+    @Override
+    public List<MessageRecord> listMessageRecords(final byte[][] keys)
+            throws ConnectionException {
+        double nanoStart = System.nanoTime();
+        OperationResult<Rows<byte[], String>> result = keyspace
+                .prepareQuery(CF_MESSAGE_RECORDS).getKeySlice(keys).execute();
+        double timeTaken = (System.nanoTime() - nanoStart) / (1e9);
+        LOG.debug("Time taken to fetch " + result.getResult().size()
+                + " URL records is " + timeTaken + " seconds.");
+        return toMessageRecordList(result);
+    }
+
+    @Override
+    public List<MessageRecord> listMessageRecords(
+            final ArrayList<byte[]> xmlLinks) throws ConnectionException {
+        byte[][] keys = new byte[xmlLinks.size()][];
+        return listMessageRecords(xmlLinks.toArray(keys));
     }
 
     @Override
@@ -920,7 +939,7 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
         byte[] content = columns.getByteArrayValue("content", null);
         XmlRecord xmlRecord = new XmlRecord(digest, timestamp,
                 hostInverted_parseAttemptCounter, content);
-        LOG.warn(xmlRecord.toString());
+        LOG.trace(xmlRecord.toString());
         return xmlRecord;
     }
 
@@ -935,6 +954,45 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
         List<XmlRecord> list = new ArrayList<XmlRecord>();
         for (Row<byte[], String> row : result.getResult()) {
             list.add(toXmlRecord(row));
+        }
+        return list;
+    }
+
+    // /
+    private static MessageRecord toMessageRecord(final byte[] digest,
+            final ColumnList<String> columns) {
+        if (columns.isEmpty()) {
+            LOG.error("Columns are empty for Message record with digest "
+                    + Arrays.toString(digest));
+            return null;
+        }
+        String host = columns.getStringValue("host", null);
+        byte[] hostInverted = columns.getByteArrayValue("hostInverted", null);
+        String topic = columns.getStringValue("topic", null);
+        String date = columns.getStringValue("date", null);
+        String author = columns.getStringValue("author", null);
+        String age = columns.getStringValue("age", null);
+        String sex = columns.getStringValue("sex", null);
+        String title = columns.getStringValue("title", null);
+        String content = columns.getStringValue("content", null);
+        String userRating = columns.getStringValue("userRating", null);
+        MessageRecord messageRecord = new MessageRecord(digest, host,
+                hostInverted, topic, date, author, age, sex, title, content,
+                userRating);
+        return messageRecord;
+    }
+
+    private static MessageRecord toMessageRecord(final Row<byte[], String> row) {
+        byte[] digest = row.getKey();
+        ColumnList<String> columns = row.getColumns();
+        return toMessageRecord(digest, columns);
+    }
+
+    private static List<MessageRecord> toMessageRecordList(
+            final OperationResult<Rows<byte[], String>> result) {
+        List<MessageRecord> list = new ArrayList<MessageRecord>();
+        for (Row<byte[], String> row : result.getResult()) {
+            list.add(toMessageRecord(row));
         }
         return list;
     }

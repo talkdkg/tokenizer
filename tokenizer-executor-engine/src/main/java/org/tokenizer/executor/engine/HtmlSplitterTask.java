@@ -68,7 +68,7 @@ public class HtmlSplitterTask extends AbstractTask {
             LOG.debug("processing URL: {}", webpageRecord.getUrl());
             List<XmlRecord> xmlRecords = parse(webpageRecord);
             for (XmlRecord xmlRecord : xmlRecords) {
-                LOG.warn("xmlRecord: {}", xmlRecord);
+                // LOG.warn("xmlRecord: {}", xmlRecord);
                 crawlerRepository.insertIfNotExist(xmlRecord);
                 metricsCache.increment(MetricsCache.XML_TOTAL_KEY);
                 webpageRecord.addXmlLink(xmlRecord.getDigest());

@@ -35,7 +35,7 @@ public class XmlRecord {
         this.hostInverted = Arrays.copyOfRange(
                 hostInverted_parseAttemptCounter, 0,
                 hostInverted_parseAttemptCounter.length - 4);
-        this.host = HttpUtils.getHost(host);
+        this.host = HttpUtils.getHostUninverted(hostInverted);
         byte[] parseAttemptCounterBytes = Arrays.copyOfRange(
                 hostInverted_parseAttemptCounter,
                 hostInverted_parseAttemptCounter.length - 4,

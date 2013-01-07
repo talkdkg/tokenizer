@@ -109,6 +109,19 @@ public class HttpUtils {
         return inverted;
     }
 
+    public static String getHostUninverted(final byte[] hostInverted) {
+        String hostInverted2;
+        try {
+            hostInverted2 = new String(hostInverted, ASCII_CHARSET);
+            byte[] host = getHostInverted(hostInverted2);
+            String host2 = new String(host, ASCII_CHARSET);
+            return host2;
+        } catch (UnsupportedEncodingException e) {
+            LOG.error("", e);
+        }
+        return null;
+    }
+
     // public static String getHost(final byte[] hostInverted) {
     // try {
     // String hostInvertedString = new String(hostInverted, ASCII_CHARSET);

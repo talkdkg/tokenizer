@@ -23,7 +23,7 @@ public class ClassicRobotTaskConfiguration extends TaskConfiguration {
     private boolean followExternal;
     private String agentName = "Tokenizer";
     private String emailAddress = "info@tokenizer.ca";
-    private String webAddress = "http://www.tokenizer.org";
+    private String webAddress = "http://www.tokenizer.ca";
 
     @Override
     public String toString() {

@@ -57,6 +57,12 @@ public interface CrawlerRepository {
     List<XmlRecord> listXmlRecords(final ArrayList<byte[]> xmlLinks)
             throws ConnectionException;
 
+    List<MessageRecord> listMessageRecords(final byte[][] keys)
+            throws ConnectionException;
+
+    List<MessageRecord> listMessageRecords(final ArrayList<byte[]> xmlLinks)
+            throws ConnectionException;
+
     void insertIfNotExists(MessageRecord messageRecord)
             throws ConnectionException;
 

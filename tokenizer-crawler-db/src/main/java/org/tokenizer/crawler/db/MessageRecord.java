@@ -1,9 +1,6 @@
 package org.tokenizer.crawler.db;
 
-import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
-
-import org.tokenizer.core.util.MD5;
 
 public class MessageRecord {
 
@@ -21,8 +18,9 @@ public class MessageRecord {
     private String content = DefaultValues.EMPTY_STRING;
     private String userRating = DefaultValues.EMPTY_STRING;
 
-    public MessageRecord(final String author, final String title,
-            final String content) {
+    public MessageRecord(final byte[] digest, final String author,
+            final String title, final String content) {
+        this.digest = digest;
         if (author != null) {
             this.author = author;
         }
@@ -31,12 +29,6 @@ public class MessageRecord {
         }
         if (content != null) {
             this.content = content;
-        }
-        try {
-            this.digest = MD5.digest((this.author + this.title + this.content)
-                    .getBytes(DefaultValues.UTF8_CHARSET));
-        } catch (UnsupportedEncodingException e) {
-            LOG.error(DefaultValues.EMPTY_STRING, e);
         }
     }
 
@@ -62,7 +54,9 @@ public class MessageRecord {
     }
 
     public void setHost(final String host) {
-        this.host = host;
+        if (host != null) {
+            this.host = host;
+        }
     }
 
     public byte[] getHostInverted() {
@@ -70,7 +64,9 @@ public class MessageRecord {
     }
 
     public void setHostInverted(final byte[] hostInverted) {
-        this.hostInverted = hostInverted;
+        if (hostInverted != null) {
+            this.hostInverted = hostInverted;
+        }
     }
 
     public String getTopic() {
@@ -78,7 +74,9 @@ public class MessageRecord {
     }
 
     public void setTopic(final String topic) {
-        this.topic = topic;
+        if (topic != null) {
+            this.topic = topic;
+        }
     }
 
     public String getDate() {
@@ -86,7 +84,9 @@ public class MessageRecord {
     }
 
     public void setDate(final String date) {
-        this.date = date;
+        if (date != null) {
+            this.date = date;
+        }
     }
 
     public String getAge() {
@@ -94,7 +94,9 @@ public class MessageRecord {
     }
 
     public void setAge(final String age) {
-        this.age = age;
+        if (age != null) {
+            this.age = age;
+        }
     }
 
     public String getSex() {
@@ -102,7 +104,9 @@ public class MessageRecord {
     }
 
     public void setSex(final String sex) {
-        this.sex = sex;
+        if (sex != null) {
+            this.sex = sex;
+        }
     }
 
     public String getUserRating() {
@@ -110,7 +114,9 @@ public class MessageRecord {
     }
 
     public void setUserRating(final String userRating) {
-        this.userRating = userRating;
+        if (userRating != null) {
+            this.userRating = userRating;
+        }
     }
 
     public byte[] getDigest() {
