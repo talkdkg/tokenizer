@@ -595,12 +595,14 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
 
     private void insert(final XmlRecord xmlRecord) throws ConnectionException {
         MutationBatch m = keyspace.prepareMutationBatch();
-        m.withRow(CF_MESSAGE_RECORDS, xmlRecord.getDigest())
-                .putColumn("host", xmlRecord.getHost(), null)
-                .putColumn("hostInverted", xmlRecord.getHostInverted(), null)
+        m.withRow(CF_XML_RECORDS, xmlRecord.getDigest())
+                .putColumn("timestamp", xmlRecord.getTimestamp(), null)
                 .putColumn("content", xmlRecord.getContent(), null)
-                .putColumn("parseAttemptCounter",
-                        xmlRecord.getParseAttemptCounter(), null);
+                .putColumn(
+                        "hostInverted_parseAttemptCounter",
+                        ArrayUtils.addAll(xmlRecord.getHostInverted(),
+                                HttpUtils.intToBytes(xmlRecord
+                                        .getParseAttemptCounter())), null);
         m.execute();
     }
 
@@ -632,6 +634,25 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
                     host);
         }
         return toXmlRecordList(result);
+    }
+
+    @Override
+    public List<XmlRecord> listXmlRecords(final byte[][] keys)
+            throws ConnectionException {
+        double nanoStart = System.nanoTime();
+        OperationResult<Rows<byte[], String>> result = keyspace
+                .prepareQuery(CF_XML_RECORDS).getKeySlice(keys).execute();
+        double timeTaken = (System.nanoTime() - nanoStart) / (1e9);
+        LOG.debug("Time taken to fetch " + result.getResult().size()
+                + " URL records is " + timeTaken + " seconds.");
+        return toXmlRecordList(result);
+    }
+
+    @Override
+    public List<XmlRecord> listXmlRecords(final ArrayList<byte[]> xmlLinks)
+            throws ConnectionException {
+        byte[][] keys = new byte[xmlLinks.size()][];
+        return listXmlRecords(xmlLinks.toArray(keys));
     }
 
     @Override
@@ -888,14 +909,18 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
 
     private static XmlRecord toXmlRecord(final byte[] digest,
             final ColumnList<String> columns) {
-        if (columns.isEmpty())
+        if (columns.isEmpty()) {
+            LOG.error("Columns are empty for XML record with digest "
+                    + Arrays.toString(digest));
             return null;
+        }
         Date timestamp = columns.getDateValue("timestamp", null);
         byte[] hostInverted_parseAttemptCounter = columns.getByteArrayValue(
                 "hostInverted_parseAttemptCounter", null);
         byte[] content = columns.getByteArrayValue("content", null);
         XmlRecord xmlRecord = new XmlRecord(digest, timestamp,
                 hostInverted_parseAttemptCounter, content);
+        LOG.warn(xmlRecord.toString());
         return xmlRecord;
     }
 

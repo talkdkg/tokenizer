@@ -16,20 +16,30 @@ public class CrawledContentTabSheet extends TabSheet {
     private final MyVaadinApplication app;
     private final Label htmlLabel;
     private final Label sourceLabel;
+    private final Panel xmlPanel;
 
     public CrawledContentTabSheet(final MyVaadinApplication app) {
         this.app = app;
         setCaption("Crawled Content");
-        this.htmlLabel = new Label();
-        this.htmlLabel.setContentMode(Label.CONTENT_RAW);
-        this.sourceLabel = new Label();
-        this.sourceLabel.setContentMode(Label.CONTENT_TEXT);
+        // HTML Formatted:
+        htmlLabel = new Label();
+        htmlLabel.setContentMode(Label.CONTENT_RAW);
         Panel htmlPanel = new Panel("HTML");
-        htmlPanel.addComponent(this.htmlLabel);
-        Panel sourcePanel = new Panel("Source");
-        sourcePanel.addComponent(this.sourceLabel);
+        htmlPanel.addComponent(htmlLabel);
         addTab(htmlPanel);
+        // HTML Source:
+        sourceLabel = new Label();
+        sourceLabel.setContentMode(Label.CONTENT_TEXT);
+        Panel sourcePanel = new Panel("Source");
+        sourcePanel.addComponent(sourceLabel);
         addTab(sourcePanel);
+        // XML Snippets:
+        Label xmlLabel = new Label();
+        xmlLabel.setContentMode(Label.CONTENT_TEXT);
+        xmlPanel = new Panel("XML Snippets");
+        xmlPanel.addComponent(xmlLabel);
+        xmlPanel.removeAllComponents();
+        addTab(xmlPanel);
         setHeight(100, UNITS_PERCENTAGE);
     }
 
@@ -39,5 +49,9 @@ public class CrawledContentTabSheet extends TabSheet {
 
     public Label getSourceLabel() {
         return sourceLabel;
+    }
+
+    public Panel getXmlPanel() {
+        return xmlPanel;
     }
 }

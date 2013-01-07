@@ -34,7 +34,7 @@ public class XmlRecord {
         this.timestamp = timestamp;
         this.hostInverted = Arrays.copyOfRange(
                 hostInverted_parseAttemptCounter, 0,
-                hostInverted_parseAttemptCounter.length - 5);
+                hostInverted_parseAttemptCounter.length - 4);
         this.host = HttpUtils.getHost(host);
         byte[] parseAttemptCounterBytes = Arrays.copyOfRange(
                 hostInverted_parseAttemptCounter,

@@ -115,12 +115,11 @@ public class HtmlSplitterTask extends AbstractTask {
             XmlRecord record;
             try {
                 record = new XmlRecord(host, xml.getBytes("UTF-8"));
+                results.add(record);
+                LOG.debug("XML record created: {}", record);
             } catch (UnsupportedEncodingException e) {
                 LOG.error("", e);
-                return null;
             }
-            results.add(record);
-            LOG.debug("XML record created: {}", record);
         }
         return results;
     }

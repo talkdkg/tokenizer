@@ -16,11 +16,13 @@
 package org.tokenizer.ui.views;
 
 import java.io.UnsupportedEncodingException;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tokenizer.crawler.db.UrlRecord;
 import org.tokenizer.crawler.db.WebpageRecord;
+import org.tokenizer.crawler.db.XmlRecord;
 import org.tokenizer.ui.MyVaadinApplication;
 import org.tokenizer.ui.lists.UrlQuery;
 import org.tokenizer.ui.lists.UrlRecordList;
@@ -29,6 +31,7 @@ import com.netflix.astyanax.connectionpool.exceptions.ConnectionException;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.util.ObjectProperty;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalSplitPanel;
 
 public class TaskOutputView extends VerticalSplitPanel implements
@@ -82,6 +85,31 @@ public class TaskOutputView extends VerticalSplitPanel implements
                     htmlProp);
             crawledContentTabSheet.getSourceLabel().setPropertyDataSource(
                     htmlProp);
+            if (webpage != null) {
+                try {
+                    List<XmlRecord> xmlRecords = MyVaadinApplication
+                            .getRepository().listXmlRecords(
+                                    webpage.getXmlLinks());
+                    crawledContentTabSheet.getXmlPanel().removeAllComponents();
+                    for (XmlRecord xmlRecord : xmlRecords) {
+                        if (xmlRecord == null) {
+                            continue;
+                        }
+                        LOG.debug(xmlRecord.toString());
+                        Label xmlLabel = new Label();
+                        xmlLabel.setContentMode(Label.CONTENT_RAW);
+                        xmlLabel.setPropertyDataSource(new ObjectProperty<String>(
+                                new String(xmlRecord.getContent(), "UTF-8"),
+                                String.class));
+                        crawledContentTabSheet.getXmlPanel().addComponent(
+                                xmlLabel);
+                    }
+                } catch (ConnectionException e) {
+                    LOG.error("", e);
+                } catch (UnsupportedEncodingException e) {
+                    LOG.error("", e);
+                }
+            }
         }
     }
 

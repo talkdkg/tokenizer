@@ -1,5 +1,6 @@
 package org.tokenizer.crawler.db;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.netflix.astyanax.connectionpool.exceptions.ConnectionException;
@@ -48,6 +49,12 @@ public interface CrawlerRepository {
 
     List<XmlRecord> listXmlRecords(final String host,
             final int parseAttemptCounter, final int maxResults)
+            throws ConnectionException;
+
+    List<XmlRecord> listXmlRecords(final byte[][] keys)
+            throws ConnectionException;
+
+    List<XmlRecord> listXmlRecords(final ArrayList<byte[]> xmlLinks)
             throws ConnectionException;
 
     void insertIfNotExists(MessageRecord messageRecord)
