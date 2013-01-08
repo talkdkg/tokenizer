@@ -339,6 +339,7 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
         KeyspaceDefinition ki2 = keyspaceContext.getEntity().describeKeyspace();
         System.out.println("Describe Keyspace: " + ki2.getName());
         getKeyspaceDefinition();
+        reindex();
     }
 
     public void getKeyspaceDefinition() throws ConnectionException {
@@ -1048,6 +1049,6 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
         } catch (Exception e) {
             LOG.error("", e);
         }
-        LOG.warn("Total {} records reindexed... ", counter.get());
+        LOG.error("Total {} records reindexed... ", counter.get());
     }
 }

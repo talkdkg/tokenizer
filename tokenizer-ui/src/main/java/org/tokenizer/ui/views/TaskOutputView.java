@@ -105,7 +105,7 @@ public class TaskOutputView extends VerticalSplitPanel implements
                         }
                         LOG.debug(xmlRecord.toString());
                         Label xmlLabel = new Label();
-                        xmlLabel.setContentMode(Label.CONTENT_RAW);
+                        xmlLabel.setContentMode(Label.CONTENT_PREFORMATTED);
                         xmlLabel.setPropertyDataSource(new ObjectProperty<String>(
                                 new String(xmlRecord.getContent(), "UTF-8"),
                                 String.class));
