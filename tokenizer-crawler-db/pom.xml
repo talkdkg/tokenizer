@@ -47,6 +47,7 @@
             <artifactId>guava</artifactId>
             <version>11.0.2</version>
         </dependency>
+        <!-- absolute path does not work in Windows...
         <dependency>
             <groupId>object-explorer</groupId>
             <artifactId>object-explorer</artifactId>
@@ -54,5 +55,6 @@
             <scope>system</scope>
             <systemPath>/java/git/tokenizer/lib/object-explorer.jar</systemPath>
         </dependency>
+         -->
     </dependencies>
 </project>
