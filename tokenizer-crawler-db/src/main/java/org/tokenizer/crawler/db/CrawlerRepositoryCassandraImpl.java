@@ -449,6 +449,41 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
     }
 
     @Override
+    public List<UrlRecord> listUrlRecords(final String host,
+            final int httpResponseCode, byte[] startRowkey, int count)
+            throws ConnectionException {
+        double nanoStart = System.nanoTime();
+        byte[] hostInverted = HttpUtils.getHostInverted(host);
+        byte[] hostInverted_httpResponseCode = ArrayUtils.addAll(hostInverted,
+                HttpUtils.intToBytes(httpResponseCode));
+        LOG.debug("host: {}", host);
+        LOG.debug("httpResponseCode: {}", httpResponseCode);
+        LOG.debug("startRowkey: {}", Arrays.toString(startRowkey));
+        LOG.debug("count: {}", count);
+        //@formatter:off
+        IndexQuery<byte[], String> query = keyspace
+                .prepareQuery(CF_URL_RECORDS)
+                .setConsistencyLevel(ConsistencyLevel.CL_ONE)
+                .searchWithIndex()
+                .setStartKey(startRowkey)
+                .setRowLimit(count)
+                .autoPaginateRows(false)
+                .addExpression()
+                .whereColumn("hostInverted_httpResponseCode")
+                .equals()
+                .value(hostInverted_httpResponseCode);
+        //@formatter:on
+        OperationResult<Rows<byte[], String>> result = query.execute();
+        if (LOG.isDebugEnabled()) {
+            double timeTaken = (System.nanoTime() - nanoStart) / (1e9);
+            LOG.debug("Time taken to fetch " + result.getResult().size()
+                    + " URL records is " + timeTaken + " seconds, host: {}",
+                    host);
+        }
+        return toUrlRecordList(result);
+    }
+
+    @Override
     public List<UrlRecord> listUrlRecordsByFetchAttemptCounter(
             final String host, final int fetchAttemptCounter,
             final int maxResults) throws ConnectionException {

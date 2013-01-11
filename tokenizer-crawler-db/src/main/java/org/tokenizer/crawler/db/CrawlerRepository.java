@@ -22,6 +22,10 @@ public interface CrawlerRepository {
             final int httpResponseCode, final int maxResults)
             throws ConnectionException;
 
+    List<UrlRecord> listUrlRecords(final String host,
+            final int httpResponseCode, byte[] startRowkey, int count)
+            throws ConnectionException;
+
     int countUrlRecords() throws ConnectionException;
 
     int countUrlRecords(final String host, final int httpResponseCode)

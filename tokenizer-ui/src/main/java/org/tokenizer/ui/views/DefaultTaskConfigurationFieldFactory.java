@@ -22,6 +22,7 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.DefaultFieldFactory;
 import com.vaadin.ui.Field;
+import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 
 public class DefaultTaskConfigurationFieldFactory extends DefaultFieldFactory {
@@ -55,6 +56,12 @@ public class DefaultTaskConfigurationFieldFactory extends DefaultFieldFactory {
             textField.setWidth(400, Field.UNITS_PIXELS);
             textField.setMaxLength(256);
             field = textField;
+        } else if (propertyId.equals("keywords")) {
+            TextArea o = new TextArea();
+            o.setCaption("Keywords (Twitter): \"OR\" between lines, \"AND\" inside lines");
+            o.setRows(25);
+            o.setColumns(50);
+            field = o;
         } else {
             field = super.createField(item, propertyId, uiContext);
         }

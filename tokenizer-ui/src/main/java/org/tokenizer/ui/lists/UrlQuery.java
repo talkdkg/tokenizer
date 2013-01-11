@@ -1,7 +1,7 @@
 package org.tokenizer.ui.lists;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -10,6 +10,9 @@ import org.slf4j.LoggerFactory;
 import org.tokenizer.core.StringPool;
 import org.tokenizer.crawler.db.CrawlerRepository;
 import org.tokenizer.crawler.db.UrlRecord;
+import org.tokenizer.executor.engine.MetricsCache;
+import org.tokenizer.executor.model.api.TaskInfoBean;
+import org.tokenizer.executor.model.configuration.ClassicRobotTaskConfiguration;
 import org.tokenizer.ui.MyVaadinApplication;
 import org.vaadin.addons.lazyquerycontainer.Query;
 
@@ -27,14 +30,20 @@ public class UrlQuery implements Query {
     public static final String URL_RECORD = "URL_RECORD";
     public static final Date DEFAULT_DATE = new Date(0);
     private final CrawlerRepository crawlerRepository;
-    private byte[] rowKeyBytes;
+    // ASSUMING that "count" is always 100; algo is oprimized for 100s frames
+    private int startIndex;
+    private final int PAGE_SIZE = 100;
+    // array to store each 100s RowKey:
+    private final List<byte[]> rowKeys = new ArrayList<byte[]>(1024);
+    // very last RowKey on a last page:
+    private byte[] lastRowKey;
     private final MyVaadinApplication app;
 
     public UrlQuery(final MyVaadinApplication app) {
         this.app = app;
         this.crawlerRepository = MyVaadinApplication.getRepository();
-        loadRowKeys(app.getSelectedHost(), app.getSelectedHttpResponseCode());
-        // loadRowKeys("www.amazon.com", 200);
+        // loadRowKeys(app.getSelectedHost(),
+        // app.getSelectedHttpResponseCode());
     }
 
     @Override
@@ -67,27 +76,59 @@ public class UrlQuery implements Query {
     public List<Item> loadItems(final int startIndex, final int count) {
         LOG.debug("loadItems() called... startIndex: {}, count: {}",
                 startIndex, count);
-        synchronized (app) {
-            byte[][] rowKeys = new byte[count][];
-            for (int i = 0; i < count; i++) {
-                // rowKeys[i] = new byte[16];
-                rowKeys[i] = Arrays.copyOfRange(rowKeyBytes,
-                        (startIndex + i) * 16, (startIndex + i) * 16 + 16);
-            }
-            List<Item> items = new ArrayList<Item>();
-            List<UrlRecord> urlRecords;
-            try {
-                urlRecords = crawlerRepository.listUrlRecords(rowKeys);
-            } catch (ConnectionException e) {
-                LOG.error("", e);
+        List<Item> items = new ArrayList<Item>();
+        try {
+            LOG.debug("startIndex: {}, count: {}", startIndex, count);
+            int page = startIndex / PAGE_SIZE;
+            // if we have "start" key in a cache:
+            if (page < rowKeys.size()) {
+                List<UrlRecord> urlRecords = crawlerRepository.listUrlRecords(
+                        app.getSelectedHost(),
+                        app.getSelectedHttpResponseCode(), rowKeys.get(page),
+                        count);
+                for (UrlRecord urlRecord : urlRecords) {
+                    items.add(toItem(urlRecord));
+                }
+                return items;
+            } else if (page == 0 && page == rowKeys.size()) {
+                List<UrlRecord> urlRecords = crawlerRepository.listUrlRecords(
+                        app.getSelectedHost(),
+                        app.getSelectedHttpResponseCode(), count);
+                for (int i = 0; i < urlRecords.size(); i++) {
+                    if (i == 0)
+                        rowKeys.add(urlRecords.get(i).getDigest());
+                    if (i == count - 1)
+                        lastRowKey = urlRecords.get(i).getDigest();
+                    items.add(toItem(urlRecords.get(i)));
+                }
+                return items;
+            } else if (page != 0 && page == rowKeys.size()) {
+                List<UrlRecord> urlRecords = crawlerRepository.listUrlRecords(
+                        app.getSelectedHost(),
+                        app.getSelectedHttpResponseCode(), lastRowKey,
+                        count + 1);
+                for (int i = 0; i < urlRecords.size(); i++) {
+                    if (i == 0)
+                        continue;
+                    if (i == 1)
+                        rowKeys.add(urlRecords.get(i).getDigest());
+                    if (i == count)
+                        lastRowKey = urlRecords.get(i).getDigest();
+                    items.add(toItem(urlRecords.get(i)));
+                }
+                return items;
+            } else {
+                // count can be less than PAGE_SIZE if it is last page
+                while (startIndex > PAGE_SIZE * rowKeys.size()) {
+                    LOG.debug("Recursive call.................");
+                    items = loadItems(PAGE_SIZE * rowKeys.size(), PAGE_SIZE);
+                }
                 return items;
             }
-            for (UrlRecord urlRecord : urlRecords) {
-                items.add(toItem(urlRecord));
-            }
-            LOG.debug("{} items found", items.size());
-            return items;
+        } catch (ConnectionException e) {
+            LOG.error("", e);
         }
+        return items;
     }
 
     @Override
@@ -98,33 +139,25 @@ public class UrlQuery implements Query {
 
     @Override
     public int size() {
-        synchronized (app) {
-            return rowKeyBytes.length / 16;
-        }
-    }
-
-    private void loadRowKeys(final String host, final int httpResponseCode) {
-        LOG.debug("Loading raw keys...");
-        List<byte[]> rowKeyList;
-        try {
-            rowKeyList = crawlerRepository.loadUrlRecordRowKeys(host,
-                    httpResponseCode);
-        } catch (Exception e) {
-            LOG.error("", e);
-            return;
-        }
-        byte[] b = new byte[16 * rowKeyList.size()];
-        int i = 0;
-        for (byte[] rowKey : rowKeyList) {
-            if (rowKey.length > 16)
-                throw new RuntimeException(
-                        "not implemented: row key size is higher than 16 bytes");
-            for (int offset = 0; offset < 16; offset++) {
-                b[i * 16 + offset] = rowKey[offset];
+        Collection<TaskInfoBean> tasks = MyVaadinApplication.getModel()
+                .getTasks();
+        String selectedHost = app.getSelectedHost();
+        int size = 0;
+        if (selectedHost == null)
+            return 0;
+        for (TaskInfoBean task : tasks) {
+            if (task.getTaskConfiguration()
+                    .getImplementationName()
+                    .equals(ClassicRobotTaskConfiguration.class.getSimpleName())) {
+                String host = ((ClassicRobotTaskConfiguration) task
+                        .getTaskConfiguration()).getHost();
+                if (selectedHost.equals(host))
+                    size = task.getCounters().get(MetricsCache.URL_OK_KEY)
+                            .intValue();
             }
-            i++;
         }
-        rowKeyBytes = b;
+        LOG.debug("size: {}", size);
+        return size;
     }
 
     private Item toItem(final UrlRecord urlRecord) {
