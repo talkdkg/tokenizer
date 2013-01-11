@@ -339,7 +339,7 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
         KeyspaceDefinition ki2 = keyspaceContext.getEntity().describeKeyspace();
         System.out.println("Describe Keyspace: " + ki2.getName());
         getKeyspaceDefinition();
-        reindex();
+        // reindex();
     }
 
     public void getKeyspaceDefinition() throws ConnectionException {
