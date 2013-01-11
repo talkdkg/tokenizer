@@ -71,15 +71,24 @@
         </pluginRepository>
     </pluginRepositories>
     <dependencies>
+<!--
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>wicket-web</artifactId>
         </dependency>
+ -->
+ 
+ <dependency>
+    <groupId>org.springframework</groupId>
+    <artifactId>spring-web</artifactId>
+</dependency>
+            
+            
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>tokenizer-core</artifactId>
         </dependency>
-       <dependency>
+        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>tokenizer-core-zk-util</artifactId>
         </dependency>
@@ -108,7 +117,7 @@
             <artifactId>tokenizer-executor-worker</artifactId>
         </dependency>
 
-		<!-- xaloon DEPENDENCIES -->
+		<!-- xaloon DEPENDENCIES 
         <dependency>
             <groupId>org.xaloon.core</groupId>
             <artifactId>xaloon-core-jpa</artifactId>
@@ -119,8 +128,8 @@
             <artifactId>xaloon-wicket-components-resources</artifactId>
             <version>${xaloon.version}</version>
         </dependency>
-
-		<!-- xaloon plugins DEPENDENCIES -->
+-->
+		<!-- xaloon plugins DEPENDENCIES 
         <dependency>
             <groupId>org.xaloon.plugins</groupId>
             <artifactId>xaloon-wicket-plugin-blog</artifactId>
@@ -136,6 +145,10 @@
             <artifactId>xaloon-wicket-plugin-authentication</artifactId>
             <version>${xaloon.version}</version>
         </dependency>
+        
+        -->
+        
+        
 		<!-- <dependency> <groupId>org.vaadin.addons</groupId> <artifactId>appfoundation</artifactId> <version>1.3.5</version> 
 			</dependency> -->
 		<!-- The XOM Dual Streaming/Tree API for Processing XML; LGPL; needed by AppFoundation Vaadin Addon -->
@@ -248,20 +261,20 @@
             <version>2.4.0</version>
             <scope>test</scope>
         </dependency>
-    <dependency>
-        <groupId>javax.validation</groupId>
-        <artifactId>validation-api</artifactId>
-        <version>1.0.0.GA</version>
-        <scope>provided</scope>
-    </dependency>
-    <dependency>
-        <groupId>javax.validation</groupId>
-        <artifactId>validation-api</artifactId>
-        <version>1.0.0.GA</version>
-        <classifier>sources</classifier>
-        <scope>provided</scope>
-    </dependency>
-            <dependency>
+        <dependency>
+            <groupId>javax.validation</groupId>
+            <artifactId>validation-api</artifactId>
+            <version>1.0.0.GA</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax.validation</groupId>
+            <artifactId>validation-api</artifactId>
+            <version>1.0.0.GA</version>
+            <classifier>sources</classifier>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>tokenizer-core</artifactId>
             <exclusions>

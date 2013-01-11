@@ -4,7 +4,11 @@
     version="2.0" xmlns="http://java.sun.com/xml/ns/persistence"
 >
     <persistence-unit name="persistenceUnit" transaction-type="RESOURCE_LOCAL">
-		<!-- shouldn't be valid for java SE per specification, but it works for EclipseLink ... -->
+<!--         <class>org.tokenizer.executor.engine.twitter.db.StatusVO</class>
+        <class>org.tokenizer.executor.engine.twitter.db.UserVO</class>
+ -->
+ 
+ 		<!-- shouldn't be valid for java SE per specification, but it works for EclipseLink ... -->
         <exclude-unlisted-classes>false</exclude-unlisted-classes>
         <shared-cache-mode>ALL</shared-cache-mode>
         <properties>

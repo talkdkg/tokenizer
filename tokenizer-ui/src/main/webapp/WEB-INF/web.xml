@@ -6,21 +6,9 @@
     <display-name>Vaadin Web Application</display-name>
     <context-param>
         <param-name>contextConfigLocation</param-name>
-<!-- 
-        <param-value>
-            classpath*:META-INF/spring-context.xml,
-            classpath*:META-INF/test-security-context.xml,
-            classpath*:META-INF/entitymanager.xml,
-            classpath*:META-INF/infrastructure-context.xml
-        </param-value>
- -->
- 
- 
- 
         <param-value>
             classpath*:META-INF/tokenizer-executor-context.xml
         </param-value>
-
     </context-param>
 
 

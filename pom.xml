@@ -39,7 +39,7 @@
         <version.rome>1.0</version.rome>
         <version.slf4j>1.6.4</version.slf4j>
         <version.solr>4.0.0</version.solr>
-        <version.spring>3.1.0.RELEASE</version.spring>
+        <version.spring>3.2.0.RELEASE</version.spring>
         <version.tagsoup>1.2.1</version.tagsoup>
         <version.tika>1.2</version.tika>
         <version.twitter4j>3.0.0-SNAPSHOT</version.twitter4j>
@@ -237,6 +237,11 @@
             <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-context</artifactId>
+                <version>${version.spring}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-web</artifactId>
                 <version>${version.spring}</version>
             </dependency>
             <dependency>
