@@ -3,6 +3,8 @@ package org.tokenizer.crawler.db;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.nutch.net.URLFilter;
+
 import com.netflix.astyanax.connectionpool.exceptions.ConnectionException;
 
 public interface CrawlerRepository {
@@ -11,6 +13,10 @@ public interface CrawlerRepository {
     void insertIfNotExists(UrlRecord urlRecord) throws ConnectionException;
 
     void update(UrlRecord urlRecord) throws ConnectionException;
+
+    void delete(final UrlRecord urlRecord) throws ConnectionException;
+
+    void filter(final String host, final URLFilter urlFilter);
 
     List<UrlRecord> listUrlRecords(String host, int httpResponseCode,
             int maxResults) throws ConnectionException;

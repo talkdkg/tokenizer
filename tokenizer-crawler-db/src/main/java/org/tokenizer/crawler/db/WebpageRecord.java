@@ -15,6 +15,7 @@
  */
 package org.tokenizer.crawler.db;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -22,8 +23,9 @@ import java.util.Date;
 import org.tokenizer.core.util.HttpUtils;
 import org.tokenizer.core.util.MD5;
 
-public class WebpageRecord {
+public class WebpageRecord implements Serializable {
 
+    private static final long serialVersionUID = 1L;
     private static final ArrayList<byte[]> EMPTY_ARRAYLIST = new ArrayList<byte[]>();
     private byte[] digest = DefaultValues.EMPTY_ARRAY;
     private String host = DefaultValues.EMPTY_STRING;

@@ -16,14 +16,17 @@
 package org.tokenizer.executor.engine;
 
 import java.io.IOException;
+import java.io.Reader;
+import java.io.StringReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 import java.util.UUID;
 
+import org.apache.nutch.net.URLFilter;
+import org.apache.nutch.urlfilter.automaton.AutomatonURLFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tokenizer.core.http.FetcherUtils;
 import org.tokenizer.crawler.db.CrawlerRepository;
 import org.tokenizer.crawler.db.UrlRecord;
 import org.tokenizer.executor.model.api.WritableExecutorModel;
@@ -37,6 +40,7 @@ import crawlercommons.fetcher.FetchedResult;
 import crawlercommons.fetcher.http.BaseHttpFetcher;
 import crawlercommons.fetcher.http.BaseHttpFetcher.RedirectMode;
 import crawlercommons.fetcher.http.SimpleHttpFetcher;
+import crawlercommons.fetcher.http.UserAgent;
 import crawlercommons.robots.BaseRobotRules;
 import crawlercommons.robots.BaseRobotsParser;
 import crawlercommons.robots.RobotUtils;
@@ -51,6 +55,11 @@ public class ClassicRobotTask extends AbstractTask {
     BaseRobotRules robotRules = null;
     private ClassicRobotTaskConfiguration taskConfiguration;
     private static final int DEFAULT_MAX_THREADS = 1024;
+    private URLFilter urlFilter;
+
+    public URLFilter getUrlFilter() {
+        return urlFilter;
+    }
 
     public ClassicRobotTask(final UUID uuid, final String friendlyName,
             final ZooKeeperItf zk, final TaskConfiguration taskConfiguration,
@@ -58,14 +67,49 @@ public class ClassicRobotTask extends AbstractTask {
             final WritableExecutorModel model, final HostLocker hostLocker) {
         super(uuid, friendlyName, zk, crawlerRepository, model, hostLocker);
         this.taskConfiguration = (ClassicRobotTaskConfiguration) taskConfiguration;
-        this.httpClient = new SimpleHttpFetcher(DEFAULT_MAX_THREADS,
-                FetcherUtils.USER_AGENT);
+        UserAgent userAgent = new UserAgent(
+                this.taskConfiguration.getAgentName(),
+                this.taskConfiguration.getEmailAddress(),
+                this.taskConfiguration.getWebAddress(),
+                UserAgent.DEFAULT_BROWSER_VERSION, "2.1");
+        LOG.warn("userAgent: {}", userAgent.getUserAgentString());
+        // this.httpClient = new SimpleHttpFetcher(DEFAULT_MAX_THREADS,
+        // FetcherUtils.USER_AGENT);
+        this.httpClient = new SimpleHttpFetcher(DEFAULT_MAX_THREADS, userAgent);
         httpClient.setSocketTimeout(30000);
         httpClient.setConnectionTimeout(30000);
         httpClient.setRedirectMode(RedirectMode.FOLLOW_NONE);
         httpClient.setDefaultMaxContentSize(1024 * 1024);
-        robotFetcher = RobotUtils.createFetcher(FetcherUtils.USER_AGENT, 1);
+        robotFetcher = RobotUtils.createFetcher(userAgent, 1);
         robotFetcher.setDefaultMaxContentSize(1024 * 1024);
+        // this validation is needed only initally; to migrate old version of
+        // ZK-serialized objects to new version with default config
+        if (this.taskConfiguration.getUrlFilterConfig() == null) {
+            this.taskConfiguration
+                    .setUrlFilterConfig(ClassicRobotTaskConfiguration.DEFAULT_URL_FILTER);
+        }
+        Reader reader = new StringReader(
+                this.taskConfiguration.getUrlFilterConfig());
+        try {
+            this.urlFilter = new AutomatonURLFilter(reader);
+        } catch (IllegalArgumentException e) {
+            LOG.error("", e);
+        } catch (IOException e) {
+            LOG.error("", e);
+        }
+        Thread filterThread = new Thread(uuid + "-"
+                + taskConfiguration.getImplementationName() + "-"
+                + taskConfiguration.getName() + "-ULRFilterThread") {
+
+            @Override
+            public void run() {
+                crawlerRepository.filter(
+                        ((ClassicRobotTaskConfiguration) taskConfiguration)
+                                .getHost(), urlFilter);
+            }
+        };
+        filterThread.setDaemon(true);
+        filterThread.start();
         LOG.debug("Instance created");
     }
 
@@ -81,6 +125,7 @@ public class ClassicRobotTask extends AbstractTask {
         UrlRecord home = new UrlRecord("http://" + taskConfiguration.getHost()
                 + "/");
         crawlerRepository.insertIfNotExists(home);
+        FetchedResult fetchedResult;
         int fetchAttemptCounter = 0;
         int maxResults = 1000;
         List<UrlRecord> urlRecords = crawlerRepository
@@ -89,15 +134,24 @@ public class ClassicRobotTask extends AbstractTask {
                         maxResults);
         for (UrlRecord urlRecord : urlRecords) {
             LOG.debug("Trying URL: {}", urlRecord);
-            FetchedResult fetchedResult = PersistenceUtils.fetch(urlRecord,
+            fetchedResult = PersistenceUtils.fetch(urlRecord,
                     crawlerRepository, robotRules, metricsCache, httpClient,
-                    taskConfiguration.getHost());
+                    taskConfiguration.getHost(), urlFilter);
             LOG.trace("Fetching Result: {} {}", urlRecord, fetchedResult);
         }
         if (urlRecords == null || urlRecords.size() == 0) {
             // to prevent spin loop in case if collection is empty:
-            LOG.warn("no URLs found with httpResponseCode == 0; sleeping 600 seconds...");
-            Thread.sleep(600000);
+            LOG.warn("no URLs found with httpResponseCode == 0; sleeping 4 hours...");
+            Thread.sleep(4 * 3600 * 1000);
+            // refresh homepage
+            fetchedResult = PersistenceUtils.fetch(home, crawlerRepository,
+                    robotRules, metricsCache, httpClient,
+                    taskConfiguration.getHost(), urlFilter);
+            LOG.warn("homepage fetched: {}, response: {}", home.getUrl(),
+                    fetchedResult.getHttpStatus());
+            if (fetchedResult == null) {
+                LOG.error("Can't retrieve homepage! {}", home.getUrl());
+            }
         }
     }
 

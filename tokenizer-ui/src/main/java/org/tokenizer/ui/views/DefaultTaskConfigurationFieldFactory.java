@@ -62,6 +62,12 @@ public class DefaultTaskConfigurationFieldFactory extends DefaultFieldFactory {
             o.setRows(25);
             o.setColumns(50);
             field = o;
+        } else if (propertyId.equals("urlFilterConfig")) {
+            TextArea o = new TextArea();
+            o.setCaption("URL Filter");
+            o.setRows(50);
+            o.setColumns(120);
+            field = o;
         } else {
             field = super.createField(item, propertyId, uiContext);
         }

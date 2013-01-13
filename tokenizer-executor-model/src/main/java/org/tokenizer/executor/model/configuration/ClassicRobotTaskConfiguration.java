@@ -24,6 +24,23 @@ public class ClassicRobotTaskConfiguration extends TaskConfiguration {
     private String agentName = "Tokenizer";
     private String emailAddress = "info@tokenizer.ca";
     private String webAddress = "http://www.tokenizer.ca";
+    //@formatter:off
+    public static final String DEFAULT_URL_FILTER = 
+            "# The default url filter.\n\n" +
+            "# Each non-comment, non-blank line contains a regular expression\n" +
+            "# prefixed by '+' or '-'.  The first matching pattern in the file\n" +
+            "# determines whether a URL is included or ignored.  If no pattern\n" +
+            "# matches, the URL is ignored.\n\n" +
+            "# skip file: ftp: and mailto: urls\n" +
+            "-(file|ftp|mailto):.*\n" +
+            "# skip image and other suffixes\n" +
+            "-.*\\.(gif|GIF|jpg|JPG|png|PNG|ico|ICO|css|CSS|sit|SIT|eps|EPS|wmf|WMF|zip|ZIP|ppt|PPT|mpg|MPG|xls|XLS|gz|GZ|rpm|RPM|tgz|TGZ|mov|MOV|exe|EXE|jpeg|JPEG|bmp|BMP|js|JS)\n\n" +
+            "# skip URLs containing certain characters as probable queries, etc. (uncomment)\n" +
+            "# -.*[?*!@=].*\n" +
+            "# accept anything else\n" +
+            "+.*\n";
+    //@formatter:on
+    private String urlFilterConfig = DEFAULT_URL_FILTER;
 
     @Override
     public String toString() {
@@ -31,7 +48,7 @@ public class ClassicRobotTaskConfiguration extends TaskConfiguration {
                 + ", followRedirects=" + followRedirects + ", followExternal="
                 + followExternal + ", agentName=" + agentName
                 + ", emailAddress=" + emailAddress + ", webAddress="
-                + webAddress + "]";
+                + webAddress + ", urlFilterConfig=" + urlFilterConfig + "]";
     }
 
     public String getHost() {
@@ -87,6 +104,14 @@ public class ClassicRobotTaskConfiguration extends TaskConfiguration {
         return ClassicRobotTaskConfiguration.class.getSimpleName();
     }
 
+    public String getUrlFilterConfig() {
+        return urlFilterConfig;
+    }
+
+    public void setUrlFilterConfig(final String urlFilterConfig) {
+        this.urlFilterConfig = urlFilterConfig;
+    }
+
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -135,6 +160,11 @@ public class ClassicRobotTaskConfiguration extends TaskConfiguration {
             if (other.webAddress != null)
                 return false;
         } else if (!webAddress.equals(other.webAddress))
+            return false;
+        if (urlFilterConfig == null) {
+            if (other.urlFilterConfig != null)
+                return false;
+        } else if (!urlFilterConfig.equals(other.urlFilterConfig))
             return false;
         return true;
     }

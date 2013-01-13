@@ -19,22 +19,21 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Date;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import twitter4j.RateLimitStatus;
 import twitter4j.Status;
+import twitter4j.URLEntity;
 import twitter4j.User;
 
 @Entity
 @Table(name = "User")
 public class UserVO implements User {
+
     private static final long serialVersionUID = 1L;
     @Id
     private long id;
@@ -48,10 +47,8 @@ public class UserVO implements User {
     private String url;
     private boolean isProtected;
     private int followersCount;
-    
-    //@OneToMany(mappedBy = "user", cascade = CascadeType.PERSIST)
-    //private StatusVO statusVO;
-   
+    // @OneToMany(mappedBy = "user", cascade = CascadeType.PERSIST)
+    // private StatusVO statusVO;
     private String profileBackgroundColor;
     private String profileTextColor;
     private String profileLinkColor;
@@ -79,19 +76,26 @@ public class UserVO implements User {
     public UserVO() {
     }
 
-    public UserVO(User user) {
+    public UserVO(final User user) {
         this.id = user.getId();
         this.name = user.getName();
         this.screenName = user.getScreenName();
         this.location = user.getLocation();
         this.description = user.getDescription();
         this.isContributorsEnabled = user.isContributorsEnabled();
-        if (user.getProfileImageURL() != null) this.profileImageUrl = user.getProfileImageURL().toString();
-        if (user.getProfileImageUrlHttps() != null) this.profileImageUrlHttps = user.getProfileImageUrlHttps().toString();
-        if (user.getURL() != null) this.url = user.getURL().toString();
+        if (user.getProfileImageURL() != null) {
+            this.profileImageUrl = user.getProfileImageURL().toString();
+        }
+        if (user.getProfileImageUrlHttps() != null) {
+            this.profileImageUrlHttps = user.getProfileImageUrlHttps()
+                    .toString();
+        }
+        if (user.getURL() != null) {
+            this.url = user.getURL().toString();
+        }
         this.isProtected = user.isProtected();
         this.followersCount = user.getFollowersCount();
-        //this.statusVO = new StatusVO(user.getStatus());
+        // this.statusVO = new StatusVO(user.getStatus());
         this.profileBackgroundColor = user.getProfileBackgroundColor();
         this.profileTextColor = user.getProfileTextColor();
         this.profileLinkColor = user.getProfileLinkColor();
@@ -118,7 +122,7 @@ public class UserVO implements User {
     }
 
     @Override
-    public int compareTo(User that) {
+    public int compareTo(final User that) {
         return (int) (this.id - that.getId());
     }
 
@@ -174,12 +178,8 @@ public class UserVO implements User {
      * {@inheritDoc}
      */
     @Override
-    public URL getProfileImageURL() {
-        try {
-            return new URL(profileImageUrl);
-        } catch (MalformedURLException ex) {
-            return null;
-        }
+    public String getProfileImageURL() {
+        return profileImageUrl;
     }
 
     /**
@@ -200,12 +200,8 @@ public class UserVO implements User {
      * {@inheritDoc}
      */
     @Override
-    public URL getURL() {
-        try {
-            return new URL(url);
-        } catch (MalformedURLException ex) {
-            return null;
-        }
+    public String getURL() {
+        return url;
     }
 
     /**
@@ -290,9 +286,8 @@ public class UserVO implements User {
      */
     @Override
     public Status getStatus() {
-        //return statusVO;
+        // return statusVO;
         throw new UnsupportedOperationException("not implemented");
-
     }
 
     /**
@@ -413,13 +408,11 @@ public class UserVO implements User {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (null == obj) {
+    public boolean equals(final Object obj) {
+        if (null == obj)
             return false;
-        }
-        if (this == obj) {
+        if (this == obj)
             return true;
-        }
         return obj instanceof User && ((User) obj).getId() == this.id;
     }
 
@@ -431,5 +424,101 @@ public class UserVO implements User {
     @Override
     public int getAccessLevel() {
         throw new UnsupportedOperationException("not implemented");
+    }
+
+    @Override
+    public String getBiggerProfileImageURL() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public String getMiniProfileImageURL() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public String getOriginalProfileImageURL() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public String getProfileImageURLHttps() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public String getBiggerProfileImageURLHttps() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public String getMiniProfileImageURLHttps() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public String getOriginalProfileImageURLHttps() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public String getProfileBackgroundImageURL() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public String getProfileBannerURL() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public String getProfileBannerRetinaURL() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public String getProfileBannerIPadURL() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public String getProfileBannerIPadRetinaURL() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public String getProfileBannerMobileURL() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public String getProfileBannerMobileRetinaURL() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public URLEntity[] getDescriptionURLEntities() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public URLEntity getURLEntity() {
+        // TODO Auto-generated method stub
+        return null;
     }
 }

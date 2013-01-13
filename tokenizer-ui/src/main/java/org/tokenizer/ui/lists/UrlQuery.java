@@ -95,10 +95,12 @@ public class UrlQuery implements Query {
                         app.getSelectedHost(),
                         app.getSelectedHttpResponseCode(), count);
                 for (int i = 0; i < urlRecords.size(); i++) {
-                    if (i == 0)
+                    if (i == 0) {
                         rowKeys.add(urlRecords.get(i).getDigest());
-                    if (i == count - 1)
+                    }
+                    if (i == count - 1) {
                         lastRowKey = urlRecords.get(i).getDigest();
+                    }
                     items.add(toItem(urlRecords.get(i)));
                 }
                 return items;
@@ -108,12 +110,15 @@ public class UrlQuery implements Query {
                         app.getSelectedHttpResponseCode(), lastRowKey,
                         count + 1);
                 for (int i = 0; i < urlRecords.size(); i++) {
-                    if (i == 0)
+                    if (i == 0) {
                         continue;
-                    if (i == 1)
+                    }
+                    if (i == 1) {
                         rowKeys.add(urlRecords.get(i).getDigest());
-                    if (i == count)
+                    }
+                    if (i == count) {
                         lastRowKey = urlRecords.get(i).getDigest();
+                    }
                     items.add(toItem(urlRecords.get(i)));
                 }
                 return items;
@@ -151,9 +156,12 @@ public class UrlQuery implements Query {
                     .equals(ClassicRobotTaskConfiguration.class.getSimpleName())) {
                 String host = ((ClassicRobotTaskConfiguration) task
                         .getTaskConfiguration()).getHost();
-                if (selectedHost.equals(host))
-                    size = task.getCounters().get(MetricsCache.URL_OK_KEY)
-                            .intValue();
+                if (selectedHost.equals(host)) {
+                    Long o = task.getCounters().get(MetricsCache.URL_OK_KEY);
+                    if (o != null) {
+                        size = o.intValue();
+                    }
+                }
             }
         }
         LOG.debug("size: {}", size);

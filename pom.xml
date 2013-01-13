@@ -21,6 +21,7 @@
 >
     <properties>
         <version.astyanax>1.0.4-SNAPSHOT</version.astyanax>
+        <version.automaton>1.11-8</version.automaton>
         <version.base64>2.3.8</version.base64>
         <version.crawler-commons>0.2-SNAPSHOT</version.crawler-commons>
         <version.commons-cli>1.2</version.commons-cli>
@@ -42,7 +43,7 @@
         <version.spring>3.2.0.RELEASE</version.spring>
         <version.tagsoup>1.2.1</version.tagsoup>
         <version.tika>1.2</version.tika>
-        <version.twitter4j>3.0.0-SNAPSHOT</version.twitter4j>
+        <version.twitter4j>3.0.3</version.twitter4j>
         <version.zookeeper>3.4.4</version.zookeeper>
         <!-- copied from tokenizer-ui -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -72,7 +73,6 @@
         <module>tokenizer-executor-master</module>
         <module>tokenizer-executor-model</module>
         <module>tokenizer-executor-worker</module>
-        <module>tokenizer-twitter</module>
         <module>tokenizer-jpa</module>
         <module>tokenizer-ui</module>
         <module>wicket</module>
@@ -117,6 +117,11 @@
                 <groupId>com.netflix.astyanax</groupId>
                 <artifactId>astyanax</artifactId>
                 <version>${version.astyanax}</version>
+            </dependency>
+            <dependency>
+                <groupId>dk.brics.automaton</groupId>
+                <artifactId>automaton</artifactId>
+                <version>${version.automaton}</version>
             </dependency>
             <dependency>
                 <groupId>javax.ws.rs</groupId>

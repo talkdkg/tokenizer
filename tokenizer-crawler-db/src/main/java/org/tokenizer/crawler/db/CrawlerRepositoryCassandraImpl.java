@@ -12,6 +12,7 @@ import javax.annotation.Nullable;
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.nutch.net.URLFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tokenizer.core.util.HttpUtils;
@@ -378,6 +379,29 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
     }
 
     @Override
+    public void delete(final UrlRecord urlRecord) throws ConnectionException {
+        deleteUrlRecord(urlRecord.getDigest());
+        deleteWebpageRecord(urlRecord.getDigest());
+    }
+
+    private void deleteUrlRecord(final byte[] digest)
+            throws ConnectionException {
+        MutationBatch m = keyspace.prepareMutationBatch();
+        m.withRow(CF_URL_RECORDS, digest).delete();
+        m.execute();
+    }
+
+    private void deleteWebpageRecord(final byte[] webpageDigest)
+            throws ConnectionException {
+        MutationBatch m = keyspace.prepareMutationBatch();
+        if (webpageDigest != null && webpageDigest.length > 0) {
+            m = keyspace.prepareMutationBatch();
+            m.withRow(CF_WEBPAGE_RECORDS, webpageDigest).delete();
+            m.execute();
+        }
+    }
+
+    @Override
     public void update(final UrlRecord urlRecord) throws ConnectionException {
         MutationBatch m = keyspace.prepareMutationBatch();
         m.withRow(CF_URL_RECORDS, urlRecord.getDigest())
@@ -450,8 +474,8 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
 
     @Override
     public List<UrlRecord> listUrlRecords(final String host,
-            final int httpResponseCode, byte[] startRowkey, int count)
-            throws ConnectionException {
+            final int httpResponseCode, final byte[] startRowkey,
+            final int count) throws ConnectionException {
         double nanoStart = System.nanoTime();
         byte[] hostInverted = HttpUtils.getHostInverted(host);
         byte[] hostInverted_httpResponseCode = ArrayUtils.addAll(hostInverted,
@@ -1085,5 +1109,58 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
             LOG.error("", e);
         }
         LOG.error("Total {} records reindexed... ", counter.get());
+    }
+
+    @Override
+    public void filter(final String host, final URLFilter urlFilter) {
+        final AtomicLong counter = new AtomicLong();
+        try {
+            ArrayList<String> columns = new ArrayList<String>();
+            columns.add("url");
+            columns.add("webpageDigest");
+            MutationBatch m = keyspace.prepareMutationBatch();
+            //@formatter:off
+            keyspace
+                    .prepareQuery(CF_URL_RECORDS)
+                    .getAllRows()
+                    .setRowLimit(100)
+                    .setRepeatLastToken(true)
+                    .withColumnSlice(columns)
+                    .executeWithCallback(new RowCallback<byte[], String>() {
+                        @Override
+                        public void success(final Rows<byte[], String> rows) {
+                            for (Row<byte[], String> row : rows) {
+                                String url = row.getColumns().getStringValue("url",null);
+                                if (!host.equals(HttpUtils.getHost(url))) {
+                                    continue;
+                                }
+                                byte[] webpageDigest = row.getColumns().getByteArrayValue("webpageDigest",null);
+                                if (urlFilter.filter(url) == null) {
+                                    LOG.debug("Filtering URL: {}", url);
+                                    try {
+                                        deleteUrlRecord(row.getKey());
+                                        deleteWebpageRecord(webpageDigest);
+                                        counter.incrementAndGet();
+                                        if (counter.get() % 1000 == 0) {
+                                            LOG.warn("{}: {} URL records deleted...", host, counter.get());
+                                        }
+                                    } catch (ConnectionException e) {
+                                      LOG.error("", e);
+                                    }
+                                }
+                            }
+                        }
+
+                        @Override
+                        public boolean failure(final ConnectionException e) {
+                            LOG.error(e.getMessage(), e);
+                            return false;
+                        }
+                    });
+            // @formatter:on
+        } catch (Exception e) {
+            LOG.error("", e);
+        }
+        LOG.error("{}: total {} records deleted... ", host, counter.get());
     }
 }

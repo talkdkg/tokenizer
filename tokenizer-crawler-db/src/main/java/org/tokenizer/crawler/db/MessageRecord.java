@@ -1,9 +1,11 @@
 package org.tokenizer.crawler.db;
 
+import java.io.Serializable;
 import java.util.Arrays;
 
-public class MessageRecord {
+public class MessageRecord implements Serializable {
 
+    private static final long serialVersionUID = 1L;
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory
             .getLogger(UrlRecord.class);
     private byte[] digest = DefaultValues.EMPTY_ARRAY;

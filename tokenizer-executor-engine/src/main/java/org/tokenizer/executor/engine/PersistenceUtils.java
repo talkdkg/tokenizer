@@ -21,16 +21,15 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.nutch.net.URLFilter;
 import org.apache.tika.utils.CharsetUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tokenizer.core.datum.Outlink;
 import org.tokenizer.core.datum.ParsedDatum;
 import org.tokenizer.core.parser.SimpleParser;
-import org.tokenizer.core.urls.BaseUrlFilter;
 import org.tokenizer.core.urls.BaseUrlNormalizer;
 import org.tokenizer.core.urls.BaseUrlValidator;
-import org.tokenizer.core.urls.SimpleUrlFilter;
 import org.tokenizer.core.urls.SimpleUrlNormalizer;
 import org.tokenizer.core.urls.SimpleUrlValidator;
 import org.tokenizer.core.util.HttpUtils;
@@ -60,8 +59,12 @@ public class PersistenceUtils {
             final BaseRobotRules baseRobotRules,
             final MetricsCache metricsCache,
             final SimpleHttpFetcher simpleHttpClient,
-            final String hostConstraint) throws ConnectionException,
-            InterruptedException {
+            final String hostConstraint, final URLFilter urlFilter)
+            throws ConnectionException, InterruptedException {
+        if (urlFilter.filter(urlRecord.getUrl()) == null) {
+            repository.delete(urlRecord);
+            return null;
+        }
         urlRecord.incrementFetchAttemptCounter();
         metricsCache.increment(MetricsCache.URL_TOTAL_KEY);
         if (!checkRobotRules(urlRecord, repository, baseRobotRules,
@@ -73,7 +76,7 @@ public class PersistenceUtils {
             repository.update(urlRecord);
             return null;
         }
-        parse(fetchedResult, repository, hostConstraint);
+        parse(fetchedResult, repository, hostConstraint, urlFilter);
         String charset = CharsetUtils.clean(HttpUtils
                 .getCharsetFromContentType(fetchedResult.getContentType()));
         WebpageRecord webpageRecord = new WebpageRecord(urlRecord.getUrl(),
@@ -181,7 +184,6 @@ public class PersistenceUtils {
 
     private static BaseUrlValidator urlValidator = new SimpleUrlValidator();
     private static BaseUrlNormalizer urlNormalizer = new SimpleUrlNormalizer();
-    private static BaseUrlFilter urlFilter = new SimpleUrlFilter();
     private static final int MAX_PARSE_DURATION = 180 * 1000;
     // Create cache to store URLs from Outlinks
     // If the cache is to be used by multiple thread
@@ -200,8 +202,9 @@ public class PersistenceUtils {
     };
 
     private static boolean parse(final FetchedResult fetchedResult,
-            final CrawlerRepository repository, final String hostConstraint)
-            throws InterruptedException, ConnectionException {
+            final CrawlerRepository repository, final String hostConstraint,
+            final URLFilter urlFilter) throws InterruptedException,
+            ConnectionException {
         ParserPolicy parserPolicy = new ParserPolicy(MAX_PARSE_DURATION);
         SimpleParser parser = new SimpleParser(parserPolicy);
         ParsedDatum parsed = parser.parse(fetchedResult);
@@ -225,6 +228,9 @@ public class PersistenceUtils {
             }
             // TODO: move it to repository; performance improvement trick:
             if (cache.containsKey(url)) {
+                continue;
+            }
+            if (urlFilter.filter(url) == null) {
                 continue;
             }
             UrlRecord urlRecord = new UrlRecord(url);

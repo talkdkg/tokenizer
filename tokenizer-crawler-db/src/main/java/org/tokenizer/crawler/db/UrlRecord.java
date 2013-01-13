@@ -15,6 +15,7 @@
  */
 package org.tokenizer.crawler.db;
 
+import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.Date;
@@ -22,8 +23,9 @@ import java.util.Date;
 import org.tokenizer.core.util.HttpUtils;
 import org.tokenizer.core.util.MD5;
 
-public class UrlRecord {
+public class UrlRecord implements Serializable {
 
+    private static final long serialVersionUID = 1L;
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory
             .getLogger(UrlRecord.class);
     private byte[] digest = DefaultValues.EMPTY_ARRAY;

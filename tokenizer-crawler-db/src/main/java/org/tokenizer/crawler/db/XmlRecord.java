@@ -1,5 +1,6 @@
 package org.tokenizer.crawler.db;
 
+import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.Date;
@@ -10,8 +11,9 @@ import org.slf4j.LoggerFactory;
 import org.tokenizer.core.util.HttpUtils;
 import org.tokenizer.core.util.MD5;
 
-public class XmlRecord {
+public class XmlRecord implements Serializable {
 
+    private static final long serialVersionUID = 1L;
     private static final Logger LOG = LoggerFactory.getLogger(XmlRecord.class);
     private byte[] digest = DefaultValues.EMPTY_ARRAY;
     private Date timestamp = DefaultValues.EMPTY_DATE;
