@@ -171,6 +171,11 @@
                 <version>${version.httpclient}</version>
             </dependency>
             <dependency>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>httpmime</artifactId>
+                <version>${version.httpclient}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.apache.solr</groupId>
                 <artifactId>solr-solrj</artifactId>
                 <version>${version.solr}</version>

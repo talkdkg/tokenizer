@@ -1,5 +1,6 @@
 package org.tokenizer.crawler.db;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,8 +14,12 @@ import javax.annotation.PostConstruct;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.nutch.net.URLFilter;
+import org.apache.solr.client.solrj.SolrServer;
+import org.apache.solr.client.solrj.SolrServerException;
+import org.apache.solr.common.SolrInputDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tokenizer.core.solr.SolrUtils;
 import org.tokenizer.core.util.HttpUtils;
 import org.tokenizer.core.util.MD5;
 import org.tokenizer.util.io.JavaSerializationUtils;
@@ -375,6 +380,7 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
                 .execute();
         if (result.getResult().isEmpty()) {
             update(urlRecord);
+            submitToSolr(urlRecord);
         }
     }
 
@@ -1162,5 +1168,21 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
             LOG.error("", e);
         }
         LOG.error("{}: total {} records deleted... ", host, counter.get());
+    }
+
+    private void submitToSolr(final UrlRecord urlRecord) {
+        SolrServer solrServer = SolrUtils.getSolrServer();
+        SolrInputDocument doc = new SolrInputDocument();
+        doc.addField("id", MD5.toHexString(urlRecord.getDigest()));
+        doc.addField("host", urlRecord.getHost());
+        doc.addField("url", urlRecord.getUrl());
+        try {
+            solrServer.add(doc);
+        } catch (SolrServerException e) {
+            LOG.error("", e);
+        } catch (IOException e) {
+            LOG.error("", e);
+        }
+        // solrServer.commit();
     }
 }

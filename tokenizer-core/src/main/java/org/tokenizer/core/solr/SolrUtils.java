@@ -23,35 +23,34 @@ import org.tokenizer.core.TokenizerConfig;
 
 /**
  * 
- * Static Utility class to get access to Solr.
- * TODO: fine-tune with new version of HttpClient
+ * Static Utility class to get access to Solr. TODO: fine-tune with new version
+ * of HttpClient
  * 
  * @author Fuad
  * 
  */
 public class SolrUtils {
 
-	private static final Logger LOG = LoggerFactory.getLogger(SolrUtils.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SolrUtils.class);
+    private static final String SOLR_URL = TokenizerConfig.getProperties()
+            .getProperty("solr.url", "http://localhost:8080/solr/url_records");
+    private static SolrServer solrServer = null;
 
-	private static final String SOLR_URL = TokenizerConfig.getProperties().getProperty("solr.url", "http://localhost:8080/solr/core0");
-
-	private static SolrServer solrServer = null;
-
-	public static SolrServer getSolrServer() {
-		if (solrServer == null) {
-			synchronized (SolrUtils.class) {
-				if (solrServer == null) {
-					HttpSolrServer httpSolrServer = new HttpSolrServer(SOLR_URL);
-					httpSolrServer.setSoTimeout(1000); // socket read timeout
-					httpSolrServer.setConnectionTimeout(100);
-					httpSolrServer.setDefaultMaxConnectionsPerHost(100);
-					httpSolrServer.setMaxTotalConnections(100);
-					httpSolrServer.setMaxRetries(1); // defaults to 0. > 1 not recommended.
-					solrServer = httpSolrServer;
-				}
-			}
-		}
-		return solrServer;
-	}
-
+    public static SolrServer getSolrServer() {
+        if (solrServer == null) {
+            synchronized (SolrUtils.class) {
+                if (solrServer == null) {
+                    HttpSolrServer httpSolrServer = new HttpSolrServer(SOLR_URL);
+                    httpSolrServer.setSoTimeout(1000); // socket read timeout
+                    httpSolrServer.setConnectionTimeout(100);
+                    httpSolrServer.setDefaultMaxConnectionsPerHost(100);
+                    httpSolrServer.setMaxTotalConnections(100);
+                    httpSolrServer.setMaxRetries(1); // defaults to 0. > 1 not
+                                                     // recommended.
+                    solrServer = httpSolrServer;
+                }
+            }
+        }
+        return solrServer;
+    }
 }

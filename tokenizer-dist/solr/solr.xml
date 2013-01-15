@@ -48,6 +48,11 @@
   You can read more about SolrCloud mode at http://wiki.apache.org/solr/SolrCloud
   -->
   <cores adminPath="/admin/cores" defaultCoreName="collection1" host="${host:}" hostPort="${jetty.port:}" hostContext="${hostContext:}" zkClientTimeout="${zkClientTimeout:15000}">
-    <core name="collection1" instanceDir="collection1" />
+    <core name="collection1" instanceDir="collection1">
+      <property name="solr.data.dir" value="/data/solr_data/collection1"/>
+    </core>
+    <core name="url_records" instanceDir="url_records">
+      <property name="solr.data.dir" value="/data/solr_data/url_records"/>
+    </core>
   </cores>
 </solr>
