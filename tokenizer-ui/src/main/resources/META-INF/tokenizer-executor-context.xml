@@ -15,10 +15,9 @@ xmlns="http://www.springframework.org/schema/beans"
     default-autowire="byName"
     >
     <context:annotation-config/>
-    <bean id="zooKeeper" class="org.tokenizer.util.zookeeper.StateWatchingZooKeeper">
+    <bean id="zooKeeper" class="org.tokenizer.util.zookeeper.ZooKeeperImpl">
         <constructor-arg index="0" value="127.0.0.1:2181"/>
-        <constructor-arg index="1" value="20000"/>
-        <constructor-arg index="2" value="600000"/>
+        <constructor-arg index="1" value="60000"/>
     </bean>
     <bean id="executorWorker" class="org.tokenizer.executor.worker.ExecutorWorker">
         <constructor-arg ref="executorModel"/>
