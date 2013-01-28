@@ -15,10 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
->
+ --><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <properties>
         <version.astyanax>1.0.4-SNAPSHOT</version.astyanax>
         <version.automaton>1.11-8</version.automaton>
@@ -48,7 +45,7 @@
         <!-- copied from tokenizer-ui -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <addonBaseName>dontpush-addon</addonBaseName>
-        <vaadin.version>6.8.4</vaadin.version>
+        <vaadin.version>6.8.7</vaadin.version>
         <vaadin.plugin.version>${vaadin.version}</vaadin.plugin.version>
         <version.dontpush>1.0.1</version.dontpush>
         <xaloon.version>1.5.1</xaloon.version>
@@ -77,7 +74,10 @@
         <module>tokenizer-ui</module>
         <module>wicket</module>
         <module>tokenizer-core-zk-util</module>
-    </modules>
+    <module>tokenizer-ui-wicket</module>
+    <module>tokenizer-ui-vaadin</module>
+    <module>tokenizer-ui-vaadin6</module>
+  </modules>
     <repositories>
         <repository>
             <id>default</id>

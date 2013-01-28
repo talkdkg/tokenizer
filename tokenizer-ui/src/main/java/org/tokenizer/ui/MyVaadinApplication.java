@@ -18,6 +18,7 @@ package org.tokenizer.ui;
 import java.util.UUID;
 
 import org.springframework.context.ApplicationContext;
+import org.tokenizer.core.context.ApplicationContextProvider;
 import org.tokenizer.crawler.db.CrawlerRepository;
 import org.tokenizer.executor.model.api.TaskNotFoundException;
 import org.tokenizer.executor.model.api.WritableExecutorModel;
@@ -72,7 +73,7 @@ public class MyVaadinApplication extends Application implements
 
     @Override
     public void init() {
-        applicationContext = MyVaadinServlet.getApplicationContext();
+        applicationContext = ApplicationContextProvider.getApplicationContext();
         model = (WritableExecutorModel) applicationContext
                 .getBean("executorModel");
         repository = (CrawlerRepository) applicationContext
