@@ -15,7 +15,7 @@
  */
 package org.tokenizer.ui.views;
 
-import org.tokenizer.ui.MyVaadinApplication;
+import org.tokenizer.ui.MyVaadinUI;
 
 import com.vaadin.ui.VerticalSplitPanel;
 
@@ -24,12 +24,12 @@ public class TaskView extends VerticalSplitPanel {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory
             .getLogger(TaskView.class);
     private static final long serialVersionUID = 1L;
-    private final MyVaadinApplication app;
+    private final MyVaadinUI app;
     private final TaskList taskList;
     // private final TaskForm taskForm;
     TaskResultsTabSheet taskResultsTabSheet;
 
-    public TaskView(final MyVaadinApplication app) {
+    public TaskView(final MyVaadinUI app) {
         this.app = app;
         this.taskList = new TaskList(app);
         // this.taskForm = new TaskForm(app);

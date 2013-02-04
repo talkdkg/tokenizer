@@ -6,7 +6,7 @@ import java.util.Date;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tokenizer.crawler.db.UrlRecord;
-import org.tokenizer.ui.MyVaadinApplication;
+import org.tokenizer.ui.MyVaadinUI;
 import org.vaadin.addons.lazyquerycontainer.LazyQueryContainer;
 
 import com.vaadin.ui.Table;
@@ -18,10 +18,10 @@ public class UrlRecordList extends Table {
             .getLogger(UrlRecordList.class);
     private final ArrayList<Object> visibleColumnIds = new ArrayList<Object>();
     private final ArrayList<String> visibleColumnLabels = new ArrayList<String>();
-    private final MyVaadinApplication app;
+    private final MyVaadinUI app;
     private final LazyQueryContainer lazyQueryContainer;
 
-    public UrlRecordList(final MyVaadinApplication app) {
+    public UrlRecordList(final MyVaadinUI app) {
         this.app = app;
         setSizeFull();
         UrlQueryFactory urlQueryFactory = new UrlQueryFactory(app);

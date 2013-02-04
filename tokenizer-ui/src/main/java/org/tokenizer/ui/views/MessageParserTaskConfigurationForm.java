@@ -15,26 +15,24 @@
  */
 package org.tokenizer.ui.views;
 
-import org.tokenizer.executor.model.configuration.TaskConfiguration;
+import org.tokenizer.executor.model.configuration.MessageParserTaskConfiguration;
 
-import com.vaadin.ui.FormFieldFactory;
+import com.vaadin.ui.Component;
 
 public class MessageParserTaskConfigurationForm extends
-        TaskConfigurationFormBase {
+        TaskConfigurationField<MessageParserTaskConfiguration> {
+
     private static final long serialVersionUID = 1L;
 
-    public MessageParserTaskConfigurationForm(
-            TaskConfiguration taskConfiguration) {
-        super(taskConfiguration);
+    @Override
+    protected Component initContent() {
+        // TODO Auto-generated method stub
+        return null;
     }
 
     @Override
-    public Class<?> getType() {
-        return MessageParserTaskConfigurationForm.class;
-    }
-
-    @Override
-    protected FormFieldFactory getFormFieldFactory() {
-        return new DefaultTaskConfigurationFieldFactory();
+    public Class<? extends MessageParserTaskConfiguration> getType() {
+        // TODO Auto-generated method stub
+        return null;
     }
 }

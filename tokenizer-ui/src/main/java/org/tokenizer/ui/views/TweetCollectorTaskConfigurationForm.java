@@ -15,26 +15,23 @@
  */
 package org.tokenizer.ui.views;
 
-import org.tokenizer.executor.model.configuration.TaskConfiguration;
+import org.tokenizer.executor.engine.twitter.TweetCollectorTaskConfiguration;
 
-import com.vaadin.ui.FormFieldFactory;
+import com.vaadin.ui.Component;
 
 public class TweetCollectorTaskConfigurationForm extends
-        TaskConfigurationFormBase {
+        TaskConfigurationField<TweetCollectorTaskConfiguration> {
+
     private static final long serialVersionUID = 1L;
 
-    public TweetCollectorTaskConfigurationForm(
-            TaskConfiguration taskConfiguration) {
-        super(taskConfiguration);
+    @Override
+    protected Component initContent() {
+        // TODO Auto-generated method stub
+        return null;
     }
 
     @Override
-    public Class<?> getType() {
-        return TweetCollectorTaskConfigurationForm.class;
-    }
-
-    @Override
-    protected FormFieldFactory getFormFieldFactory() {
-        return new DefaultTaskConfigurationFieldFactory();
+    public Class<? extends TweetCollectorTaskConfiguration> getType() {
+        return TweetCollectorTaskConfiguration.class;
     }
 }

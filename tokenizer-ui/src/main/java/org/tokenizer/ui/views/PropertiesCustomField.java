@@ -17,8 +17,6 @@ package org.tokenizer.ui.views;
 
 import java.util.Map;
 
-import org.vaadin.addon.customfield.CustomField;
-
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.IndexedContainer;
@@ -26,10 +24,14 @@ import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.CustomField;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 
+//import org.vaadin.addon.customfield.CustomField;
 public class PropertiesCustomField extends CustomField {
+
     private static final long serialVersionUID = 1L;
     Table table;
     VerticalLayout layout;
@@ -46,10 +48,11 @@ public class PropertiesCustomField extends CustomField {
         layout.addComponent(table);
         Button newMoon = new Button("New Property");
         newMoon.addListener(new ClickListener() {
+
             private static final long serialVersionUID = 1L;
 
             @Override
-            public void buttonClick(ClickEvent event) {
+            public void buttonClick(final ClickEvent event) {
                 Item item = container.addItem("");
                 item.getItemProperty("Key").setValue("");
                 item.getItemProperty("Value").setValue("");
@@ -58,11 +61,11 @@ public class PropertiesCustomField extends CustomField {
         });
         layout.addComponent(newMoon);
         layout.setComponentAlignment(newMoon, Alignment.MIDDLE_RIGHT);
-        setCompositionRoot(layout);
+        // setCompositionRoot(layout);
     }
 
     @Override
-    public void setPropertyDataSource(Property newDataSource) {
+    public void setPropertyDataSource(final Property newDataSource) {
         Object value = newDataSource.getValue();
         if (value instanceof Map<?, ?>) {
             @SuppressWarnings("unchecked")
@@ -75,12 +78,44 @@ public class PropertiesCustomField extends CustomField {
             }
             table.setPageLength(map.size());
         } else
-            throw new ConversionException("Invalid type");
+            throw new RuntimeException("Invalid type");
         super.setPropertyDataSource(newDataSource);
     }
 
     @Override
     public Class<?> getType() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public void setBuffered(final boolean buffered) {
+        // TODO Auto-generated method stub
+    }
+
+    @Override
+    public boolean isBuffered() {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public void removeAllValidators() {
+        // TODO Auto-generated method stub
+    }
+
+    @Override
+    public void addValueChangeListener(final ValueChangeListener listener) {
+        // TODO Auto-generated method stub
+    }
+
+    @Override
+    public void removeValueChangeListener(final ValueChangeListener listener) {
+        // TODO Auto-generated method stub
+    }
+
+    @Override
+    protected Component initContent() {
         // TODO Auto-generated method stub
         return null;
     }

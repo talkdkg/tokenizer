@@ -13,7 +13,7 @@ import org.tokenizer.crawler.db.UrlRecord;
 import org.tokenizer.executor.engine.MetricsCache;
 import org.tokenizer.executor.model.api.TaskInfoBean;
 import org.tokenizer.executor.model.configuration.ClassicRobotTaskConfiguration;
-import org.tokenizer.ui.MyVaadinApplication;
+import org.tokenizer.ui.MyVaadinUI;
 import org.vaadin.addons.lazyquerycontainer.Query;
 
 import com.netflix.astyanax.connectionpool.exceptions.ConnectionException;
@@ -37,11 +37,11 @@ public class UrlQuery implements Query {
     private final List<byte[]> rowKeys = new ArrayList<byte[]>(1024);
     // very last RowKey on a last page:
     private byte[] lastRowKey;
-    private final MyVaadinApplication app;
+    private final MyVaadinUI app;
 
-    public UrlQuery(final MyVaadinApplication app) {
+    public UrlQuery(final MyVaadinUI app) {
         this.app = app;
-        this.crawlerRepository = MyVaadinApplication.getRepository();
+        this.crawlerRepository = MyVaadinUI.getRepository();
         // loadRowKeys(app.getSelectedHost(),
         // app.getSelectedHttpResponseCode());
     }
@@ -144,8 +144,7 @@ public class UrlQuery implements Query {
 
     @Override
     public int size() {
-        Collection<TaskInfoBean> tasks = MyVaadinApplication.getModel()
-                .getTasks();
+        Collection<TaskInfoBean> tasks = MyVaadinUI.getModel().getTasks();
         String selectedHost = app.getSelectedHost();
         int size = 0;
         if (selectedHost == null)

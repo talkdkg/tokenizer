@@ -24,7 +24,7 @@ import org.tokenizer.crawler.db.MessageRecord;
 import org.tokenizer.crawler.db.UrlRecord;
 import org.tokenizer.crawler.db.WebpageRecord;
 import org.tokenizer.crawler.db.XmlRecord;
-import org.tokenizer.ui.MyVaadinApplication;
+import org.tokenizer.ui.MyVaadinUI;
 import org.tokenizer.ui.lists.UrlQuery;
 import org.tokenizer.ui.lists.UrlRecordList;
 
@@ -48,11 +48,11 @@ public class TaskOutputView extends VerticalSplitPanel implements
     private static final long serialVersionUID = 1L;
     private static final Logger LOG = LoggerFactory
             .getLogger(TaskOutputView.class);
-    private final MyVaadinApplication app;
+    private final MyVaadinUI app;
     private UrlRecordList urlRecordList;
     private final CrawledContentTabSheet crawledContentTabSheet;
 
-    public TaskOutputView(final MyVaadinApplication app) {
+    public TaskOutputView(final MyVaadinUI app) {
         this.app = app;
         setCaption("Task Output View");
         urlRecordList = new UrlRecordList(app);
@@ -73,8 +73,7 @@ public class TaskOutputView extends VerticalSplitPanel implements
                     .getValue()).getWebpageDigest();
             WebpageRecord webpage = null;
             try {
-                webpage = MyVaadinApplication.getRepository().getWebpageRecord(
-                        digest);
+                webpage = MyVaadinUI.getRepository().getWebpageRecord(digest);
             } catch (ConnectionException e) {
                 LOG.error("", e);
             }
@@ -95,10 +94,9 @@ public class TaskOutputView extends VerticalSplitPanel implements
                     htmlProp);
             if (webpage != null) {
                 try {
-                    List<XmlRecord> xmlRecords = MyVaadinApplication
-                            .getRepository().listXmlRecords(
-                                    webpage.getXmlLinks());
-                    crawledContentTabSheet.getXmlPanel().removeAllComponents();
+                    List<XmlRecord> xmlRecords = MyVaadinUI.getRepository()
+                            .listXmlRecords(webpage.getXmlLinks());
+                    crawledContentTabSheet.getXmlLayout().removeAllComponents();
                     for (XmlRecord xmlRecord : xmlRecords) {
                         if (xmlRecord == null) {
                             continue;
@@ -109,7 +107,7 @@ public class TaskOutputView extends VerticalSplitPanel implements
                         xmlLabel.setPropertyDataSource(new ObjectProperty<String>(
                                 new String(xmlRecord.getContent(), "UTF-8"),
                                 String.class));
-                        crawledContentTabSheet.getXmlPanel().addComponent(
+                        crawledContentTabSheet.getXmlLayout().addComponent(
                                 xmlLabel);
                     }
                 } catch (ConnectionException e) {
@@ -120,10 +118,10 @@ public class TaskOutputView extends VerticalSplitPanel implements
             }
             if (webpage != null) {
                 try {
-                    List<MessageRecord> messageRecords = MyVaadinApplication
+                    List<MessageRecord> messageRecords = MyVaadinUI
                             .getRepository().listMessageRecords(
                                     webpage.getXmlLinks());
-                    crawledContentTabSheet.getMessagePanel()
+                    crawledContentTabSheet.getMessageLayout()
                             .removeAllComponents();
                     int i = 0;
                     for (MessageRecord messageRecord : messageRecords) {
@@ -138,7 +136,7 @@ public class TaskOutputView extends VerticalSplitPanel implements
                         form.setFormFieldFactory(new MessageFieldFactory());
                         form.setItemDataSource(item);
                         form.setReadOnly(true);
-                        crawledContentTabSheet.getMessagePanel().addComponent(
+                        crawledContentTabSheet.getMessageLayout().addComponent(
                                 form);
                         /*
                          * LOG.debug(messageRecord.toString()); Label

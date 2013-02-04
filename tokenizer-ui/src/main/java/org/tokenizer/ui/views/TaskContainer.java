@@ -16,6 +16,7 @@
 package org.tokenizer.ui.views;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.Map;
 import java.util.UUID;
 
@@ -24,9 +25,10 @@ import org.slf4j.LoggerFactory;
 import org.tokenizer.executor.model.api.ExecutorModelEvent;
 import org.tokenizer.executor.model.api.ExecutorModelEventType;
 import org.tokenizer.executor.model.api.ExecutorModelListener;
+import org.tokenizer.executor.model.api.TaskGeneralState;
 import org.tokenizer.executor.model.api.TaskInfoBean;
 import org.tokenizer.executor.model.api.TaskNotFoundException;
-import org.tokenizer.ui.MyVaadinApplication;
+import org.tokenizer.ui.MyVaadinUI;
 
 import com.vaadin.data.Item;
 import com.vaadin.data.util.IndexedContainer;
@@ -36,21 +38,23 @@ public class TaskContainer extends IndexedContainer {
     private static final long serialVersionUID = 1L;
     private static final Logger LOG = LoggerFactory
             .getLogger(TaskContainer.class);
-    MyVaadinApplication app;
+    MyVaadinUI app;
     private static final String TASK_SUBMISSON_DATE = "Task Submission Date";
 
-    public TaskContainer(final MyVaadinApplication app) {
+    public TaskContainer(final MyVaadinUI app) {
         super();
         this.app = app;
         ExecutorModelListener listener = new MyExecutorModelListener();
-        Collection<TaskInfoBean> tasks = MyVaadinApplication.getModel()
-                .getTasks(listener);
-        addContainerProperty("uuid", String.class, "");
-        addContainerProperty("name", String.class, "");
-        addContainerProperty("type", String.class, "");
-        addContainerProperty(TASK_SUBMISSON_DATE, String.class, "");
-        addContainerProperty("General State", String.class, "");
-        addContainerProperty("ZkDataVersion", Long.class, 0);
+        Collection<TaskInfoBean> tasks = MyVaadinUI.getModel().getTasks(
+                listener);
+        addContainerProperty("uuid", UUID.class, null);
+        addContainerProperty("name", String.class, null);
+        addContainerProperty("type", String.class, null);
+        addContainerProperty(TASK_SUBMISSON_DATE, Date.class, null);
+        addContainerProperty("General State", TaskGeneralState.class, null);
+        addContainerProperty("ZkDataVersion", Integer.class, 0);
+        // addContainerProperty("taskConfiguration", TaskConfiguration.class,
+        // null);
         synchronized (app) {
             for (TaskInfoBean task : tasks) {
                 Item item = addItem(task.getUuid());
@@ -71,6 +75,8 @@ public class TaskContainer extends IndexedContainer {
                     item.getItemProperty(entry.getKey()).setValue(
                             entry.getValue());
                 }
+                // item.getItemProperty("taskConfiguration").setValue(
+                // task.getTaskConfiguration());
                 LOG.debug("BeanItem: {}", item);
             }
         }
@@ -86,7 +92,7 @@ public class TaskContainer extends IndexedContainer {
                 TaskInfoBean newTask;
                 boolean propertyAdded = false;
                 try {
-                    newTask = MyVaadinApplication.getModel().getTask(uuid);
+                    newTask = MyVaadinUI.getModel().getTask(uuid);
                 } catch (TaskNotFoundException e) {
                     /*
                      * this will also handle

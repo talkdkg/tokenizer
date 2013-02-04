@@ -15,24 +15,23 @@
  */
 package org.tokenizer.ui.views;
 
-import org.tokenizer.executor.model.configuration.TaskConfiguration;
+import org.tokenizer.executor.model.configuration.RssFetcherTaskConfiguration;
 
-import com.vaadin.ui.FormFieldFactory;
+import com.vaadin.ui.Component;
 
-public class RssFetcherTaskConfigurationForm extends TaskConfigurationFormBase {
+public class RssFetcherTaskConfigurationForm extends
+        TaskConfigurationField<RssFetcherTaskConfiguration> {
+
     private static final long serialVersionUID = 1L;
 
-    public RssFetcherTaskConfigurationForm(TaskConfiguration taskConfiguration) {
-        super(taskConfiguration);
+    @Override
+    protected Component initContent() {
+        // TODO Auto-generated method stub
+        return null;
     }
 
     @Override
-    public Class<?> getType() {
-        return RssFetcherTaskConfigurationForm.class;
-    }
-
-    @Override
-    protected FormFieldFactory getFormFieldFactory() {
-        return new DefaultTaskConfigurationFieldFactory();
+    public Class<? extends RssFetcherTaskConfiguration> getType() {
+        return RssFetcherTaskConfiguration.class;
     }
 }

@@ -1,5 +1,3 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- 
 /*
  * Copyright 2007-2012 Tokenizer Inc.
  *
@@ -15,9 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- -->
-<!DOCTYPE module PUBLIC "-//Google Inc.//DTD Google Web Toolkit 1.7.0//EN" "http://google-web-toolkit.googlecode.com/svn/tags/1.7.0/distro-source/core/src/gwt-module.dtd">
-<module>
-    <inherits name="com.vaadin.terminal.gwt.DefaultWidgetSet"/>
-    <inherits name="org.vaadin.dontpush.widgetset.DontPushOzoneWidgetset"/>
-</module>
+package org.tokenizer.ui.views;
+
+import com.vaadin.ui.CustomField;
+
+public abstract class TaskConfigurationField<T> extends CustomField<T> {
+
+    private static final long serialVersionUID = 1L;
+}

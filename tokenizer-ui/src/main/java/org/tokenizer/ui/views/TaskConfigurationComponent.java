@@ -15,13 +15,6 @@
  */
 package org.tokenizer.ui.views;
 
-import org.tokenizer.executor.engine.twitter.TweetCollectorTaskConfiguration;
-import org.tokenizer.executor.model.configuration.ClassicRobotTaskConfiguration;
-import org.tokenizer.executor.model.configuration.HtmlSplitterTaskConfiguration;
-import org.tokenizer.executor.model.configuration.MessageParserTaskConfiguration;
-import org.tokenizer.executor.model.configuration.RssFetcherTaskConfiguration;
-import org.tokenizer.executor.model.configuration.SitemapsFetcherTaskConfiguration;
-
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.ui.ComboBox;
@@ -29,11 +22,12 @@ import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.VerticalLayout;
 
 public class TaskConfigurationComponent extends CustomComponent {
+
     private static final long serialVersionUID = 1L;
-    private TaskConfigurationFormBase taskConfigurationField;
+    private TaskConfigurationField taskConfigurationField;
     private final VerticalLayout layout;
 
-    public TaskConfigurationFormBase getTaskConfigurationField() {
+    public TaskConfigurationField getTaskConfigurationField() {
         return taskConfigurationField;
     }
 
@@ -65,33 +59,28 @@ public class TaskConfigurationComponent extends CustomComponent {
      */
     private Property.ValueChangeListener getTypeValueChangeListener() {
         return new Property.ValueChangeListener() {
+
             private static final long serialVersionUID = 31L;
 
             @Override
-            public void valueChange(ValueChangeEvent event) {
+            public void valueChange(final ValueChangeEvent event) {
                 String selected = (String) event.getProperty().getValue();
                 System.out.println(selected);
                 if (taskConfigurationField != null) {
                     layout.removeComponent(taskConfigurationField);
                 }
                 if ("ClassicRobotTask".equals(selected)) {
-                    taskConfigurationField = new ClassicRobotTaskConfigurationForm(
-                            new ClassicRobotTaskConfiguration());
+                    taskConfigurationField = new ClassicRobotTaskConfigurationForm();
                 } else if ("HtmlSplitterTask".equals(selected)) {
-                    taskConfigurationField = new HtmlSplitterTaskConfigurationForm(
-                            new HtmlSplitterTaskConfiguration());
+                    taskConfigurationField = new HtmlSplitterTaskConfigurationForm();
                 } else if ("MessageParserTask".equals(selected)) {
-                    taskConfigurationField = new MessageParserTaskConfigurationForm(
-                            new MessageParserTaskConfiguration());
+                    taskConfigurationField = new MessageParserTaskConfigurationForm();
                 } else if ("TweetCollectorTask".equals(selected)) {
-                    taskConfigurationField = new TweetCollectorTaskConfigurationForm(
-                            new TweetCollectorTaskConfiguration());
+                    taskConfigurationField = new TweetCollectorTaskConfigurationForm();
                 } else if ("RssFetcherTask".equals(selected)) {
-                    taskConfigurationField = new RssFetcherTaskConfigurationForm(
-                            new RssFetcherTaskConfiguration());
+                    taskConfigurationField = new RssFetcherTaskConfigurationForm();
                 } else if ("SitemapsFetcherTask".equals(selected)) {
-                    taskConfigurationField = new SitemapsFetcherTaskConfigurationForm(
-                            new SitemapsFetcherTaskConfiguration());
+                    taskConfigurationField = new SitemapsFetcherTaskConfigurationForm();
                 }
                 if (taskConfigurationField != null) {
                     layout.addComponent(taskConfigurationField);

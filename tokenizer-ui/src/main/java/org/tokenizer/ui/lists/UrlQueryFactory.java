@@ -2,7 +2,7 @@ package org.tokenizer.ui.lists;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tokenizer.ui.MyVaadinApplication;
+import org.tokenizer.ui.MyVaadinUI;
 import org.vaadin.addons.lazyquerycontainer.Query;
 import org.vaadin.addons.lazyquerycontainer.QueryDefinition;
 import org.vaadin.addons.lazyquerycontainer.QueryFactory;
@@ -12,9 +12,9 @@ public class UrlQueryFactory implements QueryFactory {
     private static final Logger LOG = LoggerFactory
             .getLogger(UrlQueryFactory.class);
     private QueryDefinition queryDefinition;
-    private final MyVaadinApplication app;
+    private final MyVaadinUI app;
 
-    public UrlQueryFactory(final MyVaadinApplication app) {
+    public UrlQueryFactory(final MyVaadinUI app) {
         LOG.debug("constructor called...");
         this.app = app;
     }

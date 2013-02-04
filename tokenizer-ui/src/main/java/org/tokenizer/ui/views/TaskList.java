@@ -19,7 +19,7 @@ import java.util.Collection;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tokenizer.ui.MyVaadinApplication;
+import org.tokenizer.ui.MyVaadinUI;
 
 import com.vaadin.data.Container;
 import com.vaadin.ui.Table;
@@ -31,7 +31,7 @@ public class TaskList extends Table implements
     private static final Logger LOG = LoggerFactory.getLogger(TaskList.class);
     private TaskContainer taskContainer = null;
 
-    public TaskList(final MyVaadinApplication app) {
+    public TaskList(final MyVaadinUI app) {
         setSizeFull();
         taskContainer = new TaskContainer(app);
         setContainerDataSource(taskContainer);

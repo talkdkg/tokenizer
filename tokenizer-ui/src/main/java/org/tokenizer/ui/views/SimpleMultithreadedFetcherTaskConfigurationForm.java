@@ -15,26 +15,23 @@
  */
 package org.tokenizer.ui.views;
 
-import org.tokenizer.executor.model.configuration.TaskConfiguration;
+import org.tokenizer.executor.model.configuration.SimpleMultithreadedFetcherTaskConfiguration;
 
-import com.vaadin.ui.FormFieldFactory;
+import com.vaadin.ui.Component;
 
 public class SimpleMultithreadedFetcherTaskConfigurationForm extends
-        TaskConfigurationFormBase {
+        TaskConfigurationField<SimpleMultithreadedFetcherTaskConfiguration> {
+
     private static final long serialVersionUID = 1L;
 
-    public SimpleMultithreadedFetcherTaskConfigurationForm(
-            TaskConfiguration taskConfiguration) {
-        super(taskConfiguration);
+    @Override
+    protected Component initContent() {
+        // TODO Auto-generated method stub
+        return null;
     }
 
     @Override
-    public Class<?> getType() {
-        return SimpleMultithreadedFetcherTaskConfigurationForm.class;
-    }
-
-    @Override
-    protected FormFieldFactory getFormFieldFactory() {
-        return new DefaultTaskConfigurationFieldFactory();
+    public Class<? extends SimpleMultithreadedFetcherTaskConfiguration> getType() {
+        return SimpleMultithreadedFetcherTaskConfiguration.class;
     }
 }

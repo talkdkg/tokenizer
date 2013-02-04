@@ -24,7 +24,8 @@ import java.security.NoSuchAlgorithmException;
  * @author Fuad TODO: use ThreadLocal to cache instance
  */
 public class MD5 {
-    public static final byte[] digest(byte[] bytes) {
+
+    public static final byte[] digest(final byte[] bytes) {
         MessageDigest md;
         try {
             md = MessageDigest.getInstance("MD5");
@@ -35,12 +36,12 @@ public class MD5 {
         return md.digest();
     }
 
-    public static final String MD5(byte[] bytes) {
+    public static final String MD5(final byte[] bytes) {
         byte[] mdbytes = digest(bytes);
         return toHexString(mdbytes);
     }
 
-    public static final String MD5(String text) {
+    public static final String MD5(final String text) {
         try {
             return MD5(text.getBytes("UTF-8"));
         } catch (UnsupportedEncodingException e) {
@@ -50,20 +51,30 @@ public class MD5 {
 
     private static final String EMPTY_STRING = "";
 
-    public final static String toHexString(byte[] bytes) {
+    public final static String toHexString(final byte[] bytes) {
         if (bytes == null || bytes.length == 0)
             return EMPTY_STRING;
         StringBuffer hexString = new StringBuffer();
         for (int i = 0; i < bytes.length; i++) {
             String hex = Integer.toHexString(0xff & bytes[i]);
-            if (hex.length() == 1)
+            if (hex.length() == 1) {
                 hexString.append('0');
+            }
             hexString.append(hex);
         }
         return hexString.toString();
     }
 
-    public static void main(String[] args) {
+    public static byte[] hex2Byte(final String str) {
+        byte[] bytes = new byte[str.length() / 2];
+        for (int i = 0; i < bytes.length; i++) {
+            bytes[i] = (byte) Integer.parseInt(str.substring(2 * i, 2 * i + 2),
+                    16);
+        }
+        return bytes;
+    }
+
+    public static void main(final String[] args) {
         System.out.println(MD5("http://gugehige.exblog.jp/"));
         System.out.println("78abc5644577237daa605e6486eb9170");
     }

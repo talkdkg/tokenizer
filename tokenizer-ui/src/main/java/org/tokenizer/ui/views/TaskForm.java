@@ -18,7 +18,6 @@ package org.tokenizer.ui.views;
 import java.util.UUID;
 
 import org.apache.zookeeper.KeeperException;
-import org.tokenizer.executor.engine.twitter.TweetCollectorTaskConfiguration;
 import org.tokenizer.executor.model.api.TaskConcurrentModificationException;
 import org.tokenizer.executor.model.api.TaskExistsException;
 import org.tokenizer.executor.model.api.TaskGeneralState;
@@ -27,14 +26,8 @@ import org.tokenizer.executor.model.api.TaskModelException;
 import org.tokenizer.executor.model.api.TaskNotFoundException;
 import org.tokenizer.executor.model.api.TaskUpdateException;
 import org.tokenizer.executor.model.api.TaskValidityException;
-import org.tokenizer.executor.model.configuration.ClassicRobotTaskConfiguration;
-import org.tokenizer.executor.model.configuration.HtmlSplitterTaskConfiguration;
-import org.tokenizer.executor.model.configuration.MessageParserTaskConfiguration;
-import org.tokenizer.executor.model.configuration.RssFetcherTaskConfiguration;
-import org.tokenizer.executor.model.configuration.SimpleMultithreadedFetcherTaskConfiguration;
-import org.tokenizer.executor.model.configuration.SitemapsFetcherTaskConfiguration;
 import org.tokenizer.executor.model.configuration.TaskConfiguration;
-import org.tokenizer.ui.MyVaadinApplication;
+import org.tokenizer.ui.MyVaadinUI;
 import org.tokenizer.util.zookeeper.ZkLockException;
 
 import com.vaadin.data.Item;
@@ -50,20 +43,18 @@ public class TaskForm extends Form implements ClickListener {
     private static final long serialVersionUID = 1L;
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory
             .getLogger(TaskForm.class);
-    private final MyVaadinApplication app;
-    private final Button save = new Button("Save", (ClickListener) this);
-    private final Button cancel = new Button("Cancel", (ClickListener) this);
-    private final Button edit = new Button("Edit", (ClickListener) this);
-    // private TaskInfoBean newTask;
+    private final MyVaadinUI app;
+    private final Button save = new Button("Save", this);
+    private final Button cancel = new Button("Cancel", this);
+    private final Button edit = new Button("Edit", this);
     private boolean newTaskMode = false;
-    private TaskConfigurationComponent taskConfigurationComponent;
-    private TaskConfigurationFormBase taskConfigurationField;
-    private Item attachedDataSource = null;
+    private TaskConfigurationComponent taskConfigurationComponent = null;
+    TaskConfigurationField taskConfigurationField = null;
 
-    public TaskForm(final MyVaadinApplication app) {
+    public TaskForm(final MyVaadinUI app) {
         setCaption("Task Info");
         this.app = app;
-        setWriteThrough(false);
+        // setWriteThrough(false);
         HorizontalLayout footer = new HorizontalLayout();
         footer.setSpacing(true);
         footer.addComponent(save);
@@ -71,9 +62,47 @@ public class TaskForm extends Form implements ClickListener {
         footer.addComponent(edit);
         footer.setVisible(false);
         setFooter(footer);
-        // taskConfigurationComponent = new TaskConfigurationComponent();
-        // getLayout().addComponent(taskConfigurationComponent);
         setReadOnly(true);
+        /*
+         * setFormFieldFactory(new DefaultFieldFactory() {
+         * 
+         * @Override public Field createField(final Item item, final Object
+         * propertyId, final Component uiContext) { Field field = null; if
+         * ("taskConfiguration".equals(propertyId)) { // TaskConfiguration
+         * taskConfiguration = (TaskConfiguration) // item //
+         * .getItemProperty(propertyId).getValue(); UUID uuid = (UUID)
+         * item.getItemProperty("uuid").getValue(); TaskInfoBean taskInfoBean =
+         * null; try { taskInfoBean = MyVaadinUI.getModel().getMutableTask(
+         * uuid); } catch (InterruptedException e) { // TODO Auto-generated
+         * catch block e.printStackTrace(); } catch (KeeperException e) { //
+         * TODO Auto-generated catch block e.printStackTrace(); } catch
+         * (TaskNotFoundException e) { // TODO Auto-generated catch block
+         * e.printStackTrace(); } // if (taskInfoBean == null) return null;
+         * TaskConfiguration taskConfiguration = taskInfoBean
+         * .getTaskConfiguration(); LOG.debug(taskConfiguration.toString()); if
+         * (taskConfiguration instanceof SitemapsFetcherTaskConfiguration) {
+         * field = new SitemapsFetcherTaskConfigurationForm(); } else if
+         * (taskConfiguration instanceof HtmlSplitterTaskConfiguration) { field
+         * = new HtmlSplitterTaskConfigurationForm(); } else if
+         * (taskConfiguration instanceof MessageParserTaskConfiguration) { field
+         * = new MessageParserTaskConfigurationForm(); } else if
+         * (taskConfiguration instanceof TweetCollectorTaskConfiguration) {
+         * field = new TweetCollectorTaskConfigurationForm(); } else if
+         * (taskConfiguration instanceof ClassicRobotTaskConfiguration) { field
+         * = new ClassicRobotTaskConfigurationForm(); } else if
+         * (taskConfiguration instanceof RssFetcherTaskConfiguration) { field =
+         * new RssFetcherTaskConfigurationForm(); } else if (taskConfiguration
+         * instanceof SimpleMultithreadedFetcherTaskConfiguration) { field = new
+         * SimpleMultithreadedFetcherTaskConfigurationForm(); } // field = new
+         * BeanSetFieldWrapper<Person>(select, // Person.class,
+         * getPersonContainer(), "lastName"); //
+         * field.setCaption(createCaptionByPropertyId(propertyId)); // field =
+         * taskConfigurationField; } else if ("counters".equals(propertyId)) { }
+         * else { field = super.createField(item, propertyId, uiContext); if
+         * (field instanceof TextField) { // show null as an empty string
+         * ((TextField) field).setNullRepresentation(""); } } return field; }
+         * });
+         */
     }
 
     public void addTask() {
@@ -84,10 +113,8 @@ public class TaskForm extends Form implements ClickListener {
         setItemDataSource(item);
         newTaskMode = true;
         setReadOnly(false);
-        // if (taskConfigurationComponent == null) {
         taskConfigurationComponent = new TaskConfigurationComponent();
         getLayout().addComponent(taskConfigurationComponent);
-        // }
     }
 
     @Override
@@ -99,16 +126,16 @@ public class TaskForm extends Form implements ClickListener {
             commit();
             if (newTaskMode) {
                 try {
-                    TaskConfigurationFormBase subform = taskConfigurationComponent
+                    TaskConfigurationField subform = taskConfigurationComponent
                             .getTaskConfigurationField();
                     subform.commit();
-                    TaskConfiguration taskConfiguration = subform
-                            .getTaskConfiguration();
+                    TaskConfiguration taskConfiguration = (TaskConfiguration) subform
+                            .getConvertedValue();
                     LOG.info("taskConfiguration: {}", taskConfiguration);
                     UUID uuid = UUID.randomUUID();
                     TaskInfoBean taskInfoBean = new TaskInfoBean(uuid);
                     taskInfoBean.setTaskConfiguration(taskConfiguration);
-                    MyVaadinApplication.getModel().addTask(taskInfoBean);
+                    MyVaadinUI.getModel().addTask(taskInfoBean);
                 } catch (TaskExistsException e) {
                     LOG.error("", e);
                 } catch (TaskModelException e) {
@@ -122,12 +149,11 @@ public class TaskForm extends Form implements ClickListener {
                 TaskInfoBean task = item.getBean();
                 taskConfigurationField.commit();
                 LOG.debug("task configuration updated: {}",
-                        taskConfigurationField.getTaskConfiguration());
-                task.setTaskConfiguration(taskConfigurationField
-                        .getTaskConfiguration());
+                        taskConfigurationField.getConvertedValue());
+                task.setTaskConfiguration((TaskConfiguration) taskConfigurationField
+                        .getConvertedValue());
                 update(task);
             }
-            setItemDataSource(this.attachedDataSource);
             setReadOnly(true);
         } else if (source == cancel) {
             if (newTaskMode) {
@@ -136,71 +162,25 @@ public class TaskForm extends Form implements ClickListener {
             } else {
                 discard();
             }
-            setItemDataSource(this.attachedDataSource);
             setReadOnly(true);
         } else if (source == edit) {
-            this.attachedDataSource = getItemDataSource();
-            TaskInfoBean task2;
-            try {
-                UUID uuid = UUID.fromString((String) getItemProperty("uuid")
-                        .getValue());
-                task2 = MyVaadinApplication.getModel().getMutableTask(uuid);
-                BeanItem<TaskInfoBean> item = new BeanItem(task2,
-                        new String[] {});
-                setItemDataSource(item);
-                TaskConfiguration taskConfiguration = task2
-                        .getTaskConfiguration();
-                LOG.debug(taskConfiguration.toString());
-                if (taskConfiguration instanceof SitemapsFetcherTaskConfiguration) {
-                    taskConfigurationField = new SitemapsFetcherTaskConfigurationForm(
-                            taskConfiguration);
-                } else if (taskConfiguration instanceof HtmlSplitterTaskConfiguration) {
-                    taskConfigurationField = new HtmlSplitterTaskConfigurationForm(
-                            taskConfiguration);
-                } else if (taskConfiguration instanceof MessageParserTaskConfiguration) {
-                    taskConfigurationField = new MessageParserTaskConfigurationForm(
-                            taskConfiguration);
-                } else if (taskConfiguration instanceof TweetCollectorTaskConfiguration) {
-                    taskConfigurationField = new TweetCollectorTaskConfigurationForm(
-                            taskConfiguration);
-                } else if (taskConfiguration instanceof ClassicRobotTaskConfiguration) {
-                    taskConfigurationField = new ClassicRobotTaskConfigurationForm(
-                            taskConfiguration);
-                } else if (taskConfiguration instanceof RssFetcherTaskConfiguration) {
-                    taskConfigurationField = new RssFetcherTaskConfigurationForm(
-                            taskConfiguration);
-                } else if (taskConfiguration instanceof SimpleMultithreadedFetcherTaskConfiguration) {
-                    taskConfigurationField = new SimpleMultithreadedFetcherTaskConfigurationForm(
-                            taskConfiguration);
-                }
-                setReadOnly(false);
-                if (taskConfigurationField != null) {
-                    getLayout().addComponent(taskConfigurationField);
-                }
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            } catch (KeeperException e) {
-                LOG.error("", e);
-            } catch (TaskNotFoundException e) {
-                LOG.error("", e);
-            }
+            // setItemDataSource(getItemDataSource(),
+            // Arrays.asList(new String[] { "taskConfiguration" }));
+            setReadOnly(false);
         }
     }
 
     @Override
     public void setItemDataSource(final Item newDataSource) {
+        // super.setItemDataSource(newDataSource,
+        // Arrays.asList(new String[] { "taskConfiguration" }));
+        super.setItemDataSource(newDataSource);
         newTaskMode = false;
-        if (newDataSource != null) {
-            // super.setItemDataSource(newDataSource, orderedProperties);
-            super.setItemDataSource(newDataSource);
-            if (this.attachedDataSource == null) {
-                this.attachedDataSource = newDataSource;
-            }
-            setReadOnly(true);
-            getFooter().setVisible(true);
-        } else {
-            super.setItemDataSource(null);
+        setReadOnly(true);
+        if (newDataSource == null) {
             getFooter().setVisible(false);
+        } else {
+            getFooter().setVisible(true);
         }
     }
 
@@ -253,7 +233,7 @@ public class TaskForm extends Form implements ClickListener {
     public static String lockTask(final UUID uuid) {
         String lock = null;
         try {
-            lock = MyVaadinApplication.getModel().lockTask(uuid);
+            lock = MyVaadinUI.getModel().lockTask(uuid);
         } catch (ZkLockException e) {
             LOG.error("", e);
         } catch (TaskNotFoundException e) {
@@ -274,7 +254,7 @@ public class TaskForm extends Form implements ClickListener {
                 .getGeneralState() != null
                 && mutableTask.getTaskConfiguration().getGeneralState() == TaskGeneralState.DELETE_REQUESTED;
         try {
-            MyVaadinApplication.getModel().unlockTask(lock, ignoreMissing);
+            MyVaadinUI.getModel().unlockTask(lock, ignoreMissing);
         } catch (ZkLockException e) {
             LOG.error("", e);
         }
@@ -283,7 +263,7 @@ public class TaskForm extends Form implements ClickListener {
     public static TaskInfoBean getMutableTask(final UUID uuid) {
         TaskInfoBean mutableTask = null;
         try {
-            mutableTask = MyVaadinApplication.getModel().getMutableTask(uuid);
+            mutableTask = MyVaadinUI.getModel().getMutableTask(uuid);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         } catch (KeeperException e) {
@@ -297,7 +277,7 @@ public class TaskForm extends Form implements ClickListener {
     public static void updateTask(final TaskInfoBean mutableTask,
             final String lock) {
         try {
-            MyVaadinApplication.getModel().updateTask(mutableTask, lock);
+            MyVaadinUI.getModel().updateTask(mutableTask, lock);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         } catch (KeeperException e) {

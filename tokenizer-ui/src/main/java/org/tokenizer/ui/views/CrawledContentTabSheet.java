@@ -2,44 +2,43 @@ package org.tokenizer.ui.views;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tokenizer.ui.MyVaadinApplication;
+import org.tokenizer.ui.MyVaadinUI;
 
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.TabSheet;
+import com.vaadin.ui.VerticalLayout;
 
 public class CrawledContentTabSheet extends TabSheet {
 
     private static final long serialVersionUID = 1L;
     private static final Logger LOG = LoggerFactory
             .getLogger(CrawledContentTabSheet.class);
-    private final MyVaadinApplication app;
+    private final MyVaadinUI app;
     private final Label htmlLabel;
     private final Label sourceLabel;
-    private final Panel xmlPanel;
-    private final Panel messagePanel;
+    private final VerticalLayout xmlLayout;
+    private final VerticalLayout messageLayout;
 
-    public CrawledContentTabSheet(final MyVaadinApplication app) {
+    public CrawledContentTabSheet(final MyVaadinUI app) {
         this.app = app;
         setCaption("Crawled Content");
         // HTML Formatted:
         htmlLabel = new Label();
         htmlLabel.setContentMode(Label.CONTENT_RAW);
-        Panel htmlPanel = new Panel("HTML");
-        htmlPanel.addComponent(htmlLabel);
+        Panel htmlPanel = new Panel("HTML", htmlLabel);
         addTab(htmlPanel);
         // HTML Source:
         sourceLabel = new Label();
         sourceLabel.setContentMode(Label.CONTENT_TEXT);
-        Panel sourcePanel = new Panel("Source");
-        sourcePanel.addComponent(sourceLabel);
+        Panel sourcePanel = new Panel("Source", sourceLabel);
         addTab(sourcePanel);
         // XML Snippets:
-        xmlPanel = new Panel("XML Snippets");
-        addTab(xmlPanel);
+        xmlLayout = new VerticalLayout();
+        addTab(xmlLayout);
         // Parsed XML:
-        messagePanel = new Panel("Parsed Messages");
-        addTab(messagePanel);
+        messageLayout = new VerticalLayout();
+        addTab(messageLayout);
         setHeight(100, UNITS_PERCENTAGE);
     }
 
@@ -51,11 +50,11 @@ public class CrawledContentTabSheet extends TabSheet {
         return sourceLabel;
     }
 
-    public Panel getXmlPanel() {
-        return xmlPanel;
+    public VerticalLayout getXmlLayout() {
+        return xmlLayout;
     }
 
-    public Panel getMessagePanel() {
-        return messagePanel;
+    public VerticalLayout getMessageLayout() {
+        return messageLayout;
     }
 }
