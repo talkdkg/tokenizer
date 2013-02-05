@@ -17,7 +17,7 @@
  */
  --><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <properties>
-        <version.astyanax>1.0.4-SNAPSHOT</version.astyanax>
+        <version.astyanax>1.56.21</version.astyanax>
         <version.automaton>1.11-8</version.automaton>
         <version.base64>2.3.8</version.base64>
         <version.crawler-commons>0.2-SNAPSHOT</version.crawler-commons>
@@ -45,7 +45,7 @@
         <!-- copied from tokenizer-ui -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <addonBaseName>dontpush-addon</addonBaseName>
-		<vaadin.version>7.0-SNAPSHOT</vaadin.version>
+		<vaadin.version>7.0.0</vaadin.version>
 		<vaadin.plugin.version>${vaadin.version}</vaadin.plugin.version>
         <version.dontpush>1.0.1</version.dontpush>
         <xaloon.version>1.5.1</xaloon.version>

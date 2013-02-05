@@ -237,7 +237,7 @@
                                     <pluginExecutionFilter>
                                         <groupId>com.vaadin</groupId>
                                         <artifactId>vaadin-maven-plugin</artifactId>
-                                        <versionRange>[7.0-SNAPSHOT,7.0.0.beta11,)</versionRange>
+                                        <versionRange>[7.0.0,)</versionRange>
                                         <goals>
                                             <goal>resources</goal>
                                             <goal>update-widgetset</goal>

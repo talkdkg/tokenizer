@@ -13,6 +13,7 @@ import org.tokenizer.executor.model.configuration.ClassicRobotTaskConfiguration;
 import org.tokenizer.executor.model.configuration.HtmlSplitterTaskConfiguration;
 import org.tokenizer.executor.model.configuration.MessageParserTaskConfiguration;
 import org.tokenizer.executor.model.configuration.TaskConfiguration;
+import org.tokenizer.ui.components.TaskInfoComponent;
 import org.tokenizer.ui.views.TaskView;
 
 import com.vaadin.data.Item;
@@ -29,7 +30,6 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.HorizontalSplitPanel;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
 
 /**
  * The Application's "main" class
@@ -41,8 +41,11 @@ public class MyVaadinUI extends UI implements Button.ClickListener,
     private static final long serialVersionUID = 1L;
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory
             .getLogger(MyVaadinUI.class);
-    private Window window;
     private final HorizontalSplitPanel horizontalSplit = new HorizontalSplitPanel();
+    private Button showTaskInfoButton;
+    private Button showTasksButton;
+    private Button addNewTaskButton;
+    private TaskInfoComponent taskInfoComponent;
     VerticalLayout layout;
     private static ApplicationContext applicationContext = null;
     private String selectedHost = null;
@@ -84,15 +87,17 @@ public class MyVaadinUI extends UI implements Button.ClickListener,
         setContent(layout);
     }
 
-    private final Button tasks = new Button("Show Tasks");
-    private final Button newTask = new Button("Add New Task");
-
     public HorizontalLayout createToolbar() {
         HorizontalLayout lo = new HorizontalLayout();
-        lo.addComponent(tasks);
-        lo.addComponent(newTask);
-        tasks.addListener(this);
-        newTask.addListener(this);
+        showTaskInfoButton = new Button("Show Tasks (new UI)");
+        showTasksButton = new Button("Show Tasks");
+        addNewTaskButton = new Button("Add New Task");
+        lo.addComponent(showTaskInfoButton);
+        lo.addComponent(showTasksButton);
+        lo.addComponent(addNewTaskButton);
+        showTasksButton.addListener(this);
+        addNewTaskButton.addListener(this);
+        showTaskInfoButton.addListener(this);
         return lo;
     }
 
@@ -112,9 +117,14 @@ public class MyVaadinUI extends UI implements Button.ClickListener,
     @Override
     public void buttonClick(final ClickEvent event) {
         final Button source = event.getButton();
-        if (source == tasks) {
+        if (source == showTaskInfoButton) {
+            if (taskInfoComponent == null) {
+                taskInfoComponent = new TaskInfoComponent(this);
+            }
+            setMainComponent(taskInfoComponent);
+        } else if (source == showTasksButton) {
             showTaskView();
-        } else if (source == newTask) {
+        } else if (source == addNewTaskButton) {
             addNewTask();
         }
     }
