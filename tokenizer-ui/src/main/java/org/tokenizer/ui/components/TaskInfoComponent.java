@@ -35,7 +35,7 @@ public class TaskInfoComponent extends CustomComponent {
     private Table table;
     private GridLayout form;
 
-    public TaskInfoComponent(MyVaadinUI app) {
+    public TaskInfoComponent(final MyVaadinUI app) {
         this.app = app;
         ExecutorModelListener listener = new MyExecutorModelListener();
         tasks = MyVaadinUI.getModel().getTasks(listener);
@@ -87,12 +87,12 @@ public class TaskInfoComponent extends CustomComponent {
         BeanItemContainer<TaskInfoBean> container = new BeanItemContainer<TaskInfoBean>(
                 TaskInfoBean.class, tasks);
         table.setContainerDataSource(container);
-        table.setColumnHeaders(new String[] { "Name", "Implementation", "Date",
-                "State", "Version" });
         table.sort(new Object[] { "name", "implementationName" },
                 new boolean[] { true, true });
         table.setVisibleColumns(new String[] { "name", "implementationName",
                 "submitDate", "generalState", "zkDataVersion" });
+        table.setColumnHeaders(new String[] { "Name", "Implementation", "Date",
+                "State", "Version" });
     }
 
     private class MyExecutorModelListener implements ExecutorModelListener {

@@ -34,6 +34,18 @@ public class TaskInfoBean {
     private long metricsUpdateTimestamp;
     private final UUID uuid;
 
+    public String getName() {
+        return taskConfiguration.getName();
+    }
+
+    public String getImplementationName() {
+        return taskConfiguration.getImplementationName();
+    }
+
+    public String getGeneralState() {
+        return taskConfiguration.getGeneralState().toString();
+    }
+
     public TaskInfoBean(final UUID uuid) {
         this.uuid = uuid;
     }
