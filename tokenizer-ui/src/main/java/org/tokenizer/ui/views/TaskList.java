@@ -32,7 +32,7 @@ public class TaskList extends Table implements
     private TaskContainer taskContainer = null;
 
     public TaskList(final MyVaadinUI app) {
-        setSizeFull();
+        // setSizeFull();
         taskContainer = new TaskContainer(app);
         setContainerDataSource(taskContainer);
         setSelectable(true);

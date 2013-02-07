@@ -16,7 +16,7 @@ public class TaskResultsTabSheet extends TabSheet {
     private final TaskOutputView taskOutputView;
 
     public TaskResultsTabSheet(final MyVaadinUI app) {
-        setHeight(100, UNITS_PERCENTAGE);
+        // setHeight(100, UNITS_PERCENTAGE);
         this.app = app;
         taskForm = new TaskForm(app);
         taskOutputView = new TaskOutputView(app);

@@ -32,6 +32,7 @@ import org.tokenizer.executor.model.api.TaskValidityException;
 import org.tokenizer.executor.model.api.WritableExecutorModel;
 import org.tokenizer.util.zookeeper.ZkLockException;
 
+
 /**
  * Thread safe instance of this class should be used as an attribute of
  * AbstractTask implementations
@@ -43,8 +44,7 @@ import org.tokenizer.util.zookeeper.ZkLockException;
  */
 public class MetricsCache {
 
-    private static final Logger LOG = LoggerFactory
-            .getLogger(MetricsCache.class);
+    private static final Logger LOG = LoggerFactory.getLogger(MetricsCache.class);
     private static final long COMMIT_INTERVAL = 1 * 1000L;
     public static final String URL_ROBOTS_KEY = "robots.txt restricted";
     public static final String URL_TOTAL_KEY = "URLs processed";
@@ -55,18 +55,19 @@ public class MetricsCache {
     public static final String AVERAGE_HTTP_RESPONSE_TIME_MS = "Average HTTP response time (ms)";
     public static final String URL_ERROR_KEY = "URLs with fetch errors";
     public static final String OTHER_ERRORS = "other errors";
-    public static final String TOTAL_MEAN_TIME_KEY = "total mean time (including HTTP, Lily, and Solr) (ms)";
+    public static final String TOTAL_MEAN_TIME_KEY = "Total mean time (ms)";
     public static final String NOT_INDEXED_YET = "URLs retrieved but not indexed yet";
     public static final String UPDATES_COUNT = "Total updates";
     public static final String UPDATES_TIME = "Total time for updates (ms)";
     public static final String INJECTS_COUNT = "Total injects";
-    public static final String SITEMAPS_PROCESSED = "sitemaps processed";
-    public static final String SITEMAP_INDEXES_PROCESSED = "sitemap indexes processed";
-    public static final String REDIRECT_COUNT = "Redirect Count";
+    public static final String SITEMAPS_PROCESSED = "Sitemaps processed";
+    public static final String SITEMAP_INDEXES_PROCESSED = "Sitemap indexes processed";
+    public static final String REDIRECT_COUNT = "Redirect count";
     private long lastCommitTimestamp;
     private final Map<String, Long> cache = new HashMap<String, Long>();
     private final UUID uuid;
     private final WritableExecutorModel model;
+
 
     public MetricsCache(final UUID uuid, final WritableExecutorModel model) {
         this.uuid = uuid;
@@ -74,16 +75,6 @@ public class MetricsCache {
         this.lastCommitTimestamp = System.currentTimeMillis();
     }
 
-    /**
-     * Increments metrics with a given key <br/>
-     * 
-     * @param key
-     * @throws InterruptedException
-     */
-    public synchronized void increment(final String key)
-            throws InterruptedException {
-        increment(key, 1L);
-    }
 
     /**
      * Increments metrics with a given key <br/>
@@ -91,8 +82,18 @@ public class MetricsCache {
      * @param key
      * @throws InterruptedException
      */
-    public synchronized void increment(final String key, final long value)
-            throws InterruptedException {
+    public synchronized void increment(final String key) throws InterruptedException {
+        increment(key, 1L);
+    }
+
+
+    /**
+     * Increments metrics with a given key <br/>
+     * 
+     * @param key
+     * @throws InterruptedException
+     */
+    public synchronized void increment(final String key, final long value) throws InterruptedException {
         Long count = cache.get(key);
         if (count == null) {
             count = 0L;
@@ -102,11 +103,13 @@ public class MetricsCache {
         commitIfTimedOut();
     }
 
+
     private synchronized void commitIfTimedOut() throws InterruptedException {
         if (System.currentTimeMillis() >= lastCommitTimestamp + COMMIT_INTERVAL) {
             commit();
         }
     }
+
 
     /**
      * Adds existing subcounts to ZK-backed counters, commits to ZK, sets
@@ -146,15 +149,12 @@ public class MetricsCache {
                 value = value + cache.get(key);
                 taskDefinition.addCounter(key, value);
                 // it will update twice, and second update will be correct one:
-                if (key.equals(URL_OK_KEY)
-                        || key.equals(TOTAL_HTTP_RESPONSE_TIME_MS)) {
+                if (key.equals(URL_OK_KEY) || key.equals(TOTAL_HTTP_RESPONSE_TIME_MS)) {
                     Long count = taskDefinition.getCounters().get(URL_OK_KEY);
-                    Long time = taskDefinition.getCounters().get(
-                            TOTAL_HTTP_RESPONSE_TIME_MS);
+                    Long time = taskDefinition.getCounters().get(TOTAL_HTTP_RESPONSE_TIME_MS);
                     if (count != null && count > 0 && time != null) {
                         Long average = (long) (time / count);
-                        taskDefinition.addCounter(
-                                AVERAGE_HTTP_RESPONSE_TIME_MS, average);
+                        taskDefinition.addCounter(AVERAGE_HTTP_RESPONSE_TIME_MS, average);
                     }
                 }
             }
@@ -188,6 +188,7 @@ public class MetricsCache {
         }
         return success;
     }
+
 
     /**
      * We need this... otherwise data can become wrong: 10000 URLs added from
@@ -242,6 +243,7 @@ public class MetricsCache {
         }
         return success;
     }
+
 
     public static void main(final String[] args) {
         Long count = new Long(684L);

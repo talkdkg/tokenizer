@@ -16,6 +16,7 @@ import org.tokenizer.executor.model.configuration.TaskConfiguration;
 import org.tokenizer.ui.components.TaskInfoComponent;
 import org.tokenizer.ui.views.TaskView;
 
+import com.vaadin.annotations.Theme;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
@@ -25,16 +26,16 @@ import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.HorizontalSplitPanel;
+import com.vaadin.ui.Panel;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
 /**
  * The Application's "main" class
  */
-@SuppressWarnings("serial")
+@Theme("reindeer")
 public class MyVaadinUI extends UI implements Button.ClickListener,
         Property.ValueChangeListener {
 
@@ -47,6 +48,7 @@ public class MyVaadinUI extends UI implements Button.ClickListener,
     private Button addNewTaskButton;
     private TaskInfoComponent taskInfoComponent;
     VerticalLayout layout;
+    Panel mainPanel;
     private static ApplicationContext applicationContext = null;
     private String selectedHost = null;
     private int selectedHttpResponseCode = 200;
@@ -80,10 +82,12 @@ public class MyVaadinUI extends UI implements Button.ClickListener,
     }
 
     private void buildMainLayout() {
-        setSizeFull();
+        // ();
         layout = new VerticalLayout();
-        layout.setSizeFull();
         layout.addComponent(createToolbar());
+        mainPanel = new Panel();
+        // mainPanel.setSizeFull();
+        layout.addComponent(mainPanel);
         setContent(layout);
     }
 
@@ -101,19 +105,6 @@ public class MyVaadinUI extends UI implements Button.ClickListener,
         return lo;
     }
 
-    Component current = null;
-
-    private synchronized void setMainComponent(final Component c) {
-        // horizontalSplit.setSecondComponent(c);
-        if (current != null) {
-            layout.removeComponent(current);
-        }
-        layout.addComponent(c);
-        c.setSizeFull();
-        layout.setExpandRatio(c, 1);
-        current = c;
-    }
-
     @Override
     public void buttonClick(final ClickEvent event) {
         final Button source = event.getButton();
@@ -121,9 +112,9 @@ public class MyVaadinUI extends UI implements Button.ClickListener,
             if (taskInfoComponent == null) {
                 taskInfoComponent = new TaskInfoComponent(this);
             }
-            setMainComponent(taskInfoComponent);
+            mainPanel.setContent(taskInfoComponent);
         } else if (source == showTasksButton) {
-            showTaskView();
+            mainPanel.setContent(getTaskView());
         } else if (source == addNewTaskButton) {
             addNewTask();
         }
@@ -169,11 +160,7 @@ public class MyVaadinUI extends UI implements Button.ClickListener,
 
     private void addNewTask() {
         getTaskView().getTaskForm().addTask();
-        showTaskView();
-    }
-
-    private void showTaskView() {
-        setMainComponent(getTaskView());
+        mainPanel.setContent(getTaskView());
     }
 
     TaskView taskView;
