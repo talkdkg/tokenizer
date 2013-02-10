@@ -14,6 +14,7 @@ import org.tokenizer.executor.model.configuration.HtmlSplitterTaskConfiguration;
 import org.tokenizer.executor.model.configuration.MessageParserTaskConfiguration;
 import org.tokenizer.executor.model.configuration.TaskConfiguration;
 import org.tokenizer.ui.components.TaskInfoComponent;
+import org.tokenizer.ui.components.UrlSearchComponent;
 import org.tokenizer.ui.views.TaskView;
 
 import com.vaadin.annotations.Theme;
@@ -26,8 +27,9 @@ import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.HorizontalSplitPanel;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
@@ -35,18 +37,14 @@ import com.vaadin.ui.VerticalLayout;
 /**
  * The Application's "main" class
  */
-@Theme("reindeer")
-public class MyVaadinUI extends UI implements Button.ClickListener,
-        Property.ValueChangeListener {
+@Theme("mytheme")
+public class MyVaadinUI extends UI implements Property.ValueChangeListener {
 
     private static final long serialVersionUID = 1L;
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory
             .getLogger(MyVaadinUI.class);
-    private final HorizontalSplitPanel horizontalSplit = new HorizontalSplitPanel();
-    private Button showTaskInfoButton;
-    private Button showTasksButton;
-    private Button addNewTaskButton;
     private TaskInfoComponent taskInfoComponent;
+    private UrlSearchComponent urlSearchComponent;
     VerticalLayout layout;
     Panel mainPanel;
     private static ApplicationContext applicationContext = null;
@@ -82,42 +80,43 @@ public class MyVaadinUI extends UI implements Button.ClickListener,
     }
 
     private void buildMainLayout() {
-        // ();
         layout = new VerticalLayout();
-        layout.addComponent(createToolbar());
+        layout.addComponent(buildToolbar());
         mainPanel = new Panel();
         // mainPanel.setSizeFull();
         layout.addComponent(mainPanel);
         setContent(layout);
     }
 
-    public HorizontalLayout createToolbar() {
-        HorizontalLayout lo = new HorizontalLayout();
-        showTaskInfoButton = new Button("Show Tasks (new UI)");
-        showTasksButton = new Button("Show Tasks");
-        addNewTaskButton = new Button("Add New Task");
-        lo.addComponent(showTaskInfoButton);
-        lo.addComponent(showTasksButton);
-        lo.addComponent(addNewTaskButton);
-        showTasksButton.addListener(this);
-        addNewTaskButton.addListener(this);
-        showTaskInfoButton.addListener(this);
-        return lo;
-    }
+    private Component buildToolbar() {
+        ComponentContainer componentContainer = new HorizontalLayout();
+        @SuppressWarnings("serial")
+        Button tasksManager = new Button("Tasks Manager",
+                new Button.ClickListener() {
 
-    @Override
-    public void buttonClick(final ClickEvent event) {
-        final Button source = event.getButton();
-        if (source == showTaskInfoButton) {
-            if (taskInfoComponent == null) {
-                taskInfoComponent = new TaskInfoComponent(this);
+                    @Override
+                    public void buttonClick(final ClickEvent event) {
+                        if (taskInfoComponent == null) {
+                            taskInfoComponent = new TaskInfoComponent(
+                                    MyVaadinUI.this);
+                        }
+                        mainPanel.setContent(taskInfoComponent);
+                    }
+                });
+        @SuppressWarnings("serial")
+        Button urlSearch = new Button("URL Search", new Button.ClickListener() {
+
+            @Override
+            public void buttonClick(final ClickEvent event) {
+                if (urlSearchComponent == null) {
+                    urlSearchComponent = new UrlSearchComponent();
+                }
+                mainPanel.setContent(urlSearchComponent);
             }
-            mainPanel.setContent(taskInfoComponent);
-        } else if (source == showTasksButton) {
-            mainPanel.setContent(getTaskView());
-        } else if (source == addNewTaskButton) {
-            addNewTask();
-        }
+        });
+        componentContainer.addComponent(tasksManager);
+        componentContainer.addComponent(urlSearch);
+        return componentContainer;
     }
 
     @Override
@@ -132,11 +131,6 @@ public class MyVaadinUI extends UI implements Button.ClickListener,
                 TaskInfoBean task = getModel().getTask(uuid);
                 taskConfiguration = task.getTaskConfiguration();
                 getTaskView().getTaskForm().setItemDataSource(item);
-                // TaskInfoBean task = getModel().getTask(uuid);
-                // taskConfiguration = task.getTaskConfiguration();
-                // getTaskView().getTaskForm().setItemDataSource(
-                // new BeanItem(task, new String[] { "uuid",
-                // "taskConfiguration" }));
             } catch (TaskNotFoundException e) {
                 return;
             }
@@ -156,11 +150,6 @@ public class MyVaadinUI extends UI implements Button.ClickListener,
             getTaskView().getTaskOutputView().getUrlRecordList()
                     .getLazyQueryContainer().refresh();
         }
-    }
-
-    private void addNewTask() {
-        getTaskView().getTaskForm().addTask();
-        mainPanel.setContent(getTaskView());
     }
 
     TaskView taskView;

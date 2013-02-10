@@ -41,8 +41,8 @@ public class SolrUtils {
             synchronized (SolrUtils.class) {
                 if (solrServer == null) {
                     HttpSolrServer httpSolrServer = new HttpSolrServer(SOLR_URL);
-                    httpSolrServer.setSoTimeout(1000); // socket read timeout
-                    httpSolrServer.setConnectionTimeout(100);
+                    httpSolrServer.setSoTimeout(30000); // socket read timeout
+                    httpSolrServer.setConnectionTimeout(30000);
                     httpSolrServer.setDefaultMaxConnectionsPerHost(100);
                     httpSolrServer.setMaxTotalConnections(100);
                     httpSolrServer.setMaxRetries(1); // defaults to 0. > 1 not

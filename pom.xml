@@ -36,7 +36,7 @@
         <version.restlet>2.0.15</version.restlet>
         <version.rome>1.0</version.rome>
         <version.slf4j>1.6.4</version.slf4j>
-        <version.solr>4.0.0</version.solr>
+        <version.solr>4.1.0</version.solr>
         <version.spring>3.2.0.RELEASE</version.spring>
         <version.tagsoup>1.2.1</version.tagsoup>
         <version.tika>1.2</version.tika>
@@ -45,8 +45,8 @@
         <!-- copied from tokenizer-ui -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <addonBaseName>dontpush-addon</addonBaseName>
-		<vaadin.version>7.0.0</vaadin.version>
-		<vaadin.plugin.version>${vaadin.version}</vaadin.plugin.version>
+		<version.vaadin>7.0.0</version.vaadin>
+		<version.vaadin.plugin>${version.vaadin}</version.vaadin.plugin>
         <version.dontpush>1.0.1</version.dontpush>
         <xaloon.version>1.5.1</xaloon.version>
     </properties>
@@ -59,6 +59,7 @@
     <modules>
         <module>tokenizer-core</module>
         <module>tokenizer-dist</module>
+        <module>tokenizer-core-zk-util</module>
         <module>tokenizer-crawler-db</module>
         <module>tokenizer-executor-admin-cli</module>
         <module>tokenizer-executor-engine</module>
@@ -69,11 +70,6 @@
         <module>tokenizer-executor-worker</module>
         <module>tokenizer-jpa</module>
         <module>tokenizer-ui</module>
-        <module>wicket</module>
-        <module>tokenizer-core-zk-util</module>
-    <module>tokenizer-ui-wicket</module>
-    <module>tokenizer-ui-vaadin</module>
-    <module>tokenizer-ui-vaadin6</module>
   </modules>
     <repositories>
         <repository>
@@ -383,6 +379,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.0</version>
                 <configuration>
                     <source>1.6</source>
                     <target>1.6</target>
