@@ -38,7 +38,7 @@ public class TaskList extends Table implements
         setSelectable(true);
         setImmediate(true);
         setNullSelectionAllowed(false);
-        addListener(app);
+        // addListener(app);
         taskContainer.addListener((Container.PropertySetChangeListener) this);
     }
 

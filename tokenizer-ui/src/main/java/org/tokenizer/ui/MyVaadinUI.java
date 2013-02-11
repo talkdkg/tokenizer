@@ -6,21 +6,12 @@ import org.springframework.context.ApplicationContext;
 import org.tokenizer.core.context.ApplicationContextProvider;
 import org.tokenizer.crawler.db.CrawlerRepository;
 import org.tokenizer.executor.model.api.TaskGeneralState;
-import org.tokenizer.executor.model.api.TaskInfoBean;
-import org.tokenizer.executor.model.api.TaskNotFoundException;
 import org.tokenizer.executor.model.api.WritableExecutorModel;
-import org.tokenizer.executor.model.configuration.ClassicRobotTaskConfiguration;
-import org.tokenizer.executor.model.configuration.HtmlSplitterTaskConfiguration;
-import org.tokenizer.executor.model.configuration.MessageParserTaskConfiguration;
 import org.tokenizer.executor.model.configuration.TaskConfiguration;
 import org.tokenizer.ui.components.TaskInfoComponent;
 import org.tokenizer.ui.components.UrlSearchComponent;
-import org.tokenizer.ui.views.TaskView;
 
 import com.vaadin.annotations.Theme;
-import com.vaadin.data.Item;
-import com.vaadin.data.Property;
-import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.util.converter.Converter;
 import com.vaadin.data.util.converter.DefaultConverterFactory;
 import com.vaadin.server.VaadinRequest;
@@ -38,7 +29,7 @@ import com.vaadin.ui.VerticalLayout;
  * The Application's "main" class
  */
 @Theme("mytheme")
-public class MyVaadinUI extends UI implements Property.ValueChangeListener {
+public class MyVaadinUI extends UI {
 
     private static final long serialVersionUID = 1L;
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory
@@ -117,48 +108,6 @@ public class MyVaadinUI extends UI implements Property.ValueChangeListener {
         componentContainer.addComponent(tasksManager);
         componentContainer.addComponent(urlSearch);
         return componentContainer;
-    }
-
-    @Override
-    public void valueChange(final ValueChangeEvent event) {
-        Property property = event.getProperty();
-        if (property == getTaskView().getTaskList()) {
-            Object itemId = getTaskView().getTaskList().getValue();
-            Item item = getTaskView().getTaskList().getItem(itemId);
-            UUID uuid = (UUID) itemId;
-            TaskConfiguration taskConfiguration;
-            try {
-                TaskInfoBean task = getModel().getTask(uuid);
-                taskConfiguration = task.getTaskConfiguration();
-                getTaskView().getTaskForm().setItemDataSource(item);
-            } catch (TaskNotFoundException e) {
-                return;
-            }
-            if (taskConfiguration instanceof ClassicRobotTaskConfiguration) {
-                String host = ((ClassicRobotTaskConfiguration) taskConfiguration)
-                        .getHost();
-                setSelectedHost(host);
-            } else if (taskConfiguration instanceof HtmlSplitterTaskConfiguration) {
-                String host = ((HtmlSplitterTaskConfiguration) taskConfiguration)
-                        .getHost();
-                setSelectedHost(host);
-            } else if (taskConfiguration instanceof MessageParserTaskConfiguration) {
-                String host = ((MessageParserTaskConfiguration) taskConfiguration)
-                        .getHost();
-                setSelectedHost(host);
-            }
-            getTaskView().getTaskOutputView().getUrlRecordList()
-                    .getLazyQueryContainer().refresh();
-        }
-    }
-
-    TaskView taskView;
-
-    public TaskView getTaskView() {
-        if (taskView == null) {
-            taskView = new TaskView(this);
-        }
-        return taskView;
     }
 
     public String getSelectedHost() {

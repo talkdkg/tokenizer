@@ -45,7 +45,7 @@ public class UrlRecordList extends Table {
         setColumnHeaders(visibleColumnLabels.toArray(new String[0]));
         setSelectable(true);
         setImmediate(true);
-        addListener(app);
+        // addListener(app);
         setNullSelectionAllowed(false);
         setColumnCollapsingAllowed(true);
         setColumnReorderingAllowed(true);

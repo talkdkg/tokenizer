@@ -347,6 +347,51 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
         System.out.println("Describe Keyspace: " + ki2.getName());
         getKeyspaceDefinition();
         // reindex();
+        // REINDEX SOLR URLs
+        Thread filterThread = new Thread("SOLR-URL_Records-Reindex") {
+
+            @Override
+            public void run() {
+                final AtomicLong counter = new AtomicLong();
+                try {
+                    ArrayList<String> columns = new ArrayList<String>();
+                    columns.add("url");
+                    //@formatter:off
+                    keyspace
+                            .prepareQuery(CF_URL_RECORDS)
+                            .getAllRows()
+                            .setRowLimit(100)                           
+                            .setRepeatLastToken(true)
+                             .executeWithCallback(new RowCallback<byte[], String>() {
+                                @Override
+                                public void success(final Rows<byte[], String> rows) {
+                                    for (Row<byte[], String> row : rows) {
+                                        ColumnList<String> columns = row.getColumns();
+                                        UrlRecord urlRecord = toUrlRecord(row.getKey(), columns);         
+                                        submitToSolr(urlRecord);
+                                        counter.incrementAndGet();
+                                        if (counter.get() % 1000 == 0) {
+                                            LOG.warn("{} records reindexed...", counter.get());
+                                        }
+
+                                    }
+                                }
+
+                                @Override
+                                public boolean failure(final ConnectionException e) {
+                                    LOG.error(e.getMessage(), e);
+                                    return false;
+                                }
+                            });
+                    // @formatter:on
+                } catch (Exception e) {
+                    LOG.error("", e);
+                }
+                LOG.error("Total {} records reindexed... ", counter.get());
+            }
+        };
+        filterThread.setDaemon(true);
+        filterThread.start();
     }
 
     public void getKeyspaceDefinition() throws ConnectionException {
@@ -424,6 +469,7 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
                 .putColumn("timestamp", urlRecord.getTimestamp(), null)
                 .putColumn("webpageDigest", urlRecord.getWebpageDigest(), null);
         m.execute();
+        submitToSolr(urlRecord);
         LOG.debug("urlRecord updated: {}", urlRecord);
     }
 
@@ -614,6 +660,15 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
                 ArrayUtils.addAll(xmlRecord.getHostInverted(), HttpUtils
                         .intToBytes(xmlRecord.getParseAttemptCounter())), null);
         m.execute();
+    }
+
+    @Override
+    public UrlRecord getUrlRecord(final byte[] digest)
+            throws ConnectionException {
+        OperationResult<ColumnList<String>> result = keyspace
+                .prepareQuery(CF_URL_RECORDS).getKey(digest).execute();
+        ColumnList<String> columns = result.getResult();
+        return toUrlRecord(digest, columns);
     }
 
     @Override
@@ -1177,6 +1232,7 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
         doc.addField("id", MD5.toHexString(urlRecord.getDigest()));
         doc.addField("host", urlRecord.getHost());
         doc.addField("url", urlRecord.getUrl());
+        doc.addField("httpResponseCode", urlRecord.getHttpResponseCode());
         try {
             solrServer.add(doc);
         } catch (SolrServerException e) {

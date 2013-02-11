@@ -16,6 +16,8 @@ public interface CrawlerRepository {
 
     void delete(final UrlRecord urlRecord) throws ConnectionException;
 
+    UrlRecord getUrlRecord(final byte[] digest) throws ConnectionException;
+
     void filter(final String host, final URLFilter urlFilter);
 
     List<UrlRecord> listUrlRecords(String host, int httpResponseCode,

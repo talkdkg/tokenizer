@@ -2,6 +2,7 @@
 <schema name="URL Records" version="1.5">
   <types>
     <fieldtype name="string"  class="solr.StrField" sortMissingLast="true" omitNorms="true"/>
+    <fieldType name="int" class="solr.TrieIntField" precisionStep="0" positionIncrementGap="0"/>
     <fieldType name="long" class="solr.TrieLongField" precisionStep="0" positionIncrementGap="0"/>
     <fieldType name="text" class="solr.TextField" positionIncrementGap="100" autoGeneratePhraseQueries="true">
       <analyzer type="index">
@@ -36,7 +37,7 @@
   <field name="id"        type="string"    indexed="true"  stored="true"  multiValued="false" required="true"/>
   <field name="host"      type="string"    indexed="true"  stored="true"  multiValued="false" /> 
   <field name="url"       type="text"      indexed="true"  stored="true"  multiValued="false" /> 
-  <field name="_version_" type="long"      indexed="true" stored="true"   multiValued="false" />
+  <field name="httpResponseCode"       type="int"      indexed="true"  stored="true"  multiValued="false" /> 
  </fields>
 
  <uniqueKey>id</uniqueKey>
