@@ -68,7 +68,6 @@
         <module>tokenizer-executor-master</module>
         <module>tokenizer-executor-model</module>
         <module>tokenizer-executor-worker</module>
-        <module>tokenizer-jpa</module>
         <module>tokenizer-ui</module>
   </modules>
     <repositories>
