@@ -393,7 +393,7 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
             }
         };
         filterThread.setDaemon(true);
-        filterThread.start();
+        // filterThread.start();
     }
 
     public void getKeyspaceDefinition() throws ConnectionException {
@@ -807,6 +807,7 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
         if (result.getResult().isEmpty()) {
             insert(messageRecord);
         }
+        submitToSolr(messageRecord);
     }
 
     private void insert(final MessageRecord messageRecord)
@@ -1237,6 +1238,30 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
         doc.addField("httpResponseCode", urlRecord.getHttpResponseCode());
         try {
             solrServer.add(doc);
+        } catch (SolrServerException e) {
+            LOG.error("", e);
+        } catch (IOException e) {
+            LOG.error("", e);
+        }
+        // solrServer.commit();
+    }
+
+    private void submitToSolr(final MessageRecord messageRecord) {
+        SolrInputDocument doc = new SolrInputDocument();
+        doc.addField("id", MD5.toHexString(messageRecord.getDigest()));
+        doc.addField("host_s", messageRecord.getHost());
+        doc.addField("content_en", messageRecord.getContent());
+        doc.addField("age_ti",
+                messageRecord.getAge().equals(DefaultValues.EMPTY_STRING) ? 0
+                        : messageRecord.getAge());
+        doc.addField("author_en", messageRecord.getAuthor());
+        doc.addField("date_tdt", messageRecord.getDate());
+        doc.addField("sex_s", messageRecord.getSex());
+        doc.addField("title_en", messageRecord.getTitle());
+        doc.addField("topic_en", messageRecord.getTopic());
+        doc.addField("userRating_s", messageRecord.getUserRating());
+        try {
+            SolrUtils.getSolrServerForMessages().add(doc);
         } catch (SolrServerException e) {
             LOG.error("", e);
         } catch (IOException e) {

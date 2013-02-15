@@ -49,6 +49,7 @@ public class MetricsCache {
     public static final String URL_ROBOTS_KEY = "robots.txt restricted";
     public static final String URL_TOTAL_KEY = "URLs processed";
     public static final String XML_TOTAL_KEY = "XML created";
+    public static final String MESSAGE_TOTAL_KEY = "Messages created";
     public static final String URL_OK_KEY = "URLs fetched";
     public static final String URL_INJECTED = "URLs injected";
     public static final String TOTAL_HTTP_RESPONSE_TIME_MS = "Total HTTP response time (ms)";

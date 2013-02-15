@@ -18,6 +18,7 @@ package org.tokenizer.executor.engine.twitter;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
+import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Queue;
 import java.util.TreeSet;
@@ -26,17 +27,18 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.EntityTransaction;
-import javax.persistence.Persistence;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tokenizer.core.TokenizerConfig;
+import org.tokenizer.core.util.HttpUtils;
+import org.tokenizer.core.util.LanguageDetector;
+import org.tokenizer.core.util.MD5;
 import org.tokenizer.crawler.db.CrawlerRepository;
+import org.tokenizer.crawler.db.MessageRecord;
 import org.tokenizer.executor.engine.AbstractTask;
 import org.tokenizer.executor.engine.HostLocker;
-import org.tokenizer.executor.engine.twitter.db.StatusVO;
+import org.tokenizer.executor.engine.MetricsCache;
 import org.tokenizer.executor.model.api.WritableExecutorModel;
 import org.tokenizer.executor.model.configuration.TaskConfiguration;
 import org.tokenizer.util.zookeeper.ZooKeeperItf;
@@ -53,6 +55,7 @@ import twitter4j.TwitterStream;
 import twitter4j.TwitterStreamFactory;
 import twitter4j.auth.AccessToken;
 
+import com.cybozu.labs.langdetect.LangDetectException;
 import com.netflix.astyanax.connectionpool.exceptions.ConnectionException;
 
 public class TweetCollectorTask extends AbstractTask {
@@ -67,6 +70,9 @@ public class TweetCollectorTask extends AbstractTask {
     private final String token = TokenizerConfig.getString("twitter.token");
     private final String tokenSecret = TokenizerConfig
             .getString("twitter.tokenSecret");
+    SimpleDateFormat dateFormatter = new SimpleDateFormat(
+            "yyyy-MM-dd'T'HH:mm:ssZ");
+
     static {
         // default read timeout 120000 see
         // twitter4j.internal.http.HttpClientImpl
@@ -75,7 +81,7 @@ public class TweetCollectorTask extends AbstractTask {
         System.setProperty("twitter4j.http.connectionTimeout", "10000");
     }
     Collection<String> input = new TreeSet<String>();
-    private final EntityManager manager;
+    private EntityManager manager;
     private TweetCollectorTaskConfiguration taskConfiguration;
     BlockingQueue<Status> queue;
     TwitterStream stream;
@@ -96,9 +102,12 @@ public class TweetCollectorTask extends AbstractTask {
         } catch (IOException e) {
             LOG.error("", e);
         }
-        EntityManagerFactory factory = Persistence
-                .createEntityManagerFactory("persistenceUnit");
-        manager = factory.createEntityManager();
+
+        // TODO: uncomment or remove
+        // EntityManagerFactory factory = Persistence
+        // .createEntityManagerFactory("persistenceUnit");
+        // manager = factory.createEntityManager();
+
         AccessToken aToken = new AccessToken(token, tokenSecret);
         twitter = new TwitterFactory().getInstance();
         twitter.setOAuthConsumer(consumerKey, consumerSecret);
@@ -134,6 +143,16 @@ public class TweetCollectorTask extends AbstractTask {
             public void onStatus(final Status status) {
                 if (isEmpty(status.getUser().getScreenName()))
                     return;
+
+                /*
+                 * if (!status.getUser().getLang().equals("en")) return;
+                 * 
+                 * try { if
+                 * (!LanguageDetector.detect(status.getText()).equals("en"))
+                 * return; } catch (LangDetectException e) { // TODO
+                 * Auto-generated catch block e.printStackTrace(); return; }
+                 */
+
                 if (!queue.offer(status)) {
                     LOG.error("Cannot add tweet as input queue for streaming is full:"
                             + queue.size());
@@ -143,14 +162,11 @@ public class TweetCollectorTask extends AbstractTask {
             @Override
             public void onDeletionNotice(
                     final StatusDeletionNotice statusDeletionNotice) {
-                LOG.warn("We do not support onDeletionNotice at the moment! Tweet id: "
-                        + statusDeletionNotice.getStatusId());
             }
 
             @Override
             public void onTrackLimitationNotice(
                     final int numberOfLimitedStatuses) {
-                LOG.warn("onTrackLimitationNotice:" + numberOfLimitedStatuses);
             }
 
             @Override
@@ -175,6 +191,61 @@ public class TweetCollectorTask extends AbstractTask {
         return str == null || str.isEmpty();
     }
 
+    public TwitterStream sampleStream(final Queue<Status> queue)
+            throws TwitterException {
+        TwitterStream stream = new TwitterStreamFactory().getInstance(twitter
+                .getAuthorization());
+        stream.addListener(new StatusListener() {
+
+            @Override
+            public void onStatus(final Status status) {
+                if (isEmpty(status.getUser().getScreenName()))
+                    return;
+                if (!status.getUser().getLang().equals("en"))
+                    return;
+
+                try {
+                    if (!LanguageDetector.detect(status.getText()).equals("en"))
+                        return;
+                } catch (LangDetectException e) {
+                    LOG.debug(e.getMessage());
+                    return;
+                }
+
+                if (!queue.offer(status)) {
+                    LOG.error("Cannot add tweet as input queue for streaming is full:"
+                            + queue.size());
+                }
+            }
+
+            @Override
+            public void onDeletionNotice(
+                    final StatusDeletionNotice statusDeletionNotice) {
+            }
+
+            @Override
+            public void onTrackLimitationNotice(
+                    final int numberOfLimitedStatuses) {
+            }
+
+            @Override
+            public void onException(final Exception ex) {
+                LOG.error("onException", ex);
+            }
+
+            @Override
+            public void onScrubGeo(final long userId, final long upToStatusId) {
+            }
+
+            @Override
+            public void onStallWarning(final StallWarning warning) {
+                LOG.warn(warning.toString());
+            }
+        });
+        stream.sample();
+        return stream;
+    }
+
     @Override
     public TaskConfiguration getTaskConfiguration() {
         return this.taskConfiguration;
@@ -185,16 +256,20 @@ public class TweetCollectorTask extends AbstractTask {
         this.taskConfiguration = (TweetCollectorTaskConfiguration) taskConfiguration;
     }
 
+    //@formatter:off
     @Override
     protected void process() throws InterruptedException, ConnectionException {
         if (stream == null) {
             try {
-                stream = streamingTwitter(input, queue);
+                //stream = streamingTwitter(input, queue);
+                stream = sampleStream(queue);
             } catch (TwitterException e) {
                 LOG.error("", e);
             }
         }
         Status status = queue.take();
+    
+        /*
         StatusVO vo = new StatusVO(status);
         EntityTransaction tx = manager.getTransaction();
         tx.begin();
@@ -204,8 +279,35 @@ public class TweetCollectorTask extends AbstractTask {
             e.printStackTrace();
         }
         tx.commit();
-        LOG.debug("Status: {}", status);
+        
+        */
+        
+        MessageRecord messageRecord = new MessageRecord(MD5.digest(status
+                .toString()), status.getUser().getName(), null,
+                status.getText());
+
+        messageRecord.setHost("stream.twitter.com");
+        messageRecord.setHostInverted(HttpUtils
+                .getHostInverted("stream.twitter.com"));
+
+        messageRecord.setDate(
+                org.apache.solr.schema.DateField.formatExternal(
+            status.getCreatedAt()));
+
+        crawlerRepository.insertIfNotExists(messageRecord);
+        metricsCache.increment(MetricsCache.MESSAGE_TOTAL_KEY);
+
+        LOG.debug("Status: {}", status.getText());
+        //LOG.debug("messageRecord: {}\n\n\n", messageRecord.getContent());
+        
+        
+        
     }
+
+    
+    
+    
+    //@formatter:on
 
     @Override
     protected synchronized void shutdown() throws InterruptedException {

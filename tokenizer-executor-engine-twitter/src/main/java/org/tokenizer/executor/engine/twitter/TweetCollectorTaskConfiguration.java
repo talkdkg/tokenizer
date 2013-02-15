@@ -23,6 +23,8 @@ public class TweetCollectorTaskConfiguration extends TaskConfiguration {
     private String keywords;
 
     public String getKeywords() {
+        if (keywords == null)
+            return "";
         return keywords;
     }
 

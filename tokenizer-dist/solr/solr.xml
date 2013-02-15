@@ -54,5 +54,8 @@
     <core name="url_records" instanceDir="url_records">
       <property name="solr.data.dir" value="/data/solr_data/url_records"/>
     </core>
+    <core name="messages" instanceDir="messages">
+      <property name="solr.data.dir" value="/data/solr_data/messages"/>
+    </core>
   </cores>
 </solr>

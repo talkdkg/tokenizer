@@ -21,6 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tokenizer.core.TokenizerConfig;
 
+
 /**
  * 
  * Static Utility class to get access to Solr. TODO: fine-tune with new version
@@ -32,9 +33,12 @@ import org.tokenizer.core.TokenizerConfig;
 public class SolrUtils {
 
     private static final Logger LOG = LoggerFactory.getLogger(SolrUtils.class);
-    private static final String SOLR_URL = TokenizerConfig.getProperties()
-            .getProperty("solr.url", "http://localhost:8080/solr/url_records");
+    private static final String SOLR_URL = TokenizerConfig.getProperties().getProperty("solr.url", "http://localhost:8080/solr/url_records");
+    private static final String SOLR_URL_BASE = TokenizerConfig.getProperties().getProperty("solr.url.base", "http://localhost:8080/solr");
+
     private static SolrServer solrServer = null;
+    private static SolrServer solrServerMessages = null;
+
 
     public static SolrServer getSolrServer() {
         if (solrServer == null) {
@@ -47,10 +51,32 @@ public class SolrUtils {
                     httpSolrServer.setMaxTotalConnections(100);
                     httpSolrServer.setMaxRetries(1); // defaults to 0. > 1 not
                                                      // recommended.
+
                     solrServer = httpSolrServer;
                 }
             }
         }
         return solrServer;
     }
+
+
+    public static SolrServer getSolrServerForMessages() {
+        if (solrServerMessages == null) {
+            synchronized (SolrUtils.class) {
+                if (solrServerMessages == null) {
+                    HttpSolrServer httpSolrServer = new HttpSolrServer(SOLR_URL_BASE + "/messages");
+                    httpSolrServer.setSoTimeout(30000); // socket read timeout
+                    httpSolrServer.setConnectionTimeout(30000);
+                    httpSolrServer.setDefaultMaxConnectionsPerHost(100);
+                    httpSolrServer.setMaxTotalConnections(100);
+                    httpSolrServer.setMaxRetries(1); // defaults to 0. > 1 not
+                                                     // recommended.
+
+                    solrServerMessages = httpSolrServer;
+                }
+            }
+        }
+        return solrServerMessages;
+    }
+
 }
