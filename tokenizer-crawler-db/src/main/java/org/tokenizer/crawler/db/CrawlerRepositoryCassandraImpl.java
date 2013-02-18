@@ -61,7 +61,7 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
     private final String clusterName = "WEB_CRAWL_CLUSTER";
     private final String keyspaceName = "WEB_CRAWL_KEYSPACE";
     private String seeds = "127.0.0.1";
-    private final int port = 19160;
+    private final int port = 9160;
     private static final ColumnFamily<byte[], String> CF_URL_RECORDS = ColumnFamily
             .newColumnFamily("URL_RECORDS", BytesArraySerializer.get(),
                     StringSerializer.get());

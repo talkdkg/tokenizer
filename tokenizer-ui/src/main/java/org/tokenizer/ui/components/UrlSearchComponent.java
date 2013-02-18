@@ -157,7 +157,7 @@ public class UrlSearchComponent extends CustomComponent {
     private Component buildSearchResults() {
         VerticalLayout layout = new VerticalLayout();
         final Table table = new Table(null);
-        table.setWidth(3 * COMMON_FIELD_WIDTH, Unit.EM);
+        table.setWidth(100, Unit.PERCENTAGE);
         table.setSelectable(true);
         table.setImmediate(true);
         table.setNullSelectionAllowed(false);
