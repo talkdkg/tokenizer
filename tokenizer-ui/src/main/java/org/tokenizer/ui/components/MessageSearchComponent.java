@@ -10,13 +10,21 @@ import org.apache.solr.client.solrj.SolrQuery.ORDER;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.beans.Field;
+import org.apache.solr.client.solrj.response.FacetField;
 import org.apache.solr.client.solrj.response.QueryResponse;
+import org.apache.solr.client.solrj.response.RangeFacet;
 import org.tokenizer.core.solr.SolrUtils;
 import org.vaadin.addons.lazyquerycontainer.LazyQueryContainer;
 import org.vaadin.addons.lazyquerycontainer.Query;
 import org.vaadin.addons.lazyquerycontainer.QueryDefinition;
 import org.vaadin.addons.lazyquerycontainer.QueryFactory;
 
+import com.vaadin.addon.charts.Chart;
+import com.vaadin.addon.charts.model.ChartType;
+import com.vaadin.addon.charts.model.Configuration;
+import com.vaadin.addon.charts.model.ListSeries;
+import com.vaadin.addon.charts.model.XAxis;
+import com.vaadin.addon.charts.model.YAxis;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
@@ -34,6 +42,9 @@ import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Layout;
+import com.vaadin.ui.Panel;
+import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Table.ColumnGenerator;
 import com.vaadin.ui.TextField;
@@ -57,6 +68,8 @@ public class MessageSearchComponent extends CustomComponent {
     Component searchResultsComponent;
     LazyQueryContainer lazyQueryContainer;
     Component crawledContentTabSheet;
+    FacetField hostFacetField;
+    RangeFacet.Date dateRangeFacet;
 
     public MessageSearchComponent() {
         buildMainLayout();
@@ -114,20 +127,37 @@ public class MessageSearchComponent extends CustomComponent {
         return formControls;
     }
 
+    /**
+     * "Table" with Lazy COntainer are independent form this method call 1. This
+     * method call is needed to populate (only once) response time TODO: should
+     * we populate response time etc. via LazyContainer calls?
+     * 
+     * 2. This method call is needed for Facets; "Table" calls are for
+     * pagination only
+     * 
+     * @param q
+     */
     private void querySolr(final MyQuery q) {
         SolrQuery solrQuery = new SolrQuery();
         solrQuery.setQuery(q.getQuery());
         solrQuery.setFacet(true);
         solrQuery.setFacetMinCount(10);
         solrQuery.addFacetField("host_s");
-        solrQuery.setHighlight(true);
-        solrQuery.setHighlightSnippets(1);
-        solrQuery.setHighlightFragsize(4096);
-        solrQuery.setParam("hl.fl", "content_en");
-        solrQuery.setRows(10);
+        //solrQuery.setHighlight(true);
+        //solrQuery.setHighlightSnippets(1);
+        //solrQuery.setHighlightFragsize(4096);
+        //solrQuery.setParam("hl.fl", "content_en");
+        solrQuery.setRows(0);
+
+        // Date Range Faceting
+        // http://wiki.apache.org/solr/VariableRangeGaps#facet.range.spec
+        solrQuery.addDateRangeFacet("date_tdt", new Date(0), new Date(),
+                "+1HOUR");
+
         // for better performance:
-        solrQuery.setSortField("_docid_", ORDER.asc);
+        //solrQuery.setSortField("_docid_", ORDER.asc);
         solrQuery.setParam("df", "content_en");
+        LOG.debug("solrQuery: {}", solrQuery);
         try {
             queryResponse = solrServer.query(solrQuery);
         } catch (SolrServerException e) {
@@ -135,16 +165,16 @@ public class MessageSearchComponent extends CustomComponent {
             beans = new ArrayList<MessageBean>();
         }
         LOG.debug(queryResponse.toString());
-        beans = queryResponse.getBeans(MessageBean.class);
-        for (MessageBean bean : beans) {
-            String id = bean.getId();
-            if (queryResponse.getHighlighting().get(id) != null) {
-                List<String> highlightSnippets = queryResponse
-                        .getHighlighting().get(id).get("content_en");
-                bean.setHighlightSnippet(highlightSnippets.get(0));
-            }
-            LOG.debug(bean.toString());
+
+        hostFacetField = queryResponse.getFacetField("host_s");
+
+        List<RangeFacet> facetRanges = queryResponse.getFacetRanges();
+
+        RangeFacet rangeFacet = facetRanges.get(0);
+        if (rangeFacet.getName().equals("date_tdt")) {
+            dateRangeFacet = (RangeFacet.Date) rangeFacet;
         }
+
     }
 
     public class MyQuery implements Serializable {
@@ -313,15 +343,25 @@ public class MessageSearchComponent extends CustomComponent {
         MyLazyQueryFactory myLazyQueryFactory = new MyLazyQueryFactory();
         lazyQueryContainer = new LazyQueryContainer(myLazyQueryFactory, false,
                 100);
-        lazyQueryContainer.addContainerProperty("id", String.class, "", true,
-                false);
+        //lazyQueryContainer.addContainerProperty("id", String.class, "", true,
+        //        false);
         lazyQueryContainer.addContainerProperty("host", String.class, "", true,
                 false);
+        lazyQueryContainer.addContainerProperty("date", Date.class,
+                new Date(0), true, false);
+        lazyQueryContainer.addContainerProperty("topic", String.class, "",
+                true, false);
+        lazyQueryContainer.addContainerProperty("author", String.class, "",
+                true, false);
+        lazyQueryContainer.addContainerProperty("title", String.class, "",
+                true, false);
         lazyQueryContainer.addContainerProperty("highlightSnippet",
                 String.class, "", true, false);
         table.setContainerDataSource(lazyQueryContainer);
-        table.setVisibleColumns(new String[] { "id", "host", "highlightSnippet" });
-        table.setColumnHeaders(new String[] { "ID", "Host", "Content" });
+        table.setVisibleColumns(new String[] { "host", "date", "topic",
+                "author", "title", "highlightSnippet" });
+        table.setColumnHeaders(new String[] { "Host", "Date", "Topic",
+                "Author", "Title", "Content" });
         table.addValueChangeListener(new ValueChangeListener() {
 
             private static final long serialVersionUID = 1L;
@@ -358,6 +398,7 @@ public class MessageSearchComponent extends CustomComponent {
             }
         });
         layout.addComponent(table);
+
         Label label = new Label("Elapsed time: "
                 + queryResponse.getElapsedTime() + "(ms)");
         layout.addComponent(label);
@@ -366,6 +407,10 @@ public class MessageSearchComponent extends CustomComponent {
         label = new Label("Total found: "
                 + queryResponse.getResults().getNumFound());
         layout.addComponent(label);
+
+        Component component = buildFacets();
+        layout.addComponent(component);
+
         return layout;
     }
 
@@ -473,6 +518,92 @@ public class MessageSearchComponent extends CustomComponent {
         public int size() {
             return (int) numFound;
         }
+    }
+
+    private Component buildFacets() {
+        TabSheet component = new TabSheet();
+        component.setCaption("Statistics and Charts");
+
+        Layout layout = new HorizontalLayout();
+        Panel panel = new Panel("Facets", layout);
+        component.addTab(panel);
+
+        Table table = new Table();
+
+        //table2.setVisibleColumns(new String[] { "Time", "Count" });
+        //table2.setColumnHeaders(new String[] { "Time", "Count" });
+
+        table.addContainerProperty("Time", String.class, null);
+        table.addContainerProperty("Count", Integer.class, null);
+
+        //IndexedContainer container = new IndexedContainer();
+
+        for (int i = 0; i < dateRangeFacet.getCounts().size(); i++) {
+            RangeFacet.Count count = dateRangeFacet.getCounts().get(i);
+
+            // Add a row the hard way
+            Object newItemId = table.addItem();
+            Item row = table.getItem(newItemId);
+
+            row.getItemProperty("Time").setValue(count.getValue());
+            row.getItemProperty("Count").setValue(count.getCount());
+
+            // Add a few other rows using shorthand addItem()
+            //table.addItem(new Object[]{"Canopus",        -0.72}, 2);
+            //table.addItem(new Object[]{"Arcturus",       -0.04}, 3);
+            //table.addItem(new Object[]{"Alpha Centauri", -0.01}, 4);
+
+            // Show 5 rows
+
+        }
+
+        table.setPageLength(dateRangeFacet.getCounts().size());
+
+        layout.addComponent(table);
+
+        Chart chart = new Chart(ChartType.BAR);
+        chart.setWidth("400px");
+        chart.setHeight("300px");
+
+        // Modify the default configuration a bit
+        Configuration conf = chart.getConfiguration();
+        conf.setTitle("Messages");
+        conf.setSubTitle("Hourly counts");
+        conf.getLegend().setEnabled(false); // Disable legend
+
+        // The data
+        ListSeries series = new ListSeries("Diameter");
+
+        for (RangeFacet.Count c : dateRangeFacet.getCounts()) {
+            series.addData(c.getCount());
+        }
+
+        conf.addSeries(series);
+
+        // Set the category labels on the axis correspondingly
+        XAxis xaxis = new XAxis();
+        String[] categories = new String[dateRangeFacet.getCounts().size()];
+        int i = 0;
+        for (RangeFacet.Count c : dateRangeFacet.getCounts()) {
+            categories[i] = c.getValue();
+            i++;
+        }
+        xaxis.setCategories(categories);
+        xaxis.setTitle("Time");
+        xaxis.getLabels().setStep(4);
+        conf.addxAxis(xaxis);
+
+        // Set the Y axis title
+        YAxis yaxis = new YAxis();
+        yaxis.setTitle("Number of Messages");
+        yaxis.getLabels().setFormatter(
+                "function() {return Math.floor(this.value/10) + \'(x10)\';}");
+        yaxis.getLabels().setStep(2);
+        conf.addyAxis(yaxis);
+
+        layout.addComponent(chart);
+
+        return component;
     }
 
 }
