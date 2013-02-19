@@ -336,7 +336,8 @@
          have some sort of hard autoCommit to limit the log size.
       -->
      <autoCommit> 
-       <maxTime>15000</maxTime> 
+       <maxDocs>100000</maxDocs>
+       <maxTime>3600000</maxTime>
        <openSearcher>false</openSearcher> 
      </autoCommit>
 
@@ -474,8 +475,8 @@
                and old cache.  
       -->
     <filterCache class="solr.FastLRUCache"
-                 size="512"
-                 initialSize="512"
+                 size="1048576"
+                 initialSize="1048576"
                  autowarmCount="0"/>
 
     <!-- Query Result Cache
@@ -483,9 +484,9 @@
          Caches results of searches - ordered lists of document ids
          (DocList) based on a query, a sort, and the range of documents requested.  
       -->
-    <queryResultCache class="solr.LRUCache"
-                     size="512"
-                     initialSize="512"
+    <queryResultCache class="solr.FastLRUCache"
+                     size="1048576"
+                     initialSize="1048576"
                      autowarmCount="0"/>
    
     <!-- Document Cache
@@ -494,9 +495,9 @@
          document).  Since Lucene internal document ids are transient,
          this cache will not be autowarmed.  
       -->
-    <documentCache class="solr.LRUCache"
-                   size="512"
-                   initialSize="512"
+    <documentCache class="solr.FastLRUCache"
+                   size="1048576"
+                   initialSize="1048576"
                    autowarmCount="0"/>
     
     <!-- Field Value Cache
@@ -505,12 +506,12 @@
          by document id.  The fieldValueCache is created by default
          even if not configured here.
       -->
-    <!--
+
        <fieldValueCache class="solr.FastLRUCache"
-                        size="512"
-                        autowarmCount="128"
+                        size="1048576"
+                        autowarmCount="1024"
                         showItems="32" />
-      -->
+     
 
     <!-- Custom Cache
 
