@@ -117,6 +117,16 @@
                 <groupId>com.netflix.astyanax</groupId>
                 <artifactId>astyanax</artifactId>
                 <version>${version.astyanax}</version>
+                <exclusions>
+                    <exclusion>
+                        <artifactId>guava</artifactId>
+                        <groupId>com.google.guava</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>servlet-api</artifactId>
+                        <groupId>javax.servlet</groupId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>commons-lang</groupId>

@@ -155,7 +155,7 @@ public class MessageSearchComponent extends CustomComponent {
                 "+1HOUR");
 
         // for better performance:
-        //solrQuery.setSortField("_docid_", ORDER.asc);
+        solrQuery.setSortField("_docid_", ORDER.asc);
         solrQuery.setParam("df", "content_en");
         LOG.debug("solrQuery: {}", solrQuery);
         try {

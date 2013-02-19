@@ -569,12 +569,12 @@
         then documents 0 through 49 will be collected and cached.  Any further
         requests in that range can be satisfied via the cache.  
      -->
-   <queryResultWindowSize>20</queryResultWindowSize>
+   <queryResultWindowSize>100</queryResultWindowSize>
 
    <!-- Maximum number of documents to cache for any entry in the
         queryResultCache. 
      -->
-   <queryResultMaxDocsCached>200</queryResultMaxDocsCached>
+   <queryResultMaxDocsCached>1000</queryResultMaxDocsCached>
 
    <!-- Query Related Event Listeners
 
@@ -596,19 +596,20 @@
          local query request for each NamedList in sequence. 
       -->
     <listener event="newSearcher" class="solr.QuerySenderListener">
-      <arr name="queries">
-        <!--
-           <lst><str name="q">solr</str><str name="sort">price asc</str></lst>
-           <lst><str name="q">rocks</str><str name="sort">weight asc</str></lst>
-          -->
-      </arr>
+            <arr name="queries">
+                <lst>
+                    <str name="q">review</str>
+                    <str name="sort">_docid_ asc</str>
+                </lst>
+            </arr>
     </listener>
     <listener event="firstSearcher" class="solr.QuerySenderListener">
-      <arr name="queries">
-        <lst>
-          <str name="q">static firstSearcher warming in solrconfig.xml</str>
-        </lst>
-      </arr>
+            <arr name="queries">
+                <lst>
+                    <str name="q">review</str>
+                    <str name="sort">_docid_ asc</str>
+                </lst>
+            </arr>
     </listener>
 
     <!-- Use Cold Searcher
@@ -771,7 +772,7 @@
      <lst name="defaults">
        <str name="echoParams">explicit</str>
        <int name="rows">10</int>
-       <str name="df">text</str>
+       <str name="df">content_en</str>
      </lst>
     <!-- In addition to defaults, "appends" params can be specified
          to identify values which should be appended to the list of
@@ -833,7 +834,7 @@
        <str name="echoParams">explicit</str>
        <str name="wt">json</str>
        <str name="indent">true</str>
-       <str name="df">text</str>
+       <str name="df">content_en</str>
      </lst>
   </requestHandler>
 

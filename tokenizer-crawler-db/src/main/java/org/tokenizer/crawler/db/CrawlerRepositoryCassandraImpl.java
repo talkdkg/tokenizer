@@ -9,9 +9,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
-import javax.annotation.Nullable;
 import javax.annotation.PostConstruct;
 
+import org.apache.avro.reflect.Nullable;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.nutch.net.URLFilter;
 import org.apache.solr.client.solrj.SolrServer;
