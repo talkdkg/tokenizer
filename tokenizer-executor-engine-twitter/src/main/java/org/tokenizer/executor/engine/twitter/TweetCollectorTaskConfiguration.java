@@ -15,16 +15,15 @@
  */
 package org.tokenizer.executor.engine.twitter;
 
+import org.tokenizer.core.StringPool;
 import org.tokenizer.executor.model.configuration.TaskConfiguration;
 
 public class TweetCollectorTaskConfiguration extends TaskConfiguration {
 
     private static final long serialVersionUID = 1L;
-    private String keywords;
+    private String keywords = StringPool.EMPTY;
 
     public String getKeywords() {
-        if (keywords == null)
-            return "";
         return keywords;
     }
 
@@ -62,4 +61,9 @@ public class TweetCollectorTaskConfiguration extends TaskConfiguration {
             return false;
         return true;
     }
+
+    public boolean isSampleStream() {
+        return StringPool.EMPTY.equals(keywords);
+    }
+
 }

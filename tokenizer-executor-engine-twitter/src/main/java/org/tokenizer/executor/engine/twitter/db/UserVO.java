@@ -32,6 +32,7 @@ import twitter4j.User;
 
 @Entity
 @Table(name = "User")
+@Deprecated
 public class UserVO implements User {
 
     private static final long serialVersionUID = 1L;

@@ -26,8 +26,6 @@ import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import javax.persistence.EntityManager;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tokenizer.core.TokenizerConfig;
@@ -54,6 +52,7 @@ import twitter4j.TwitterFactory;
 import twitter4j.TwitterStream;
 import twitter4j.TwitterStreamFactory;
 import twitter4j.auth.AccessToken;
+import twitter4j.auth.RequestToken;
 
 import com.cybozu.labs.langdetect.LangDetectException;
 import com.netflix.astyanax.connectionpool.exceptions.ConnectionException;
@@ -81,7 +80,6 @@ public class TweetCollectorTask extends AbstractTask {
         System.setProperty("twitter4j.http.connectionTimeout", "10000");
     }
     Collection<String> input = new TreeSet<String>();
-    private EntityManager manager;
     private TweetCollectorTaskConfiguration taskConfiguration;
     BlockingQueue<Status> queue;
     TwitterStream stream;
@@ -103,27 +101,18 @@ public class TweetCollectorTask extends AbstractTask {
             LOG.error("", e);
         }
 
-        // TODO: uncomment or remove
-        // EntityManagerFactory factory = Persistence
-        // .createEntityManagerFactory("persistenceUnit");
-        // manager = factory.createEntityManager();
-
         AccessToken aToken = new AccessToken(token, tokenSecret);
         twitter = new TwitterFactory().getInstance();
         twitter.setOAuthConsumer(consumerKey, consumerSecret);
         twitter.setOAuthAccessToken(aToken);
         try {
-            // RequestToken requestToken = t.getOAuthRequestToken();
-            // System.out.println("TW-URL:" +
-            // requestToken.getAuthorizationURL());
+            RequestToken requestToken = twitter.getOAuthRequestToken();
+            LOG.debug("Authorization URL: {}",
+                    requestToken.getAuthorizationURL());
             twitter.verifyCredentials();
-            String str = "<user>";
-            try {
-                str = twitter.getScreenName();
-            } catch (Exception e) {
-                LOG.error("", e);
-            }
-            LOG.info("create new TwitterSearch for " + str);
+            String user;
+            user = twitter.getScreenName();
+            LOG.warn("Authenticated successfully; user: {}" + user);
         } catch (TwitterException ex) {
             // if (ex.getStatusCode() == 400)
             throw new RuntimeException(ex);
@@ -256,32 +245,21 @@ public class TweetCollectorTask extends AbstractTask {
         this.taskConfiguration = (TweetCollectorTaskConfiguration) taskConfiguration;
     }
 
-    //@formatter:off
     @Override
     protected void process() throws InterruptedException, ConnectionException {
         if (stream == null) {
             try {
-                //stream = streamingTwitter(input, queue);
-                stream = sampleStream(queue);
+                if (taskConfiguration.isSampleStream()) {
+                    stream = sampleStream(queue);
+                } else {
+                    stream = streamingTwitter(input, queue);
+                }
             } catch (TwitterException e) {
                 LOG.error("", e);
             }
         }
         Status status = queue.take();
-    
-        /*
-        StatusVO vo = new StatusVO(status);
-        EntityTransaction tx = manager.getTransaction();
-        tx.begin();
-        try {
-            manager.merge(vo);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        tx.commit();
-        
-        */
-        
+
         MessageRecord messageRecord = new MessageRecord(MD5.digest(status
                 .toString()), status.getUser().getName(), null,
                 status.getText());
@@ -290,24 +268,15 @@ public class TweetCollectorTask extends AbstractTask {
         messageRecord.setHostInverted(HttpUtils
                 .getHostInverted("stream.twitter.com"));
 
-        messageRecord.setDate(
-                org.apache.solr.schema.DateField.formatExternal(
-            status.getCreatedAt()));
+        messageRecord.setDate(org.apache.solr.schema.DateField
+                .formatExternal(status.getCreatedAt()));
 
         crawlerRepository.insertIfNotExists(messageRecord);
         metricsCache.increment(MetricsCache.MESSAGE_TOTAL_KEY);
 
         LOG.debug("Status: {}", status.getText());
-        //LOG.debug("messageRecord: {}\n\n\n", messageRecord.getContent());
-        
-        
-        
-    }
 
-    
-    
-    
-    //@formatter:on
+    }
 
     @Override
     protected synchronized void shutdown() throws InterruptedException {

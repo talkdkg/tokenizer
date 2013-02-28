@@ -38,6 +38,7 @@ import twitter4j.UserMentionEntity;
 
 @Entity
 @Table(name = "Status")
+@Deprecated
 public class StatusVO implements Status {
 
     private static final long serialVersionUID = 1L;
