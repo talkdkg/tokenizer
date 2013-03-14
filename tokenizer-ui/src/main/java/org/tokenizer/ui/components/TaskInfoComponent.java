@@ -89,12 +89,7 @@ public class TaskInfoComponent extends CustomComponent {
     }
 
     private Component buildTable() {
-        // setContainerDataSource(taskContainer);
-        // addListener(app);
-        // taskContainer.addListener((Container.PropertySetChangeListener)
-        // this);
         final Table table = new Table(null);
-        setSizeFull();
         table.setSelectable(true);
         table.setImmediate(true);
         table.setNullSelectionAllowed(false);

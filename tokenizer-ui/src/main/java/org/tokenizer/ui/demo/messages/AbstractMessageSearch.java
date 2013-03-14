@@ -17,7 +17,7 @@ import org.apache.solr.client.solrj.response.RangeFacet;
 import org.apache.solr.common.util.NamedList;
 import org.tokenizer.core.solr.SolrUtils;
 import org.tokenizer.ui.components.MessageSearchComponent;
-import org.tokenizer.ui.demo.AbstractVaadinChartExample;
+import org.tokenizer.ui.demo.AbstractScreen;
 import org.tokenizer.ui.demo.SkipFromDemo;
 import org.vaadin.addons.lazyquerycontainer.LazyQueryContainer;
 import org.vaadin.addons.lazyquerycontainer.Query;
@@ -46,7 +46,7 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 
 @SkipFromDemo
-public abstract class AbstractMessageSearch extends AbstractVaadinChartExample {
+public abstract class AbstractMessageSearch extends AbstractScreen {
 
     @Override
     protected Component getChart() {

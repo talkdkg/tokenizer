@@ -18,7 +18,7 @@ import org.tokenizer.executor.model.api.WritableExecutorModel;
 import org.tokenizer.ui.components.MessageSearchComponent;
 import org.tokenizer.ui.components.TaskInfoComponent;
 import org.tokenizer.ui.components.UrlSearchComponent;
-import org.tokenizer.ui.demo.AbstractVaadinChartExample;
+import org.tokenizer.ui.demo.AbstractScreen;
 import org.tokenizer.ui.demo.SkipFromDemo;
 
 import com.vaadin.addon.charts.ChartOptions;
@@ -68,17 +68,17 @@ public class MyVaadinUI extends UI {
     private Tree tree;
     private OptionGroup themeSelector;
 
-    private static Map<String, List<Class<? extends AbstractVaadinChartExample>>> tests;
+    private static Map<String, List<Class<? extends AbstractScreen>>> tests;
 
     static {
         Reflections reflections = new Reflections("org.tokenizer.ui.demo");
 
-        Set<Class<? extends AbstractVaadinChartExample>> subTypes = reflections
-                .getSubTypesOf(AbstractVaadinChartExample.class);
+        Set<Class<? extends AbstractScreen>> subTypes = reflections
+                .getSubTypesOf(AbstractScreen.class);
 
-        Map<String, List<Class<? extends AbstractVaadinChartExample>>> grouped = new HashMap<String, List<Class<? extends AbstractVaadinChartExample>>>();
+        Map<String, List<Class<? extends AbstractScreen>>> grouped = new HashMap<String, List<Class<? extends AbstractScreen>>>();
 
-        for (Class<? extends AbstractVaadinChartExample> class1 : subTypes) {
+        for (Class<? extends AbstractScreen> class1 : subTypes) {
             if (class1.getAnnotation(SkipFromDemo.class) != null) {
                 continue;
             }
@@ -86,21 +86,21 @@ public class MyVaadinUI extends UI {
             String name = package1.getName();
             name = name.substring(name.lastIndexOf(".") + 1);
 
-            List<Class<? extends AbstractVaadinChartExample>> list = grouped
+            List<Class<? extends AbstractScreen>> list = grouped
                     .get(name);
             if (list == null) {
-                list = new ArrayList<Class<? extends AbstractVaadinChartExample>>();
+                list = new ArrayList<Class<? extends AbstractScreen>>();
                 grouped.put(name, list);
             }
             list.add(class1);
             Collections
                     .sort(list,
-                            new Comparator<Class<? extends AbstractVaadinChartExample>>() {
+                            new Comparator<Class<? extends AbstractScreen>>() {
 
                                 @Override
                                 public int compare(
-                                        final Class<? extends AbstractVaadinChartExample> o1,
-                                        final Class<? extends AbstractVaadinChartExample> o2) {
+                                        final Class<? extends AbstractScreen> o1,
+                                        final Class<? extends AbstractScreen> o2) {
                                     String simpleName = o1.getSimpleName();
                                     String simpleName2 = o2.getSimpleName();
                                     return simpleName.compareTo(simpleName2);
@@ -216,7 +216,7 @@ public class MyVaadinUI extends UI {
                 if (value2 instanceof Class) {
                     try {
                         Class value = (Class) value2;
-                        AbstractVaadinChartExample newInstance = (AbstractVaadinChartExample) value
+                        AbstractScreen newInstance = (AbstractScreen) value
                                 .newInstance();
                         tabSheet.removeAllComponents();
                         tabSheet.addTab(newInstance, "Graph");
@@ -303,9 +303,9 @@ public class MyVaadinUI extends UI {
             String group = g.replaceAll(" ", "").toLowerCase();
             Item groupItem = hierarchicalContainer.addItem(group);
             groupItem.getItemProperty("displayName").setValue(g);
-            List<Class<? extends AbstractVaadinChartExample>> list = tests
+            List<Class<? extends AbstractScreen>> list = tests
                     .get(group);
-            for (Class<? extends AbstractVaadinChartExample> class1 : list) {
+            for (Class<? extends AbstractScreen> class1 : list) {
                 Item testItem = hierarchicalContainer.addItem(class1);
                 testItem.getItemProperty("displayName").setValue(
                         class1.getSimpleName());

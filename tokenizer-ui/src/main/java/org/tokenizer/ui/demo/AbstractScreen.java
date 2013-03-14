@@ -4,11 +4,14 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.VerticalLayout;
 
 @SuppressWarnings("serial")
-public abstract class AbstractVaadinChartExample extends VerticalLayout {
+public abstract class AbstractScreen extends VerticalLayout {
+
+    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory
+            .getLogger(AbstractScreen.class);
 
     private final VerticalLayout content;
 
-    public AbstractVaadinChartExample() {
+    public AbstractScreen() {
         content = this;
         content.setSizeFull();
     }
@@ -23,6 +26,7 @@ public abstract class AbstractVaadinChartExample extends VerticalLayout {
 
     protected void setup() {
         if (content.getComponentCount() == 0) {
+            LOG.debug("creating component instance...");
             final Component map = getChart();
             content.addComponent(map);
             content.setExpandRatio(map, 1);
