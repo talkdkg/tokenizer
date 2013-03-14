@@ -52,7 +52,6 @@ import twitter4j.TwitterFactory;
 import twitter4j.TwitterStream;
 import twitter4j.TwitterStreamFactory;
 import twitter4j.auth.AccessToken;
-import twitter4j.auth.RequestToken;
 
 import com.cybozu.labs.langdetect.LangDetectException;
 import com.netflix.astyanax.connectionpool.exceptions.ConnectionException;
@@ -106,9 +105,6 @@ public class TweetCollectorTask extends AbstractTask {
         twitter.setOAuthConsumer(consumerKey, consumerSecret);
         twitter.setOAuthAccessToken(aToken);
         try {
-            RequestToken requestToken = twitter.getOAuthRequestToken();
-            LOG.debug("Authorization URL: {}",
-                    requestToken.getAuthorizationURL());
             twitter.verifyCredentials();
             String user;
             user = twitter.getScreenName();

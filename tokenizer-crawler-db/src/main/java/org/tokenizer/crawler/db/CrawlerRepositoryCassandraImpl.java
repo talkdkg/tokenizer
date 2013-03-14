@@ -6,7 +6,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 
 import javax.annotation.PostConstruct;
@@ -26,6 +28,10 @@ import org.tokenizer.util.io.JavaSerializationUtils;
 
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableMap;
+import com.kaypok.FeatureExtraction;
+import com.kaypok.Tools;
+import com.kaypok.model.Sentence;
+import com.kaypok.model.Text;
 import com.netflix.astyanax.AstyanaxContext;
 import com.netflix.astyanax.ExceptionCallback;
 import com.netflix.astyanax.Keyspace;
@@ -394,6 +400,55 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
         };
         filterThread.setDaemon(true);
         // filterThread.start();
+
+        // reindex();
+        // REINDEX SOLR Message Records
+        Thread messageRecordsReindexThread = new Thread(
+                "messageRecordsReindexThread") {
+
+            @Override
+            public void run() {
+                final AtomicLong counter = new AtomicLong();
+                try {
+                    //ArrayList<String> columns = new ArrayList<String>();
+                    //columns.add("url");
+                    //@formatter:off
+                    keyspace
+                            .prepareQuery(CF_MESSAGE_RECORDS)
+                            .getAllRows()
+                            .setRowLimit(100)                           
+                            .setRepeatLastToken(true)
+                             .executeWithCallback(new RowCallback<byte[], String>() {
+                                @Override
+                                public void success(final Rows<byte[], String> rows) {
+                                    for (Row<byte[], String> row : rows) {
+                                        ColumnList<String> columns = row.getColumns();
+                                        MessageRecord record = toMessageRecord(row.getKey(), columns);         
+                                        submitToSolr(record);
+                                        counter.incrementAndGet();
+                                        if (counter.get() % 1000 == 0) {
+                                            LOG.warn("{} message records reindexed...", counter.get());
+                                        }
+
+                                    }
+                                }
+
+                                @Override
+                                public boolean failure(final ConnectionException e) {
+                                    LOG.error(e.getMessage(), e);
+                                    return false;
+                                }
+                            });
+                    // @formatter:on
+                } catch (Exception e) {
+                    LOG.error("", e);
+                }
+                LOG.error("Total {} records reindexed... ", counter.get());
+            }
+        };
+        messageRecordsReindexThread.setDaemon(true);
+        //messageRecordsReindexThread.start();
+
     }
 
     public void getKeyspaceDefinition() throws ConnectionException {
@@ -1255,17 +1310,50 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
                 messageRecord.getAge().equals(DefaultValues.EMPTY_STRING) ? 0
                         : messageRecord.getAge());
         doc.addField("author_en", messageRecord.getAuthor());
-        doc.addField("date_tdt", messageRecord.getDate());
+        doc.addField("date_tdt", messageRecord.getISO8601Date());
         doc.addField("sex_s", messageRecord.getSex());
         doc.addField("title_en", messageRecord.getTitle());
         doc.addField("topic_en", messageRecord.getTopic());
         doc.addField("userRating_s", messageRecord.getUserRating());
+
+        Text text = FeatureExtraction.process(messageRecord.getContent());
+
+        Set<String> features = new HashSet<String>();
+
+        for (Sentence s : text.getSentences()) {
+            LOG.debug("sentence: {}", s);
+            if (s.getFeatures() != null) {
+                features.addAll(s.getFeatures());
+            }
+        }
+
+        doc.addField("feature_ss", features);
+
+        int sentiment = 0;
+        for (Sentence s : text.getSentences()) {
+            if (s.getFeatures() != null) {
+                sentiment = sentiment
+                        + Tools.prunTree(s.getSentence(), s.getFeatures(),
+                                s.getTreebank(), s.getChunks());
+            }
+        }
+
+        if (sentiment > 0) {
+            doc.addField("sentiment_s", "Positive");
+        } else if (sentiment < 0) {
+            doc.addField("sentiment_s", "Negative");
+        } else {
+            doc.addField("sentiment_s", "Neutral");
+        }
+
         try {
             SolrUtils.getSolrServerForMessages().add(doc);
         } catch (SolrServerException e) {
-            LOG.error("", e);
+            LOG.error(messageRecord.toString(), e);
         } catch (IOException e) {
-            LOG.error("", e);
+            LOG.error(messageRecord.toString(), e);
+        } catch (Exception e) {
+            LOG.error(messageRecord.toString(), e);
         }
         // solrServer.commit();
     }

@@ -48,8 +48,9 @@
         <!-- copied from tokenizer-ui -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <addonBaseName>dontpush-addon</addonBaseName>
-        <version.vaadin>7.0.0</version.vaadin>
-        <version.vaadin.plugin>${version.vaadin}</version.vaadin.plugin>
+        <vaadin.version>7.0.2</vaadin.version>
+        <version.vaadin>${vaadin.version}</version.vaadin>
+        <vaadin.plugin.version>${vaadin.version}</vaadin.plugin.version>
         <version.dontpush>1.0.1</version.dontpush>
         <xaloon.version>1.5.1</xaloon.version>
     </properties>
@@ -71,7 +72,9 @@
         <module>tokenizer-executor-master</module>
         <module>tokenizer-executor-model</module>
         <module>tokenizer-executor-worker</module>
+        <module>tokenizer-thrift-server</module>
         <module>tokenizer-ui</module>
+        <module>tokenizer-thrift-client</module>
     </modules>
     <repositories>
         <repository>
@@ -420,6 +423,6 @@
                     <encoding>UTF-8</encoding>
                 </configuration>
             </plugin>
-        </plugins>
+         </plugins>
     </build>
 </project>

@@ -54,7 +54,6 @@ public class TaskInfoComponent extends CustomComponent {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory
             .getLogger(TaskInfoComponent.class);
     private static final int COMMON_FIELD_WIDTH = 48;
-    private final MyVaadinUI app;
     Collection<TaskInfoBean> tasks;
     private VerticalLayout mainLayout;
     FieldGroup taskConfigurationFieldGroup;
@@ -69,8 +68,7 @@ public class TaskInfoComponent extends CustomComponent {
     BeanItemContainer<TaskInfoBean> container;
     boolean newTaskMode = false;
 
-    public TaskInfoComponent(final MyVaadinUI app) {
-        this.app = app;
+    public TaskInfoComponent() {
         ExecutorModelListener listener = new MyExecutorModelListener();
         tasks = MyVaadinUI.getModel().getTasks(listener);
         buildMainLayout();

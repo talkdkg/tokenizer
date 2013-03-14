@@ -32,8 +32,6 @@ import org.tokenizer.core.TokenizerConfig;
 public class SolrUtils {
 
     private static final Logger LOG = LoggerFactory.getLogger(SolrUtils.class);
-    private static final String SOLR_URL = TokenizerConfig.getProperties()
-            .getProperty("solr.url", "http://localhost:8080/solr/url_records");
     private static final String SOLR_URL_BASE = TokenizerConfig.getProperties()
             .getProperty("solr.url.base", "http://localhost:8080/solr");
 
@@ -44,7 +42,8 @@ public class SolrUtils {
         if (solrServer == null) {
             synchronized (SolrUtils.class) {
                 if (solrServer == null) {
-                    HttpSolrServer httpSolrServer = new HttpSolrServer(SOLR_URL);
+                    HttpSolrServer httpSolrServer = new HttpSolrServer(
+                            SOLR_URL_BASE + "/url_records");
                     httpSolrServer.setSoTimeout(30000); // socket read timeout
                     httpSolrServer.setConnectionTimeout(30000);
                     httpSolrServer.setDefaultMaxConnectionsPerHost(100);

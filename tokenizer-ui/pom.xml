@@ -148,6 +148,14 @@
             <version>1.0.0-beta4</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.reflections</groupId>
+            <artifactId>reflections</artifactId>
+            <version>0.9.8</version>
+        </dependency>
+
+
+
 		<!-- The XOM Dual Streaming/Tree API for Processing XML; LGPL; needed by AppFoundation Vaadin Addon -->
 <!--         <dependency>
             <groupId>xom</groupId>
@@ -155,7 +163,7 @@
             <version>1.2.5</version>
         </dependency>
  -->
-        <dependency>
+ <!--        <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
         </dependency>
@@ -163,6 +171,7 @@
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>eclipselink</artifactId>
         </dependency>
+ -->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
@@ -171,17 +180,9 @@
     </dependencies>
     <build>
         <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.0</version>
-                <configuration>
-                    <source>1.6</source>
-                    <target>1.6</target>
-                </configuration>
-            </plugin>
-            <!-- As we are doing "inplace" GWT compilation, ensure the widgetset -->
-            <!-- directory is cleaned properly -->
+ 			<!-- As we are doing "inplace" GWT compilation, ensure the widgetset -->
+			<!-- directory is cleaned properly -->
+            <!-- 
             <plugin>
                 <artifactId>maven-clean-plugin</artifactId>
                 <version>2.4.1</version>
@@ -193,17 +194,21 @@
                     </filesets>
                 </configuration>
             </plugin>
+            -->
+            
             <plugin>
                 <groupId>com.vaadin</groupId>
                 <artifactId>vaadin-maven-plugin</artifactId>
-                <version>${version.vaadin.plugin}</version>
+                <version>${vaadin.plugin.version}</version>
                 <configuration>
-                    <extraJvmArgs>-Xmx512M -Xss1024k</extraJvmArgs>
+                    <extraJvmArgs>-Xms1024M -Xmx1024M -Xss2048k</extraJvmArgs>
                     <!-- <runTarget>mobilemail</runTarget> -->
                     <!-- We are doing "inplace" but into subdir VAADIN/widgetsets. This 
                         way compatible with Vaadin eclipse plugin. -->
-                    <webappDirectory>${basedir}/src/main/webapp/VAADIN/widgetsets</webappDirectory>
-                    <hostedWebapp>${basedir}/src/main/webapp/VAADIN/widgetsets</hostedWebapp>
+                    <webappDirectory>${basedir}/src/main/webapp/VAADIN/widgetsets 
+                    </webappDirectory>
+                    <hostedWebapp>${basedir}/src/main/webapp/VAADIN/widgetsets 
+                    </hostedWebapp>
                     <noServer>true</noServer>
                     <!-- Remove draftCompile when project is ready -->
                     <draftCompile>false</draftCompile>
@@ -214,23 +219,23 @@
                 </configuration>
                 <executions>
                     <execution>
-                        <configuration></configuration>
+                        <configuration>
+                            <!-- if you don't specify any modules, the plugin will find them -->
+                            <!-- <modules> <module>com.vaadin.demo.mobilemail.gwt.ColorPickerWidgetSet</module> 
+                                </modules> -->
+                        </configuration>
                         <goals>
-                            <goal>resources</goal>
+<!--                             <goal>resources</goal>
                             <goal>update-widgetset</goal>
                             <goal>compile</goal>
-                        </goals>
+ -->                        </goals>
                     </execution>
                 </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.mortbay.jetty</groupId>
-                <artifactId>jetty-maven-plugin</artifactId>
             </plugin>
         </plugins>
         <pluginManagement>
             <plugins>
-                <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+				<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
                 <plugin>
                     <groupId>org.eclipse.m2e</groupId>
                     <artifactId>lifecycle-mapping</artifactId>
@@ -241,13 +246,15 @@
                                 <pluginExecution>
                                     <pluginExecutionFilter>
                                         <groupId>com.vaadin</groupId>
-                                        <artifactId>vaadin-maven-plugin</artifactId>
-                                        <versionRange>[7.0.0,)</versionRange>
+                                        <artifactId> vaadin-maven-plugin 
+                                        </artifactId>
+                                        <versionRange> [7.0.1,) 
+                                        </versionRange>
                                         <goals>
-                                            <goal>resources</goal>
+<!--                                             <goal>resources</goal>
                                             <goal>update-widgetset</goal>
                                             <goal>compile</goal>
-                                        </goals>
+ -->                                        </goals>
                                     </pluginExecutionFilter>
                                     <action>
                                         <ignore></ignore>

@@ -182,4 +182,24 @@ public class ClassicRobotTask extends AbstractTask {
     public void setTaskConfiguration(final TaskConfiguration taskConfiguration) {
         this.taskConfiguration = (ClassicRobotTaskConfiguration) taskConfiguration;
     }
+
+    public static void main(final String[] args) throws Exception {
+
+        String url = "http://reviews.cnet.com/smartphones/htc-droid-dna-verizon/4505-6452_7-35536642.html";
+
+        UserAgent userAgent = new UserAgent("Googlebot", "", "",
+                UserAgent.DEFAULT_BROWSER_VERSION, "2.1");
+        SimpleHttpFetcher httpClient = new SimpleHttpFetcher(
+                DEFAULT_MAX_THREADS, userAgent);
+        httpClient.setSocketTimeout(30000);
+        httpClient.setConnectionTimeout(30000);
+        httpClient.setRedirectMode(RedirectMode.FOLLOW_NONE);
+        httpClient.setDefaultMaxContentSize(1024 * 1024);
+
+        FetchedResult fetchedResult = httpClient.get(url, null);
+
+        System.out.println(fetchedResult.toString());
+
+    }
+
 }

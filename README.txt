@@ -46,3 +46,12 @@ topic
 content
 /div
 
+
+http://stackoverflow.com/questions/2615727/webpage-data-scraping-using-java
+http://www.ibm.com/developerworks/xml/library/j-jtp03225/index.html
+https://developers.google.com/webmasters/ajax-crawling/docs/specification
+
+For example, if www.example.com contains <meta name="fragment" content="!"> in the head, the crawler will transform this URL into www.example.com?_escaped_fragment_= and fetch www.example.com?_escaped_fragment_= from the web server. 
+
+
+

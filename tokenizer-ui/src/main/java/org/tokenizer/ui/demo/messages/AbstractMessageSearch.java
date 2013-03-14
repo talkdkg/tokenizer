@@ -1,4 +1,4 @@
-package org.tokenizer.ui.components;
+package org.tokenizer.ui.demo.messages;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -16,21 +16,14 @@ import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.client.solrj.response.RangeFacet;
 import org.apache.solr.common.util.NamedList;
 import org.tokenizer.core.solr.SolrUtils;
+import org.tokenizer.ui.components.MessageSearchComponent;
+import org.tokenizer.ui.demo.AbstractVaadinChartExample;
+import org.tokenizer.ui.demo.SkipFromDemo;
 import org.vaadin.addons.lazyquerycontainer.LazyQueryContainer;
 import org.vaadin.addons.lazyquerycontainer.Query;
 import org.vaadin.addons.lazyquerycontainer.QueryDefinition;
 import org.vaadin.addons.lazyquerycontainer.QueryFactory;
 
-import com.vaadin.addon.charts.Chart;
-import com.vaadin.addon.charts.model.ChartType;
-import com.vaadin.addon.charts.model.Configuration;
-import com.vaadin.addon.charts.model.Legend;
-import com.vaadin.addon.charts.model.ListSeries;
-import com.vaadin.addon.charts.model.PlotOptionsSeries;
-import com.vaadin.addon.charts.model.Stacking;
-import com.vaadin.addon.charts.model.Tooltip;
-import com.vaadin.addon.charts.model.XAxis;
-import com.vaadin.addon.charts.model.YAxis;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
@@ -44,25 +37,32 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.ComponentContainer;
-import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Table.ColumnGenerator;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 
-public class MessageSearchComponent extends CustomComponent {
+@SkipFromDemo
+public abstract class AbstractMessageSearch extends AbstractVaadinChartExample {
+
+    @Override
+    protected Component getChart() {
+
+        buildMainLayout();
+        return mainLayout;
+
+    }
 
     private static final long serialVersionUID = 1L;
 
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory
             .getLogger(MessageSearchComponent.class);
     private static final int COMMON_FIELD_WIDTH = 48;
-    private static SolrServer solrServer = SolrUtils.getSolrServerForMessages();
+    protected static SolrServer solrServer = SolrUtils
+            .getSolrServerForMessages();
 
     private VerticalLayout mainLayout;
     MyQuery myQuery;
@@ -76,12 +76,6 @@ public class MessageSearchComponent extends CustomComponent {
     FacetField hostFacetField;
     RangeFacet.Date dateRangeFacet;
     NamedList<List<PivotField>> facetPivot;
-
-    public MessageSearchComponent() {
-        buildMainLayout();
-        setCompositionRoot(mainLayout);
-        setCaption("Personal details");
-    }
 
     private void buildMainLayout() {
         mainLayout = new VerticalLayout();
@@ -116,7 +110,7 @@ public class MessageSearchComponent extends CustomComponent {
             @Override
             public void buttonClick(final ClickEvent event) {
                 LOG.debug(myQuery.toString());
-                querySolr(myQuery);
+                initialQuerySolr(myQuery);
                 Component newSearchResultsComponent = buildSearchResults();
                 if (searchResultsComponent == null) {
                     mainLayout.addComponent(newSearchResultsComponent);
@@ -131,62 +125,6 @@ public class MessageSearchComponent extends CustomComponent {
         search.addStyleName("primary");
         formControls.addComponent(search);
         return formControls;
-    }
-
-    /**
-     * "Table" with Lazy COntainer are independent form this method call 1. This
-     * method call is needed to populate (only once) response time TODO: should
-     * we populate response time etc. via LazyContainer calls?
-     * 
-     * 2. This method call is needed for Facets; "Table" calls are for
-     * pagination only
-     * 
-     * @param q
-     */
-    private void querySolr(final MyQuery q) {
-        SolrQuery solrQuery = new SolrQuery();
-        solrQuery.setQuery(q.getQuery());
-        solrQuery.setFacet(true);
-        solrQuery.setFacetMinCount(10);
-        //solrQuery.addFacetField("host_s");
-        //solrQuery.setHighlight(true);
-        //solrQuery.setHighlightSnippets(1);
-        //solrQuery.setHighlightFragsize(4096);
-        //solrQuery.setParam("hl.fl", "content_en");
-        solrQuery.setRows(0);
-
-        // Date Range Faceting
-        // http://wiki.apache.org/solr/VariableRangeGaps#facet.range.spec
-        solrQuery.addDateRangeFacet("date_tdt", new Date(0), new Date(),
-                "+1HOUR");
-
-        solrQuery.addFacetPivotField("feature_ss,sentiment_s");
-
-        // for better performance:
-        solrQuery.setSortField("_docid_", ORDER.asc);
-        solrQuery.setParam("df", "content_en");
-        solrQuery.setParam("q.op", "AND");
-
-        LOG.debug("solrQuery: {}", solrQuery);
-        try {
-            queryResponse = solrServer.query(solrQuery);
-        } catch (SolrServerException e) {
-            LOG.error(e.getMessage());
-            beans = new ArrayList<MessageBean>();
-        }
-        LOG.debug(queryResponse.toString());
-
-        hostFacetField = queryResponse.getFacetField("host_s");
-
-        List<RangeFacet> facetRanges = queryResponse.getFacetRanges();
-
-        RangeFacet rangeFacet = facetRanges.get(0);
-        if (rangeFacet.getName().equals("date_tdt")) {
-            dateRangeFacet = (RangeFacet.Date) rangeFacet;
-        }
-
-        facetPivot = queryResponse.getFacetPivot();
-
     }
 
     public class MyQuery implements Serializable {
@@ -420,8 +358,10 @@ public class MessageSearchComponent extends CustomComponent {
                 + queryResponse.getResults().getNumFound());
         layout.addComponent(label);
 
-        Component component = buildFacets();
-        layout.addComponent(component);
+        Component facets = buildFacets();
+        if (facets != null) {
+            layout.addComponent(buildFacets());
+        }
 
         return layout;
     }
@@ -456,7 +396,6 @@ public class MessageSearchComponent extends CustomComponent {
             solrQuery.setRows(0);
             solrQuery.setParam("df", "content_en");
             solrQuery.setParam("q.op", "AND");
-
             solrQuery.setSortField("_docid_", ORDER.asc);
             try {
                 LOG.debug("Querying Solr... {}", solrQuery);
@@ -496,7 +435,6 @@ public class MessageSearchComponent extends CustomComponent {
             solrQuery.setRows(count);
             solrQuery.setParam("df", "content_en");
             solrQuery.setParam("q.op", "AND");
-
             // for better performance:
             solrQuery.setSortField("_docid_", ORDER.asc);
             try {
@@ -536,165 +474,8 @@ public class MessageSearchComponent extends CustomComponent {
         }
     }
 
-    private Component buildFacets() {
+    abstract void initialQuerySolr(MyQuery myQuery);
 
-        TabSheet tabSheet = new TabSheet();
-        tabSheet.setCaption("Statistics and Charts");
-
-        VerticalLayout layout = new VerticalLayout();
-        layout.setSizeFull();
-
-        Panel panel = new Panel("Classic Tables", layout);
-        tabSheet.addTab(panel);
-
-        Table table = new Table();
-        table.addContainerProperty("Time", String.class, null);
-        table.addContainerProperty("Count", Integer.class, null);
-        for (int i = 0; i < dateRangeFacet.getCounts().size(); i++) {
-            RangeFacet.Count count = dateRangeFacet.getCounts().get(i);
-            // Add a row the hard way
-            Object newItemId = table.addItem();
-            Item row = table.getItem(newItemId);
-            row.getItemProperty("Time").setValue(count.getValue());
-            row.getItemProperty("Count").setValue(count.getCount());
-        }
-
-        table.setPageLength(dateRangeFacet.getCounts().size());
-        layout.addComponent(table);
-
-        layout = new VerticalLayout();
-        layout.setSizeFull();
-        panel = new Panel("Timeline Bar", layout);
-        tabSheet.addTab(panel);
-        Component c = getTimelineChart();
-        layout.addComponent(c);
-        layout.setExpandRatio(c, 1);
-
-        layout = new VerticalLayout();
-        layout.setSizeFull();
-        panel = new Panel("Features & Sentiment", layout);
-        tabSheet.addTab(panel);
-        c = getFeaturesSentimentChart();
-        layout.addComponent(c);
-        layout.setExpandRatio(c, 1);
-
-        return tabSheet;
-    }
-
-    protected Component getTimelineChart() {
-        Chart chart = new Chart(ChartType.BAR);
-        //chart.setWidth("400px");
-        //chart.setHeight("300px");
-
-        // Modify the default configuration a bit
-        Configuration conf = chart.getConfiguration();
-        conf.setTitle("Messages");
-        conf.setSubTitle("Hourly counts");
-        conf.getLegend().setEnabled(false); // Disable legend
-
-        // The data
-        ListSeries series = new ListSeries("Diameter");
-
-        for (RangeFacet.Count c : dateRangeFacet.getCounts()) {
-            series.addData(c.getCount());
-        }
-
-        conf.addSeries(series);
-
-        // Set the category labels on the axis correspondingly
-        XAxis xaxis = new XAxis();
-        String[] categories = new String[dateRangeFacet.getCounts().size()];
-        int i = 0;
-        for (RangeFacet.Count c : dateRangeFacet.getCounts()) {
-            categories[i] = c.getValue();
-            i++;
-        }
-        xaxis.setCategories(categories);
-        xaxis.setTitle("Time");
-        xaxis.getLabels().setStep(4);
-        conf.addxAxis(xaxis);
-
-        // Set the Y axis title
-        YAxis yaxis = new YAxis();
-        yaxis.setTitle("Number of Messages");
-        yaxis.getLabels().setFormatter(
-                "function() {return Math.floor(this.value/10) + \'(x10)\';}");
-        yaxis.getLabels().setStep(2);
-        conf.addyAxis(yaxis);
-        return chart;
-
-    }
-
-    protected Component getFeaturesSentimentChart() {
-        Chart chart = new Chart(ChartType.BAR);
-
-        //chart.setWidth("100%");
-        //chart.setHeight("100%");
-
-        //AbstractVaadinChartExample
-
-        Configuration conf = chart.getConfiguration();
-
-        conf.setTitle("Stacked bar chart");
-
-        XAxis x = new XAxis();
-
-        //NamedList<List<PivotField>> facetPivot
-
-        List<PivotField> pivotFields = facetPivot.get("feature_ss,sentiment_s");
-
-        String[] categories = new String[pivotFields.size()];
-        Number[] negative = new Number[pivotFields.size()];
-        Number[] neutral = new Number[pivotFields.size()];
-        Number[] positive = new Number[pivotFields.size()];
-        int i = 0;
-        for (PivotField pivotField : pivotFields) {
-            categories[i] = (String) pivotField.getValue();
-            List<PivotField> sentimentPivots = pivotField.getPivot();
-            for (PivotField sentimentPivotField : sentimentPivots) {
-                if (sentimentPivotField.getValue().equals("Negative")) {
-                    negative[i] = sentimentPivotField.getCount();
-                } else if (sentimentPivotField.getValue().equals("Positive")) {
-                    positive[i] = sentimentPivotField.getCount();
-                } else {
-                    neutral[i] = sentimentPivotField.getCount();
-                }
-            }
-
-            i++;
-        }
-
-        x.setCategories(categories);
-        //x.setCategories("Apples", "Oranges", "Pears", "Grapes", "Bananas");
-
-        conf.addxAxis(x);
-
-        YAxis y = new YAxis();
-        y.setMin(0);
-        y.setTitle("Total fruit consumption");
-        conf.addyAxis(y);
-
-        Legend legend = new Legend();
-        legend.setBackgroundColor("#FFFFFF");
-        legend.setReversed(true);
-
-        Tooltip tooltip = new Tooltip();
-        tooltip.setFormatter("this.series.name +': '+ this.y");
-        conf.setTooltip(tooltip);
-
-        PlotOptionsSeries plot = new PlotOptionsSeries();
-        plot.setStacking(Stacking.NORMAL);
-        conf.setPlotOptions(plot);
-
-        conf.addSeries(new ListSeries("Negative", negative));
-        conf.addSeries(new ListSeries("Neutral", neutral));
-        conf.addSeries(new ListSeries("Positive", positive));
-
-        chart.setHeight(categories.length * 2, Unit.EM);
-
-        chart.drawChart(conf);
-
-        return chart;
-    }
+    abstract Component buildFacets();
 
 }

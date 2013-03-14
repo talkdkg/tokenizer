@@ -3,6 +3,10 @@ package org.tokenizer.crawler.db;
 import java.io.Serializable;
 import java.util.Arrays;
 
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+
 public class MessageRecord implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -19,6 +23,19 @@ public class MessageRecord implements Serializable {
     private String title = DefaultValues.EMPTY_STRING;
     private String content = DefaultValues.EMPTY_STRING;
     private String userRating = DefaultValues.EMPTY_STRING;
+
+    private static final DateTimeFormatter fmt = DateTimeFormat
+            .forPattern("MMMM d, yyyy");
+
+    private static final DateTimeFormatter TWITTER_DATE_FORMATTER = DateTimeFormat
+            .forPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
+
+    public static void main(final String[] args) {
+
+        String test = "2013-02-20T02:00:53Z";
+        TWITTER_DATE_FORMATTER.parseDateTime(test);
+
+    }
 
     public MessageRecord(final byte[] digest, final String author,
             final String title, final String content) {
@@ -83,6 +100,29 @@ public class MessageRecord implements Serializable {
 
     public String getDate() {
         return date;
+    }
+
+    public String getISO8601Date() {
+
+        try {
+            DateTime dt = TWITTER_DATE_FORMATTER.parseDateTime(date);
+            return date;
+
+        } catch (Exception e) {
+
+            try {
+
+                DateTime dt = fmt.parseDateTime(date);
+
+                return dt.toString();
+
+            } catch (IllegalArgumentException e2) {
+                LOG.error("Can't parse date: {}", date);
+            }
+
+        }
+        return (new DateTime(0)).toString();
+
     }
 
     public void setDate(final String date) {
