@@ -58,7 +58,7 @@ public class TaskInfoComponent extends CustomComponent {
     private VerticalLayout mainLayout;
     FieldGroup taskConfigurationFieldGroup;
     Component taskFieldsComponent = new FormLayout();
-    Component formControls;
+    HorizontalLayout formControls;
     Component tableControls;
     Button edit;
     Button save;
@@ -73,6 +73,7 @@ public class TaskInfoComponent extends CustomComponent {
         tasks = MyVaadinUI.getModel().getTasks(listener);
         buildMainLayout();
         setCompositionRoot(mainLayout);
+        buildFormControls();
     }
 
     private void buildMainLayout() {
@@ -83,9 +84,7 @@ public class TaskInfoComponent extends CustomComponent {
         mainLayout.addComponent(tableControls);
         mainLayout.addComponent(buildTable());
         mainLayout.addComponent(taskFieldsComponent);
-        // build, but do not add yet; because form will be replaced, it should
-        // be added after the form
-        buildFormControls();
+        
     }
 
     private Component buildTable() {
@@ -138,9 +137,6 @@ public class TaskInfoComponent extends CustomComponent {
         fieldGroup.bind(emailAddress, "emailAddress");
         fieldGroup.bind(webAddress, "webAddress");
         fieldGroup.bind(urlFilterConfig, "urlFilterConfig");
-        if (formControls == null) {
-            formControls = buildFormControls();
-        }
         componentContainer.addComponent(formControls);
     }
 
@@ -160,9 +156,6 @@ public class TaskInfoComponent extends CustomComponent {
         fieldGroup.bind(host, "host");
         fieldGroup.bind(xpath, "xpath");
         fieldGroup.bind(splitAttemptCounter, "splitAttemptCounter");
-        if (formControls == null) {
-            formControls = buildFormControls();
-        }
         componentContainer.addComponent(formControls);
     }
 
@@ -210,9 +203,6 @@ public class TaskInfoComponent extends CustomComponent {
         fieldGroup.bind(dateXPath, "dateXPath");
         fieldGroup.bind(userRatingXPath, "userRatingXPath");
         fieldGroup.bind(parseAttemptCounter, "parseAttemptCounter");
-        if (formControls == null) {
-            formControls = buildFormControls();
-        }
         componentContainer.addComponent(formControls);
     }
 
@@ -225,9 +215,6 @@ public class TaskInfoComponent extends CustomComponent {
         keywords.setColumns(30);
         componentContainer.addComponent(keywords);
         fieldGroup.bind(keywords, "keywords");
-        if (formControls == null) {
-            formControls = buildFormControls();
-        }
         componentContainer.addComponent(formControls);
     }
 
@@ -278,9 +265,6 @@ public class TaskInfoComponent extends CustomComponent {
             field.setWidth(COMMON_FIELD_WIDTH, Unit.EM);
             componentContainer.addComponent(field);
         }
-        if (formControls == null) {
-            formControls = buildFormControls();
-        }
         componentContainer.addComponent(formControls);
         return componentContainer;
     }
@@ -297,8 +281,8 @@ public class TaskInfoComponent extends CustomComponent {
                 "State", "Version" });
     }
 
-    private Component buildFormControls() {
-        ComponentContainer formControls = new HorizontalLayout();
+    private void buildFormControls() {
+        formControls = new HorizontalLayout();
         edit = new Button("Edit", new Button.ClickListener() {
 
             private static final long serialVersionUID = 1L;
@@ -343,7 +327,7 @@ public class TaskInfoComponent extends CustomComponent {
         formControls.addComponent(edit);
         formControls.addComponent(save);
         formControls.addComponent(discard);
-        return formControls;
+        
     }
 
     @Override

@@ -97,6 +97,7 @@ public class ClassicRobotTask extends AbstractTask {
         } catch (IOException e) {
             LOG.error("", e);
         }
+        /*
         Thread filterThread = new Thread(uuid + "-"
                 + taskConfiguration.getImplementationName() + "-"
                 + taskConfiguration.getName() + "-ULRFilterThread") {
@@ -110,6 +111,7 @@ public class ClassicRobotTask extends AbstractTask {
         };
         filterThread.setDaemon(true);
         filterThread.start();
+        */
         LOG.debug("Instance created");
     }
 
@@ -126,6 +128,13 @@ public class ClassicRobotTask extends AbstractTask {
                 + "/");
         crawlerRepository.insertIfNotExists(home);
         FetchedResult fetchedResult;
+        
+        LOG.debug("Trying Home: {}", home);
+        fetchedResult = PersistenceUtils.fetch(home,
+                crawlerRepository, robotRules, metricsCache, httpClient,
+                taskConfiguration.getHost(), urlFilter);
+        LOG.trace("Fetching Home: {} {}", home, fetchedResult);
+        
         int fetchAttemptCounter = 0;
         int maxResults = 1000;
         List<UrlRecord> urlRecords = crawlerRepository
@@ -141,8 +150,8 @@ public class ClassicRobotTask extends AbstractTask {
         }
         if (urlRecords == null || urlRecords.size() == 0) {
             // to prevent spin loop in case if collection is empty:
-            LOG.warn("no URLs found with httpResponseCode == 0; sleeping 4 hours...");
-            Thread.sleep(4 * 3600 * 1000);
+            LOG.warn("no URLs found with httpResponseCode == 0; sleeping 1 hour...");
+            Thread.sleep(1 * 3600 * 1000L);
             // refresh homepage
             fetchedResult = PersistenceUtils.fetch(home, crawlerRepository,
                     robotRules, metricsCache, httpClient,

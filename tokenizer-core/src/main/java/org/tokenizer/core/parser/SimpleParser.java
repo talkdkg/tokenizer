@@ -105,7 +105,7 @@ public class SimpleParser extends BaseParser {
     public ParsedDatum parse(FetchedResult fetchedResult)
             throws InterruptedException {
         init();
-        LOG.debug("Parsing: {}", fetchedResult.getBaseUrl());
+        LOG.debug("Parsing: {}", fetchedResult);
         // Provide clues to the parser about the format of the content.
         Metadata metadata = new Metadata();
         metadata.add(Metadata.RESOURCE_NAME_KEY, fetchedResult.getBaseUrl());
@@ -119,7 +119,7 @@ public class SimpleParser extends BaseParser {
         try {
             URL baseUrl = getContentLocation(fetchedResult);
             metadata.add(Metadata.CONTENT_LOCATION, baseUrl.toExternalForm());
-            Callable<ParsedDatum> c = new TikaCallable(_parser,
+            Callable<ParsedDatum> c = new ParserCallable(_parser,
                     _contentExtractor, _linkExtractor, is, metadata,
                     isExtractLanguage());
             task = new FutureTask<ParsedDatum>(c);

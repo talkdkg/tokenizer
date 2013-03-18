@@ -34,8 +34,8 @@ import org.apache.tika.sax.TeeContentHandler;
 import org.slf4j.Logger;
 import org.tokenizer.core.datum.ParsedDatum;
 
-class TikaCallable implements Callable<ParsedDatum> {
-	private static final Logger LOGGER = org.slf4j.LoggerFactory.getLogger(TikaCallable.class);
+class ParserCallable implements Callable<ParsedDatum> {
+	private static final Logger LOGGER = org.slf4j.LoggerFactory.getLogger(ParserCallable.class);
 
 	private static class CustomHtmlMapper extends DefaultHtmlMapper {
 
@@ -85,11 +85,11 @@ class TikaCallable implements Callable<ParsedDatum> {
 	private Metadata _metadata;
 	private boolean _extractLanguage;
 
-	public TikaCallable(Parser parser, BaseContentExtractor contentExtractor, BaseLinkExtractor linkExtractor, InputStream input, Metadata metadata) {
+	public ParserCallable(Parser parser, BaseContentExtractor contentExtractor, BaseLinkExtractor linkExtractor, InputStream input, Metadata metadata) {
 		this(parser, contentExtractor, linkExtractor, input, metadata, true);
 	}
 
-	public TikaCallable(Parser parser, BaseContentExtractor contentExtractor, BaseLinkExtractor linkExtractor, InputStream input, Metadata metadata, boolean extractLanguage) {
+	public ParserCallable(Parser parser, BaseContentExtractor contentExtractor, BaseLinkExtractor linkExtractor, InputStream input, Metadata metadata, boolean extractLanguage) {
 		_parser = parser;
 		_contentExtractor = contentExtractor;
 		_linkExtractor = linkExtractor;

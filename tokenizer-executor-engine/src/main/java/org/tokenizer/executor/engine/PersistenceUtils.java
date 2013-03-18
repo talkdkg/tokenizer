@@ -207,11 +207,13 @@ public class PersistenceUtils {
             ConnectionException {
         ParserPolicy parserPolicy = new ParserPolicy(MAX_PARSE_DURATION);
         SimpleParser parser = new SimpleParser(parserPolicy);
+        LOG.debug("tryying to parse {}", fetchedResult);
         ParsedDatum parsed = parser.parse(fetchedResult);
         if (parsed == null)
             return false;
         Outlink[] outlinks = parsed.getOutlinks();
         for (Outlink outlink : outlinks) {
+        	LOG.debug("outlink: {}", outlink);
             String url = outlink.getToUrl();
             if (!urlValidator.isValid(url)) {
                 continue;

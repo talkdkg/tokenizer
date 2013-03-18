@@ -1281,7 +1281,7 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
         } catch (Exception e) {
             LOG.error("", e);
         }
-        LOG.error("{}: total {} records deleted... ", host, counter.get());
+        LOG.warn("{}: total {} filtered records deleted... ", host, counter.get());
     }
 
     private void submitToSolr(final UrlRecord urlRecord) {
