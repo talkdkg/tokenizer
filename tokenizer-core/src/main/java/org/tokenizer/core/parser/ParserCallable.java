@@ -32,24 +32,25 @@ import org.apache.tika.parser.html.DefaultHtmlMapper;
 import org.apache.tika.parser.html.HtmlMapper;
 import org.apache.tika.sax.TeeContentHandler;
 import org.slf4j.Logger;
+import org.tokenizer.core.datum.Outlink;
 import org.tokenizer.core.datum.ParsedDatum;
 
 class ParserCallable implements Callable<ParsedDatum> {
-	private static final Logger LOGGER = org.slf4j.LoggerFactory.getLogger(ParserCallable.class);
+	private static final Logger LOG = org.slf4j.LoggerFactory.getLogger(ParserCallable.class);
 
 	private static class CustomHtmlMapper extends DefaultHtmlMapper {
 
-		private Set<String> _validTags;
-		private Set<String> _validAttributes;
+		private Set<String> validTags;
+		private Set<String> validAttributes;
 
 		public CustomHtmlMapper(Set<String> validTags, Set<String> validAttributes) {
-			_validTags = validTags;
-			_validAttributes = validAttributes;
+			this.validTags = validTags;
+			this.validAttributes = validAttributes;
 		}
 
 		@Override
 		public String mapSafeElement(String name) {
-			if (_validTags.contains(name.toLowerCase())) {
+			if (validTags.contains(name.toLowerCase())) {
 				return name.toLowerCase();
 			} else {
 				return super.mapSafeElement(name);
@@ -64,7 +65,7 @@ class ParserCallable implements Callable<ParsedDatum> {
 			// implemented currently.
 			// So we blindly assume that if the attribute exists, it's valid.
 
-			if (_validAttributes.contains(attributeName)) {
+			if (validAttributes.contains(attributeName)) {
 				return attributeName;
 			} else {
 				return super.mapSafeAttribute(elementName, attributeName);
@@ -113,6 +114,13 @@ class ParserCallable implements Callable<ParsedDatum> {
 			_parser.parse(_input, teeContentHandler, _metadata, makeParseContext());
 
 			String lang = _extractLanguage ? detectLanguage(_metadata, profilingHandler) : "";
+			
+			if (LOG.isDebugEnabled()) {
+				for (Outlink o : _linkExtractor.getLinks()) {
+					LOG.debug("Outlink extracted: {}", o);
+				}
+			}
+			
 			return new ParsedDatum(_metadata.get(Metadata.RESOURCE_NAME_KEY), null, _contentExtractor.getContent(), lang, _metadata.get(Metadata.TITLE), _linkExtractor.getLinks(),
 					makeMap(_metadata));
 		} catch (Exception e) {
@@ -176,7 +184,7 @@ class ParserCallable implements Callable<ParsedDatum> {
 			// level.
 			if (langIdentifier.isReasonablyCertain()) {
 				result = langIdentifier.getLanguage();
-				LOGGER.trace("Using language specified by profiling handler: " + result);
+				LOG.trace("Using language specified by profiling handler: " + result);
 			} else {
 				result = "";
 			}

@@ -42,7 +42,7 @@
         <version.solr>4.1.0</version.solr>
         <version.spring>3.2.0.RELEASE</version.spring>
         <version.tagsoup>1.2.1</version.tagsoup>
-        <version.tika>1.2</version.tika>
+        <version.tika>1.3</version.tika>
         <version.twitter4j>3.0.3</version.twitter4j>
         <version.zookeeper>3.4.4</version.zookeeper>
         <!-- copied from tokenizer-ui -->

@@ -207,7 +207,7 @@ public class PersistenceUtils {
             ConnectionException {
         ParserPolicy parserPolicy = new ParserPolicy(MAX_PARSE_DURATION);
         SimpleParser parser = new SimpleParser(parserPolicy);
-        LOG.debug("tryying to parse {}", fetchedResult);
+        
         ParsedDatum parsed = parser.parse(fetchedResult);
         if (parsed == null)
             return false;
