@@ -24,6 +24,7 @@ import org.tokenizer.executor.model.configuration.RssFetcherTaskConfiguration;
 import org.tokenizer.executor.model.configuration.SimpleMultithreadedFetcherTaskConfiguration;
 import org.tokenizer.executor.model.configuration.SitemapsFetcherTaskConfiguration;
 import org.tokenizer.executor.model.configuration.TaskConfiguration;
+import org.tokenizer.executor.model.configuration.WeblogsSubscriberTaskConfiguration;
 import org.tokenizer.ui.MyVaadinUI;
 import org.tokenizer.util.zookeeper.ZkLockException;
 
@@ -84,7 +85,7 @@ public class TaskInfoComponent extends CustomComponent {
         mainLayout.addComponent(tableControls);
         mainLayout.addComponent(buildTable());
         mainLayout.addComponent(taskFieldsComponent);
-        
+
     }
 
     private Component buildTable() {
@@ -234,6 +235,34 @@ public class TaskInfoComponent extends CustomComponent {
         fieldGroup.bind(state, "generalState");
     }
 
+    private void buildWeblogsSubscriberTaskConfigurationForm(
+            final FieldGroup fieldGroup,
+            final ComponentContainer componentContainer) {
+        buildBaseTaskConfigurationForm(fieldGroup, componentContainer);
+        TextField url = new TextField("URL:");
+        url.setWidth(COMMON_FIELD_WIDTH, Unit.EM);
+
+        TextField delay = new TextField("Delay:");
+
+        TextField agentName = new TextField("Robot name:");
+        agentName.setWidth(COMMON_FIELD_WIDTH, Unit.EM);
+        TextField emailAddress = new TextField("Robot Email:");
+        emailAddress.setWidth(COMMON_FIELD_WIDTH, Unit.EM);
+        TextField webAddress = new TextField("Robot description URL:");
+        webAddress.setWidth(COMMON_FIELD_WIDTH, Unit.EM);
+        componentContainer.addComponent(url);
+        componentContainer.addComponent(delay);
+        componentContainer.addComponent(agentName);
+        componentContainer.addComponent(emailAddress);
+        componentContainer.addComponent(webAddress);
+        fieldGroup.bind(url, "url");
+        fieldGroup.bind(delay, "delay");
+        fieldGroup.bind(agentName, "agentName");
+        fieldGroup.bind(emailAddress, "emailAddress");
+        fieldGroup.bind(webAddress, "webAddress");
+        componentContainer.addComponent(formControls);
+    }
+
     private ComponentContainer buildTaskInfoBeanComponent(
             final TaskInfoBean task) {
         ComponentContainer componentContainer = new FormLayout();
@@ -327,7 +356,7 @@ public class TaskInfoComponent extends CustomComponent {
         formControls.addComponent(edit);
         formControls.addComponent(save);
         formControls.addComponent(discard);
-        
+
     }
 
     @Override
@@ -337,8 +366,7 @@ public class TaskInfoComponent extends CustomComponent {
         save.setVisible(!readOnly);
         discard.setVisible(!readOnly);
         ComponentContainer newComponent;
-        if (readOnly) {
-            newTaskMode = false;
+        if (!newTaskMode & readOnly) {
             newComponent = buildTaskInfoBeanComponent(currentTask);
         } else if (newTaskMode) {
             taskConfigurationFieldGroup = new FieldGroup();
@@ -360,6 +388,9 @@ public class TaskInfoComponent extends CustomComponent {
                         taskConfigurationFieldGroup, newComponent);
             } else if (currentTask.getTaskConfiguration() instanceof ClassicRobotTaskConfiguration) {
                 buildClassicRobotTaskConfigurationForm(
+                        taskConfigurationFieldGroup, newComponent);
+            } else if (currentTask.getTaskConfiguration() instanceof WeblogsSubscriberTaskConfiguration) {
+                buildWeblogsSubscriberTaskConfigurationForm(
                         taskConfigurationFieldGroup, newComponent);
             } else if (currentTask.getTaskConfiguration() instanceof RssFetcherTaskConfiguration) {
             } else if (currentTask.getTaskConfiguration() instanceof SimpleMultithreadedFetcherTaskConfiguration) {
@@ -554,6 +585,7 @@ public class TaskInfoComponent extends CustomComponent {
         type.addItem("HtmlSplitterTask");
         type.addItem("MessageParserTask");
         type.addItem("TweetCollectorTask");
+        type.addItem("WeblogsSubscriberTask");
         type.addValueChangeListener(new Property.ValueChangeListener() {
 
             private static final long serialVersionUID = 1L;
@@ -580,7 +612,12 @@ public class TaskInfoComponent extends CustomComponent {
                     newTask.setTaskConfiguration(new TweetCollectorTaskConfiguration());
                     buildTweetCollectorTaskConfigurationForm(
                             taskConfigurationFieldGroup, newComponent);
+                } else if ("WeblogsSubscriberTask".equals(selected)) {
+                    newTask.setTaskConfiguration(new WeblogsSubscriberTaskConfiguration());
+                    buildWeblogsSubscriberTaskConfigurationForm(
+                            taskConfigurationFieldGroup, newComponent);
                 }
+
                 BeanItem<TaskConfiguration> item = new BeanItem<TaskConfiguration>(
                         newTask.getTaskConfiguration());
                 taskConfigurationFieldGroup.setItemDataSource(item);
