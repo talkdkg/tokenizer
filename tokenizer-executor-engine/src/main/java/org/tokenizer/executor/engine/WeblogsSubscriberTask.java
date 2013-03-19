@@ -47,10 +47,12 @@ public class WeblogsSubscriberTask extends AbstractTask {
     private final SimpleHttpFetcher simpleHttpClient;
 
     public WeblogsSubscriberTask(UUID uuid, String friendlyName,
-            ZooKeeperItf zk, CrawlerRepository crawlerRepository,
-            WritableExecutorModel model, HostLocker hostLocker) {
+            ZooKeeperItf zk, final TaskConfiguration taskConfiguration,
+            CrawlerRepository crawlerRepository, WritableExecutorModel model,
+            HostLocker hostLocker) {
         super(uuid, friendlyName, zk, crawlerRepository, model, hostLocker);
-        this.taskConfiguration = taskConfiguration;
+        this.taskConfiguration = (WeblogsSubscriberTaskConfiguration) taskConfiguration;
+
         UserAgent userAgent = new UserAgent(
                 this.taskConfiguration.getAgentName(),
                 this.taskConfiguration.getEmailAddress(),
@@ -93,6 +95,7 @@ public class WeblogsSubscriberTask extends AbstractTask {
             for (Weblog item : weblogUpdates.getWeblogs()) {
                 UrlRecord urlRecord = new UrlRecord(item.getUrl());
                 crawlerRepository.insertIfNotExists(urlRecord);
+                LOG.debug("new record inserted: {}", urlRecord);
             }
 
         } catch (RedirectFetchException e) {
