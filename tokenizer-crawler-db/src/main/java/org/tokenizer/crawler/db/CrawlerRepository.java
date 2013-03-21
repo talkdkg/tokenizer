@@ -83,4 +83,7 @@ public interface CrawlerRepository {
 
     List<byte[]> loadUrlRecordRowKeys(final String host,
             final int httpResponseCode) throws ConnectionException;
+
+    void insert(final WeblogsRecord weblogsRecord) throws ConnectionException;
+
 }

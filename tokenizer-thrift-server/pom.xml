@@ -33,20 +33,6 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>tokenizer-crawler-db</artifactId>
         </dependency>
-        <dependency>
-            <groupId>com.netflix.astyanax</groupId>
-            <artifactId>astyanax</artifactId>
-            <exclusions>
-                <exclusion>
-                    <artifactId>jetty</artifactId>
-                    <groupId>org.mortbay.jetty</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>httpcore</artifactId>
-                    <groupId>org.apache.httpcomponents</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>
     </dependencies>
     <build>
         <plugins>
