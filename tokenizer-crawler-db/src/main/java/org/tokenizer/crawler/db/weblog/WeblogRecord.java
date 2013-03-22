@@ -1,4 +1,4 @@
-package org.tokenizer.crawler.db;
+package org.tokenizer.crawler.db.weblog;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -8,7 +8,7 @@ import org.tokenizer.core.StringPool;
 
 import com.netflix.astyanax.annotations.Component;
 
-public class WeblogsRecord {
+public class WeblogRecord {
 
     private int count;
 

@@ -17,8 +17,8 @@ import javax.xml.stream.events.XMLEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tokenizer.crawler.db.CrawlerRepository;
-import org.tokenizer.crawler.db.WeblogsRecord;
-import org.tokenizer.crawler.db.WeblogsRecord.Weblog;
+import org.tokenizer.crawler.db.weblog.WeblogRecord;
+import org.tokenizer.crawler.db.weblog.WeblogRecord.Weblog;
 import org.tokenizer.executor.model.api.WritableExecutorModel;
 import org.tokenizer.executor.model.configuration.TaskConfiguration;
 import org.tokenizer.executor.model.configuration.WeblogsSubscriberTaskConfiguration;
@@ -90,7 +90,7 @@ public class WeblogsSubscriberTask extends AbstractTask {
 
             StaXParser read = new StaXParser();
 
-            WeblogsRecord weblogsRecord = read.parseContent(fetchedResult
+            WeblogRecord weblogsRecord = read.parseContent(fetchedResult
                     .getContent());
 
             long start = System.currentTimeMillis();
@@ -129,7 +129,7 @@ public class WeblogsSubscriberTask extends AbstractTask {
         System.out.println(fetchedResult.toString());
 
         StaXParser read = new StaXParser();
-        WeblogsRecord weblogBatchRecord = read.parseContent(fetchedResult
+        WeblogRecord weblogBatchRecord = read.parseContent(fetchedResult
                 .getContent());
         System.out.println(weblogBatchRecord);
     }
@@ -145,8 +145,8 @@ public class WeblogsSubscriberTask extends AbstractTask {
         static final String WHEN = "when";
 
         @SuppressWarnings({ "unchecked", "null" })
-        public WeblogsRecord parseContent(byte[] content) {
-            WeblogsRecord weblogBatchRecord = new WeblogsRecord();
+        public WeblogRecord parseContent(byte[] content) {
+            WeblogRecord weblogBatchRecord = new WeblogRecord();
             try {
                 XMLInputFactory inputFactory = XMLInputFactory.newInstance();
                 InputStream in = new ByteArrayInputStream(content);

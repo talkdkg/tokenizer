@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.nutch.net.URLFilter;
+import org.tokenizer.crawler.db.weblog.WeblogRecord;
 
 import com.netflix.astyanax.connectionpool.exceptions.ConnectionException;
 
@@ -84,6 +85,6 @@ public interface CrawlerRepository {
     List<byte[]> loadUrlRecordRowKeys(final String host,
             final int httpResponseCode) throws ConnectionException;
 
-    void insert(final WeblogsRecord weblogsRecord) throws ConnectionException;
+    void insert(final WeblogRecord weblogsRecord) throws ConnectionException;
 
 }

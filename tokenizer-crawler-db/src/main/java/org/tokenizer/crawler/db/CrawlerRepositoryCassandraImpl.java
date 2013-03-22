@@ -22,7 +22,9 @@ import org.slf4j.LoggerFactory;
 import org.tokenizer.core.solr.SolrUtils;
 import org.tokenizer.core.util.HttpUtils;
 import org.tokenizer.core.util.MD5;
-import org.tokenizer.crawler.db.WeblogsRecord.Weblog;
+import org.tokenizer.crawler.db.weblog.FetchedResultRecord;
+import org.tokenizer.crawler.db.weblog.WeblogRecord;
+import org.tokenizer.crawler.db.weblog.WeblogRecord.Weblog;
 import org.tokenizer.util.io.JavaSerializationUtils;
 
 import com.drew.lang.annotations.Nullable;
@@ -89,6 +91,15 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
     protected static final ColumnFamily<Integer, Weblog> CF_WEBLOGS_RECORDS = ColumnFamily
             .newColumnFamily("WEBLOGS_RECORDS", IntegerSerializer.get(),
                     WEBLOG_SERIALIZER);
+
+    // TODO: buffer is set explicitly to 8192 due to current bug in Astyanax
+    // https://github.com/Netflix/astyanax/pull/228#issuecomment-15250973
+    protected static AnnotatedCompositeSerializer<FetchedResultRecord> FETCHED_RESULT_SERIALIZER = new AnnotatedCompositeSerializer<FetchedResultRecord>(
+            FetchedResultRecord.class, 8192, false);
+
+    protected static final ColumnFamily<String, FetchedResultRecord> CF_FETCHED_RESULT_RECORDS = ColumnFamily
+            .newColumnFamily("FETCHED_RESULT_RECORDS", StringSerializer.get(),
+                    FETCHED_RESULT_SERIALIZER);
 
     protected Keyspace keyspace;
     protected static AstyanaxContext<Keyspace> keyspaceContext;
@@ -367,7 +378,7 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
                             .build());
         }
 
-        // TODO:
+        // WEBLOGS_RECORDS
         if (def.getColumnFamily("WEBLOGS_RECORDS") == null) {
             keyspace.createColumnFamily(
                     CF_WEBLOGS_RECORDS,
@@ -381,9 +392,27 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
 
         }
 
+        // FETCHED_RESULT_RECORDS
+        if (def.getColumnFamily("FETCHED_RESULT_RECORDS") == null) {
+            keyspace.createColumnFamily(
+                    CF_FETCHED_RESULT_RECORDS,
+                    ImmutableMap
+                            .<String, Object> builder()
+                            .put("default_validation_class", "BytesType")
+                            .put("key_validation_class", "IntegerType")
+                            // host inverted
+                            .put("comparator_type",
+                                    "CompositeType(UTF8Type, DateType)") // URL
+                                                                         // +
+                                                                         // Timestamp
+                            .build());
+
+        }
+
         KeyspaceDefinition ki2 = keyspaceContext.getEntity().describeKeyspace();
         System.out.println("Describe Keyspace: " + ki2.getName());
         getKeyspaceDefinition();
+
         // reindex();
         // REINDEX SOLR URLs
         Thread filterThread = new Thread("SOLR-URL_Records-Reindex") {
@@ -815,7 +844,7 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
     }
 
     @Override
-    public void insert(final WeblogsRecord weblogsRecord)
+    public void insert(final WeblogRecord weblogsRecord)
             throws ConnectionException {
         MutationBatch m = keyspace.prepareMutationBatch();
         for (Weblog weblog : weblogsRecord.getWeblogs()) {
