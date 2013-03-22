@@ -76,6 +76,7 @@
 		<module>tokenizer-thrift-server</module>
 		<module>tokenizer-ui</module>
 		<module>tokenizer-thrift-client</module>
+		<module>tokenizer-crawler-db-utils</module>
 	</modules>
 	<repositories>
 		<repository>

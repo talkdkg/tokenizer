@@ -1,7 +1,6 @@
 package org.tokenizer.crawler.db;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -65,36 +64,43 @@ import com.netflix.astyanax.util.RangeBuilder;
 
 public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
 
-    private static Logger LOG = LoggerFactory
+    protected static Logger LOG = LoggerFactory
             .getLogger(CrawlerRepositoryCassandraImpl.class);
-    private final String clusterName = "WEB_CRAWL_CLUSTER";
-    private final String keyspaceName = "WEB_CRAWL_KEYSPACE";
-    private String seeds = "127.0.0.1";
-    private final int port = 9160;
-    private static final ColumnFamily<byte[], String> CF_URL_RECORDS = ColumnFamily
+    protected final String clusterName = "WEB_CRAWL_CLUSTER";
+    protected final String keyspaceName = "WEB_CRAWL_KEYSPACE";
+    protected String seeds = "127.0.0.1";
+    protected int port = 19160;
+    protected final ColumnFamily<byte[], String> CF_URL_RECORDS = ColumnFamily
             .newColumnFamily("URL_RECORDS", BytesArraySerializer.get(),
                     StringSerializer.get());
-    private static final ColumnFamily<byte[], String> CF_WEBPAGE_RECORDS = ColumnFamily
+    protected final ColumnFamily<byte[], String> CF_WEBPAGE_RECORDS = ColumnFamily
             .newColumnFamily("WEBPAGE_RECORDS", BytesArraySerializer.get(),
                     StringSerializer.get());
-    private static final ColumnFamily<byte[], String> CF_XML_RECORDS = ColumnFamily
+    protected final ColumnFamily<byte[], String> CF_XML_RECORDS = ColumnFamily
             .newColumnFamily("XML_RECORDS", BytesArraySerializer.get(),
                     StringSerializer.get());
-    private static final ColumnFamily<byte[], String> CF_MESSAGE_RECORDS = ColumnFamily
+    protected final ColumnFamily<byte[], String> CF_MESSAGE_RECORDS = ColumnFamily
             .newColumnFamily("MESSAGE_RECORDS", BytesArraySerializer.get(),
                     StringSerializer.get());
 
-    public static AnnotatedCompositeSerializer<Weblog> WEBLOG_SERIALIZER = new AnnotatedCompositeSerializer<Weblog>(
+    protected static AnnotatedCompositeSerializer<Weblog> WEBLOG_SERIALIZER = new AnnotatedCompositeSerializer<Weblog>(
             Weblog.class, 8192, false);
 
-    private static final ColumnFamily<Integer, Weblog> CF_WEBLOGS_RECORDS = ColumnFamily
+    protected static final ColumnFamily<Integer, Weblog> CF_WEBLOGS_RECORDS = ColumnFamily
             .newColumnFamily("WEBLOGS_RECORDS", IntegerSerializer.get(),
                     WEBLOG_SERIALIZER);
 
-    private static Keyspace keyspace;
-    private static AstyanaxContext<Keyspace> keyspaceContext;
+    protected Keyspace keyspace;
+    protected static AstyanaxContext<Keyspace> keyspaceContext;
 
-    private static final int MAX_ROWS = 1000;
+    protected static final int MAX_ROWS = 1000;
+
+    public CrawlerRepositoryCassandraImpl() {
+    }
+
+    CrawlerRepositoryCassandraImpl(int port) {
+        this.port = port;
+    }
 
     @PostConstruct
     public void setup() throws ConnectionException, InterruptedException {
@@ -550,7 +556,6 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
                 .putColumn("timestamp", urlRecord.getTimestamp(), null)
                 .putColumn("webpageDigest", urlRecord.getWebpageDigest(), null);
         m.execute();
-        submitToSolr(urlRecord);
         LOG.debug("urlRecord updated: {}", urlRecord);
     }
 
@@ -694,7 +699,7 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
         }
     }
 
-    private void insert(final WebpageRecord webpageRecord)
+    protected void insert(final WebpageRecord webpageRecord)
             throws ConnectionException {
         MutationBatch m = keyspace.prepareMutationBatch();
         m.withRow(CF_WEBPAGE_RECORDS, webpageRecord.getDigest())
@@ -796,7 +801,7 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
         }
     }
 
-    private void insert(final XmlRecord xmlRecord) throws ConnectionException {
+    protected void insert(final XmlRecord xmlRecord) throws ConnectionException {
         MutationBatch m = keyspace.prepareMutationBatch();
         m.withRow(CF_XML_RECORDS, xmlRecord.getDigest())
                 .putColumn("timestamp", xmlRecord.getTimestamp(), null)
@@ -900,7 +905,7 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
         submitToSolr(messageRecord);
     }
 
-    private void insert(final MessageRecord messageRecord)
+    protected void insert(final MessageRecord messageRecord)
             throws ConnectionException {
         MutationBatch m = keyspace.prepareMutationBatch();
         m.withRow(CF_MESSAGE_RECORDS, messageRecord.getDigest())
@@ -998,26 +1003,6 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
         return counter.get();
     }
 
-    public static void main(final String[] args) throws ConnectionException,
-            UnsupportedEncodingException, InterruptedException {
-        CrawlerRepositoryCassandraImpl o = new CrawlerRepositoryCassandraImpl();
-        o.setup();
-        UrlRecord home = new UrlRecord("http://www.tokenizer.ca");
-        o.insertIfNotExists(home);
-        OperationResult<ColumnList<String>> result = keyspace
-                .prepareQuery(CF_URL_RECORDS)
-                .getKey(MD5.digest("http://www.tokenizer.ca"
-                        .getBytes("US-ASCII"))).execute();
-        ColumnList<String> columns = result.getResult();
-        String url = columns.getStringValue("url", null);
-        OperationResult<ColumnList<String>> result2 = keyspace
-                .prepareQuery(CF_URL_RECORDS).getKey(home.getDigest())
-                .execute();
-        ColumnList<String> columns2 = result2.getResult();
-        String url2 = columns2.getStringValue("url", null);
-        System.out.println(url + " " + url2 + " " + o.countUrlRecords());
-    }
-
     @Override
     public int countWebpageRecords(final String host,
             final int splitAttemptCounter) throws ConnectionException {
@@ -1068,13 +1053,13 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
         this.seeds = seeds;
     }
 
-    private static UrlRecord toUrlRecord(final Row<byte[], String> row) {
+    protected static UrlRecord toUrlRecord(final Row<byte[], String> row) {
         byte[] digest = row.getKey();
         ColumnList<String> columns = row.getColumns();
         return toUrlRecord(digest, columns);
     }
 
-    private static UrlRecord toUrlRecord(final byte[] digest,
+    protected static UrlRecord toUrlRecord(final byte[] digest,
             final ColumnList<String> columns) {
         if (columns.isEmpty())
             return null;
@@ -1092,7 +1077,7 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
         return urlRecord;
     }
 
-    private static List<UrlRecord> toUrlRecordList(
+    protected static List<UrlRecord> toUrlRecordList(
             final OperationResult<Rows<byte[], String>> result) {
         List<UrlRecord> list = new ArrayList<UrlRecord>();
         for (Row<byte[], String> row : result.getResult()) {
@@ -1101,13 +1086,13 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
         return list;
     }
 
-    private static WebpageRecord toWebpageRecord(final Row<byte[], String> row) {
+    protected static WebpageRecord toWebpageRecord(final Row<byte[], String> row) {
         byte[] digest = row.getKey();
         ColumnList<String> columns = row.getColumns();
         return toWebpageRecord(digest, columns);
     }
 
-    private static WebpageRecord toWebpageRecord(final byte[] digest,
+    protected static WebpageRecord toWebpageRecord(final byte[] digest,
             final ColumnList<String> columns) {
         if (columns.isEmpty())
             return null;
@@ -1141,7 +1126,7 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
         return list;
     }
 
-    private static XmlRecord toXmlRecord(final byte[] digest,
+    protected static XmlRecord toXmlRecord(final byte[] digest,
             final ColumnList<String> columns) {
         if (columns.isEmpty()) {
             LOG.error("Columns are empty for XML record with digest "
@@ -1158,13 +1143,13 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
         return xmlRecord;
     }
 
-    private static XmlRecord toXmlRecord(final Row<byte[], String> row) {
+    protected static XmlRecord toXmlRecord(final Row<byte[], String> row) {
         byte[] digest = row.getKey();
         ColumnList<String> columns = row.getColumns();
         return toXmlRecord(digest, columns);
     }
 
-    private static List<XmlRecord> toXmlRecordList(
+    protected static List<XmlRecord> toXmlRecordList(
             final OperationResult<Rows<byte[], String>> result) {
         List<XmlRecord> list = new ArrayList<XmlRecord>();
         for (Row<byte[], String> row : result.getResult()) {
@@ -1174,7 +1159,7 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
     }
 
     // /
-    private static MessageRecord toMessageRecord(final byte[] digest,
+    protected static MessageRecord toMessageRecord(final byte[] digest,
             final ColumnList<String> columns) {
         if (columns.isEmpty()) {
             LOG.error("Columns are empty for Message record with digest "
@@ -1197,13 +1182,13 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
         return messageRecord;
     }
 
-    private static MessageRecord toMessageRecord(final Row<byte[], String> row) {
+    protected static MessageRecord toMessageRecord(final Row<byte[], String> row) {
         byte[] digest = row.getKey();
         ColumnList<String> columns = row.getColumns();
         return toMessageRecord(digest, columns);
     }
 
-    private static List<MessageRecord> toMessageRecordList(
+    protected static List<MessageRecord> toMessageRecordList(
             final OperationResult<Rows<byte[], String>> result) {
         List<MessageRecord> list = new ArrayList<MessageRecord>();
         for (Row<byte[], String> row : result.getResult()) {

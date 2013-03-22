@@ -56,16 +56,26 @@ public class MessageRecord implements Serializable {
             final String author, final String age, final String sex,
             final String title, final String content, final String userRating) {
         this.digest = digest;
-        this.host = host;
-        this.hostInverted = hostInverted;
-        this.topic = topic;
-        this.date = date;
-        this.author = author;
-        this.age = age;
-        this.sex = sex;
-        this.title = title;
-        this.content = content;
-        this.userRating = userRating;
+        if (host != null)
+            this.host = host;
+        if (hostInverted != null)
+            this.hostInverted = hostInverted;
+        if (topic != null)
+            this.topic = topic;
+        if (date != null)
+            this.date = date;
+        if (author != null)
+            this.author = author;
+        if (age != null)
+            this.age = age;
+        if (sex != null)
+            this.sex = sex;
+        if (title != null)
+            this.title = title;
+        if (content != null)
+            this.content = content;
+        if (userRating != null)
+            this.userRating = userRating;
     }
 
     public String getHost() {
