@@ -90,5 +90,11 @@ public interface CrawlerRepository {
 
     WeblogRecord getLastWeblogRecord() throws ConnectionException;
 
-    void insert(final FetchedResultRecord fetchedResultRecord) throws ConnectionException;
+    void insert(final FetchedResultRecord fetchedResultRecord)
+            throws ConnectionException;
+
+    void insert(final HostRecord hostRecord) throws ConnectionException;
+
+    void insertIfNotExists(final HostRecord hostRecord)
+            throws ConnectionException;
 }

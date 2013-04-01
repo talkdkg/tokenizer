@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tokenizer.core.util.HttpUtils;
 import org.tokenizer.crawler.db.CrawlerRepository;
+import org.tokenizer.crawler.db.HostRecord;
 import org.tokenizer.crawler.db.UrlRecord;
 import org.tokenizer.crawler.db.weblog.FetchedResultRecord;
 import org.tokenizer.crawler.db.weblog.WeblogRecord;
@@ -70,37 +71,43 @@ public class WeblogsCrawlerTask extends AbstractTask {
     protected void process() throws InterruptedException, ConnectionException {
         WeblogRecord weblogRecord = crawlerRepository.getLastWeblogRecord();
         LOG.debug("Last Counter: {}", weblogRecord.getCount());
-        
-        for (Weblog weblog: weblogRecord.getWeblogs()) {
+
+        for (Weblog weblog : weblogRecord.getWeblogs()) {
             String url = weblog.getUrl();
             FetchedResult fetchedResult = null;
             long start = System.currentTimeMillis();
             try {
+                LOG.debug("trying url: {}", url);
                 fetchedResult = httpClient.get(url, null);
-                FetchedResultRecord fetchedResultRecord = new FetchedResultRecord(url, new Date(),
-                        fetchedResult); 
+                FetchedResultRecord fetchedResultRecord = new FetchedResultRecord(
+                        url, new Date(), fetchedResult);
                 crawlerRepository.insert(fetchedResultRecord);
+                crawlerRepository.insertIfNotExists(new HostRecord(
+                        fetchedResultRecord.getHost()));
             } catch (RedirectFetchException e) {
                 String redirectedUrl = e.getRedirectedUrl();
-                LOG.error("Redirected to {}; functionality not implemented yet", redirectedUrl);
+                LOG.error(
+                        "Redirected to {}; functionality not implemented yet",
+                        redirectedUrl);
                 metricsCache.increment(MetricsCache.REDIRECT_COUNT);
-//                String normalizedRedirectedUrl = urlNormalizer
-//                        .normalize(redirectedUrl);
-//                String redirectedHost = HttpUtils.getHost(normalizedRedirectedUrl);
-//                if (record.getHost().equals(redirectedHost)) {
-//                    UrlRecord urlRecord = new UrlRecord(normalizedRedirectedUrl);
-//                    try {
-//                        repository.insertIfNotExists(urlRecord);
-//                    } catch (ConnectionException e1) {
-//                        LOG.error(
-//                                "repository not available... sleeping 60 seconds",
-//                                e);
-//                        Thread.sleep(60000);
-//                    }
-//                } else {
-//                    LOG.debug("redirected extrenal host ignored: {}",
-//                            normalizedRedirectedUrl);
-//                }
+                // String normalizedRedirectedUrl = urlNormalizer
+                // .normalize(redirectedUrl);
+                // String redirectedHost =
+                // HttpUtils.getHost(normalizedRedirectedUrl);
+                // if (record.getHost().equals(redirectedHost)) {
+                // UrlRecord urlRecord = new UrlRecord(normalizedRedirectedUrl);
+                // try {
+                // repository.insertIfNotExists(urlRecord);
+                // } catch (ConnectionException e1) {
+                // LOG.error(
+                // "repository not available... sleeping 60 seconds",
+                // e);
+                // Thread.sleep(60000);
+                // }
+                // } else {
+                // LOG.debug("redirected extrenal host ignored: {}",
+                // normalizedRedirectedUrl);
+                // }
             } catch (HttpFetchException e) {
             } catch (BaseFetchException e) {
                 if (e.getMessage().contains("Aborted due to INTERRUPTED"))
@@ -109,8 +116,8 @@ public class WeblogsCrawlerTask extends AbstractTask {
             }
 
         }
-        
-        Thread.sleep(30000);
+
+        //Thread.sleep(30000);
 
     }
 

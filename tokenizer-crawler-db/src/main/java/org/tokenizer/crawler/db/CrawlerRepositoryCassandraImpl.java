@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -118,6 +119,7 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
             .newColumnFamily(WEBLOGS_RECORDS_IDX0, StringSerializer.get(),
                     IntegerSerializer.get());
 
+
     // TODO: buffer is set explicitly to 8192 due to current bug in Astyanax
     // https://github.com/Netflix/astyanax/pull/228#issuecomment-15250973
     protected static AnnotatedCompositeSerializer<FetchedResultRecord> FETCHED_RESULT_SERIALIZER = new AnnotatedCompositeSerializer<FetchedResultRecord>(
@@ -126,6 +128,12 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
     protected static final ColumnFamily<String, FetchedResultRecord> CF_FETCHED_RESULT_RECORDS = ColumnFamily
             .newColumnFamily("FETCHED_RESULT_RECORDS", StringSerializer.get(),
                     FETCHED_RESULT_SERIALIZER);
+
+    // TDE-13: Index for Inverted Hosts
+    private static final String HOST_RECORDS = "HOST_RECORDS";
+    protected final ColumnFamily<String, byte[]> CF_HOST_RECORDS = ColumnFamily
+            .newColumnFamily(HOST_RECORDS, StringSerializer.get(),
+                    BytesArraySerializer.get());
 
     protected Keyspace keyspace;
     protected static AstyanaxContext<Keyspace> keyspaceContext;
@@ -450,6 +458,20 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
                             .build());
 
         }
+        
+        
+        // HOST_RECORDS
+        if (def.getColumnFamily(HOST_RECORDS) == null) {
+            keyspace.createColumnFamily(
+                    CF_HOST_RECORDS,
+                    ImmutableMap.<String, Object> builder()
+                            .put("default_validation_class", "BytesType") // TODO: will store host-specific info
+                            .put("key_validation_class", "UTF8Type")
+                            .put("comparator_type", "BytesType").build());
+
+        }
+        
+        
         KeyspaceDefinition ki2 = keyspaceContext.getEntity().describeKeyspace();
         System.out.println("Describe Keyspace: " + ki2.getName());
         getKeyspaceDefinition();
@@ -1537,5 +1559,27 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
                     .putColumn(fetchedResultRecord, JavaSerializationUtils.serialize(fetchedResultRecord.getFetchedResult()));
         m.execute();
     }
+
+    @Override
+    public void insert(final HostRecord hostRecord)
+            throws ConnectionException {
+        MutationBatch m = keyspace.prepareMutationBatch();
+             m.withRow(CF_HOST_RECORDS, hostRecord.getTld() )
+                    .putColumn(hostRecord.getHostInverted(), JavaSerializationUtils.serialize(hostRecord.getPayload()));
+        m.execute();
+    }
+    
+    @Override
+    public void insertIfNotExists(final HostRecord hostRecord)
+            throws ConnectionException {
+        OperationResult<ColumnList<byte[]>> result = keyspace
+                .prepareQuery(CF_HOST_RECORDS)
+                .getKey(hostRecord.getTld())
+                  .withColumnSlice(hostRecord.getHostInverted()).execute();
+        if (result.getResult().isEmpty()) {
+            insert(hostRecord);
+        }
+    }
+
 
 }
