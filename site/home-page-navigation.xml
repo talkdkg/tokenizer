@@ -1,0 +1,99 @@
+<div class="infoBox">
+	<h3>
+		Products
+	</h3>
+	<dl>
+		<dd>
+			<a href="/products/vertical-search">
+				<strong>Vertical Search</strong>
+				- Custom Search Engine, Web Crawler and Extractor, Robot, Scraper,
+				Harvester, Enricher, Miner, Tagger
+			</a>
+		</dd>
+		<dd>
+			<a href="/products/elastic-executor">
+				<strong>Elastic Executor</strong>
+				- Parallel Processing, Cloud Computing, Big Data Analytics
+			</a>
+		</dd>
+	</dl>
+	<h3>
+		Consulting Services
+	</h3>
+	<dl>
+		<dd>
+			<a href="/services/consulting">
+				<strong>Search Engines and Web Crawlers</strong>
+				- Apache Lucene, Solr, Nutch, Droids, ManifoldMF, Heritrix,
+				ElasticSearch, LucidWorks, Idol, FAST, Autonomy/Verity K2, OmniFind,
+				Google Search Appliance
+			</a>
+		</dd>
+		<dd>
+			<a href="/services/consulting">
+				<strong>Natural Language Processing, Data Mining</strong>
+				- WEKA, LingPipe, NLTK, Apache Mahout, OpenNLP, Open Calais, GATE,
+				and more...
+			</a>
+		</dd>
+		<dd>
+			<a href="/services/consulting">
+				<strong>Web Applications</strong>
+				- Apache Tomcat, Liferay Portal, Oracle WebLogic, IBM WebSphere,
+				VAADIN, Wicket, and more...
+			</a>
+		</dd>
+		<dd>
+			<a href="/services/consulting">
+				<strong>Column Oriented Databases, NoSQL</strong>
+				- HBase, Hive, Cassandra, MongoDB, OpenLink Virtuoso, Oracle NoSQL,
+				and more...
+			</a>
+		</dd>
+		<dd>
+			<a href="/services/consulting">
+				<strong>Relational Databases</strong>
+				- Oracle, DB2, PostgreSQL, MySQL, Microsoft SQL Server, and more...
+			</a>
+		</dd>
+		<dd>
+			<a href="/services/consulting">
+				<strong>Graph Databases</strong>
+				- Neo4j, FlockDB, AllegroGraph, InfiniteGraph, GraphDB, and more...
+			</a>
+		</dd>
+		<dd>
+			<a href="/services/consulting">
+				<strong>Big Data Solutions</strong>
+				- Apache Hadoop, MapReduce, Amazon EC2, HBase, Cassandra, GFS, and
+				more...
+			</a>
+		</dd>
+	</dl>
+	<h3>
+		Clients
+	</h3>
+	<dl>
+		<dd>
+			<a href="/clients">York University</a>
+		</dd>
+		<dd>
+			<a href="/clients">Research in Motion</a>
+		</dd>
+		<dd>
+			<a href="/clients">Outside Intelligence</a>
+		</dd>
+		<dd>
+			<a href="/clients">Royal Bank</a>
+		</dd>
+		<dd>
+			<a href="/clients">Toronto Star</a>
+		</dd>
+		<dd>
+			<a href="/clients">NAVTEQ</a>
+		</dd>
+		<dd>
+			<a href="/clients">and more...</a>
+		</dd>
+	</dl>
+</div>

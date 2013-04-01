@@ -1,17 +1,24 @@
 package org.tokenizer.crawler.db;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.cassandra.dht.AbstractByteOrderedPartitioner;
+import org.apache.cassandra.dht.BigIntegerToken;
+import org.apache.cassandra.dht.ByteOrderedPartitioner;
+import org.apache.cassandra.dht.BytesToken;
+import org.apache.cassandra.dht.IPartitioner;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.nutch.net.URLFilter;
 import org.apache.solr.client.solrj.SolrServer;
@@ -30,6 +37,7 @@ import org.tokenizer.util.io.JavaSerializationUtils;
 import com.drew.lang.annotations.Nullable;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
 import com.kaypok.FeatureExtraction;
 import com.kaypok.Tools;
 import com.kaypok.model.Sentence;
@@ -50,12 +58,21 @@ import com.netflix.astyanax.ddl.ColumnFamilyDefinition;
 import com.netflix.astyanax.ddl.FieldMetadata;
 import com.netflix.astyanax.ddl.KeyspaceDefinition;
 import com.netflix.astyanax.impl.AstyanaxConfigurationImpl;
+import com.netflix.astyanax.model.Column;
 import com.netflix.astyanax.model.ColumnFamily;
 import com.netflix.astyanax.model.ColumnList;
 import com.netflix.astyanax.model.ConsistencyLevel;
 import com.netflix.astyanax.model.Row;
 import com.netflix.astyanax.model.Rows;
+import com.netflix.astyanax.partitioner.BigInteger127Partitioner;
+import com.netflix.astyanax.partitioner.Murmur3Partitioner;
+import com.netflix.astyanax.partitioner.OrderedBigIntegerPartitioner;
+import com.netflix.astyanax.partitioner.Partitioner;
 import com.netflix.astyanax.query.IndexQuery;
+import com.netflix.astyanax.query.RowQuery;
+import com.netflix.astyanax.recipes.Callback;
+import com.netflix.astyanax.recipes.ReverseIndexQuery;
+import com.netflix.astyanax.recipes.Shards;
 import com.netflix.astyanax.recipes.reader.AllRowsReader;
 import com.netflix.astyanax.serializers.AnnotatedCompositeSerializer;
 import com.netflix.astyanax.serializers.BytesArraySerializer;
@@ -92,6 +109,15 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
             .newColumnFamily("WEBLOGS_RECORDS", IntegerSerializer.get(),
                     WEBLOG_SERIALIZER);
 
+    private static final String WEBLOGS_RECORDS_IDX0 = "WEBLOGS_RECORDS_IDX0";
+    private static final String SHARD_ = "SHARD_";
+    private static final String SHARD_0 = "SHARD_0";
+
+    // Index to find last sequence number (Weblog counter)
+    protected final ColumnFamily<String, Integer> CF_WEBLOGS_RECORDS_IDX0 = ColumnFamily
+            .newColumnFamily(WEBLOGS_RECORDS_IDX0, StringSerializer.get(),
+                    IntegerSerializer.get());
+
     // TODO: buffer is set explicitly to 8192 due to current bug in Astyanax
     // https://github.com/Netflix/astyanax/pull/228#issuecomment-15250973
     protected static AnnotatedCompositeSerializer<FetchedResultRecord> FETCHED_RESULT_SERIALIZER = new AnnotatedCompositeSerializer<FetchedResultRecord>(
@@ -115,12 +141,18 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
 
     @PostConstruct
     public void setup() throws ConnectionException, InterruptedException {
+
         keyspaceContext = new AstyanaxContext.Builder()
                 .forCluster(clusterName)
                 .forKeyspace(keyspaceName)
                 .withAstyanaxConfiguration(
-                        new AstyanaxConfigurationImpl().setDiscoveryType(
-                                NodeDiscoveryType.RING_DESCRIBE)
+                        new AstyanaxConfigurationImpl()
+                                // .registerPartitioner(
+                                // org.apache.cassandra.dht.ByteOrderedPartitioner.class
+                                // .getCanonicalName(),
+                                // MyBOPPartitioner.get())
+                                .setDiscoveryType(
+                                        NodeDiscoveryType.RING_DESCRIBE)
                                 .setConnectionPoolType(
                                         ConnectionPoolType.TOKEN_AWARE))
                 .withConnectionPoolConfiguration(
@@ -392,6 +424,16 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
 
         }
 
+        // CF_WEBLOGS_RECORDS_IDX0
+        if (def.getColumnFamily("WEBLOGS_RECORDS_IDX0") == null) {
+            keyspace.createColumnFamily(
+                    CF_WEBLOGS_RECORDS_IDX0,
+                    ImmutableMap.<String, Object> builder()
+                            .put("key_validation_class", "UTF8Type")
+                            .put("comparator_type", "IntegerType").build());
+
+        }
+
         // FETCHED_RESULT_RECORDS
         if (def.getColumnFamily("FETCHED_RESULT_RECORDS") == null) {
             keyspace.createColumnFamily(
@@ -399,7 +441,7 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
                     ImmutableMap
                             .<String, Object> builder()
                             .put("default_validation_class", "BytesType")
-                            .put("key_validation_class", "IntegerType")
+                            .put("key_validation_class", "UTF8Type")
                             // host inverted
                             .put("comparator_type",
                                     "CompositeType(UTF8Type, DateType)") // URL
@@ -408,7 +450,6 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
                             .build());
 
         }
-
         KeyspaceDefinition ki2 = keyspaceContext.getEntity().describeKeyspace();
         System.out.println("Describe Keyspace: " + ki2.getName());
         getKeyspaceDefinition();
@@ -840,17 +881,6 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
                         ArrayUtils.addAll(xmlRecord.getHostInverted(),
                                 HttpUtils.intToBytes(xmlRecord
                                         .getParseAttemptCounter())), null);
-        m.execute();
-    }
-
-    @Override
-    public void insert(final WeblogRecord weblogsRecord)
-            throws ConnectionException {
-        MutationBatch m = keyspace.prepareMutationBatch();
-        for (Weblog weblog : weblogsRecord.getWeblogs()) {
-            m.withRow(CF_WEBLOGS_RECORDS, weblogsRecord.getCount())
-                    .putEmptyColumn(weblog);
-        }
         m.execute();
     }
 
@@ -1407,4 +1437,105 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
         }
         // solrServer.commit();
     }
+
+    @Override
+    public void insert(final WeblogRecord weblogsRecord)
+            throws ConnectionException {
+        MutationBatch m = keyspace.prepareMutationBatch();
+        for (Weblog weblog : weblogsRecord.getWeblogs()) {
+            m.withRow(CF_WEBLOGS_RECORDS, weblogsRecord.getCount())
+                    .putEmptyColumn(weblog);
+        }
+
+        m.withRow(CF_WEBLOGS_RECORDS_IDX0, SHARD_0).putEmptyColumn(
+                weblogsRecord.getCount());
+
+        m.execute();
+    }
+
+    public WeblogRecord getLastWeblogRecordSample() throws ConnectionException {
+
+        final WeblogRecord weblogRecord = new WeblogRecord();
+        final List<WeblogRecord.Weblog> weblogs = new ArrayList<WeblogRecord.Weblog>();
+        weblogRecord.setWeblogs(weblogs);
+
+        ReverseIndexQuery
+                .newQuery(keyspace, CF_WEBLOGS_RECORDS, WEBLOGS_RECORDS_IDX0,
+                        IntegerSerializer.get())
+                .withIndexShards(
+                        new Shards.StringShardBuilder().setPrefix(SHARD_)
+                                .setShardCount(1).build())
+                .withConsistencyLevel(ConsistencyLevel.CL_ONE)
+                .fromIndexValue(0)
+                .toIndexValue(Integer.MAX_VALUE)
+
+                .forEach(
+                        new Function<Row<Integer, WeblogRecord.Weblog>, Void>() {
+
+                            @Override
+                            public Void apply(
+                                    Row<Integer, WeblogRecord.Weblog> row) {
+
+                                weblogRecord.setCountInverted(row.getKey());
+                                for (Column<WeblogRecord.Weblog> weblogColumn : row
+                                        .getColumns()) {
+                                    WeblogRecord.Weblog weblog = weblogColumn
+                                            .getName();
+                                    weblogs.add(weblog);
+                                }
+                                return null;
+                            }
+                        }).execute();
+
+        return weblogRecord;
+
+    }
+
+    @Override
+    public WeblogRecord getLastWeblogRecord() throws ConnectionException {
+
+        final WeblogRecord weblogRecord = new WeblogRecord();
+        final List<WeblogRecord.Weblog> weblogs = new ArrayList<WeblogRecord.Weblog>();
+        weblogRecord.setWeblogs(weblogs);
+
+        int count = getLastWeblogCounter();
+        weblogRecord.setCount(count);
+
+        OperationResult<ColumnList<WeblogRecord.Weblog>> result = keyspace
+                .prepareQuery(CF_WEBLOGS_RECORDS).getKey(count)
+                .autoPaginate(true).execute();
+
+        ColumnList<WeblogRecord.Weblog> columns = result.getResult();
+        for (Column<WeblogRecord.Weblog> weblogColumn : columns) {
+            WeblogRecord.Weblog weblog = weblogColumn.getName();
+            weblogs.add(weblog);
+        }
+
+        return weblogRecord;
+
+    }
+
+    public int getLastWeblogCounter() throws ConnectionException {
+
+        OperationResult<ColumnList<Integer>> result = keyspace
+                .prepareQuery(CF_WEBLOGS_RECORDS_IDX0)
+                .getKey(SHARD_0)
+                .autoPaginate(false)
+                .withColumnRange(
+                        new RangeBuilder().setReversed(true).setLimit(1)
+                                .build()).execute();
+
+        return result.getResult().getColumnNames().iterator().next();
+
+    }
+
+    @Override
+    public void insert(final FetchedResultRecord fetchedResultRecord)
+            throws ConnectionException {
+        MutationBatch m = keyspace.prepareMutationBatch();
+             m.withRow(CF_FETCHED_RESULT_RECORDS, fetchedResultRecord.getHost())
+                    .putColumn(fetchedResultRecord, JavaSerializationUtils.serialize(fetchedResultRecord.getFetchedResult()));
+        m.execute();
+    }
+
 }

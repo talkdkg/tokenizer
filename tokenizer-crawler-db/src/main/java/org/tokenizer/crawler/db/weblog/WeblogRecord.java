@@ -18,10 +18,19 @@ public class WeblogRecord {
         return count;
     }
 
+    public int getCountInverted() {
+        return Integer.MAX_VALUE - count;
+    }
+    
+    
     public void setCount(int count) {
         this.count = count;
     }
 
+    public void setCountInverted(int countInverted) {
+        this.count = Integer.MAX_VALUE - countInverted;
+    }
+    
     public List<Weblog> getWeblogs() {
         return weblogs;
     }

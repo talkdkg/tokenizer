@@ -1,0 +1,18 @@
+ll following commands should be run on the machine which hosts the service that will be monitored:
+1
+Download and run the installer
+curl -ko installer.sh "https://apps.sematext.com/spm-reports/installerDownload.do?client_token=42d06c40-cf13-4f09-bea3-97ec788a5056" && sudo bash installer.sh
+
+OR
+wget --no-check-certificate -O installer.sh "https://apps.sematext.com/spm-reports/installerDownload.do?client_token=42d06c40-cf13-4f09-bea3-97ec788a5056" && sudo bash installer.sh
+2
+Install SPM monitor by adding the following arguments to the startup script of your application server (for instance, under JAVA_OPTS variable or just append after java command if that is how you are starting the server):
+-Dcom.sun.management.jmxremote -javaagent:/spm/spm-monitor/lib/spm-monitor-solr-1.10.0-withdeps.jar=42d06c40-cf13-4f09-bea3-97ec788a5056::default
+
+After that, restart your application server, e.g.:
+/etc/init.d/jetty restart
+OR
+/etc/init.d/tomcat restart
+OR ...
+
+

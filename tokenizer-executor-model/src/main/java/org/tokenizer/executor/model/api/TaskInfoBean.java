@@ -15,6 +15,7 @@
  */
 package org.tokenizer.executor.model.api;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -23,8 +24,12 @@ import java.util.UUID;
 import org.tokenizer.executor.model.configuration.TaskConfiguration;
 
 
-public class TaskInfoBean {
+public class TaskInfoBean implements Serializable {
 
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(TaskInfoBean.class);
     private TaskConfiguration taskConfiguration;
     private int zkDataVersion = -1;

@@ -178,7 +178,7 @@ public class MyVaadinUI extends UI {
         themeSelector.setImmediate(true);
         themeSelector.select(VaadinTheme.class);
         themeSelector.addValueChangeListener(new ValueChangeListener() {
-
+            private static final long serialVersionUID = 1L;
             @Override
             public void valueChange(final ValueChangeEvent event) {
                 @SuppressWarnings("unchecked")
@@ -210,6 +210,8 @@ public class MyVaadinUI extends UI {
 
         tree.addValueChangeListener(new ValueChangeListener() {
 
+            private static final long serialVersionUID = 1L;
+            
             @Override
             public void valueChange(final ValueChangeEvent event) {
                 Object value2 = event.getProperty().getValue();
