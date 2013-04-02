@@ -75,50 +75,43 @@ public class WeblogsCrawlerTask extends AbstractTask {
         for (Weblog weblog : weblogRecord.getWeblogs()) {
             String url = weblog.getUrl();
             FetchedResult fetchedResult = null;
-            long start = System.currentTimeMillis();
+            // long start = System.currentTimeMillis();
             try {
                 LOG.debug("trying url: {}", url);
                 fetchedResult = httpClient.get(url, null);
+            } catch (RedirectFetchException e) {
+                String redirectedUrl = e.getRedirectedUrl();
+                try {
+                    LOG.debug("trying redirected url: {}", redirectedUrl);
+                    fetchedResult = httpClient.get(redirectedUrl, null);
+                } catch (RedirectFetchException e1) {
+                    String redirectedUrl2 = e.getRedirectedUrl();
+                    LOG.error("secondary redirect: {}",redirectedUrl2 );
+                } catch (HttpFetchException e1) {
+                    LOG.error(e1.getMessage());
+                } catch (BaseFetchException e1) {
+                    if (e1.getMessage().contains("Aborted due to INTERRUPTED"))
+                        throw new InterruptedException("Aborted...");
+                    LOG.error(e1.getMessage());
+                }
+                metricsCache.increment(MetricsCache.REDIRECT_COUNT);
+            } catch (HttpFetchException e) {
+                LOG.error(e.getMessage());
+            } catch (BaseFetchException e) {
+                if (e.getMessage().contains("Aborted due to INTERRUPTED"))
+                    throw new InterruptedException("Aborted...");
+                metricsCache.increment(MetricsCache.OTHER_ERRORS);
+                LOG.error(e.getMessage());
+            }
+            if (fetchedResult != null) {
                 FetchedResultRecord fetchedResultRecord = new FetchedResultRecord(
                         url, new Date(), fetchedResult);
                 crawlerRepository.insert(fetchedResultRecord);
                 crawlerRepository.insertIfNotExists(new HostRecord(
                         fetchedResultRecord.getHost()));
-            } catch (RedirectFetchException e) {
-                String redirectedUrl = e.getRedirectedUrl();
-                LOG.error(
-                        "Redirected to {}; functionality not implemented yet",
-                        redirectedUrl);
-                metricsCache.increment(MetricsCache.REDIRECT_COUNT);
-                // String normalizedRedirectedUrl = urlNormalizer
-                // .normalize(redirectedUrl);
-                // String redirectedHost =
-                // HttpUtils.getHost(normalizedRedirectedUrl);
-                // if (record.getHost().equals(redirectedHost)) {
-                // UrlRecord urlRecord = new UrlRecord(normalizedRedirectedUrl);
-                // try {
-                // repository.insertIfNotExists(urlRecord);
-                // } catch (ConnectionException e1) {
-                // LOG.error(
-                // "repository not available... sleeping 60 seconds",
-                // e);
-                // Thread.sleep(60000);
-                // }
-                // } else {
-                // LOG.debug("redirected extrenal host ignored: {}",
-                // normalizedRedirectedUrl);
-                // }
-            } catch (HttpFetchException e) {
-            } catch (BaseFetchException e) {
-                if (e.getMessage().contains("Aborted due to INTERRUPTED"))
-                    throw new InterruptedException("Aborted...");
-                metricsCache.increment(MetricsCache.OTHER_ERRORS);
             }
 
         }
-
-        //Thread.sleep(30000);
-
     }
 
 }
