@@ -1,7 +1,6 @@
 package org.tokenizer.crawler.db;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -9,17 +8,12 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicLong;
 
 import javax.annotation.PostConstruct;
 
-import org.apache.cassandra.dht.AbstractByteOrderedPartitioner;
-import org.apache.cassandra.dht.BigIntegerToken;
-import org.apache.cassandra.dht.ByteOrderedPartitioner;
-import org.apache.cassandra.dht.BytesToken;
-import org.apache.cassandra.dht.IPartitioner;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.nutch.net.URLFilter;
 import org.apache.solr.client.solrj.SolrServer;
@@ -38,7 +32,6 @@ import org.tokenizer.util.io.JavaSerializationUtils;
 import com.drew.lang.annotations.Nullable;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Maps;
 import com.kaypok.FeatureExtraction;
 import com.kaypok.Tools;
 import com.kaypok.model.Sentence;
@@ -65,13 +58,8 @@ import com.netflix.astyanax.model.ColumnList;
 import com.netflix.astyanax.model.ConsistencyLevel;
 import com.netflix.astyanax.model.Row;
 import com.netflix.astyanax.model.Rows;
-import com.netflix.astyanax.partitioner.BigInteger127Partitioner;
-import com.netflix.astyanax.partitioner.Murmur3Partitioner;
-import com.netflix.astyanax.partitioner.OrderedBigIntegerPartitioner;
-import com.netflix.astyanax.partitioner.Partitioner;
 import com.netflix.astyanax.query.IndexQuery;
 import com.netflix.astyanax.query.RowQuery;
-import com.netflix.astyanax.recipes.Callback;
 import com.netflix.astyanax.recipes.ReverseIndexQuery;
 import com.netflix.astyanax.recipes.Shards;
 import com.netflix.astyanax.recipes.reader.AllRowsReader;
@@ -118,7 +106,6 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
     protected final ColumnFamily<String, Integer> CF_WEBLOGS_RECORDS_IDX0 = ColumnFamily
             .newColumnFamily(WEBLOGS_RECORDS_IDX0, StringSerializer.get(),
                     IntegerSerializer.get());
-
 
     // TODO: buffer is set explicitly to 8192 due to current bug in Astyanax
     // https://github.com/Netflix/astyanax/pull/228#issuecomment-15250973
@@ -458,20 +445,19 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
                             .build());
 
         }
-        
-        
+
         // HOST_RECORDS
         if (def.getColumnFamily(HOST_RECORDS) == null) {
             keyspace.createColumnFamily(
                     CF_HOST_RECORDS,
                     ImmutableMap.<String, Object> builder()
-                            .put("default_validation_class", "BytesType") // TODO: will store host-specific info
+                            .put("default_validation_class", "BytesType")
+                            // TODO: will store host-specific info
                             .put("key_validation_class", "UTF8Type")
                             .put("comparator_type", "BytesType").build());
 
         }
-        
-        
+
         KeyspaceDefinition ki2 = keyspaceContext.getEntity().describeKeyspace();
         System.out.println("Describe Keyspace: " + ki2.getName());
         getKeyspaceDefinition();
@@ -1555,31 +1541,104 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
     public void insert(final FetchedResultRecord fetchedResultRecord)
             throws ConnectionException {
         MutationBatch m = keyspace.prepareMutationBatch();
-             m.withRow(CF_FETCHED_RESULT_RECORDS, fetchedResultRecord.getHost())
-                    .putColumn(fetchedResultRecord, JavaSerializationUtils.serialize(fetchedResultRecord.getFetchedResult()));
+        m.withRow(CF_FETCHED_RESULT_RECORDS, fetchedResultRecord.getHost())
+                .putColumn(
+                        fetchedResultRecord,
+                        JavaSerializationUtils.serialize(fetchedResultRecord
+                                .getFetchedResult()));
         m.execute();
     }
 
     @Override
-    public void insert(final HostRecord hostRecord)
-            throws ConnectionException {
+    public void insert(final HostRecord hostRecord) throws ConnectionException {
         MutationBatch m = keyspace.prepareMutationBatch();
-             m.withRow(CF_HOST_RECORDS, hostRecord.getTld() )
-                    .putColumn(hostRecord.getHostInverted(), JavaSerializationUtils.serialize(hostRecord.getPayload()));
+        m.withRow(CF_HOST_RECORDS, hostRecord.getTld()).putColumn(
+                hostRecord.getHostInverted(),
+                JavaSerializationUtils.serialize(hostRecord.getPayload()));
         m.execute();
     }
-    
+
     @Override
     public void insertIfNotExists(final HostRecord hostRecord)
             throws ConnectionException {
         OperationResult<ColumnList<byte[]>> result = keyspace
-                .prepareQuery(CF_HOST_RECORDS)
-                .getKey(hostRecord.getTld())
-                  .withColumnSlice(hostRecord.getHostInverted()).execute();
+                .prepareQuery(CF_HOST_RECORDS).getKey(hostRecord.getTld())
+                .withColumnSlice(hostRecord.getHostInverted()).execute();
         if (result.getResult().isEmpty()) {
             insert(hostRecord);
         }
     }
 
+    @Override
+    public Collection<String> listTLDs() throws ConnectionException {
+        OperationResult<Rows<String, byte[]>> result = keyspace
+                .prepareQuery(CF_HOST_RECORDS)
+                .setConsistencyLevel(ConsistencyLevel.CL_ONE).getAllRows()
+                .withColumnRange(new RangeBuilder().setLimit(0).build())
+                .execute();
+        Set list = new TreeSet<String>();
+        for (Row<String, byte[]> row : result.getResult()) {
+            list.add(row.getKey());
+        }
+        return list;
+    }
+
+    @Override
+    public int countHosts(String tld) {
+        OperationResult<ColumnList<byte[]>> result;
+        try {
+            result = keyspace.prepareQuery(CF_HOST_RECORDS)
+                    .setConsistencyLevel(ConsistencyLevel.CL_ONE).getKey(tld)
+                    .execute();
+            int size = result.getResult().size();
+            LOG.info("TLD: {}; Columns size: {}", tld, size);
+            return size;
+        } catch (ConnectionException e) {
+            LOG.error("", e);
+            return 0;
+        }
+    }
+
+    @Override
+    public List<HostRecord> listHostRecords(String tld, final int startIndex,
+            final int count) {
+        ColumnList<byte[]> columns;
+        int pageize = 10;
+        int pointer = -1;
+        int endIndex = startIndex + count;
+        List<HostRecord> hostRecords = new ArrayList<HostRecord>();
+        OperationResult<ColumnList<byte[]>> result;
+        try {
+            RowQuery<String, byte[]> query = keyspace
+                    .prepareQuery(CF_HOST_RECORDS)
+                    .setConsistencyLevel(ConsistencyLevel.CL_ONE).getKey(tld)
+                    .autoPaginate(true);
+
+            while (!(columns = query.execute().getResult()).isEmpty()) {
+                LOG.info("Paginated Quesy: TLD: {}; Columns size: {}", tld,
+                        columns.size());
+                for (Column<byte[]> c : columns) {
+                    // LOG.info(Long.toString(c.getName()));
+                    pointer++;
+                    if (pointer >= startIndex && pointer < endIndex) {
+                        HostRecord hostRecord = new HostRecord(c.getName());
+                        HashMap o = (HashMap) JavaSerializationUtils
+                                .deserialize(c.getByteArrayValue());
+                        hostRecord.setPayload(o);
+                        hostRecords.add(hostRecord);
+                    }
+                }
+                // column = Iterables.getLast(columns).getName() + "\u0000";
+                if (pointer >= endIndex)
+                    break;
+            }
+            return hostRecords;
+        } catch (ConnectionException e) {
+            LOG.error("", e);
+        }
+
+        return null;
+
+    }
 
 }

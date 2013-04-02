@@ -1,6 +1,7 @@
 package org.tokenizer.crawler.db;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.apache.nutch.net.URLFilter;
@@ -97,4 +98,12 @@ public interface CrawlerRepository {
 
     void insertIfNotExists(final HostRecord hostRecord)
             throws ConnectionException;
+
+    Collection<String> listTLDs() throws ConnectionException;
+
+    int countHosts(String tld);
+
+    List<HostRecord> listHostRecords(String tld, final int startIndex,
+            final int count);
+
 }

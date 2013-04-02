@@ -8,7 +8,7 @@ import com.vaadin.ui.Component;
 public class TaskManager extends AbstractScreen {
 
     @Override
-    protected Component getChart() {
+    protected Component get() {
         return new TaskInfoComponent();
 
     }

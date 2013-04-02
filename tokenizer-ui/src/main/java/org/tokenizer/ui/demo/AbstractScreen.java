@@ -3,11 +3,15 @@ package org.tokenizer.ui.demo;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.VerticalLayout;
 
-@SuppressWarnings("serial")
+
 public abstract class AbstractScreen extends VerticalLayout {
+
+    private static final long serialVersionUID = 1L;
 
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory
             .getLogger(AbstractScreen.class);
+
+    protected static final int COMMON_FIELD_WIDTH = 48;
 
     private final VerticalLayout content;
 
@@ -16,7 +20,7 @@ public abstract class AbstractScreen extends VerticalLayout {
         content.setSizeFull();
     }
 
-    protected abstract Component getChart();
+    protected abstract Component get();
 
     @Override
     public void attach() {
@@ -27,7 +31,7 @@ public abstract class AbstractScreen extends VerticalLayout {
     protected void setup() {
         if (content.getComponentCount() == 0) {
             LOG.debug("creating component instance...");
-            final Component map = getChart();
+            final Component map = get();
             content.addComponent(map);
             content.setExpandRatio(map, 1);
         }

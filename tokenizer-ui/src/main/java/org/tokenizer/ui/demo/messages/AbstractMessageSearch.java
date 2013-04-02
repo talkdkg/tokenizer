@@ -49,7 +49,7 @@ import com.vaadin.ui.VerticalLayout;
 public abstract class AbstractMessageSearch extends AbstractScreen {
 
     @Override
-    protected Component getChart() {
+    protected Component get() {
 
         buildMainLayout();
         return mainLayout;

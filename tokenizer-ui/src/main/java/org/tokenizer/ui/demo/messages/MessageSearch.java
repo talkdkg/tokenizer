@@ -8,7 +8,7 @@ import com.vaadin.ui.Component;
 public class MessageSearch extends AbstractScreen {
 
     @Override
-    protected Component getChart() {
+    protected Component get() {
         return new MessageSearchComponent();
 
     }

@@ -110,7 +110,7 @@ public class MyVaadinUI extends UI {
         tests = grouped;
     }
 
-    private static final String[] GROUP_ORDER = { "Admin", "Messages", "URLs" };
+    private static final String[] GROUP_ORDER = { "Admin", "Messages", "URLs", "Hosts" };
 
     private static ApplicationContext applicationContext = null;
 
