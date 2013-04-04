@@ -33,8 +33,9 @@ import com.netflix.astyanax.connectionpool.exceptions.ConnectionException;
 
 public abstract class AbstractTask implements Runnable, LeaderElectionCallback {
 
-    private static final Logger LOG = LoggerFactory
-            .getLogger(AbstractTask.class);
+    // not static, and not final: abstract
+    protected Logger LOG = LoggerFactory.getLogger(getClass()
+            .getCanonicalName());
     protected final UUID uuid;
     protected final String friendlyName;
     protected final ZooKeeperItf zk;
@@ -61,6 +62,7 @@ public abstract class AbstractTask implements Runnable, LeaderElectionCallback {
     public AbstractTask(final UUID uuid, final String friendlyName,
             final ZooKeeperItf zk, final CrawlerRepository crawlerRepository,
             final WritableExecutorModel model, final HostLocker hostLocker) {
+
         this.uuid = uuid;
         this.friendlyName = friendlyName;
         this.zk = zk;

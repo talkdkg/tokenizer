@@ -48,8 +48,6 @@ import crawlercommons.robots.SimpleRobotRulesParser;
 
 public class ClassicRobotTask extends AbstractTask {
 
-	private static final Logger LOG = LoggerFactory
-			.getLogger(ClassicRobotTask.class);
 	private final SimpleHttpFetcher httpClient;
 	private final BaseHttpFetcher robotFetcher;
 	BaseRobotRules robotRules = null;

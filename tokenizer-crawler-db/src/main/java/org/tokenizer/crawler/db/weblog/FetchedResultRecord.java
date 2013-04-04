@@ -1,5 +1,6 @@
 package org.tokenizer.crawler.db.weblog;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import org.tokenizer.core.util.HttpUtils;
@@ -8,22 +9,34 @@ import com.netflix.astyanax.annotations.Component;
 
 import crawlercommons.fetcher.FetchedResult;
 
-public class FetchedResultRecord {
+public class FetchedResultRecord implements Serializable {
 
-    private final String host;
+    private static final long serialVersionUID = 1L;
+
+    private String host;
 
     @Component(ordinal = 0)
-    private final String url;
+    private String url;
 
     @Component(ordinal = 1)
-    private final Date timestamp;
+    private Date timestamp;
 
-    private final FetchedResult fetchedResult;
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public void setTimestamp(Date timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    private FetchedResult fetchedResult;
+
+    public FetchedResultRecord() {
+    }
 
     public FetchedResultRecord(final String url, final Date timestamp,
             final FetchedResult fetchedResult) {
         this.url = url;
-        this.host = HttpUtils.getHost(url);
         this.timestamp = timestamp;
         this.fetchedResult = fetchedResult;
     }
@@ -37,6 +50,8 @@ public class FetchedResultRecord {
     }
 
     public String getHost() {
+        if (host == null)
+            host = HttpUtils.getHost(url);
         return host;
     }
 
@@ -45,7 +60,15 @@ public class FetchedResultRecord {
     }
 
     public byte[] getHostInverted() {
-        return HttpUtils.getHostInverted(host);
+        return HttpUtils.getHostInverted(getHost());
+    }
+
+    @Override
+    public String toString() {
+        return "FetchedResultRecord [host=" + host + ", url=" + url
+                + ", timestamp=" + timestamp + "]";
+        //+ ", fetchedResult="
+        //        + fetchedResult + "]";
     }
 
 }

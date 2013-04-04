@@ -36,6 +36,7 @@ import org.tokenizer.executor.engine.RssFetcherTask;
 import org.tokenizer.executor.engine.SimpleMultithreadedFetcher;
 import org.tokenizer.executor.engine.SitemapsFetcherTask;
 import org.tokenizer.executor.engine.WeblogsCrawlerTask;
+import org.tokenizer.executor.engine.WeblogsParserTask;
 import org.tokenizer.executor.engine.WeblogsSubscriberTask;
 import org.tokenizer.executor.engine.message.MessageParserTask;
 import org.tokenizer.executor.engine.twitter.TweetCollectorTask;
@@ -55,6 +56,7 @@ import org.tokenizer.executor.model.configuration.SimpleMultithreadedFetcherTask
 import org.tokenizer.executor.model.configuration.SitemapsFetcherTaskConfiguration;
 import org.tokenizer.executor.model.configuration.TaskConfiguration;
 import org.tokenizer.executor.model.configuration.WeblogsCrawlerTaskConfiguration;
+import org.tokenizer.executor.model.configuration.WeblogsParserTaskConfiguration;
 import org.tokenizer.executor.model.configuration.WeblogsSubscriberTaskConfiguration;
 import org.tokenizer.util.zookeeper.LeaderElectionSetupException;
 import org.tokenizer.util.zookeeper.ZooKeeperItf;
@@ -250,6 +252,10 @@ public class ExecutorWorker {
                     repository, executorModel, hostLocker);
         } else if (taskConfiguration instanceof WeblogsCrawlerTaskConfiguration) {
             task = new WeblogsCrawlerTask(taskInfo.getUuid(), taskInfo
+                    .getTaskConfiguration().getName(), zk, taskConfiguration,
+                    repository, executorModel, hostLocker);
+        } else if (taskConfiguration instanceof WeblogsParserTaskConfiguration) {
+            task = new WeblogsParserTask(taskInfo.getUuid(), taskInfo
                     .getTaskConfiguration().getName(), zk, taskConfiguration,
                     repository, executorModel, hostLocker);
         }

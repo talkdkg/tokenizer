@@ -47,9 +47,6 @@ import crawlercommons.sitemaps.SiteMapURL;
 import crawlercommons.sitemaps.UnknownFormatException;
 
 public class SitemapsFetcherTask extends AbstractTask {
-
-    private static final Logger LOG = LoggerFactory
-            .getLogger(SitemapsFetcherTask.class);
     private boolean stop;
     // Delay 4 hours between subsequent refresh of sitemaps
     private static final long DELAY = 4 * 3600 * 1000L;

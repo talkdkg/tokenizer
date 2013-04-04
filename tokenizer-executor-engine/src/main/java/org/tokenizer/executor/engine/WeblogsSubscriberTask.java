@@ -35,8 +35,6 @@ import crawlercommons.fetcher.http.UserAgent;
 
 public class WeblogsSubscriberTask extends AbstractTask {
 
-    private static final Logger LOG = LoggerFactory
-            .getLogger(WeblogsSubscriberTask.class);
     private static String url = "http://rpc.weblogs.com/shortChanges.xml";
 
     private static final int FIVE_MINUTES = 5 * 60 * 1000;

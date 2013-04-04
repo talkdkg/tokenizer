@@ -1,12 +1,12 @@
-package org.tokenizer.crawler.db;
+package org.tokenizer.crawler.db.weblog;
 
+import java.io.Serializable;
 import java.util.HashMap;
-import java.util.Map;
 
 import org.tokenizer.core.util.HttpUtils;
 
-public class HostRecord {
-
+public class HostRecord implements Serializable {
+    private static final long serialVersionUID = 1L;
     private String host;
     private String tld;
     private byte[] hostInverted;
@@ -18,13 +18,13 @@ public class HostRecord {
 
     public HostRecord(final byte[] hostInverted) {
         this.hostInverted = hostInverted;
-        this.host = HttpUtils.getHostUninverted(hostInverted);;
+        this.host = HttpUtils.getHostUninverted(hostInverted);
     }
-    
+
     public String getHost() {
         return host;
     }
-    
+
     public String getTld() {
         if (host == null)
             return null;
@@ -53,8 +53,16 @@ public class HostRecord {
         return payload;
     }
 
-    public void setPayload( HashMap<String, Object> payload) {
+    public void setPayload(HashMap<String, Object> payload) {
         this.payload = payload;
     }
+
+    @Override
+    public String toString() {
+        return "HostRecord [host=" + host + "]";
+    }
+
+    
+    
     
 }

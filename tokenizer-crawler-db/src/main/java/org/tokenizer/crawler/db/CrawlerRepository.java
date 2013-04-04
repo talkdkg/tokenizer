@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.apache.nutch.net.URLFilter;
 import org.tokenizer.crawler.db.weblog.FetchedResultRecord;
+import org.tokenizer.crawler.db.weblog.HostRecord;
 import org.tokenizer.crawler.db.weblog.WeblogRecord;
 
 import com.netflix.astyanax.connectionpool.exceptions.ConnectionException;
@@ -106,4 +107,7 @@ public interface CrawlerRepository {
     List<HostRecord> listHostRecords(String tld, final int startIndex,
             final int count);
 
+    
+    List<FetchedResultRecord> listFetchedResultRecords(String host);
+    
 }

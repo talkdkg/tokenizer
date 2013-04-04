@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -25,6 +24,7 @@ import org.tokenizer.core.solr.SolrUtils;
 import org.tokenizer.core.util.HttpUtils;
 import org.tokenizer.core.util.MD5;
 import org.tokenizer.crawler.db.weblog.FetchedResultRecord;
+import org.tokenizer.crawler.db.weblog.HostRecord;
 import org.tokenizer.crawler.db.weblog.WeblogRecord;
 import org.tokenizer.crawler.db.weblog.WeblogRecord.Weblog;
 import org.tokenizer.util.io.JavaSerializationUtils;
@@ -1542,11 +1542,13 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
             throws ConnectionException {
         MutationBatch m = keyspace.prepareMutationBatch();
         m.withRow(CF_FETCHED_RESULT_RECORDS, fetchedResultRecord.getHost())
-                .putColumn(
-                        fetchedResultRecord,
-                        JavaSerializationUtils.serialize(fetchedResultRecord
-                                .getFetchedResult()));
+                .putColumn(fetchedResultRecord,
+                        JavaSerializationUtils.serialize(fetchedResultRecord));
         m.execute();
+        
+        insertIfNotExists(new HostRecord(
+                fetchedResultRecord.getHost()));
+        
     }
 
     @Override
@@ -1554,7 +1556,7 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
         MutationBatch m = keyspace.prepareMutationBatch();
         m.withRow(CF_HOST_RECORDS, hostRecord.getTld()).putColumn(
                 hostRecord.getHostInverted(),
-                JavaSerializationUtils.serialize(hostRecord.getPayload()));
+                JavaSerializationUtils.serialize(hostRecord));
         m.execute();
     }
 
@@ -1603,7 +1605,7 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
     public List<HostRecord> listHostRecords(String tld, final int startIndex,
             final int count) {
         ColumnList<byte[]> columns;
-        int pageize = 10;
+        int pagesize = 10;
         int pointer = -1;
         int endIndex = startIndex + count;
         List<HostRecord> hostRecords = new ArrayList<HostRecord>();
@@ -1611,20 +1613,21 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
         try {
             RowQuery<String, byte[]> query = keyspace
                     .prepareQuery(CF_HOST_RECORDS)
-                    .setConsistencyLevel(ConsistencyLevel.CL_ONE).getKey(tld)
+                    .setConsistencyLevel(ConsistencyLevel.CL_ONE)
+                    .getKey(tld)
+                    .withColumnRange(
+                            new RangeBuilder().setLimit(pagesize).build())
                     .autoPaginate(true);
 
             while (!(columns = query.execute().getResult()).isEmpty()) {
-                LOG.info("Paginated Quesy: TLD: {}; Columns size: {}", tld,
+                LOG.info("paginated query: TLD: {}; columns size: {}", tld,
                         columns.size());
                 for (Column<byte[]> c : columns) {
                     // LOG.info(Long.toString(c.getName()));
                     pointer++;
                     if (pointer >= startIndex && pointer < endIndex) {
-                        HostRecord hostRecord = new HostRecord(c.getName());
-                        HashMap o = (HashMap) JavaSerializationUtils
+                        HostRecord hostRecord = (HostRecord) JavaSerializationUtils
                                 .deserialize(c.getByteArrayValue());
-                        hostRecord.setPayload(o);
                         hostRecords.add(hostRecord);
                     }
                 }
@@ -1641,4 +1644,33 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
 
     }
 
+    @Override
+    public List<FetchedResultRecord> listFetchedResultRecords(String host) {
+        ColumnList<FetchedResultRecord> columns;
+        int pagesize = 10;
+        List<FetchedResultRecord> fetchedResultRecords = new ArrayList<FetchedResultRecord>();
+        OperationResult<ColumnList<byte[]>> result;
+        try {
+            RowQuery<String, FetchedResultRecord> query = keyspace
+                    .prepareQuery(CF_FETCHED_RESULT_RECORDS)
+                    .setConsistencyLevel(ConsistencyLevel.CL_ONE)
+                    .getKey(host)
+                    .withColumnRange(
+                            new RangeBuilder().setLimit(pagesize).build())
+                    .autoPaginate(true);
+            while (!(columns = query.execute().getResult()).isEmpty()) {
+                for (Column<FetchedResultRecord> c : columns) {
+                    FetchedResultRecord fetchedResultRecord = (FetchedResultRecord) JavaSerializationUtils
+                            .deserialize(c.getByteArrayValue());
+                    fetchedResultRecords.add(fetchedResultRecord);
+                }
+            }
+            return fetchedResultRecords;
+        } catch (ConnectionException e) {
+            LOG.error("", e);
+        }
+
+        return null;
+
+    }
 }

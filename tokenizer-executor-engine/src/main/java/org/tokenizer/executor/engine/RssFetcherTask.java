@@ -48,8 +48,6 @@ import crawlercommons.fetcher.http.SimpleHttpFetcher;
 
 public class RssFetcherTask extends AbstractTask {
 
-    private static final Logger LOG = LoggerFactory
-            .getLogger(RssFetcherTask.class);
     SimpleHttpFetcher simpleHttpClient = new SimpleHttpFetcher(
             FetcherUtils.USER_AGENT);
     static FeedFetcherCache feedInfoCache = HashMapFeedInfoCache.getInstance();

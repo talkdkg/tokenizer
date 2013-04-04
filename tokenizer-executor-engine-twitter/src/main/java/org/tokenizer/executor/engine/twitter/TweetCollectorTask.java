@@ -58,8 +58,6 @@ import com.netflix.astyanax.connectionpool.exceptions.ConnectionException;
 
 public class TweetCollectorTask extends AbstractTask {
 
-    private static final Logger LOG = LoggerFactory
-            .getLogger(TweetCollectorTask.class);
     private final Twitter twitter;
     private final String consumerKey = TokenizerConfig
             .getString("twitter.consumerKey");

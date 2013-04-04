@@ -45,8 +45,6 @@ import crawlercommons.robots.SimpleRobotRulesParser;
 
 public class SimpleMultithreadedFetcher extends AbstractTask {
 
-    private static final Logger LOG = LoggerFactory
-            .getLogger(SimpleMultithreadedFetcher.class);
     /** used for generic retrieval */
     private final SimpleHttpFetcher simpleHttpClient;
     /** for robots.txt and sitemaps */

@@ -30,8 +30,6 @@ import com.netflix.astyanax.connectionpool.exceptions.ConnectionException;
 
 public class HtmlSplitterTask extends AbstractTask {
 
-    private static final Logger LOG = LoggerFactory
-            .getLogger(HtmlSplitterTask.class);
     HtmlSplitterTaskConfiguration taskConfiguration;
     // single thread only!
     private HXPathExpression splitterXPathExpression = null;

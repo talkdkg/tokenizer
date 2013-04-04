@@ -25,6 +25,7 @@ import org.tokenizer.executor.model.configuration.SimpleMultithreadedFetcherTask
 import org.tokenizer.executor.model.configuration.SitemapsFetcherTaskConfiguration;
 import org.tokenizer.executor.model.configuration.TaskConfiguration;
 import org.tokenizer.executor.model.configuration.WeblogsCrawlerTaskConfiguration;
+import org.tokenizer.executor.model.configuration.WeblogsParserTaskConfiguration;
 import org.tokenizer.executor.model.configuration.WeblogsSubscriberTaskConfiguration;
 import org.tokenizer.ui.MyVaadinUI;
 import org.tokenizer.util.zookeeper.ZkLockException;
@@ -338,18 +339,15 @@ public class TaskInfoComponent extends CustomComponent {
     private void buildFormControls() {
         formControls = new HorizontalLayout();
         edit = new Button("Edit", new Button.ClickListener() {
-
             private static final long serialVersionUID = 1L;
-
             @Override
             public void buttonClick(final ClickEvent event) {
                 setReadOnly(false);
             }
         });
+
         save = new Button("Save", new Button.ClickListener() {
-
             private static final long serialVersionUID = 1L;
-
             @Override
             public void buttonClick(final Button.ClickEvent event) {
                 try {
@@ -419,7 +417,14 @@ public class TaskInfoComponent extends CustomComponent {
                         taskConfigurationFieldGroup, newComponent);
             } else if (currentTask.getTaskConfiguration() instanceof RssFetcherTaskConfiguration) {
             } else if (currentTask.getTaskConfiguration() instanceof SimpleMultithreadedFetcherTaskConfiguration) {
+            } else if (currentTask.getTaskConfiguration() instanceof WeblogsCrawlerTaskConfiguration) {
+                buildWeblogsCrawlerTaskConfigurationForm(
+                        taskConfigurationFieldGroup, newComponent);
+            } else if (currentTask.getTaskConfiguration() instanceof WeblogsParserTaskConfiguration) {
+                buildWeblogsParserTaskConfigurationForm(
+                        taskConfigurationFieldGroup, newComponent);
             }
+            
             BeanItem<TaskConfiguration> item = new BeanItem<TaskConfiguration>(
                     currentTask.getTaskConfiguration());
             taskConfigurationFieldGroup.setItemDataSource(item);
@@ -612,6 +617,7 @@ public class TaskInfoComponent extends CustomComponent {
         type.addItem("TweetCollectorTask");
         type.addItem("WeblogsSubscriberTask");
         type.addItem("WeblogsCrawlerTask");
+        type.addItem("WeblogsParserTask");
         type.addValueChangeListener(new Property.ValueChangeListener() {
 
             private static final long serialVersionUID = 1L;
@@ -646,6 +652,10 @@ public class TaskInfoComponent extends CustomComponent {
                     newTask.setTaskConfiguration(new WeblogsCrawlerTaskConfiguration());
                     buildWeblogsCrawlerTaskConfigurationForm(
                             taskConfigurationFieldGroup, newComponent);
+                } else if ("WeblogsParserTask".equals(selected)) {
+                    newTask.setTaskConfiguration(new WeblogsParserTaskConfiguration());
+                    buildWeblogsParserTaskConfigurationForm(
+                            taskConfigurationFieldGroup, newComponent);
                 }
 
                 BeanItem<TaskConfiguration> item = new BeanItem<TaskConfiguration>(
@@ -658,4 +668,31 @@ public class TaskInfoComponent extends CustomComponent {
         componentContainer.addComponent(type);
         fieldGroup.bind(type, "type");
     }
+
+    private void buildWeblogsParserTaskConfigurationForm(
+            final FieldGroup fieldGroup,
+            final ComponentContainer componentContainer) {
+        buildBaseTaskConfigurationForm(fieldGroup, componentContainer);
+        TextField url = new TextField("URL:");
+        url.setWidth(COMMON_FIELD_WIDTH, Unit.EM);
+        TextField delay = new TextField("Delay:");
+        TextField agentName = new TextField("Robot name:");
+        agentName.setWidth(COMMON_FIELD_WIDTH, Unit.EM);
+        TextField emailAddress = new TextField("Robot Email:");
+        emailAddress.setWidth(COMMON_FIELD_WIDTH, Unit.EM);
+        TextField webAddress = new TextField("Robot description URL:");
+        webAddress.setWidth(COMMON_FIELD_WIDTH, Unit.EM);
+        componentContainer.addComponent(url);
+        componentContainer.addComponent(delay);
+        componentContainer.addComponent(agentName);
+        componentContainer.addComponent(emailAddress);
+        componentContainer.addComponent(webAddress);
+        fieldGroup.bind(url, "url");
+        fieldGroup.bind(delay, "delay");
+        fieldGroup.bind(agentName, "agentName");
+        fieldGroup.bind(emailAddress, "emailAddress");
+        fieldGroup.bind(webAddress, "webAddress");
+        componentContainer.addComponent(formControls);
+    }
+
 }

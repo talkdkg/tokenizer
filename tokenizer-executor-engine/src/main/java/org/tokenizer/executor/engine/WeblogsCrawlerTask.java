@@ -7,9 +7,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tokenizer.core.util.HttpUtils;
 import org.tokenizer.crawler.db.CrawlerRepository;
-import org.tokenizer.crawler.db.HostRecord;
 import org.tokenizer.crawler.db.UrlRecord;
 import org.tokenizer.crawler.db.weblog.FetchedResultRecord;
+import org.tokenizer.crawler.db.weblog.HostRecord;
 import org.tokenizer.crawler.db.weblog.WeblogRecord;
 import org.tokenizer.crawler.db.weblog.WeblogRecord.Weblog;
 import org.tokenizer.executor.model.api.WritableExecutorModel;
@@ -30,10 +30,7 @@ import crawlercommons.robots.RobotUtils;
 
 public class WeblogsCrawlerTask extends AbstractTask {
 
-    private static final Logger LOG = LoggerFactory
-            .getLogger(WeblogsCrawlerTask.class);
-
-    private WeblogsCrawlerTaskConfiguration taskConfiguration;
+     private WeblogsCrawlerTaskConfiguration taskConfiguration;
     private static final int DEFAULT_MAX_THREADS = 1024;
     private final SimpleHttpFetcher httpClient;
 
@@ -107,8 +104,7 @@ public class WeblogsCrawlerTask extends AbstractTask {
                 FetchedResultRecord fetchedResultRecord = new FetchedResultRecord(
                         url, new Date(), fetchedResult);
                 crawlerRepository.insert(fetchedResultRecord);
-                crawlerRepository.insertIfNotExists(new HostRecord(
-                        fetchedResultRecord.getHost()));
+               
             }
 
         }
