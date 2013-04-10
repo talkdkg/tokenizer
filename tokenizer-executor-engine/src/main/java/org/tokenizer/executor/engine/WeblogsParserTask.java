@@ -21,6 +21,7 @@ import org.tokenizer.crawler.db.CrawlerRepository;
 import org.tokenizer.crawler.db.UrlRecord;
 import org.tokenizer.crawler.db.weblog.FetchedResultRecord;
 import org.tokenizer.crawler.db.weblog.HostRecord;
+import org.tokenizer.crawler.db.weblog.UrlHeadRecord;
 import org.tokenizer.executor.model.api.WritableExecutorModel;
 import org.tokenizer.executor.model.configuration.TaskConfiguration;
 import org.tokenizer.executor.model.configuration.WeblogsCrawlerTaskConfiguration;
@@ -104,6 +105,11 @@ public class WeblogsParserTask extends AbstractTask {
                                 url, new Payload());
                         LOG.debug(i + " url: {}; content type: {}", url,
                                 fetchedResult.getContentType());
+                        
+                        UrlHeadRecord urlHeadRecord = new UrlHeadRecord(fetchedResult);
+                        
+                        
+                        
                     } catch (RedirectFetchException e) {
                         String redirectedUrl2 = e.getRedirectedUrl();
                         LOG.error("secondary redirect: {}", redirectedUrl2);

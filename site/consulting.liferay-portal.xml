@@ -5,11 +5,59 @@
 		<dd>Liferay Portal patched editions, upgrades, and fixes</dd>
 		<dd>Liferay Portal adoption and migration strategies</dd>
 		<dd>Liferay Portal customization, development, implementation, and
-			deployment</dd>
+			deployment
+		</dd>
 		<dd>Liferay Portal performance tuning</dd>
 		<dd>Liferay Portal theme customization</dd>
 		<dd>Liferay Portal rapid portlet development using Apache Wicket,
-			VAADIN, and other frameworks</dd>
+			VAADIN, and other frameworks
+		</dd>
+		<dd>
+			Liferay Administration
+		</dd>
+		<dd>
+			Liferay Plugin Management
+		</dd>
+		<dd>
+			Creating a Plugin Repository
+		</dd>
+		<dd>
+			Configuring Liferay Web Services
+		</dd>
+		<dd>
+			Liferay Clusters Design, Support, and Performance Tuning
+		</dd>
+		<dd>
+			Configuring EHCache and Hibernate
+		</dd>
+		<dd>
+			Configuring Document and Image Gallery
+		</dd>
+		<dd>
+			Configuring Solr-powered Search Index
+		</dd>
+		<dd>
+			Load Balancing with Apache HTTPD and JBoss
+		</dd>
+		<dd>
+			Deploying Plugins to a Cluster
+		</dd>
+		<dd>
+			Liferay WSRP
+		</dd>
+		<dd>
+			Liferay Monitoring
+		</dd>
+		<dd>
+			Liferay Portal automated backups
+		</dd>
+		<dd>
+			MySQL Database Performance Tuning
+		</dd>
+		<dd>
+			Custom Objects development; integration with Liferay Asset Publisher and
+			Search
+		</dd>
 
 	</dl>
 

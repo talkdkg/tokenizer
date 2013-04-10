@@ -1,160 +1,214 @@
-
 <article>
-<h1>Lucene Solr Expert Consulting Services and Tech Support</h1>
-	<div
-		class="field field-name-field-main-body-content field-type-text-long field-label-hidden">
-		<div class="field-items">
-			<div class="field-item even">
-				<p>Tokenizer Inc. provides expert consulting for Lucene, Solr, and
-					related technology frameworks such as LingPipe, GATE, WEKA, Mahout,
-					Cassandra, HBase, Hadoop, MapReduce,
+	<h1>
+		Lucene Solr Expert Consulting Services and Tech Support
+	</h1>
+	<p>
+		Tokenizer Inc. provides expert consulting for Lucene, Solr, and
+		related technology frameworks such as LingPipe, GATE, WEKA, Mahout,
+		Cassandra, HBase, Hadoop, MapReduce, focused on architecture and
+		design reviews, performance optimization and best practices. The
+		Tokenizer Inc. consulting team consists of senior technologists
+		intimately familiar with Lucene/Solr and many other technologies,
+		with
+		extensive experience in field-tested search solutions in
+		diverse
+		deployment scenarios.
+	</p>
+	<p>
+		By leveraging Tokenizer's deep domain expertise, you can achieve
+		rapid transfer of knowledge on Lucene and Solr technologies, faster
+		application development cycles, and assurance of utilizing well
+		tested
+		architectural design principles. Our customers also gain
+		economic
+		efficiencies by avoiding lengthy ramp-up times and costly
+		design errors
+		due to inexperience.
+	</p>
+	<p>
+		The majority of consulting activities are conducted remotely to
+		maintain cost-effectiveness.
+	</p>
+	<h2>
+		Early Stage Evaluation
+	</h2>
+	<p>
+		Key to the success of any search application is ensuring that the
+		architectural design and configuration are grounded in best
+		practices
+		and align with the business and functional requirements.
+		Tokenizer Inc.
+		Enterprise Solution Architects can provide advice
+		and recommendations
+		for rapid and optimal development as well as
+		deployment that ensure
+		that:
+	</p>
+	<ul>
+		<li>
+			Your search application design meets business objectives
+		</li>
+		<li>
+			Your search application effectively meets functional/technical
+			requirements
+		</li>
+		<li>
+			Best practices for indexing, searching and performance are
+			utilized
+		</li>
+	</ul>
+	<h2>
+		Diagnostic Services
+	</h2>
+	<p>
+		Tokenizer Inc. consulting services can cost effectively and
+		rapidly
+		analyze, troubleshoot and recommend fixes for complex
+		search issues
+		that arise from changes to your application or the
+		content you are
+		searching. Specific areas that benefit from such
+		diagnostic assessment
+		can include:
+	</p>
+	<ul>
+		<li>
+			Indexing
+		</li>
+		<li>
+			Query
+		</li>
+		<li>
+			Advanced search functions such as spellchecking, faceting,
+			"more-like-this", autosuggest/as-you-type
+		</li>
+		<li>
+			Configuration
+		</li>
+		<li>
+			Performance analysis
+		</li>
+		<li>
+			Scalability and capacity planning
+		</li>
+	</ul>
+	<h2>
+		Periodic Assessment
+	</h2>
+	<p>
+		Tokenizer search experts can perform a periodic assessment of
+		your
+		Lucene/Solr based application, to help you ensure know that
+		your
+		application is performing optimally to meet your business
+		objectives.
+		To deliver optimum performance for search
+		effectiveness, your dedicated
+		Lucene/Solr Expert Consultant will:
+	</p>
+	<ul>
+		<li>
+			Analyze and optimize Query response times
+		</li>
+		<li>
+			Verify accuracy and performance of data analysis and
+			transformation
+		</li>
+		<li>
+			Validate the search index integrity
+		</li>
+	</ul>
+	<h2>
+		Typical Tokenizer Inc. Consulting Engagement
+	</h2>
+	<p>
+		Once you have completed a technical briefing with our engagement
+		team, we will work with you to formulate a recommended approach to
+		identifying your needs and requirements, and translating them into
+		key
+		focus areas. A typical engagement runs 5-7 days, not all
+		consecutive,
+		performed remotely to reduce your costs and accelerate
+		the time you
+		need to implement recommended improvements. Within
+		these engagements,
+		you can expect our experts to cover one or more
+		of the following:
+	</p>
+	<ul>
+		<li>
+			Diagnostic/Assessment session
+		</li>
+		<li>
+			Requirements analysis
+		</li>
+		<li>
+			Architecture/Design review
+		</li>
+		<li>
+			Benchmarking and baselining system attributes
+		</li>
+		<li>
+			Best practices recommendations
+		</li>
+		<li>
+			Tuning and performance optimizations
+		</li>
+	</ul>
+	<p>
+		At the conclusion of the engagement, Tokenizer Inc. delivers a
+		thorough architectural design report with recommendations tailored
+		to
+		your specific needs and environment. Implementation of the
+		recommendations and optimizations is performed by your software
+		development staff; if need be, we can recommend a certified
+		Tokenizer
+		Inc. development partner to assist with implementation
+		work as your
+		require. Note that Tokenizer Inc. does not offer
+		consulting on an
+		ad-hoc hourly basis.
+	</p>
+	<p>
+		Many customers discover that the set of recommendations and
+		assessments produced for their initial consulting agreement are
+		only
+		the first step in an ongoing effort to keep their search
+		environment
+		current with their marketplace and technology needs.
+		For those who
+		understand that effective search requires continuous
+		tuning and
+		evaluation, Tokenizer Inc. offers ExpertLink, an annual
+		subscription
+		which includes a package of consulting hours that
+		serves as a
+		continuation of your initial project engagement.
+		ExpertLink also
+		includes a support packages, available at various
+		service levels, to
+		assist you with responding to specific issues
+		that emerge during
+		development, deployment and in production.
+	</p>
 
-					focused on architecture and
-					design reviews, performance optimization and
-					best practices. The
-					Tokenizer Inc. consulting team consists of
-					senior technologists
-					intimately familiar with Lucene/Solr and many
-					other technologies,
-					with extensive
-					experience in field-tested search
-					solutions in diverse
-					deployment
-					scenarios.
-				</p>
-				<p>By leveraging Tokenizer's deep domain expertise, you can achieve
-					rapid transfer of knowledge on Lucene and Solr technologies, faster
-					application development cycles, and assurance of utilizing well
-					tested architectural design principles. Our customers also
-					gain
-					economic efficiencies by avoiding lengthy ramp-up times and
-					costly
-					design errors due to inexperience.
-				</p>
-				<p>The majority of consulting activities are conducted remotely to
-					maintain cost-effectiveness.
-				</p>
-				<h2>
-					Early Stage Evaluation
-				</h2>
-				<p>Key to the success of any search
-					application is ensuring that the
-					architectural design and
-					configuration are grounded in best
-					practices and align with the
-					business and functional requirements.
-					Tokenizer Inc. Enterprise Solution
-					Architects
-					can provide advice and
-					recommendations for
-					rapid and
-					optimal development
-					as well as
-					deployment that ensure
-					that:
-				</p>
-				<ul>
-					<li>Your search application design meets business objectives</li>
-					<li>Your search application effectively meets functional/technical
-						requirements
-					</li>
-					<li>Best practices for indexing, searching and performance are
-						utilized
-					</li>
-				</ul>
-				<h2>Diagnostic Services</h2>
-				<p> Tokenizer Inc. consulting services can cost
-					effectively and
-					rapidly analyze, troubleshoot and recommend fixes
-					for complex search
-					issues that arise from changes to your
-					application or the content
-					you are searching. Specific areas that
-					benefit from such diagnostic
-					assessment can include:
-				</p>
-				<ul>
-					<li>Indexing</li>
-					<li>Query</li>
-					<li>Advanced search functions such as spellchecking, faceting,
-						"more-like-this", autosuggest/as-you-type
-					</li>
-					<li>Configuration</li>
-					<li>Performance analysis</li>
-					<li>Scalability and capacity planning</li>
-				</ul>
-				<h2>Periodic Assessment</h2>
-				<p>Tokenizer search experts can perform a
-					periodic assessment of your
-					Lucene/Solr based application, to help
-					you ensure know that your
-					application is performing optimally to
-					meet your business
-					objectives. To deliver
-					optimum performance for search effectiveness,
-					your dedicated Lucene/Solr Expert Consultant will:
-				</p>
-				<ul>
-					<li>Analyze and optimize Query response times</li>
-					<li>Verify accuracy and performance of data analysis and
-						transformation
-					</li>
-					<li>Validate the search index integrity</li>
-				</ul>
-				<h2>Typical Tokenizer Inc. Consulting Engagement</h2>
+	<h2>
+		Get Started
+	</h2>
+	<p>
+		To determine which consulting package is best suited for your
+		situation, please
+		<a href="http://www.tokenizer.ca/about-us/contact-us">contact Tokenizer Inc.</a>
+		to arrange an initial requirements assessment. Once the discovery
+		session is completed, Tokenizer Inc. will propose the consulting
+		package for services and on-going support that best meet your needs
+		and requirements.
+	</p>
+	<em>
+		<a href="http://lucene.apache.org/">Apache Lucene</a>
+		and
+		<a href=http://lucene.apache.org/solr ">Apache Solr</a>
+		are trademarks of Apache Software Foundation.
+	</em>
 
-				<p>Once you have completed a technical briefing with our engagement
-					team, we will work with you to formulate a recommended approach to
-					identifying your needs and requirements, and translating them into
-					key focus areas. A typical engagement runs 5-7 days, not all
-					consecutive, performed remotely to reduce your costs and accelerate
-					the time you need to implement recommended improvements. Within
-					these engagements, you can expect our experts to cover one or more
-					of the following:
-				</p>
-				<ul>
-					<li>Diagnostic/Assessment session</li>
-					<li>Requirements analysis</li>
-					<li>Architecture/Design review</li>
-					<li>Benchmarking and baselining system attributes</li>
-					<li>Best practices recommendations</li>
-					<li>Tuning and performance optimizations</li>
-				</ul>
-				<p>At the conclusion of the engagement, Tokenizer Inc. delivers a
-					thorough architectural design report with recommendations tailored
-					to your specific needs and environment. Implementation of the
-					recommendations and optimizations is performed by your software
-					development staff; if need be, we can recommend a certified
-					Tokenizer Inc. development partner to assist with implementation
-					work
-					as your require. Note that Tokenizer Inc. does not offer
-					consulting on
-					an ad-hoc hourly basis.
-				</p>
-				<p>Many customers discover that the set of recommendations and
-					assessments produced for their initial consulting agreement are
-					only the first step in an ongoing effort to keep their search
-					environment current with their marketplace and technology needs.
-					For those who understand that effective search requires continuous
-					tuning and evaluation, Tokenizer Inc. offers ExpertLink, an annual
-					subscription which includes a package of consulting hours that
-					serves as a continuation of your initial project engagement.
-					ExpertLink also includes a support packages, available at various
-					service levels, to assist you with responding to specific issues
-					that emerge during development, deployment and in production.
-				</p>
-				<h2>Get Started</h2>
-				<p>
-					To determine which consulting package is best suited for your
-					situation, please
-					<a href="http://www.tokenizer.ca/about-us/contact-us">contact Tokenizer Inc.</a>
-					to arrange an initial requirements assessment. Once the discovery
-					session is completed, Tokenizer Inc. will propose the consulting
-					package for services and on-going support that best meet your needs
-					and requirements.
-				</p>
-			</div>
-		</div>
-	</div>
 </article>
-

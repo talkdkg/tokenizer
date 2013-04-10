@@ -18,6 +18,7 @@ import org.apache.nutch.net.URLFilter;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.common.SolrInputDocument;
+import org.apache.tika.metadata.Metadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tokenizer.core.solr.SolrUtils;
@@ -25,6 +26,7 @@ import org.tokenizer.core.util.HttpUtils;
 import org.tokenizer.core.util.MD5;
 import org.tokenizer.crawler.db.weblog.FetchedResultRecord;
 import org.tokenizer.crawler.db.weblog.HostRecord;
+import org.tokenizer.crawler.db.weblog.UrlHeadRecord;
 import org.tokenizer.crawler.db.weblog.WeblogRecord;
 import org.tokenizer.crawler.db.weblog.WeblogRecord.Weblog;
 import org.tokenizer.util.io.JavaSerializationUtils;
@@ -70,6 +72,12 @@ import com.netflix.astyanax.serializers.StringSerializer;
 import com.netflix.astyanax.thrift.ThriftFamilyFactory;
 import com.netflix.astyanax.util.RangeBuilder;
 
+/**
+ * http://anuff.com/2011/02/indexing-in-cassandra/
+ * 
+ * @author Fuad
+ * 
+ */
 public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
 
     protected static Logger LOG = LoggerFactory
@@ -115,6 +123,14 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
     protected static final ColumnFamily<String, FetchedResultRecord> CF_FETCHED_RESULT_RECORDS = ColumnFamily
             .newColumnFamily("FETCHED_RESULT_RECORDS", StringSerializer.get(),
                     FETCHED_RESULT_SERIALIZER);
+
+    /**
+     * This CF is "vertical" classic table to store HTTP HEAD response
+     */
+    protected final static String URL_HEAD_RECORDS = "URL_HEAD_RECORDS";
+    protected final ColumnFamily<String, String> CF_URL_HEAD_RECORDS = ColumnFamily
+            .newColumnFamily(URL_HEAD_RECORDS, StringSerializer.get(),
+                    StringSerializer.get());
 
     // TDE-13: Index for Inverted Hosts
     private static final String HOST_RECORDS = "HOST_RECORDS";
@@ -228,6 +244,79 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
                                                             .put("validation_class",
                                                                     "BytesType")
                                                             .build()).build())
+                            .build());
+        }
+        if (def.getColumnFamily(URL_HEAD_RECORDS) == null) {
+            keyspace.createColumnFamily(
+                    CF_URL_HEAD_RECORDS,
+                    ImmutableMap
+                            .<String, Object> builder()
+                            // .put("default_validation_class", "AsciiType")
+                            .put("key_validation_class", "AsciiType")
+                            // .put("Caching", "ALL")
+                            .put("column_metadata",
+                                    ImmutableMap
+                                            .<String, Object> builder()
+                                            .put("fetchedUrl",
+                                                    ImmutableMap
+                                                            .<String, Object> builder()
+                                                            .put("validation_class",
+                                                                    "AsciiType")
+                                                            .build())
+                                            .put("fetchTime",
+                                                    ImmutableMap
+                                                            .<String, Object> builder()
+                                                            .put("validation_class",
+                                                                    "LongType")
+                                                            .build())
+                                            .put("contentType",
+                                                    ImmutableMap
+                                                            .<String, Object> builder()
+                                                            .put("validation_class",
+                                                                    "AsciiType")
+                                                            .put("index_type",
+                                                                    "KEYS")
+                                                            .build())
+                                            .put("headers",
+                                                    ImmutableMap
+                                                            .<String, Object> builder()
+                                                            .put("validation_class",
+                                                                    "BytesType")
+                                                            .build())
+                                            .put("newBaseUrl",
+                                                    ImmutableMap
+                                                            .<String, Object> builder()
+                                                            .put("validation_class",
+                                                                    "AsciiType")
+                                                            .build())
+                                            .put("numRedirects",
+                                                    ImmutableMap
+                                                            .<String, Object> builder()
+                                                            .put("validation_class",
+                                                                    "IntegerType")
+                                                            .build())
+
+                                            .put("hostAddress",
+                                                    ImmutableMap
+                                                            .<String, Object> builder()
+                                                            .put("validation_class",
+                                                                    "AsciiType")
+                                                            .build())
+                                            .put("httpStatus",
+                                                    ImmutableMap
+                                                            .<String, Object> builder()
+                                                            .put("validation_class",
+                                                                    "IntegerType")
+                                                            .build())
+                                            .put("reasonPhrase",
+                                                    ImmutableMap
+                                                            .<String, Object> builder()
+                                                            .put("validation_class",
+                                                                    "AsciiType")
+                                                            .build())
+
+                                            .build())
+
                             .build());
         }
         if (def.getColumnFamily("WEBPAGE_RECORDS") == null) {
@@ -590,7 +679,7 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
                 .prepareQuery(CF_URL_RECORDS).getKey(urlRecord.getDigest())
                 .execute();
         if (result.getResult().isEmpty()) {
-            update(urlRecord);
+            insert(urlRecord);
             submitToSolr(urlRecord);
         }
     }
@@ -620,6 +709,10 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
 
     @Override
     public void update(final UrlRecord urlRecord) throws ConnectionException {
+        insert(urlRecord);
+    }
+
+    protected void insert(final UrlRecord urlRecord) throws ConnectionException {
         MutationBatch m = keyspace.prepareMutationBatch();
         m.withRow(CF_URL_RECORDS, urlRecord.getDigest())
                 .putColumn("url", urlRecord.getUrl(), null)
@@ -1545,10 +1638,9 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
                 .putColumn(fetchedResultRecord,
                         JavaSerializationUtils.serialize(fetchedResultRecord));
         m.execute();
-        
-        insertIfNotExists(new HostRecord(
-                fetchedResultRecord.getHost()));
-        
+
+        insertIfNotExists(new HostRecord(fetchedResultRecord.getHost()));
+
     }
 
     @Override
@@ -1673,4 +1765,42 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
         return null;
 
     }
+
+    protected void insert(final UrlHeadRecord urlHeadRecord)
+            throws ConnectionException {
+        MutationBatch m = keyspace.prepareMutationBatch();
+        m.withRow(CF_URL_HEAD_RECORDS, urlHeadRecord.getBaseUrl())
+
+                .putColumn("fetchedUrl", urlHeadRecord.getFetchedUrl(), null)
+                .putColumn("fetchTime", urlHeadRecord.getFetchTime(), null)
+                .putColumn("contentType", urlHeadRecord.getContentType(), null)
+                .putColumn(
+                        "headers",
+                        JavaSerializationUtils.serialize(urlHeadRecord
+                                .getHeaders()), null)
+                .putColumn("newBaseUrl", urlHeadRecord.getNewBaseUrl(), null)
+                .putColumn("numRedirects", urlHeadRecord.getNumRedirects(),
+                        null)
+                .putColumn("hostAddress", urlHeadRecord.getHostAddress(), null)
+                .putColumn("httpStatus", urlHeadRecord.getHttpStatus(), null)
+                .putColumn("reasonPhrase", urlHeadRecord.getReasonPhrase(),
+                        null);
+
+        m.execute();
+        LOG.debug("urlHeadRecord inserted: {}", urlHeadRecord);
+    }
+
+    @Override
+    public void insertIfNotExists(final UrlHeadRecord urlHeadRecord)
+            throws ConnectionException {
+        OperationResult<ColumnList<String>> result = keyspace
+                .prepareQuery(CF_URL_HEAD_RECORDS)
+                .getKey(urlHeadRecord.getBaseUrl()).execute();
+        if (result.getResult().isEmpty()) {
+            insert(urlHeadRecord);
+        }
+    }
+    
+
+    
 }
