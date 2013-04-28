@@ -107,7 +107,7 @@ public class WeblogsParserTask extends AbstractTask {
                                 fetchedResult.getContentType());
                         
                         UrlHeadRecord urlHeadRecord = new UrlHeadRecord(fetchedResult);
-                        
+                        crawlerRepository.insertIfNotExists(urlHeadRecord);
                         
                         
                     } catch (RedirectFetchException e) {
