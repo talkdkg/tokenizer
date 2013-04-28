@@ -20,7 +20,9 @@ import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.Date;
 
+import org.apache.tika.metadata.Metadata;
 import org.tokenizer.core.util.HttpUtils;
+import org.tokenizer.core.util.JavaSerializationUtils;
 import org.tokenizer.core.util.MD5;
 
 public class UrlRecord implements Serializable {
@@ -28,82 +30,165 @@ public class UrlRecord implements Serializable {
     private static final long serialVersionUID = 1L;
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory
             .getLogger(UrlRecord.class);
-    private byte[] digest = DefaultValues.EMPTY_ARRAY;
-    private String url = DefaultValues.EMPTY_STRING;
-    private String host = DefaultValues.EMPTY_STRING;
-    private byte[] hostInverted = DefaultValues.EMPTY_ARRAY;
-    private Date timestamp = DefaultValues.EMPTY_DATE;
+
+    // standard
+    private String baseUrl = DefaultValues.EMPTY_STRING;
+    private String fetchedUrl = DefaultValues.EMPTY_STRING;
+    private long fetchTime = 0L;
+    private String contentType = DefaultValues.EMPTY_STRING;
+    private Metadata headers = DefaultValues.EMPTY_METADATA;
+    private String newBaseUrl = DefaultValues.EMPTY_STRING;
+    private int numRedirects = 0;
+    private String hostAddress = DefaultValues.EMPTY_STRING;
+    private int httpStatus = 0;
+    private String reasonPhrase = DefaultValues.EMPTY_STRING;
+
+    // calculated
     private int fetchAttemptCounter = 0;
     private int httpResponseCode = 0;
     private byte[] webpageDigest = DefaultValues.EMPTY_ARRAY;
 
     public UrlRecord(final String url) {
-        this.url = url;
-        this.host = HttpUtils.getHost(url);
-        this.hostInverted = HttpUtils.getHostInverted(host);
-        try {
-            this.digest = MD5.digest(url.getBytes(HttpUtils.ASCII_CHARSET));
-        } catch (UnsupportedEncodingException e) {
-            LOG.error("", e);
-        }
+        this.baseUrl = url;
     }
 
-    public UrlRecord(final byte[] digest, final String url,
-            final byte[] hostInverted_fetchAttemptCounter,
-            final byte[] hostInverted_httpResponseCode, final Date timestamp,
+    public UrlRecord(final String url, final long fetchTime,
             final byte[] webpageDigest) {
-        this.digest = digest;
-        this.url = url;
-        this.host = HttpUtils.getHost(url);
-        this.hostInverted = HttpUtils.getHostInverted(host);
-        byte[] fetchAttemptCounterBytes = Arrays.copyOfRange(
-                hostInverted_fetchAttemptCounter,
-                hostInverted_fetchAttemptCounter.length - 4,
-                hostInverted_fetchAttemptCounter.length);
-        byte[] httpResponseCodeBytes = Arrays.copyOfRange(
-                hostInverted_httpResponseCode,
-                hostInverted_httpResponseCode.length - 4,
-                hostInverted_httpResponseCode.length);
-        this.fetchAttemptCounter = HttpUtils
-                .bytesToInt(fetchAttemptCounterBytes);
-        this.httpResponseCode = HttpUtils.bytesToInt(httpResponseCodeBytes);
-        this.timestamp = timestamp;
+        this.baseUrl = url;
+        this.fetchTime = fetchTime;
         this.webpageDigest = webpageDigest;
     }
 
-    public Date getTimestamp() {
-        return timestamp;
+    
+    
+    public UrlRecord(String baseUrl, String fetchedUrl, long fetchTime,
+            String contentType, Metadata headers, String newBaseUrl,
+            int numRedirects, String hostAddress, int httpStatus,
+            String reasonPhrase, int fetchAttemptCounter, int httpResponseCode,
+            byte[] webpageDigest) {
+        super();
+        this.baseUrl = baseUrl;
+        this.fetchedUrl = fetchedUrl;
+        this.fetchTime = fetchTime;
+        this.contentType = contentType;
+        this.headers = headers;
+        this.newBaseUrl = newBaseUrl;
+        this.numRedirects = numRedirects;
+        this.hostAddress = hostAddress;
+        this.httpStatus = httpStatus;
+        this.reasonPhrase = reasonPhrase;
+        this.fetchAttemptCounter = fetchAttemptCounter;
+        this.httpResponseCode = httpResponseCode;
+        this.webpageDigest = webpageDigest;
     }
 
-    public void setTimestamp(final Date timestamp) {
-        this.timestamp = timestamp;
+    public String getBaseUrl() {
+        return baseUrl;
+    }
+
+    public void setBaseUrl(String baseUrl) {
+        this.baseUrl = baseUrl;
+    }
+
+    public String getBaseHost() {
+        return HttpUtils.getHost(baseUrl);
+    }
+    
+    public String getFetchedUrl() {
+        return fetchedUrl;
+    }
+
+    public void setFetchedUrl(String fetchedUrl) {
+        this.fetchedUrl = fetchedUrl;
+    }
+
+    public long getFetchTime() {
+        return fetchTime;
+    }
+
+    public void setFetchTime(long fetchTime) {
+        this.fetchTime = fetchTime;
+    }
+
+    public String getContentType() {
+        return contentType;
+    }
+
+    public void setContentType(String contentType) {
+        this.contentType = contentType;
+    }
+
+    public Metadata getHeaders() {
+        return headers;
+    }
+
+    public byte[] getHeadersSerialized() {
+        return JavaSerializationUtils.serialize(headers);
+    }
+
+    public void setHeaders(Metadata headers) {
+        this.headers = headers;
+    }
+
+    public void setHeaders(byte[] headersSerialized) {
+      if (headersSerialized!=null) this.headers = (Metadata) JavaSerializationUtils
+                        .deserialize(headersSerialized);
+    }
+    
+    
+    public String getNewBaseUrl() {
+        return newBaseUrl;
+    }
+
+    public void setNewBaseUrl(String newBaseUrl) {
+        this.newBaseUrl = newBaseUrl;
+    }
+
+    public int getNumRedirects() {
+        return numRedirects;
+    }
+
+    public void setNumRedirects(int numRedirects) {
+        this.numRedirects = numRedirects;
+    }
+
+    public String getHostAddress() {
+        return hostAddress;
+    }
+
+    public void setHostAddress(String hostAddress) {
+        this.hostAddress = hostAddress;
+    }
+
+    public int getHttpStatus() {
+        return httpStatus;
+    }
+
+    public void setHttpStatus(int httpStatus) {
+        this.httpStatus = httpStatus;
+    }
+
+    public String getReasonPhrase() {
+        return reasonPhrase;
+    }
+
+    public void setReasonPhrase(String reasonPhrase) {
+        this.reasonPhrase = reasonPhrase;
     }
 
     public int getFetchAttemptCounter() {
         return fetchAttemptCounter;
     }
 
-    public byte[] getFetchAttemptCounterBytes() {
-        return HttpUtils.intToBytes(fetchAttemptCounter);
-    }
-
-    public void setFetchAttemptCounter(final int fetchAttemptCounter) {
+    public void setFetchAttemptCounter(int fetchAttemptCounter) {
         this.fetchAttemptCounter = fetchAttemptCounter;
-    }
-
-    public void incrementFetchAttemptCounter() {
-        this.fetchAttemptCounter++;
     }
 
     public int getHttpResponseCode() {
         return httpResponseCode;
     }
 
-    public byte[] getHttpResponseCodeBytes() {
-        return HttpUtils.intToBytes(httpResponseCode);
-    }
-
-    public void setHttpResponseCode(final int httpResponseCode) {
+    public void setHttpResponseCode(int httpResponseCode) {
         this.httpResponseCode = httpResponseCode;
     }
 
@@ -111,33 +196,22 @@ public class UrlRecord implements Serializable {
         return webpageDigest;
     }
 
-    public void setWebpageDigest(final byte[] webpageDigest) {
+    public void setWebpageDigest(byte[] webpageDigest) {
         this.webpageDigest = webpageDigest;
-    }
-
-    public byte[] getDigest() {
-        return digest;
-    }
-
-    public String getUrl() {
-        return url;
-    }
-
-    public String getHost() {
-        return host;
-    }
-
-    public byte[] getHostInverted() {
-        return hostInverted;
     }
 
     @Override
     public String toString() {
-        return "UrlRecord [digest=" + Arrays.toString(digest) + ", url=" + url
-                + ", host=" + host + ", hostInverted="
-                + Arrays.toString(hostInverted) + ", timestamp=" + timestamp
-                + ", fetchAttemptCounter=" + fetchAttemptCounter
-                + ", httpResponseCode=" + httpResponseCode + ", webpageDigest="
+        return "UrlRecord [baseUrl=" + baseUrl + ", fetchedUrl=" + fetchedUrl
+                + ", fetchTime=" + fetchTime + ", contentType=" + contentType
+                + ", headers=" + headers + ", newBaseUrl=" + newBaseUrl
+                + ", numRedirects=" + numRedirects + ", hostAddress="
+                + hostAddress + ", httpStatus=" + httpStatus
+                + ", reasonPhrase=" + reasonPhrase + ", fetchAttemptCounter="
+                + fetchAttemptCounter + ", httpResponseCode="
+                + httpResponseCode + ", webpageDigest="
                 + Arrays.toString(webpageDigest) + "]";
     }
+
+
 }

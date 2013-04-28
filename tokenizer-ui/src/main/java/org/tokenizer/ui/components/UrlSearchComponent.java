@@ -240,12 +240,12 @@ public class UrlSearchComponent extends CustomComponent {
         Panel messages = new Panel("Parsed Messages", messageLayout);
         component.addTab(messages);
         setHeight(100, Unit.PERCENTAGE);
-        byte[] urlRecordDigest = MD5.hex2Byte(currentBean.id);
+        //byte[] urlRecordDigest = MD5.hex2Byte(currentBean.id);
         WebpageRecord webpage = null;
         String html = null;
         try {
             UrlRecord urlRecord = MyVaadinUI.getRepository().getUrlRecord(
-                    urlRecordDigest);
+                    currentBean.id);
             if (urlRecord.getWebpageDigest() == null
                     || urlRecord.getWebpageDigest() == DefaultValues.EMPTY_ARRAY)
                 return component;

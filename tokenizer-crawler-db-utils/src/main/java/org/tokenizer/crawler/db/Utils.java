@@ -62,10 +62,10 @@ public class Utils {
                             .getAllRows()
                             .setRowLimit(100)                           
                             .setRepeatLastToken(true)
-                             .executeWithCallback(new RowCallback<byte[], String>() {
+                             .executeWithCallback(new RowCallback<String, String>() {
                                 @Override
-                                public void success(final Rows<byte[], String> rows) {
-                                    for (Row<byte[], String> row : rows) {
+                                public void success(final Rows<String, String> rows) {
+                                    for (Row<String, String> row : rows) {
                                         ColumnList<String> columns = row.getColumns();
                                         UrlRecord urlRecord = toUrlRecord(row.getKey(), columns);         
                                         try {

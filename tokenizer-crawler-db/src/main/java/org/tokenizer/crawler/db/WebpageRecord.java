@@ -66,6 +66,12 @@ public class WebpageRecord implements Serializable {
         }
     }
 
+    public WebpageRecord(final String url, final long timestamp,
+            final String charset, final byte[] content,
+            final ArrayList<byte[]> xmlLinks) {
+        this(url, new Date(timestamp), charset, content, xmlLinks);
+    }
+
     public WebpageRecord(final byte[] digest, final String url,
             final byte[] hostInverted_splitAttemptCounter,
             final Date timestamp, final String charset, final byte[] content,

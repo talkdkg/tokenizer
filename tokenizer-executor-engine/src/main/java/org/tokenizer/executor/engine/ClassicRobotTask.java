@@ -127,7 +127,7 @@ public class ClassicRobotTask extends AbstractTask {
 				taskConfiguration.getHost(), urlFilter);
 		LOG.trace("Fetching Home: {} {}", home, fetchedResult);
 		if (fetchedResult == null) {
-			LOG.error("Can't retrieve homepage! {}", home.getUrl());
+			LOG.error("Can't retrieve homepage! {}", home.getBaseUrl());
 		}
 
 		int fetchAttemptCounter = 0;

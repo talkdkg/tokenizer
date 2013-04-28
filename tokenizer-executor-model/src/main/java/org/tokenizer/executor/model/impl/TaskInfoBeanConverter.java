@@ -25,9 +25,9 @@ import net.iharder.Base64;
 
 import org.codehaus.jackson.node.JsonNodeFactory;
 import org.codehaus.jackson.node.ObjectNode;
+import org.tokenizer.core.util.JavaSerializationUtils;
 import org.tokenizer.executor.model.api.TaskInfoBean;
 import org.tokenizer.executor.model.configuration.TaskConfiguration;
-import org.tokenizer.util.io.JavaSerializationUtils;
 import org.tokenizer.util.json.JsonFormat;
 import org.tokenizer.util.json.JsonUtil;
 

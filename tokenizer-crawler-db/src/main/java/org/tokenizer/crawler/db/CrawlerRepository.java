@@ -21,14 +21,14 @@ public interface CrawlerRepository {
 
     void delete(final UrlRecord urlRecord) throws ConnectionException;
 
-    UrlRecord getUrlRecord(final byte[] digest) throws ConnectionException;
+    UrlRecord getUrlRecord(final String key) throws ConnectionException;
 
     void filter(final String host, final URLFilter urlFilter);
 
     List<UrlRecord> listUrlRecords(String host, int httpResponseCode,
             int maxResults) throws ConnectionException;
 
-    List<UrlRecord> listUrlRecords(final byte[][] keys)
+    List<UrlRecord> listUrlRecords(final String[] keys)
             throws ConnectionException;
 
     List<UrlRecord> listUrlRecordsByFetchAttemptCounter(final String host,

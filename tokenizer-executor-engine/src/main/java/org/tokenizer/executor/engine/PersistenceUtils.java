@@ -61,11 +61,12 @@ public class PersistenceUtils {
             final SimpleHttpFetcher simpleHttpClient,
             final String hostConstraint, final URLFilter urlFilter)
             throws ConnectionException, InterruptedException {
-        if (urlFilter.filter(urlRecord.getUrl()) == null) {
+        if (urlFilter.filter(urlRecord.getBaseUrl()) == null) {
             repository.delete(urlRecord);
             return null;
         }
-        urlRecord.incrementFetchAttemptCounter();
+        urlRecord
+                .setFetchAttemptCounter(urlRecord.getFetchAttemptCounter() + 1);
         metricsCache.increment(MetricsCache.URL_TOTAL_KEY);
         if (!checkRobotRules(urlRecord, repository, baseRobotRules,
                 metricsCache))
@@ -79,8 +80,8 @@ public class PersistenceUtils {
         parse(fetchedResult, repository, hostConstraint, urlFilter);
         String charset = CharsetUtils.clean(HttpUtils
                 .getCharsetFromContentType(fetchedResult.getContentType()));
-        WebpageRecord webpageRecord = new WebpageRecord(urlRecord.getUrl(),
-                urlRecord.getTimestamp(), charset, fetchedResult.getContent(),
+        WebpageRecord webpageRecord = new WebpageRecord(urlRecord.getBaseUrl(),
+                urlRecord.getFetchTime(), charset, fetchedResult.getContent(),
                 null);
         repository.insertIfNotExists(webpageRecord);
         urlRecord.setWebpageDigest(webpageRecord.getDigest());
@@ -92,10 +93,10 @@ public class PersistenceUtils {
             final CrawlerRepository repository,
             final BaseRobotRules baseRobotRules, final MetricsCache metricsCache)
             throws InterruptedException, ConnectionException {
-        String url = urlRecord.getUrl();
+        String url = urlRecord.getBaseUrl();
         if (!baseRobotRules.isAllowed(url)) {
             urlRecord.setHttpResponseCode(-1);
-            urlRecord.setTimestamp(new Date());
+            urlRecord.setFetchTime(System.currentTimeMillis());
             repository.update(urlRecord);
             metricsCache.increment(MetricsCache.URL_ROBOTS_KEY);
             return false;
@@ -108,7 +109,7 @@ public class PersistenceUtils {
             final MetricsCache metricsCache,
             final SimpleHttpFetcher simpleHttpClient)
             throws InterruptedException {
-        String url = record.getUrl();
+        String url = record.getBaseUrl();
         FetchedResult fetchedResult = null;
         long start = System.currentTimeMillis();
         try {
@@ -117,12 +118,12 @@ public class PersistenceUtils {
             String redirectedUrl = e.getRedirectedUrl();
             LOG.debug("Redirected to {}", redirectedUrl);
             record.setHttpResponseCode(e.getHttpStatusCode());
-            record.setTimestamp(new Date());
+            record.setFetchTime(System.currentTimeMillis());
             metricsCache.increment(MetricsCache.REDIRECT_COUNT);
             String normalizedRedirectedUrl = urlNormalizer
                     .normalize(redirectedUrl);
             String redirectedHost = HttpUtils.getHost(normalizedRedirectedUrl);
-            if (record.getHost().equals(redirectedHost)) {
+            if (record.getBaseHost().equals(redirectedHost)) {
                 UrlRecord urlRecord = new UrlRecord(normalizedRedirectedUrl);
                 try {
                     repository.insertIfNotExists(urlRecord);
@@ -139,18 +140,18 @@ public class PersistenceUtils {
             return null;
         } catch (HttpFetchException e) {
             record.setHttpResponseCode(e.getHttpStatus());
-            record.setTimestamp(new Date());
+            record.setFetchTime(System.currentTimeMillis());
             return null;
         } catch (BaseFetchException e) {
             if (e.getMessage().contains("Aborted due to INTERRUPTED"))
                 throw new InterruptedException("Aborted...");
             // e.printStackTrace();
             // record.setHttpResponseCode(-2);
-            record.setTimestamp(new Date());
+            record.setFetchTime(System.currentTimeMillis());
             metricsCache.increment(MetricsCache.OTHER_ERRORS);
             return null;
         }
-        record.setTimestamp(new Date());
+        record.setFetchTime(System.currentTimeMillis());
         if (fetchedResult.getHttpStatus() >= 200
                 && fetchedResult.getHttpStatus() < 300) {
             metricsCache.increment(MetricsCache.TOTAL_HTTP_RESPONSE_TIME_MS,
@@ -207,13 +208,13 @@ public class PersistenceUtils {
             ConnectionException {
         ParserPolicy parserPolicy = new ParserPolicy(MAX_PARSE_DURATION);
         SimpleParser parser = new SimpleParser(parserPolicy);
-        
+
         ParsedDatum parsed = parser.parse(fetchedResult);
         if (parsed == null)
             return false;
         Outlink[] outlinks = parsed.getOutlinks();
         for (Outlink outlink : outlinks) {
-        	LOG.debug("outlink: {}", outlink);
+            LOG.debug("outlink: {}", outlink);
             String url = outlink.getToUrl();
             if (!urlValidator.isValid(url)) {
                 continue;
