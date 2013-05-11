@@ -289,6 +289,39 @@ public class TaskInfoComponent extends CustomComponent {
         componentContainer.addComponent(formControls);
     }
 
+    private void buildSitemapsFetcherTaskConfigurationForm(
+            final FieldGroup fieldGroup,
+            final ComponentContainer componentContainer) {
+        buildBaseTaskConfigurationForm(fieldGroup, componentContainer);
+        
+        TextField host = new TextField("Host:");
+        host.setWidth(COMMON_FIELD_WIDTH, Unit.EM);
+        
+        TextField agentName = new TextField("Robot name:");
+        agentName.setWidth(COMMON_FIELD_WIDTH, Unit.EM);
+
+        TextField emailAddress = new TextField("Robot Email:");
+        emailAddress.setWidth(COMMON_FIELD_WIDTH, Unit.EM);
+        
+        TextField webAddress = new TextField("Robot description URL:");
+        webAddress.setWidth(COMMON_FIELD_WIDTH, Unit.EM);
+        
+        componentContainer.addComponent(host);
+        componentContainer.addComponent(agentName);
+        componentContainer.addComponent(emailAddress);
+        componentContainer.addComponent(webAddress);
+
+        fieldGroup.bind(host, "host");
+        fieldGroup.bind(agentName, "agentName");
+        fieldGroup.bind(emailAddress, "emailAddress");
+        fieldGroup.bind(webAddress, "webAddress");
+
+        componentContainer.addComponent(formControls);
+    
+    }
+    
+    
+
     private ComponentContainer buildTaskInfoBeanComponent(
             final TaskInfoBean task) {
         ComponentContainer componentContainer = new FormLayout();
@@ -340,6 +373,7 @@ public class TaskInfoComponent extends CustomComponent {
         formControls = new HorizontalLayout();
         edit = new Button("Edit", new Button.ClickListener() {
             private static final long serialVersionUID = 1L;
+
             @Override
             public void buttonClick(final ClickEvent event) {
                 setReadOnly(false);
@@ -348,6 +382,7 @@ public class TaskInfoComponent extends CustomComponent {
 
         save = new Button("Save", new Button.ClickListener() {
             private static final long serialVersionUID = 1L;
+
             @Override
             public void buttonClick(final Button.ClickEvent event) {
                 try {
@@ -399,8 +434,7 @@ public class TaskInfoComponent extends CustomComponent {
         } else {
             taskConfigurationFieldGroup = new FieldGroup();
             newComponent = new FormLayout();
-            if (currentTask.getTaskConfiguration() instanceof SitemapsFetcherTaskConfiguration) {
-            } else if (currentTask.getTaskConfiguration() instanceof HtmlSplitterTaskConfiguration) {
+            if (currentTask.getTaskConfiguration() instanceof HtmlSplitterTaskConfiguration) {
                 buildHtmlSplitterTaskConfigurationForm(
                         taskConfigurationFieldGroup, newComponent);
             } else if (currentTask.getTaskConfiguration() instanceof MessageParserTaskConfiguration) {
@@ -417,6 +451,9 @@ public class TaskInfoComponent extends CustomComponent {
                         taskConfigurationFieldGroup, newComponent);
             } else if (currentTask.getTaskConfiguration() instanceof RssFetcherTaskConfiguration) {
             } else if (currentTask.getTaskConfiguration() instanceof SimpleMultithreadedFetcherTaskConfiguration) {
+            } else if (currentTask.getTaskConfiguration() instanceof SitemapsFetcherTaskConfiguration) {
+                buildSitemapsFetcherTaskConfigurationForm(
+                        taskConfigurationFieldGroup, newComponent);
             } else if (currentTask.getTaskConfiguration() instanceof WeblogsCrawlerTaskConfiguration) {
                 buildWeblogsCrawlerTaskConfigurationForm(
                         taskConfigurationFieldGroup, newComponent);
@@ -424,7 +461,7 @@ public class TaskInfoComponent extends CustomComponent {
                 buildWeblogsParserTaskConfigurationForm(
                         taskConfigurationFieldGroup, newComponent);
             }
-            
+
             BeanItem<TaskConfiguration> item = new BeanItem<TaskConfiguration>(
                     currentTask.getTaskConfiguration());
             taskConfigurationFieldGroup.setItemDataSource(item);
@@ -612,6 +649,7 @@ public class TaskInfoComponent extends CustomComponent {
         type.setImmediate(true);
         type.addItem("");
         type.addItem("ClassicRobotTask");
+        type.addItem("SitemapsFetcherTask");
         type.addItem("HtmlSplitterTask");
         type.addItem("MessageParserTask");
         type.addItem("TweetCollectorTask");
@@ -631,6 +669,10 @@ public class TaskInfoComponent extends CustomComponent {
                 if ("ClassicRobotTask".equals(selected)) {
                     newTask.setTaskConfiguration(new ClassicRobotTaskConfiguration());
                     buildClassicRobotTaskConfigurationForm(
+                            taskConfigurationFieldGroup, newComponent);
+                } else if ("SitemapsFetcherTask".equals(selected)) {
+                    newTask.setTaskConfiguration(new SitemapsFetcherTaskConfiguration());
+                    buildSitemapsFetcherTaskConfigurationForm(
                             taskConfigurationFieldGroup, newComponent);
                 } else if ("HtmlSplitterTask".equals(selected)) {
                     newTask.setTaskConfiguration(new HtmlSplitterTaskConfiguration());

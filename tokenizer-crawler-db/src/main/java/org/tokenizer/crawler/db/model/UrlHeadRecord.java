@@ -1,4 +1,4 @@
-package org.tokenizer.crawler.db.weblog;
+package org.tokenizer.crawler.db.model;
 
 import org.apache.tika.metadata.Metadata;
 

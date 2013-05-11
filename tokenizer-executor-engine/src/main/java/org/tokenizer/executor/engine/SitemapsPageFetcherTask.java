@@ -45,7 +45,7 @@ import crawlercommons.sitemaps.SiteMapParser;
 import crawlercommons.sitemaps.SiteMapURL;
 import crawlercommons.sitemaps.UnknownFormatException;
 
-public class SitemapsFetcherTask extends AbstractTask {
+public class SitemapsPageFetcherTask extends AbstractTask {
     private boolean stop;
     // Delay 4 hours between subsequent refresh of sitemaps
     private static final long DELAY = 4 * 3600 * 1000L;
@@ -54,7 +54,7 @@ public class SitemapsFetcherTask extends AbstractTask {
     private final BaseHttpFetcher fetcher;
     private BaseRobotRules robotRules = null;
 
-    public SitemapsFetcherTask(final UUID uuid, final String friendlyName,
+    public SitemapsPageFetcherTask(final UUID uuid, final String friendlyName,
             final ZooKeeperItf zk,
             final TaskConfiguration taskConfiguration,
             final CrawlerRepository repository,

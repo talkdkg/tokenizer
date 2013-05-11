@@ -15,8 +15,9 @@ import static org.junit.Assert.*;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tokenizer.crawler.db.weblog.FetchedResultRecord;
-import org.tokenizer.crawler.db.weblog.WeblogRecord;
+import org.tokenizer.crawler.db.model.FetchedResultRecord;
+import org.tokenizer.crawler.db.model.WeblogRecord;
+
 import com.netflix.astyanax.Keyspace;
 import com.netflix.astyanax.connectionpool.Host;
 import com.netflix.astyanax.connectionpool.OperationResult;

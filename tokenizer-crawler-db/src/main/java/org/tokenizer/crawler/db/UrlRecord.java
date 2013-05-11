@@ -16,14 +16,11 @@
 package org.tokenizer.crawler.db;
 
 import java.io.Serializable;
-import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
-import java.util.Date;
 
 import org.apache.tika.metadata.Metadata;
 import org.tokenizer.core.util.HttpUtils;
 import org.tokenizer.core.util.JavaSerializationUtils;
-import org.tokenizer.core.util.MD5;
 
 public class UrlRecord implements Serializable {
 
@@ -59,8 +56,6 @@ public class UrlRecord implements Serializable {
         this.webpageDigest = webpageDigest;
     }
 
-    
-    
     public UrlRecord(String baseUrl, String fetchedUrl, long fetchTime,
             String contentType, Metadata headers, String newBaseUrl,
             int numRedirects, String hostAddress, int httpStatus,
@@ -93,7 +88,7 @@ public class UrlRecord implements Serializable {
     public String getBaseHost() {
         return HttpUtils.getHost(baseUrl);
     }
-    
+
     public String getFetchedUrl() {
         return fetchedUrl;
     }
@@ -131,11 +126,11 @@ public class UrlRecord implements Serializable {
     }
 
     public void setHeaders(byte[] headersSerialized) {
-      if (headersSerialized!=null) this.headers = (Metadata) JavaSerializationUtils
-                        .deserialize(headersSerialized);
+        if (headersSerialized != null)
+            this.headers = (Metadata) JavaSerializationUtils
+                    .deserialize(headersSerialized);
     }
-    
-    
+
     public String getNewBaseUrl() {
         return newBaseUrl;
     }
@@ -212,6 +207,5 @@ public class UrlRecord implements Serializable {
                 + httpResponseCode + ", webpageDigest="
                 + Arrays.toString(webpageDigest) + "]";
     }
-
 
 }

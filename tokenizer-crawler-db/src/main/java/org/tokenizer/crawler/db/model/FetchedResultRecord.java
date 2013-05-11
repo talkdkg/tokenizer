@@ -1,4 +1,4 @@
-package org.tokenizer.crawler.db.weblog;
+package org.tokenizer.crawler.db.model;
 
 import java.io.Serializable;
 import java.util.Date;

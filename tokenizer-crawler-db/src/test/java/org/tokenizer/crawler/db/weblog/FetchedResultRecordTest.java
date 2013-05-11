@@ -6,6 +6,8 @@ import java.util.Date;
 import org.apache.tika.metadata.Metadata;
 import crawlercommons.fetcher.Payload;
 import org.junit.*;
+import org.tokenizer.crawler.db.model.FetchedResultRecord;
+
 import static org.junit.Assert.*;
 
 /**

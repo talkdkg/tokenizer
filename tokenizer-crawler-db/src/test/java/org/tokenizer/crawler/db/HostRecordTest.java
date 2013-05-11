@@ -2,7 +2,7 @@ package org.tokenizer.crawler.db;
 
 import java.util.Map;
 import org.junit.*;
-import org.tokenizer.crawler.db.weblog.HostRecord;
+import org.tokenizer.crawler.db.model.HostRecord;
 
 import static org.junit.Assert.*;
 

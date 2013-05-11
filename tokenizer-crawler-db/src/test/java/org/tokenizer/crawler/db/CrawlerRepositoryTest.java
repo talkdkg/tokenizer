@@ -5,8 +5,9 @@ import java.util.List;
 import org.apache.nutch.net.URLFilter;
 import org.junit.*;
 import static org.junit.Assert.*;
-import org.tokenizer.crawler.db.weblog.FetchedResultRecord;
-import org.tokenizer.crawler.db.weblog.WeblogRecord;
+
+import org.tokenizer.crawler.db.model.FetchedResultRecord;
+import org.tokenizer.crawler.db.model.WeblogRecord;
 
 /**
  * The class <code>CrawlerRepositoryTest</code> contains tests for the class <code>{@link CrawlerRepository}</code>.

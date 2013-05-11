@@ -3,6 +3,8 @@ package org.tokenizer.crawler.db.weblog;
 import java.util.LinkedList;
 import java.util.List;
 import org.junit.*;
+import org.tokenizer.crawler.db.model.WeblogRecord;
+
 import static org.junit.Assert.*;
 
 /**

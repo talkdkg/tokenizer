@@ -10,7 +10,7 @@ import org.apache.solr.client.solrj.SolrQuery.ORDER;
 import org.tokenizer.core.StringPool;
 import org.tokenizer.core.solr.SolrUtils;
 import org.tokenizer.crawler.db.CrawlerRepository;
-import org.tokenizer.crawler.db.weblog.HostRecord;
+import org.tokenizer.crawler.db.model.HostRecord;
 import org.tokenizer.executor.model.configuration.ClassicRobotTaskConfiguration;
 import org.tokenizer.ui.MyVaadinUI;
 import org.tokenizer.ui.components.TaskInfoComponent;

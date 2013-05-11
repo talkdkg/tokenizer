@@ -254,6 +254,10 @@ public class ExecutorWorker {
             task = new WeblogsCrawlerTask(taskInfo.getUuid(), taskInfo
                     .getTaskConfiguration().getName(), zk, taskConfiguration,
                     repository, executorModel, hostLocker);
+        } else if (taskConfiguration instanceof SitemapsFetcherTaskConfiguration) {
+            task = new SitemapsFetcherTask(taskInfo.getUuid(), taskInfo
+                    .getTaskConfiguration().getName(), zk, taskConfiguration,
+                    repository, executorModel, hostLocker);
         } else if (taskConfiguration instanceof WeblogsParserTaskConfiguration) {
             task = new WeblogsParserTask(taskInfo.getUuid(), taskInfo
                     .getTaskConfiguration().getName(), zk, taskConfiguration,
