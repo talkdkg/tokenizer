@@ -27,6 +27,7 @@ import org.tokenizer.core.util.JavaSerializationUtils;
 import org.tokenizer.core.util.MD5;
 import org.tokenizer.crawler.db.model.FetchedResultRecord;
 import org.tokenizer.crawler.db.model.HostRecord;
+import org.tokenizer.crawler.db.model.TimestampUrlIDX;
 import org.tokenizer.crawler.db.model.UrlHeadRecord;
 import org.tokenizer.crawler.db.model.UrlSitemapIDX;
 import org.tokenizer.crawler.db.model.WeblogRecord;
@@ -59,6 +60,7 @@ import com.netflix.astyanax.model.Column;
 import com.netflix.astyanax.model.ColumnFamily;
 import com.netflix.astyanax.model.ColumnList;
 import com.netflix.astyanax.model.ConsistencyLevel;
+import com.netflix.astyanax.model.Equality;
 import com.netflix.astyanax.model.Row;
 import com.netflix.astyanax.model.Rows;
 import com.netflix.astyanax.query.IndexQuery;
@@ -81,8 +83,8 @@ import com.netflix.astyanax.util.RangeBuilder;
 public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
 
     protected static Logger LOG = LoggerFactory.getLogger(CrawlerRepositoryCassandraImpl.class);
-    protected final String clusterName = "WEB_CRAWL_CLUSTER";
-    protected final String keyspaceName = "WEB_CRAWL_KEYSPACE";
+    protected final String clusterName = "web_crawl_cluster";
+    protected final String keyspaceName = "web_crawl_keyspace";
     protected String seeds = "127.0.0.1";
     protected int port = 19160;
 
@@ -95,7 +97,7 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
      * see TDE-20
      * 
      */
-    protected final ColumnFamily<String, String> CF_URL_RECORDS = ColumnFamily.newColumnFamily("URL_RECORDS",
+    protected final ColumnFamily<String, String> CF_URL_RECORDS = ColumnFamily.newColumnFamily("url_records",
             StringSerializer.get(), StringSerializer.get());
 
     /**
@@ -109,25 +111,31 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
      * see TDE-21
      */
     protected final ColumnFamily<String, UrlSitemapIDX> CF_URL_SITEMAP_IDX = ColumnFamily.newColumnFamily(
-            "URL_SITEMAP_IDX", StringSerializer.get(), URL_SITEMAP_IDX_SERIALIZER);
+            "url_sitemap_idx", StringSerializer.get(), URL_SITEMAP_IDX_SERIALIZER);
 
     protected static AnnotatedCompositeSerializer<UrlSitemapIDX> URL_SITEMAP_IDX_SERIALIZER = new AnnotatedCompositeSerializer<UrlSitemapIDX>(
             UrlSitemapIDX.class, 512, false);
 
-    protected final ColumnFamily<byte[], String> CF_WEBPAGE_RECORDS = ColumnFamily.newColumnFamily("WEBPAGE_RECORDS",
+    protected final ColumnFamily<String, TimestampUrlIDX> CF_TIMESTAMP_URL_IDX = ColumnFamily.newColumnFamily(
+            "timestamp_url_idx", StringSerializer.get(), TIMESTAMP_URL_IDX_SERIALIZER);
+
+    protected static AnnotatedCompositeSerializer<TimestampUrlIDX> TIMESTAMP_URL_IDX_SERIALIZER = new AnnotatedCompositeSerializer<TimestampUrlIDX>(
+            TimestampUrlIDX.class, 512, false);
+
+    protected final ColumnFamily<byte[], String> CF_WEBPAGE_RECORDS = ColumnFamily.newColumnFamily("webpage_records",
             BytesArraySerializer.get(), StringSerializer.get());
-    protected final ColumnFamily<byte[], String> CF_XML_RECORDS = ColumnFamily.newColumnFamily("XML_RECORDS",
+    protected final ColumnFamily<byte[], String> CF_XML_RECORDS = ColumnFamily.newColumnFamily("xml_records",
             BytesArraySerializer.get(), StringSerializer.get());
-    protected final ColumnFamily<byte[], String> CF_MESSAGE_RECORDS = ColumnFamily.newColumnFamily("MESSAGE_RECORDS",
+    protected final ColumnFamily<byte[], String> CF_MESSAGE_RECORDS = ColumnFamily.newColumnFamily("message_records",
             BytesArraySerializer.get(), StringSerializer.get());
 
     protected static AnnotatedCompositeSerializer<Weblog> WEBLOG_SERIALIZER = new AnnotatedCompositeSerializer<Weblog>(
             Weblog.class, 8192, false);
 
     protected static final ColumnFamily<Integer, Weblog> CF_WEBLOGS_RECORDS = ColumnFamily.newColumnFamily(
-            "WEBLOGS_RECORDS", IntegerSerializer.get(), WEBLOG_SERIALIZER);
+            "weblogs_records", IntegerSerializer.get(), WEBLOG_SERIALIZER);
 
-    private static final String WEBLOGS_RECORDS_IDX0 = "WEBLOGS_RECORDS_IDX0";
+    private static final String WEBLOGS_RECORDS_IDX0 = "weblogs_records_idx0";
     private static final String SHARD_ = "SHARD_";
     private static final String SHARD_0 = "SHARD_0";
 
@@ -141,17 +149,17 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
             FetchedResultRecord.class, 8192, false);
 
     protected static final ColumnFamily<String, FetchedResultRecord> CF_FETCHED_RESULT_RECORDS = ColumnFamily
-            .newColumnFamily("FETCHED_RESULT_RECORDS", StringSerializer.get(), FETCHED_RESULT_SERIALIZER);
+            .newColumnFamily("fetched_result_records", StringSerializer.get(), FETCHED_RESULT_SERIALIZER);
 
     /**
      * This CF is "vertical" classic table to store HTTP HEAD response
      */
-    protected final static String URL_HEAD_RECORDS = "URL_HEAD_RECORDS";
+    protected final static String URL_HEAD_RECORDS = "url_head_records";
     protected final ColumnFamily<String, String> CF_URL_HEAD_RECORDS = ColumnFamily.newColumnFamily(URL_HEAD_RECORDS,
             StringSerializer.get(), StringSerializer.get());
 
     // TDE-13: Index for Inverted Hosts
-    private static final String HOST_RECORDS = "HOST_RECORDS";
+    private static final String HOST_RECORDS = "host_records";
     protected final ColumnFamily<String, byte[]> CF_HOST_RECORDS = ColumnFamily.newColumnFamily(HOST_RECORDS,
             StringSerializer.get(), BytesArraySerializer.get());
 
@@ -223,6 +231,15 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
                     CF_URL_SITEMAP_IDX,
                     ImmutableMap.<String, Object> builder().put("key_validation_class", "AsciiType")
                             .put("comparator_type", "CompositeType(AsciiType)").build());
+
+        }
+
+        // CF_TIMESTAMP_URL_IDX
+        if (def.getColumnFamily("TIMESTAMP_URL_IDX") == null) {
+            keyspace.createColumnFamily(
+                    CF_TIMESTAMP_URL_IDX,
+                    ImmutableMap.<String, Object> builder().put("key_validation_class", "AsciiType")
+                            .put("comparator_type", "CompositeType(LongType,AsciiType)").build());
 
         }
 
@@ -551,7 +568,17 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
                 .getKey(urlRecord.getBaseUrl()).execute();
         if (result.getResult().isEmpty()) {
             insert(urlRecord);
-            submitToSolr(urlRecord);
+            // submitToSolr(urlRecord);
+        }
+    }
+
+    @Override
+    public UrlRecord loadUrlRecord(final String baseUrl) throws ConnectionException {
+        OperationResult<ColumnList<String>> result = keyspace.prepareQuery(CF_URL_RECORDS).getKey(baseUrl).execute();
+        if (result.getResult().isEmpty()) {
+            return null;
+        } else {
+            return toUrlRecord(baseUrl, result.getResult());
         }
     }
 
@@ -581,9 +608,14 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
         insert(urlRecord);
     }
 
-    protected void insert(final UrlRecord urlRecord) throws ConnectionException {
+    @Override
+    public void insert(final UrlRecord urlRecord) throws ConnectionException {
+        
+        LOG.info("inserting urlRecord: {}", urlRecord);
+        
         MutationBatch m = keyspace.prepareMutationBatch();
-        m.withRow(CF_URL_RECORDS, urlRecord.getBaseUrl()).putColumn("fetchedUrl", urlRecord.getFetchedUrl(), null)
+        m.withRow(CF_URL_RECORDS, urlRecord.getBaseUrl())
+                .putColumn("fetchedUrl", urlRecord.getFetchedUrl(), null)
                 .putColumn("fetchTime", urlRecord.getFetchTime(), null)
                 .putColumn("contentType", urlRecord.getContentType(), null)
                 .putColumn("headers", urlRecord.getHeadersSerialized(), null)
@@ -593,7 +625,6 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
                 .putColumn("httpStatus", urlRecord.getHttpStatus(), null)
                 .putColumn("reasonPhrase", urlRecord.getReasonPhrase(), null)
                 .putColumn("fetchAttemptCounter", urlRecord.getFetchAttemptCounter(), null)
-                .putColumn("httpResponseCode", urlRecord.getHttpResponseCode(), null)
                 .putColumn("webpageDigest", urlRecord.getWebpageDigest(), null);
         m.execute();
         LOG.debug("urlRecord updated: {}", urlRecord);
@@ -1091,8 +1122,7 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
         byte[] webpageDigest = columns.getByteArrayValue("webpageDigest", DefaultValues.EMPTY_ARRAY);
 
         UrlRecord urlRecord = new UrlRecord(baseUrl, fetchedUrl, fetchTime, contentType, headers, newBaseUrl,
-                numRedirects, hostAddress, httpStatus, reasonPhrase, fetchAttemptCounter, httpResponseCode,
-                webpageDigest);
+                numRedirects, hostAddress, httpStatus, reasonPhrase, fetchAttemptCounter, webpageDigest);
 
         return urlRecord;
     }
@@ -1313,7 +1343,7 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
         doc.addField("id", urlRecord.getBaseUrl());
         doc.addField("host", urlRecord.getBaseHost());
         // doc.addField("url", urlRecord.getBaseUrl());
-        doc.addField("httpResponseCode", urlRecord.getHttpResponseCode());
+        doc.addField("httpStatus", urlRecord.getHttpStatus());
         try {
             solrServer.add(doc);
         } catch (SolrServerException e) {
@@ -1609,6 +1639,7 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
     public void insert(final UrlSitemapIDX urlSitemapIDX) throws ConnectionException {
         MutationBatch m = keyspace.prepareMutationBatch();
         m.withRow(CF_URL_SITEMAP_IDX, urlSitemapIDX.getHost()).putEmptyColumn(urlSitemapIDX);
+        m.execute();
     }
 
     @Override
@@ -1634,6 +1665,59 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
         if (load(urlSitemapIDX) == null) {
             insert(urlSitemapIDX);
         }
+
+    }
+
+    // CF_TIMESTAMP_URL_IDX
+    @Override
+    public void insert(final TimestampUrlIDX timestampUrlIDX) throws ConnectionException {
+        MutationBatch m = keyspace.prepareMutationBatch();
+        m.withRow(CF_TIMESTAMP_URL_IDX, timestampUrlIDX.getHost()).putEmptyColumn(timestampUrlIDX);
+        m.execute();
+    }
+
+    @Override
+    public void delete(TimestampUrlIDX timestampUrlIDX) throws ConnectionException {
+        keyspace.prepareColumnMutation(CF_TIMESTAMP_URL_IDX, timestampUrlIDX.getHost(), timestampUrlIDX).deleteColumn()
+                .execute();
+    }
+
+    @Override
+    public TimestampUrlIDX load(TimestampUrlIDX timestampUrlIDX) throws ConnectionException {
+        try {
+            OperationResult<Column<TimestampUrlIDX>> result = keyspace.prepareQuery(CF_TIMESTAMP_URL_IDX)
+                    .getKey(timestampUrlIDX.getHost()).getColumn(timestampUrlIDX).execute();
+            if (result.getResult().hasValue())
+                return result.getResult().getValue(TIMESTAMP_URL_IDX_SERIALIZER);
+        } catch (NotFoundException e) {
+        }
+        return null;
+    }
+
+    @Override
+    public void insertIfNotExists(final TimestampUrlIDX timestampUrlIDX) throws ConnectionException {
+        if (load(timestampUrlIDX) == null) {
+            insert(timestampUrlIDX);
+        }
+    }
+
+    @Override
+    public List<TimestampUrlIDX> loadTimestampUrlIDX(String host) throws ConnectionException {
+
+        OperationResult<ColumnList<TimestampUrlIDX>> result = keyspace.prepareQuery(CF_TIMESTAMP_URL_IDX).getKey(host)
+                .withColumnRange(
+                        TIMESTAMP_URL_IDX_SERIALIZER.makeEndpoint(0L, Equality.LESS_THAN)
+                        .toBytes(),
+                        TIMESTAMP_URL_IDX_SERIALIZER.makeEndpoint(0L, Equality.GREATER_THAN)
+                        .toBytes(), false, 100).execute();
+
+        List<TimestampUrlIDX> list = new ArrayList<TimestampUrlIDX>();
+
+        for (Column<TimestampUrlIDX> o : result.getResult()) {
+            list.add(o.getName());
+        }
+
+        return list;
 
     }
 

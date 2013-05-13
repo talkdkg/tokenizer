@@ -35,6 +35,8 @@ import org.tokenizer.executor.engine.HtmlSplitterTask;
 import org.tokenizer.executor.engine.RssFetcherTask;
 import org.tokenizer.executor.engine.SimpleMultithreadedFetcher;
 import org.tokenizer.executor.engine.SitemapsFetcherTask;
+import org.tokenizer.executor.engine.SitemapsLinkedPageFetcherTask;
+import org.tokenizer.executor.engine.SitemapsPageFetcherTask;
 import org.tokenizer.executor.engine.WeblogsCrawlerTask;
 import org.tokenizer.executor.engine.WeblogsParserTask;
 import org.tokenizer.executor.engine.WeblogsSubscriberTask;
@@ -54,6 +56,8 @@ import org.tokenizer.executor.model.configuration.MessageParserTaskConfiguration
 import org.tokenizer.executor.model.configuration.RssFetcherTaskConfiguration;
 import org.tokenizer.executor.model.configuration.SimpleMultithreadedFetcherTaskConfiguration;
 import org.tokenizer.executor.model.configuration.SitemapsFetcherTaskConfiguration;
+import org.tokenizer.executor.model.configuration.SitemapsLinkedPageFetcherTaskConfiguration;
+import org.tokenizer.executor.model.configuration.SitemapsPageFetcherTaskConfiguration;
 import org.tokenizer.executor.model.configuration.TaskConfiguration;
 import org.tokenizer.executor.model.configuration.WeblogsCrawlerTaskConfiguration;
 import org.tokenizer.executor.model.configuration.WeblogsParserTaskConfiguration;
@@ -69,8 +73,7 @@ import org.tokenizer.util.zookeeper.ZooKeeperItf;
  */
 public class ExecutorWorker {
 
-    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory
-            .getLogger(ExecutorWorker.class);
+    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ExecutorWorker.class);
     private final WritableExecutorModel executorModel;
     private final CrawlerRepository repository;
     private final ZooKeeperItf zk;
@@ -81,9 +84,8 @@ public class ExecutorWorker {
     /** will be shared between tasks; multithreaded access */
     private final HostLocker hostLocker;
 
-    public ExecutorWorker(final WritableExecutorModel executorModel,
-            final ZooKeeperItf zk, final CrawlerRepository repository)
-            throws IOException, TaskNotFoundException, InterruptedException,
+    public ExecutorWorker(final WritableExecutorModel executorModel, final ZooKeeperItf zk,
+            final CrawlerRepository repository) throws IOException, TaskNotFoundException, InterruptedException,
             KeeperException {
         this.executorModel = executorModel;
         this.zk = zk;
@@ -93,16 +95,12 @@ public class ExecutorWorker {
 
     @PostConstruct
     public void init() {
-        eventWorkerThread = new Thread(new EventWorker(),
-                "ExecutorWorker.EventWorker");
+        eventWorkerThread = new Thread(new EventWorker(), "ExecutorWorker.EventWorker");
         eventWorkerThread.start();
-        Collection<TaskInfoBean> taskDefinitions = executorModel
-                .getTasks(listener);
+        Collection<TaskInfoBean> taskDefinitions = executorModel.getTasks(listener);
         for (TaskInfoBean taskDefinition : taskDefinitions) {
             try {
-                eventQueue.put(new ExecutorModelEvent(
-                        ExecutorModelEventType.TASK_ADDED, taskDefinition
-                                .getUuid()));
+                eventQueue.put(new ExecutorModelEvent(ExecutorModelEventType.TASK_ADDED, taskDefinition.getUuid()));
             } catch (InterruptedException e) {
                 eventWorkerThread.interrupt();
                 Thread.currentThread().interrupt();
@@ -150,14 +148,12 @@ public class ExecutorWorker {
                     int queueSize = eventQueue.size();
                     LOG.debug("queue size: {}", queueSize);
                     if (queueSize >= 10) {
-                        LOG.warn("EventWorker queue getting large: {}"
-                                + queueSize);
+                        LOG.warn("EventWorker queue getting large: {}" + queueSize);
                     }
                     ExecutorModelEvent event = eventQueue.take();
                     LOG.debug("Event removed from queue: {}", event);
                     if (event.getType() == ExecutorModelEventType.TASK_ADDED) {
-                        TaskInfoBean taskInfo = executorModel.getTask(event
-                                .getUuid());
+                        TaskInfoBean taskInfo = executorModel.getTask(event.getUuid());
                         AbstractTask task = createTask(taskInfo);
                         if (taskInfo.getTaskConfiguration().getGeneralState() == TaskGeneralState.START_REQUESTED) {
                             task.start();
@@ -165,31 +161,24 @@ public class ExecutorWorker {
                         tasks.put(event.getUuid(), task);
                         continue;
                     } else if (event.getType() == ExecutorModelEventType.TASK_UPDATED) {
-                        TaskInfoBean taskInfo = executorModel.getTask(event
-                                .getUuid());
-                        TaskGeneralState taskGeneralState = taskInfo
-                                .getTaskConfiguration().getGeneralState();
+                        TaskInfoBean taskInfo = executorModel.getTask(event.getUuid());
+                        TaskGeneralState taskGeneralState = taskInfo.getTaskConfiguration().getGeneralState();
                         AbstractTask task = tasks.get(event.getUuid());
-                        boolean configurationChanged = !task
-                                .getTaskConfiguration().equals(
-                                        taskInfo.getTaskConfiguration());
-                        LOG.debug("configurationChanged: {}",
-                                configurationChanged);
+                        boolean configurationChanged = !task.getTaskConfiguration().equals(
+                                taskInfo.getTaskConfiguration());
+                        LOG.debug("configurationChanged: {}", configurationChanged);
                         if (!configurationChanged) {
-                            if (taskGeneralState
-                                    .equals(TaskGeneralState.START_REQUESTED)) {
+                            if (taskGeneralState.equals(TaskGeneralState.START_REQUESTED)) {
                                 LOG.info("start requested...");
                                 task.start();
-                            } else if (taskGeneralState
-                                    .equals(TaskGeneralState.STOP_REQUESTED)) {
+                            } else if (taskGeneralState.equals(TaskGeneralState.STOP_REQUESTED)) {
                                 LOG.info("stop requested...");
                                 task.stop();
                             }
                             continue;
                         }
                         if (configurationChanged) {
-                            task.setTaskConfiguration(taskInfo
-                                    .getTaskConfiguration());
+                            task.setTaskConfiguration(taskInfo.getTaskConfiguration());
                             continue;
                         }
                     } else if (event.getType() == ExecutorModelEventType.TASK_REMOVED) {
@@ -219,49 +208,44 @@ public class ExecutorWorker {
         TaskConfiguration taskConfiguration = taskInfo.getTaskConfiguration();
         LOG.debug(taskConfiguration.toString());
         if (taskConfiguration instanceof SitemapsFetcherTaskConfiguration) {
-            task = new SitemapsFetcherTask(taskInfo.getUuid(), taskInfo
-                    .getTaskConfiguration().getName(), zk, taskConfiguration,
-                    repository, executorModel, hostLocker);
+            task = new SitemapsFetcherTask(taskInfo.getUuid(), taskInfo.getTaskConfiguration().getName(), zk,
+                    taskConfiguration, repository, executorModel, hostLocker);
         } else if (taskConfiguration instanceof HtmlSplitterTaskConfiguration) {
-            task = new HtmlSplitterTask(taskInfo.getUuid(), taskInfo
-                    .getTaskConfiguration().getName(), zk, taskConfiguration,
-                    repository, executorModel, hostLocker);
+            task = new HtmlSplitterTask(taskInfo.getUuid(), taskInfo.getTaskConfiguration().getName(), zk,
+                    taskConfiguration, repository, executorModel, hostLocker);
         } else if (taskConfiguration instanceof MessageParserTaskConfiguration) {
-            task = new MessageParserTask(taskInfo.getUuid(), taskInfo
-                    .getTaskConfiguration().getName(), zk, taskConfiguration,
-                    repository, executorModel, hostLocker);
+            task = new MessageParserTask(taskInfo.getUuid(), taskInfo.getTaskConfiguration().getName(), zk,
+                    taskConfiguration, repository, executorModel, hostLocker);
         } else if (taskConfiguration instanceof TweetCollectorTaskConfiguration) {
-            task = new TweetCollectorTask(taskInfo.getUuid(), taskInfo
-                    .getTaskConfiguration().getName(), zk, taskConfiguration,
-                    repository, executorModel, hostLocker);
+            task = new TweetCollectorTask(taskInfo.getUuid(), taskInfo.getTaskConfiguration().getName(), zk,
+                    taskConfiguration, repository, executorModel, hostLocker);
         } else if (taskConfiguration instanceof ClassicRobotTaskConfiguration) {
-            task = new ClassicRobotTask(taskInfo.getUuid(), taskInfo
-                    .getTaskConfiguration().getName(), zk, taskConfiguration,
-                    repository, executorModel, hostLocker);
+            task = new ClassicRobotTask(taskInfo.getUuid(), taskInfo.getTaskConfiguration().getName(), zk,
+                    taskConfiguration, repository, executorModel, hostLocker);
         } else if (taskConfiguration instanceof RssFetcherTaskConfiguration) {
-            task = new RssFetcherTask(taskInfo.getUuid(), taskInfo
-                    .getTaskConfiguration().getName(), zk, taskConfiguration,
-                    repository, executorModel, hostLocker);
+            task = new RssFetcherTask(taskInfo.getUuid(), taskInfo.getTaskConfiguration().getName(), zk,
+                    taskConfiguration, repository, executorModel, hostLocker);
         } else if (taskConfiguration instanceof SimpleMultithreadedFetcherTaskConfiguration) {
-            task = new SimpleMultithreadedFetcher(taskInfo.getUuid(), taskInfo
-                    .getTaskConfiguration().getName(), zk, taskConfiguration,
-                    repository, executorModel, hostLocker);
+            task = new SimpleMultithreadedFetcher(taskInfo.getUuid(), taskInfo.getTaskConfiguration().getName(), zk,
+                    taskConfiguration, repository, executorModel, hostLocker);
         } else if (taskConfiguration instanceof WeblogsSubscriberTaskConfiguration) {
-            task = new WeblogsSubscriberTask(taskInfo.getUuid(), taskInfo
-                    .getTaskConfiguration().getName(), zk, taskConfiguration,
-                    repository, executorModel, hostLocker);
+            task = new WeblogsSubscriberTask(taskInfo.getUuid(), taskInfo.getTaskConfiguration().getName(), zk,
+                    taskConfiguration, repository, executorModel, hostLocker);
         } else if (taskConfiguration instanceof WeblogsCrawlerTaskConfiguration) {
-            task = new WeblogsCrawlerTask(taskInfo.getUuid(), taskInfo
-                    .getTaskConfiguration().getName(), zk, taskConfiguration,
-                    repository, executorModel, hostLocker);
+            task = new WeblogsCrawlerTask(taskInfo.getUuid(), taskInfo.getTaskConfiguration().getName(), zk,
+                    taskConfiguration, repository, executorModel, hostLocker);
         } else if (taskConfiguration instanceof SitemapsFetcherTaskConfiguration) {
-            task = new SitemapsFetcherTask(taskInfo.getUuid(), taskInfo
-                    .getTaskConfiguration().getName(), zk, taskConfiguration,
-                    repository, executorModel, hostLocker);
+            task = new SitemapsFetcherTask(taskInfo.getUuid(), taskInfo.getTaskConfiguration().getName(), zk,
+                    taskConfiguration, repository, executorModel, hostLocker);
+        } else if (taskConfiguration instanceof SitemapsPageFetcherTaskConfiguration) {
+            task = new SitemapsPageFetcherTask(taskInfo.getUuid(), taskInfo.getTaskConfiguration().getName(), zk,
+                    taskConfiguration, repository, executorModel, hostLocker);
+        } else if (taskConfiguration instanceof SitemapsLinkedPageFetcherTaskConfiguration) {
+            task = new SitemapsLinkedPageFetcherTask(taskInfo.getUuid(), taskInfo.getTaskConfiguration().getName(), zk,
+                    taskConfiguration, repository, executorModel, hostLocker);
         } else if (taskConfiguration instanceof WeblogsParserTaskConfiguration) {
-            task = new WeblogsParserTask(taskInfo.getUuid(), taskInfo
-                    .getTaskConfiguration().getName(), zk, taskConfiguration,
-                    repository, executorModel, hostLocker);
+            task = new WeblogsParserTask(taskInfo.getUuid(), taskInfo.getTaskConfiguration().getName(), zk,
+                    taskConfiguration, repository, executorModel, hostLocker);
         }
         return task;
     }

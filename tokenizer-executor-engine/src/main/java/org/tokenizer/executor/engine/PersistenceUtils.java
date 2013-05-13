@@ -16,7 +16,6 @@
 package org.tokenizer.executor.engine;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,51 +50,41 @@ import crawlercommons.robots.BaseRobotRules;
 
 public class PersistenceUtils {
 
-    private static final Logger LOG = LoggerFactory
-            .getLogger(PersistenceUtils.class);
+    private static final Logger LOG = LoggerFactory.getLogger(PersistenceUtils.class);
 
-    public static FetchedResult fetch(final UrlRecord urlRecord,
-            final CrawlerRepository repository,
-            final BaseRobotRules baseRobotRules,
-            final MetricsCache metricsCache,
-            final SimpleHttpFetcher simpleHttpClient,
-            final String hostConstraint, final URLFilter urlFilter)
+    public static FetchedResult fetch(final UrlRecord urlRecord, final CrawlerRepository repository,
+            final BaseRobotRules baseRobotRules, final MetricsCache metricsCache,
+            final SimpleHttpFetcher simpleHttpClient, final String hostConstraint, final URLFilter urlFilter)
             throws ConnectionException, InterruptedException {
         if (urlFilter.filter(urlRecord.getBaseUrl()) == null) {
             repository.delete(urlRecord);
             return null;
         }
-        urlRecord
-                .setFetchAttemptCounter(urlRecord.getFetchAttemptCounter() + 1);
+        urlRecord.setFetchAttemptCounter(urlRecord.getFetchAttemptCounter() + 1);
         metricsCache.increment(MetricsCache.URL_TOTAL_KEY);
-        if (!checkRobotRules(urlRecord, repository, baseRobotRules,
-                metricsCache))
+        if (!checkRobotRules(urlRecord, repository, baseRobotRules, metricsCache))
             return null;
-        FetchedResult fetchedResult = fetch(urlRecord, repository,
-                metricsCache, simpleHttpClient);
+        FetchedResult fetchedResult = fetch(urlRecord, repository, metricsCache, simpleHttpClient);
         if (fetchedResult == null) {
             repository.update(urlRecord);
             return null;
         }
         parse(fetchedResult, repository, hostConstraint, urlFilter);
-        String charset = CharsetUtils.clean(HttpUtils
-                .getCharsetFromContentType(fetchedResult.getContentType()));
-        WebpageRecord webpageRecord = new WebpageRecord(urlRecord.getBaseUrl(),
-                urlRecord.getFetchTime(), charset, fetchedResult.getContent(),
-                null);
+        String charset = CharsetUtils.clean(HttpUtils.getCharsetFromContentType(fetchedResult.getContentType()));
+        WebpageRecord webpageRecord = new WebpageRecord(urlRecord.getBaseUrl(), urlRecord.getFetchTime(), charset,
+                fetchedResult.getContent(), null);
         repository.insertIfNotExists(webpageRecord);
         urlRecord.setWebpageDigest(webpageRecord.getDigest());
         repository.update(urlRecord);
         return fetchedResult;
     }
 
-    public static boolean checkRobotRules(final UrlRecord urlRecord,
-            final CrawlerRepository repository,
-            final BaseRobotRules baseRobotRules, final MetricsCache metricsCache)
-            throws InterruptedException, ConnectionException {
+    public static boolean checkRobotRules(final UrlRecord urlRecord, final CrawlerRepository repository,
+            final BaseRobotRules baseRobotRules, final MetricsCache metricsCache) throws InterruptedException,
+            ConnectionException {
         String url = urlRecord.getBaseUrl();
         if (!baseRobotRules.isAllowed(url)) {
-            urlRecord.setHttpResponseCode(-1);
+            urlRecord.setHttpStatus(-1);
             urlRecord.setFetchTime(System.currentTimeMillis());
             repository.update(urlRecord);
             metricsCache.increment(MetricsCache.URL_ROBOTS_KEY);
@@ -104,11 +93,8 @@ public class PersistenceUtils {
         return true;
     }
 
-    public static FetchedResult fetch(final UrlRecord record,
-            final CrawlerRepository repository,
-            final MetricsCache metricsCache,
-            final SimpleHttpFetcher simpleHttpClient)
-            throws InterruptedException {
+    public static FetchedResult fetch(final UrlRecord record, final CrawlerRepository repository,
+            final MetricsCache metricsCache, final SimpleHttpFetcher simpleHttpClient) throws InterruptedException {
         String url = record.getBaseUrl();
         FetchedResult fetchedResult = null;
         long start = System.currentTimeMillis();
@@ -117,29 +103,25 @@ public class PersistenceUtils {
         } catch (RedirectFetchException e) {
             String redirectedUrl = e.getRedirectedUrl();
             LOG.debug("Redirected to {}", redirectedUrl);
-            record.setHttpResponseCode(e.getHttpStatusCode());
+            record.setHttpStatus(e.getHttpStatusCode());
             record.setFetchTime(System.currentTimeMillis());
             metricsCache.increment(MetricsCache.REDIRECT_COUNT);
-            String normalizedRedirectedUrl = urlNormalizer
-                    .normalize(redirectedUrl);
+            String normalizedRedirectedUrl = urlNormalizer.normalize(redirectedUrl);
             String redirectedHost = HttpUtils.getHost(normalizedRedirectedUrl);
             if (record.getBaseHost().equals(redirectedHost)) {
                 UrlRecord urlRecord = new UrlRecord(normalizedRedirectedUrl);
                 try {
                     repository.insertIfNotExists(urlRecord);
                 } catch (ConnectionException e1) {
-                    LOG.error(
-                            "repository not available... sleeping 60 seconds",
-                            e);
+                    LOG.error("repository not available... sleeping 60 seconds", e);
                     Thread.sleep(60000);
                 }
             } else {
-                LOG.debug("redirected extrenal host ignored: {}",
-                        normalizedRedirectedUrl);
+                LOG.debug("redirected extrenal host ignored: {}", normalizedRedirectedUrl);
             }
             return null;
         } catch (HttpFetchException e) {
-            record.setHttpResponseCode(e.getHttpStatus());
+            record.setHttpStatus(e.getHttpStatus());
             record.setFetchTime(System.currentTimeMillis());
             return null;
         } catch (BaseFetchException e) {
@@ -152,28 +134,25 @@ public class PersistenceUtils {
             return null;
         }
         record.setFetchTime(System.currentTimeMillis());
-        if (fetchedResult.getHttpStatus() >= 200
-                && fetchedResult.getHttpStatus() < 300) {
-            metricsCache.increment(MetricsCache.TOTAL_HTTP_RESPONSE_TIME_MS,
-                    System.currentTimeMillis() - start);
+        if (fetchedResult.getHttpStatus() >= 200 && fetchedResult.getHttpStatus() < 300) {
+            metricsCache.increment(MetricsCache.TOTAL_HTTP_RESPONSE_TIME_MS, System.currentTimeMillis() - start);
             metricsCache.increment(MetricsCache.URL_OK_KEY);
         } else {
             metricsCache.increment(MetricsCache.URL_ERROR_KEY);
         }
-        record.setHttpResponseCode(fetchedResult.getHttpStatus());
+        record.setHttpStatus(fetchedResult.getHttpStatus());
         return fetchedResult;
     }
 
-    public static void injectIfNotExists(final SyndEntry entry,
-            final CrawlerRepository repository, final MetricsCache metricsCache)
-            throws InterruptedException {
+    public static void injectIfNotExists(final SyndEntry entry, final CrawlerRepository repository,
+            final MetricsCache metricsCache) throws InterruptedException {
         // TODO:
         // record = repository.create(record);
         // metricsCache.increment(MetricsCache.LILY_INJECTS_COUNT);
     }
 
-    private static void createRecord(final SyndEntry entry,
-            final CrawlerRepository repository) throws InterruptedException {
+    private static void createRecord(final SyndEntry entry, final CrawlerRepository repository)
+            throws InterruptedException {
         // TODO: not implemented yet
         String url = entry.getLink().trim();
         List<SyndCategory> categories = entry.getCategories();
@@ -192,8 +171,7 @@ public class PersistenceUtils {
     // cache = (Map)Collections.synchronizedMap(cache);
     private static final int MAX_ENTRIES = 1000;
     @SuppressWarnings("serial")
-    private static Map<String, String> cache = new LinkedHashMap<String, String>(
-            MAX_ENTRIES + 1, .75F, true) {
+    private static Map<String, String> cache = new LinkedHashMap<String, String>(MAX_ENTRIES + 1, .75F, true) {
 
         @Override
         public boolean removeEldestEntry(@SuppressWarnings("rawtypes")
@@ -202,10 +180,8 @@ public class PersistenceUtils {
         }
     };
 
-    private static boolean parse(final FetchedResult fetchedResult,
-            final CrawlerRepository repository, final String hostConstraint,
-            final URLFilter urlFilter) throws InterruptedException,
-            ConnectionException {
+    private static boolean parse(final FetchedResult fetchedResult, final CrawlerRepository repository,
+            final String hostConstraint, final URLFilter urlFilter) throws InterruptedException, ConnectionException {
         ParserPolicy parserPolicy = new ParserPolicy(MAX_PARSE_DURATION);
         SimpleParser parser = new SimpleParser(parserPolicy);
 

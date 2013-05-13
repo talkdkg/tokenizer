@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.tokenizer.crawler.db.CrawlerRepository;
+import org.tokenizer.crawler.db.model.TimestampUrlIDX;
 import org.tokenizer.crawler.db.model.UrlSitemapIDX;
 import org.tokenizer.executor.model.api.WritableExecutorModel;
 import org.tokenizer.executor.model.configuration.SitemapsFetcherTaskConfiguration;
@@ -54,19 +55,14 @@ public class SitemapsFetcherTask extends AbstractTask {
     private final BaseHttpFetcher fetcher;
     private BaseRobotRules robotRules = null;
 
-    public SitemapsFetcherTask(final UUID uuid, final String friendlyName,
-            final ZooKeeperItf zk,
-            final TaskConfiguration taskConfiguration,
-            final CrawlerRepository repository,
-            final WritableExecutorModel fetcherModel,
-            final HostLocker hostLocker) {
+    public SitemapsFetcherTask(final UUID uuid, final String friendlyName, final ZooKeeperItf zk,
+            final TaskConfiguration taskConfiguration, final CrawlerRepository repository,
+            final WritableExecutorModel fetcherModel, final HostLocker hostLocker) {
         super(uuid, friendlyName, zk, repository, fetcherModel, hostLocker);
         this.taskConfiguration = (SitemapsFetcherTaskConfiguration) taskConfiguration;
 
-        UserAgent userAgent = new UserAgent(
-                this.taskConfiguration.getAgentName(),
-                this.taskConfiguration.getEmailAddress(),
-                this.taskConfiguration.getWebAddress(),
+        UserAgent userAgent = new UserAgent(this.taskConfiguration.getAgentName(),
+                this.taskConfiguration.getEmailAddress(), this.taskConfiguration.getWebAddress(),
                 UserAgent.DEFAULT_BROWSER_VERSION, "2.1");
 
         LOG.warn("userAgent: {}", userAgent.getUserAgentString());
@@ -80,14 +76,12 @@ public class SitemapsFetcherTask extends AbstractTask {
         BaseRobotsParser parser = new SimpleRobotRulesParser();
         URL robotsUrl;
         try {
-            robotsUrl = new URL("http://" + taskConfiguration.getHost()
-                    + "/robots.txt");
+            robotsUrl = new URL("http://" + taskConfiguration.getHost() + "/robots.txt");
         } catch (MalformedURLException e) {
             LOG.error("", e);
             return;
         }
-        BaseRobotRules rules = RobotUtils.getRobotRules(fetcher, parser,
-                robotsUrl);
+        BaseRobotRules rules = RobotUtils.getRobotRules(fetcher, parser, robotsUrl);
         List<String> sitemaps = rules.getSitemaps();
         for (String sitemapIndexUrl : sitemaps) {
             LOG.info("fetching sitemap index: {}", sitemapIndexUrl);
@@ -104,8 +98,7 @@ public class SitemapsFetcherTask extends AbstractTask {
             byte[] content = result.getContent();
             AbstractSiteMap abstractSitemap;
             try {
-                abstractSitemap = sitemapParser.parseSiteMap(contentType,
-                        content, new URL(sitemapIndexUrl));
+                abstractSitemap = sitemapParser.parseSiteMap(contentType, content, new URL(sitemapIndexUrl));
             } catch (MalformedURLException e) {
                 LOG.error("", e);
                 continue;
@@ -117,8 +110,7 @@ public class SitemapsFetcherTask extends AbstractTask {
                 continue;
             }
             if (!abstractSitemap.isIndex()) {
-                LOG.error("found sitemap instead of sitemap index: {}",
-                        sitemapIndexUrl);
+                LOG.error("found sitemap instead of sitemap index: {}", sitemapIndexUrl);
                 continue;
             }
             SiteMapIndex sitemapIndex = (SiteMapIndex) abstractSitemap;
@@ -139,11 +131,9 @@ public class SitemapsFetcherTask extends AbstractTask {
                     }
                 }
                 content = result.getContent();
-                LOG.debug("contentType: {} \t URL: {}",
-                        result.getContentType(), result.getFetchedUrl());
+                LOG.debug("contentType: {} \t URL: {}", result.getContentType(), result.getFetchedUrl());
                 try {
-                    abstractSitemap = sitemapParser.parseSiteMap(
-                            result.getContentType(), result.getContent(),
+                    abstractSitemap = sitemapParser.parseSiteMap(result.getContentType(), result.getContent(),
                             sitemap.getUrl());
                 } catch (UnknownFormatException e) {
                     LOG.error("", e);
@@ -153,15 +143,24 @@ public class SitemapsFetcherTask extends AbstractTask {
                     continue;
                 }
                 if (abstractSitemap.isIndex()) {
-                    LOG.error("found sitemap index instead of sitemap: {}",
-                            sitemapIndexUrl);
+                    LOG.error("found sitemap index instead of sitemap: {}", sitemapIndexUrl);
                     continue;
                 }
-                for (SiteMapURL siteMapURL : ((SiteMap) abstractSitemap)
-                        .getSiteMapUrls()) {
-                    UrlSitemapIDX urlRecordIDX = new UrlSitemapIDX(siteMapURL.getUrl().toString());
-                    crawlerRepository.insertIfNotExists(urlRecordIDX);
-                    LOG.info("urlRecordIDX created: {}", urlRecordIDX);
+                for (SiteMapURL siteMapURL : ((SiteMap) abstractSitemap).getSiteMapUrls()) {
+
+                    String baseUrl = siteMapURL.getUrl().toString();
+
+                    // if we don't have it in URL_RECORDS, then we don't have it (must not) in an index.
+                    // Be careful: do not insert same URL into index twice!
+                    if (crawlerRepository.loadUrlRecord(baseUrl) == null) {
+                        TimestampUrlIDX timestampUrlIDX = new TimestampUrlIDX(baseUrl);
+                        crawlerRepository.insert(timestampUrlIDX);
+                    }
+
+                    UrlSitemapIDX urlSitemapIDX = new UrlSitemapIDX(baseUrl);
+                    crawlerRepository.insertIfNotExists(urlSitemapIDX);
+
+                    LOG.debug("urlSitemapIDX ... created ... : {}", urlSitemapIDX);
                 }
                 metricsCache.increment(MetricsCache.SITEMAPS_PROCESSED);
             }

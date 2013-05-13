@@ -25,8 +25,7 @@ import org.tokenizer.core.util.JavaSerializationUtils;
 public class UrlRecord implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory
-            .getLogger(UrlRecord.class);
+    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(UrlRecord.class);
 
     // standard
     private String baseUrl = DefaultValues.EMPTY_STRING;
@@ -42,25 +41,21 @@ public class UrlRecord implements Serializable {
 
     // calculated
     private int fetchAttemptCounter = 0;
-    private int httpResponseCode = 0;
     private byte[] webpageDigest = DefaultValues.EMPTY_ARRAY;
 
     public UrlRecord(final String url) {
         this.baseUrl = url;
     }
 
-    public UrlRecord(final String url, final long fetchTime,
-            final byte[] webpageDigest) {
+    public UrlRecord(final String url, final long fetchTime, final byte[] webpageDigest) {
         this.baseUrl = url;
         this.fetchTime = fetchTime;
         this.webpageDigest = webpageDigest;
     }
 
-    public UrlRecord(String baseUrl, String fetchedUrl, long fetchTime,
-            String contentType, Metadata headers, String newBaseUrl,
-            int numRedirects, String hostAddress, int httpStatus,
-            String reasonPhrase, int fetchAttemptCounter, int httpResponseCode,
-            byte[] webpageDigest) {
+    public UrlRecord(String baseUrl, String fetchedUrl, long fetchTime, String contentType, Metadata headers,
+            String newBaseUrl, int numRedirects, String hostAddress, int httpStatus, String reasonPhrase,
+            int fetchAttemptCounter, byte[] webpageDigest) {
         super();
         this.baseUrl = baseUrl;
         this.fetchedUrl = fetchedUrl;
@@ -73,7 +68,6 @@ public class UrlRecord implements Serializable {
         this.httpStatus = httpStatus;
         this.reasonPhrase = reasonPhrase;
         this.fetchAttemptCounter = fetchAttemptCounter;
-        this.httpResponseCode = httpResponseCode;
         this.webpageDigest = webpageDigest;
     }
 
@@ -127,8 +121,7 @@ public class UrlRecord implements Serializable {
 
     public void setHeaders(byte[] headersSerialized) {
         if (headersSerialized != null)
-            this.headers = (Metadata) JavaSerializationUtils
-                    .deserialize(headersSerialized);
+            this.headers = (Metadata) JavaSerializationUtils.deserialize(headersSerialized);
     }
 
     public String getNewBaseUrl() {
@@ -136,7 +129,7 @@ public class UrlRecord implements Serializable {
     }
 
     public void setNewBaseUrl(String newBaseUrl) {
-        this.newBaseUrl = newBaseUrl;
+        if (newBaseUrl != null) this.newBaseUrl = newBaseUrl;
     }
 
     public int getNumRedirects() {
@@ -179,14 +172,6 @@ public class UrlRecord implements Serializable {
         this.fetchAttemptCounter = fetchAttemptCounter;
     }
 
-    public int getHttpResponseCode() {
-        return httpResponseCode;
-    }
-
-    public void setHttpResponseCode(int httpResponseCode) {
-        this.httpResponseCode = httpResponseCode;
-    }
-
     public byte[] getWebpageDigest() {
         return webpageDigest;
     }
@@ -197,15 +182,11 @@ public class UrlRecord implements Serializable {
 
     @Override
     public String toString() {
-        return "UrlRecord [baseUrl=" + baseUrl + ", fetchedUrl=" + fetchedUrl
-                + ", fetchTime=" + fetchTime + ", contentType=" + contentType
-                + ", headers=" + headers + ", newBaseUrl=" + newBaseUrl
-                + ", numRedirects=" + numRedirects + ", hostAddress="
-                + hostAddress + ", httpStatus=" + httpStatus
-                + ", reasonPhrase=" + reasonPhrase + ", fetchAttemptCounter="
-                + fetchAttemptCounter + ", httpResponseCode="
-                + httpResponseCode + ", webpageDigest="
-                + Arrays.toString(webpageDigest) + "]";
+        return "UrlRecord [baseUrl=" + baseUrl + ", fetchedUrl=" + fetchedUrl + ", fetchTime=" + fetchTime
+                + ", contentType=" + contentType + ", headers=" + headers + ", newBaseUrl=" + newBaseUrl
+                + ", numRedirects=" + numRedirects + ", hostAddress=" + hostAddress + ", httpStatus=" + httpStatus
+                + ", reasonPhrase=" + reasonPhrase + ", fetchAttemptCounter=" + fetchAttemptCounter
+                + ", webpageDigest=" + Arrays.toString(webpageDigest) + "]";
     }
 
 }

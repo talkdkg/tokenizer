@@ -7,16 +7,21 @@ import java.util.List;
 import org.apache.nutch.net.URLFilter;
 import org.tokenizer.crawler.db.model.FetchedResultRecord;
 import org.tokenizer.crawler.db.model.HostRecord;
+import org.tokenizer.crawler.db.model.TimestampUrlIDX;
 import org.tokenizer.crawler.db.model.UrlHeadRecord;
 import org.tokenizer.crawler.db.model.UrlSitemapIDX;
 import org.tokenizer.crawler.db.model.WeblogRecord;
 
+import com.netflix.astyanax.MutationBatch;
+import com.netflix.astyanax.connectionpool.OperationResult;
 import com.netflix.astyanax.connectionpool.exceptions.ConnectionException;
+import com.netflix.astyanax.connectionpool.exceptions.NotFoundException;
 import com.netflix.astyanax.model.Column;
 
 public interface CrawlerRepository {
 
-    // public void insert(UrlRecord urlRecord) throws ConnectionException;
+    void insert(final UrlRecord urlRecord) throws ConnectionException;
+
     void insertIfNotExists(UrlRecord urlRecord) throws ConnectionException;
 
     void update(UrlRecord urlRecord) throws ConnectionException;
@@ -34,6 +39,8 @@ public interface CrawlerRepository {
 
     List<UrlRecord> listUrlRecords(final String host, final int httpResponseCode, byte[] startRowkey, int count)
             throws ConnectionException;
+
+    UrlRecord loadUrlRecord(final String baseUrl) throws ConnectionException;
 
     int countUrlRecords() throws ConnectionException;
 
@@ -101,12 +108,24 @@ public interface CrawlerRepository {
     UrlRecord getUrlRecord(final String key) throws ConnectionException;
 
     // CF_URL_SITEMAP_IDX
-    UrlSitemapIDX load(UrlSitemapIDX urlSitemapIDX) throws ConnectionException;
 
     void insert(final UrlSitemapIDX urlSitemapIDX) throws ConnectionException;
 
     void delete(UrlSitemapIDX urlSitemapIDX) throws ConnectionException;
 
     void insertIfNotExists(final UrlSitemapIDX urlSitemapIDX) throws ConnectionException;
+
+    UrlSitemapIDX load(UrlSitemapIDX urlSitemapIDX) throws ConnectionException;
+
+    // CF_TIMESTAMP_URL_IDX
+    void insert(final TimestampUrlIDX timestampUrlIDX) throws ConnectionException;
+
+    void delete(TimestampUrlIDX timestampUrlIDX) throws ConnectionException;
+
+    void insertIfNotExists(final TimestampUrlIDX timestampUrlIDX) throws ConnectionException;
+
+    TimestampUrlIDX load(TimestampUrlIDX timestampUrlIDX) throws ConnectionException;
+
+    List<TimestampUrlIDX> loadTimestampUrlIDX(String host) throws ConnectionException;
 
 }

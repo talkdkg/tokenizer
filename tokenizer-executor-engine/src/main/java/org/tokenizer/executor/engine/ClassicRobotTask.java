@@ -25,8 +25,6 @@ import java.util.UUID;
 
 import org.apache.nutch.net.URLFilter;
 import org.apache.nutch.urlfilter.automaton.AutomatonURLFilter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.tokenizer.crawler.db.CrawlerRepository;
 import org.tokenizer.crawler.db.UrlRecord;
 import org.tokenizer.executor.model.api.WritableExecutorModel;
