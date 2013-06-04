@@ -30,7 +30,7 @@ public class CrawlerRepositoryCassandraImplTest {
 
     @BeforeClass
     public static void setup() throws Exception {
-        CrawlerRepositoryCassandraImpl repo = new CrawlerRepositoryCassandraImpl();
+        CrawlerRepositoryCassandraImpl repo = new CrawlerRepositoryCassandraImpl(null);
         repo.setup();
         repository = repo;
     }
@@ -112,7 +112,7 @@ public class CrawlerRepositoryCassandraImplTest {
     @Test
     public void testCrawlerRepositoryCassandraImpl_1() throws Exception {
 
-        CrawlerRepositoryCassandraImpl result = new CrawlerRepositoryCassandraImpl();
+        CrawlerRepositoryCassandraImpl result = new CrawlerRepositoryCassandraImpl(null);
 
         // add additional test code here
         assertNotNull(result);

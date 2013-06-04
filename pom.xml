@@ -77,6 +77,8 @@
 		<module>tokenizer-ui</module>
 		<module>tokenizer-thrift-client</module>
 		<module>tokenizer-crawler-db-utils</module>
+		<module>tokenizer-nlp</module>
+		<module>tokenizer-nlp-impl</module>
 	</modules>
 	<repositories>
 		<repository>
@@ -423,6 +425,16 @@
 			<dependency>
 				<groupId>${project.groupId}</groupId>
 				<artifactId>tokenizer-executor-worker</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.tokenizer</groupId>
+				<artifactId>tokenizer-nlp</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.tokenizer</groupId>
+				<artifactId>tokenizer-nlp-impl</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>

@@ -32,13 +32,12 @@ import org.tokenizer.crawler.db.model.UrlHeadRecord;
 import org.tokenizer.crawler.db.model.UrlSitemapIDX;
 import org.tokenizer.crawler.db.model.WeblogRecord;
 import org.tokenizer.crawler.db.model.WeblogRecord.Weblog;
+import org.tokenizer.nlp.NlpTools;
+import org.tokenizer.nlp.Text;
+import org.tokenizer.nlp.Text.Sentence;
 
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableMap;
-import com.kaypok.FeatureExtraction;
-import com.kaypok.Tools;
-import com.kaypok.model.Sentence;
-import com.kaypok.model.Text;
 import com.netflix.astyanax.AstyanaxContext;
 import com.netflix.astyanax.ExceptionCallback;
 import com.netflix.astyanax.Keyspace;
@@ -168,7 +167,10 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
 
     protected static final int MAX_ROWS = 1000;
 
-    public CrawlerRepositoryCassandraImpl() {
+    private NlpTools nlpTools;
+
+    public CrawlerRepositoryCassandraImpl(NlpTools nlpTools) {
+        this.nlpTools = nlpTools;
     }
 
     CrawlerRepositoryCassandraImpl(int port) {
@@ -1364,7 +1366,7 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
         doc.addField("topic_en", messageRecord.getTopic());
         doc.addField("userRating_s", messageRecord.getUserRating());
 
-        Text text = FeatureExtraction.process(messageRecord.getContent());
+        Text text = nlpTools.processFeatureExtraction(messageRecord.getContent());
 
         Set<String> features = new HashSet<String>();
 
@@ -1380,8 +1382,7 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
         int sentiment = 0;
         for (Sentence s : text.getSentences()) {
             if (s.getFeatures() != null) {
-                sentiment = sentiment
-                        + Tools.prunTree(s.getSentence(), s.getFeatures(), s.getTreebank(), s.getChunks());
+                sentiment = sentiment + nlpTools.prunTree(s);
             }
         }
 
