@@ -1,20 +1,19 @@
 package org.tokenizer.crawler.db;
 
 import java.io.Serializable;
-import java.util.Arrays;
 
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
+import org.tokenizer.core.util.MD5;
 
 public class MessageRecord implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory
-            .getLogger(UrlRecord.class);
+    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(UrlRecord.class);
+
     private byte[] digest = DefaultValues.EMPTY_ARRAY;
     private String host = DefaultValues.EMPTY_STRING;
-    private byte[] hostInverted = DefaultValues.EMPTY_ARRAY;
     private String topic = DefaultValues.EMPTY_STRING;
     private String date = DefaultValues.EMPTY_STRING;
     private String author = DefaultValues.EMPTY_STRING;
@@ -24,8 +23,7 @@ public class MessageRecord implements Serializable {
     private String content = DefaultValues.EMPTY_STRING;
     private String userRating = DefaultValues.EMPTY_STRING;
 
-    private static final DateTimeFormatter fmt = DateTimeFormat
-            .forPattern("MMMM d, yyyy");
+    private static final DateTimeFormatter fmt = DateTimeFormat.forPattern("MMMM d, yyyy");
 
     private static final DateTimeFormatter TWITTER_DATE_FORMATTER = DateTimeFormat
             .forPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
@@ -37,8 +35,7 @@ public class MessageRecord implements Serializable {
 
     }
 
-    public MessageRecord(final byte[] digest, final String author,
-            final String title, final String content) {
+    public MessageRecord(final byte[] digest, final String author, final String title, final String content) {
         this.digest = digest;
         if (author != null) {
             this.author = author;
@@ -51,15 +48,12 @@ public class MessageRecord implements Serializable {
         }
     }
 
-    public MessageRecord(final byte[] digest, final String host,
-            final byte[] hostInverted, final String topic, final String date,
-            final String author, final String age, final String sex,
-            final String title, final String content, final String userRating) {
+    public MessageRecord(final byte[] digest, final String host, final String topic, final String date,
+            final String author, final String age, final String sex, final String title, final String content,
+            final String userRating) {
         this.digest = digest;
         if (host != null)
             this.host = host;
-        if (hostInverted != null)
-            this.hostInverted = hostInverted;
         if (topic != null)
             this.topic = topic;
         if (date != null)
@@ -88,16 +82,6 @@ public class MessageRecord implements Serializable {
         }
     }
 
-    public byte[] getHostInverted() {
-        return hostInverted;
-    }
-
-    public void setHostInverted(final byte[] hostInverted) {
-        if (hostInverted != null) {
-            this.hostInverted = hostInverted;
-        }
-    }
-
     public String getTopic() {
         return topic;
     }
@@ -116,7 +100,7 @@ public class MessageRecord implements Serializable {
 
         try {
             DateTime dt = TWITTER_DATE_FORMATTER.parseDateTime(date);
-            return date;
+            return dt.toString();
 
         } catch (Exception e) {
 
@@ -189,10 +173,8 @@ public class MessageRecord implements Serializable {
 
     @Override
     public String toString() {
-        return "MessageRecord [digest=" + Arrays.toString(digest) + ", host="
-                + host + ", hostInverted=" + Arrays.toString(hostInverted)
-                + ", topic=" + topic + ", date=" + date + ", author=" + author
-                + ", age=" + age + ", sex=" + sex + ", title=" + title
-                + ", content=" + content + ", userRating=" + userRating + "]";
+        return "MessageRecord [digest=" + MD5.toHexString(digest) + ", host=" + host + ", topic=" + topic + ", date="
+                + date + ", author=" + author + ", age=" + age + ", sex=" + sex + ", title=" + title + ", content="
+                + content + ", userRating=" + userRating + "]";
     }
 }

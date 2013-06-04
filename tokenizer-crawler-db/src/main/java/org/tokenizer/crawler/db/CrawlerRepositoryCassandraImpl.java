@@ -86,7 +86,7 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
     protected final String clusterName = "web_crawl_cluster";
     protected final String keyspaceName = "web_crawl_keyspace";
     protected String seeds = "127.0.0.1";
-    protected int port = 19160;
+    protected int port = 9160;
 
     /**
      * This is classic table key:=URL and columns:= all the response headers except webpage content
@@ -610,12 +610,11 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
 
     @Override
     public void insert(final UrlRecord urlRecord) throws ConnectionException {
-        
+
         LOG.info("inserting urlRecord: {}", urlRecord);
-        
+
         MutationBatch m = keyspace.prepareMutationBatch();
-        m.withRow(CF_URL_RECORDS, urlRecord.getBaseUrl())
-                .putColumn("fetchedUrl", urlRecord.getFetchedUrl(), null)
+        m.withRow(CF_URL_RECORDS, urlRecord.getBaseUrl()).putColumn("fetchedUrl", urlRecord.getFetchedUrl(), null)
                 .putColumn("fetchTime", urlRecord.getFetchTime(), null)
                 .putColumn("contentType", urlRecord.getContentType(), null)
                 .putColumn("headers", urlRecord.getHeadersSerialized(), null)
@@ -950,7 +949,6 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
     protected void insert(final MessageRecord messageRecord) throws ConnectionException {
         MutationBatch m = keyspace.prepareMutationBatch();
         m.withRow(CF_MESSAGE_RECORDS, messageRecord.getDigest()).putColumn("host", messageRecord.getHost(), null)
-                .putColumn("hostInverted", messageRecord.getHostInverted(), null)
                 .putColumn("topic", messageRecord.getTopic(), null).putColumn("date", messageRecord.getDate(), null)
                 .putColumn("author", messageRecord.getAuthor(), null).putColumn("age", messageRecord.getAge(), null)
                 .putColumn("sex", messageRecord.getSex(), null).putColumn("title", messageRecord.getTitle(), null)
@@ -1201,7 +1199,6 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
             return null;
         }
         String host = columns.getStringValue("host", null);
-        byte[] hostInverted = columns.getByteArrayValue("hostInverted", null);
         String topic = columns.getStringValue("topic", null);
         String date = columns.getStringValue("date", null);
         String author = columns.getStringValue("author", null);
@@ -1210,8 +1207,8 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
         String title = columns.getStringValue("title", null);
         String content = columns.getStringValue("content", null);
         String userRating = columns.getStringValue("userRating", null);
-        MessageRecord messageRecord = new MessageRecord(digest, host, hostInverted, topic, date, author, age, sex,
-                title, content, userRating);
+        MessageRecord messageRecord = new MessageRecord(digest, host, topic, date, author, age, sex, title, content,
+                userRating);
         return messageRecord;
     }
 
@@ -1704,12 +1701,12 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
     @Override
     public List<TimestampUrlIDX> loadTimestampUrlIDX(String host) throws ConnectionException {
 
-        OperationResult<ColumnList<TimestampUrlIDX>> result = keyspace.prepareQuery(CF_TIMESTAMP_URL_IDX).getKey(host)
-                .withColumnRange(
-                        TIMESTAMP_URL_IDX_SERIALIZER.makeEndpoint(0L, Equality.LESS_THAN)
-                        .toBytes(),
-                        TIMESTAMP_URL_IDX_SERIALIZER.makeEndpoint(0L, Equality.GREATER_THAN)
-                        .toBytes(), false, 100).execute();
+        OperationResult<ColumnList<TimestampUrlIDX>> result = keyspace
+                .prepareQuery(CF_TIMESTAMP_URL_IDX)
+                .getKey(host)
+                .withColumnRange(TIMESTAMP_URL_IDX_SERIALIZER.makeEndpoint(0L, Equality.LESS_THAN).toBytes(),
+                        TIMESTAMP_URL_IDX_SERIALIZER.makeEndpoint(0L, Equality.GREATER_THAN).toBytes(), false, 100)
+                .execute();
 
         List<TimestampUrlIDX> list = new ArrayList<TimestampUrlIDX>();
 

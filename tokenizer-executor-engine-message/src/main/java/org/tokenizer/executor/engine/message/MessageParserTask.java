@@ -165,8 +165,6 @@ public class MessageParserTask extends AbstractTask {
         MessageRecord messageRecord = new MessageRecord(xmlRecord.getDigest(),
                 author, title, content);
         messageRecord.setHost(xmlRecord.getHost());
-        messageRecord.setHostInverted(HttpUtils.getHostInverted(xmlRecord
-                .getHost()));
         messageRecord.setTopic(topic);
         messageRecord.setDate(date);
         messageRecord.setAge(age);

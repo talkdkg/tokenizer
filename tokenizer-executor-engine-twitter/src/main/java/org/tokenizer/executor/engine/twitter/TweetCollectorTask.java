@@ -26,10 +26,7 @@ import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.tokenizer.core.TokenizerConfig;
-import org.tokenizer.core.util.HttpUtils;
 import org.tokenizer.core.util.LanguageDetector;
 import org.tokenizer.core.util.MD5;
 import org.tokenizer.crawler.db.CrawlerRepository;
@@ -59,15 +56,11 @@ import com.netflix.astyanax.connectionpool.exceptions.ConnectionException;
 public class TweetCollectorTask extends AbstractTask {
 
     private final Twitter twitter;
-    private final String consumerKey = TokenizerConfig
-            .getString("twitter.consumerKey");
-    private final String consumerSecret = TokenizerConfig
-            .getString("twitter.consumerSecret");
+    private final String consumerKey = TokenizerConfig.getString("twitter.consumerKey");
+    private final String consumerSecret = TokenizerConfig.getString("twitter.consumerSecret");
     private final String token = TokenizerConfig.getString("twitter.token");
-    private final String tokenSecret = TokenizerConfig
-            .getString("twitter.tokenSecret");
-    SimpleDateFormat dateFormatter = new SimpleDateFormat(
-            "yyyy-MM-dd'T'HH:mm:ssZ");
+    private final String tokenSecret = TokenizerConfig.getString("twitter.tokenSecret");
+    SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
 
     static {
         // default read timeout 120000 see
@@ -81,14 +74,12 @@ public class TweetCollectorTask extends AbstractTask {
     BlockingQueue<Status> queue;
     TwitterStream stream;
 
-    public TweetCollectorTask(final UUID uuid, final String friendlyName,
-            final ZooKeeperItf zk, final TaskConfiguration taskConfiguration,
-            final CrawlerRepository crawlerRepository,
+    public TweetCollectorTask(final UUID uuid, final String friendlyName, final ZooKeeperItf zk,
+            final TaskConfiguration taskConfiguration, final CrawlerRepository crawlerRepository,
             final WritableExecutorModel model, final HostLocker hostLocker) {
         super(uuid, friendlyName, zk, crawlerRepository, model, hostLocker);
         this.taskConfiguration = (TweetCollectorTaskConfiguration) taskConfiguration;
-        BufferedReader bufferedReader = new BufferedReader(new StringReader(
-                this.taskConfiguration.getKeywords()));
+        BufferedReader bufferedReader = new BufferedReader(new StringReader(this.taskConfiguration.getKeywords()));
         String line = null;
         try {
             while ((line = bufferedReader.readLine()) != null) {
@@ -115,11 +106,10 @@ public class TweetCollectorTask extends AbstractTask {
         LOG.debug("Instance created");
     }
 
-    public TwitterStream streamingTwitter(final Collection<String> track,
-            final Queue<Status> queue) throws TwitterException {
+    public TwitterStream streamingTwitter(final Collection<String> track, final Queue<Status> queue)
+            throws TwitterException {
         String[] trackArray = track.toArray(new String[track.size()]);
-        TwitterStream stream = new TwitterStreamFactory().getInstance(twitter
-                .getAuthorization());
+        TwitterStream stream = new TwitterStreamFactory().getInstance(twitter.getAuthorization());
         stream.addListener(new StatusListener() {
 
             @Override
@@ -137,19 +127,16 @@ public class TweetCollectorTask extends AbstractTask {
                  */
 
                 if (!queue.offer(status)) {
-                    LOG.error("Cannot add tweet as input queue for streaming is full:"
-                            + queue.size());
+                    LOG.error("Cannot add tweet as input queue for streaming is full:" + queue.size());
                 }
             }
 
             @Override
-            public void onDeletionNotice(
-                    final StatusDeletionNotice statusDeletionNotice) {
+            public void onDeletionNotice(final StatusDeletionNotice statusDeletionNotice) {
             }
 
             @Override
-            public void onTrackLimitationNotice(
-                    final int numberOfLimitedStatuses) {
+            public void onTrackLimitationNotice(final int numberOfLimitedStatuses) {
             }
 
             @Override
@@ -174,10 +161,8 @@ public class TweetCollectorTask extends AbstractTask {
         return str == null || str.isEmpty();
     }
 
-    public TwitterStream sampleStream(final Queue<Status> queue)
-            throws TwitterException {
-        TwitterStream stream = new TwitterStreamFactory().getInstance(twitter
-                .getAuthorization());
+    public TwitterStream sampleStream(final Queue<Status> queue) throws TwitterException {
+        TwitterStream stream = new TwitterStreamFactory().getInstance(twitter.getAuthorization());
         stream.addListener(new StatusListener() {
 
             @Override
@@ -196,19 +181,16 @@ public class TweetCollectorTask extends AbstractTask {
                 }
 
                 if (!queue.offer(status)) {
-                    LOG.error("Cannot add tweet as input queue for streaming is full:"
-                            + queue.size());
+                    LOG.error("Cannot add tweet as input queue for streaming is full:" + queue.size());
                 }
             }
 
             @Override
-            public void onDeletionNotice(
-                    final StatusDeletionNotice statusDeletionNotice) {
+            public void onDeletionNotice(final StatusDeletionNotice statusDeletionNotice) {
             }
 
             @Override
-            public void onTrackLimitationNotice(
-                    final int numberOfLimitedStatuses) {
+            public void onTrackLimitationNotice(final int numberOfLimitedStatuses) {
             }
 
             @Override
@@ -254,16 +236,12 @@ public class TweetCollectorTask extends AbstractTask {
         }
         Status status = queue.take();
 
-        MessageRecord messageRecord = new MessageRecord(MD5.digest(status
-                .toString()), status.getUser().getName(), null,
-                status.getText());
+        MessageRecord messageRecord = new MessageRecord(MD5.digest(status.toString()), status.getUser().getName(),
+                null, status.getText());
 
         messageRecord.setHost("stream.twitter.com");
-        messageRecord.setHostInverted(HttpUtils
-                .getHostInverted("stream.twitter.com"));
 
-        messageRecord.setDate(org.apache.solr.schema.DateField
-                .formatExternal(status.getCreatedAt()));
+        messageRecord.setDate(org.apache.solr.schema.DateField.formatExternal(status.getCreatedAt()));
 
         crawlerRepository.insertIfNotExists(messageRecord);
         metricsCache.increment(MetricsCache.MESSAGE_TOTAL_KEY);
