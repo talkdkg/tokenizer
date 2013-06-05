@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -34,7 +33,6 @@ import org.tokenizer.crawler.db.model.WeblogRecord;
 import org.tokenizer.crawler.db.model.WeblogRecord.Weblog;
 import org.tokenizer.nlp.NlpTools;
 import org.tokenizer.nlp.Text;
-import org.tokenizer.nlp.Text.Sentence;
 
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableMap;
@@ -1366,25 +1364,13 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
         doc.addField("topic_en", messageRecord.getTopic());
         doc.addField("userRating_s", messageRecord.getUserRating());
 
-        Text text = nlpTools.processFeatureExtraction(messageRecord.getContent());
+        Text text = nlpTools.process(messageRecord.getContent());
 
-        Set<String> features = new HashSet<String>();
-
-        for (Sentence s : text.getSentences()) {
-            LOG.debug("sentence: {}", s);
-            if (s.getFeatures() != null) {
-                features.addAll(s.getFeatures());
-            }
-        }
+        Set<String> features = text.getFeatures();
 
         doc.addField("feature_ss", features);
 
-        int sentiment = 0;
-        for (Sentence s : text.getSentences()) {
-            if (s.getFeatures() != null) {
-                sentiment = sentiment + nlpTools.prunTree(s);
-            }
-        }
+        int sentiment = text.getSentiment();
 
         if (sentiment > 0) {
             doc.addField("sentiment_s", "Positive");

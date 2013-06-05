@@ -57,3 +57,7 @@ test TDE-2 #close
 TDE-2 #close
 
 
+Vaadin, Shiro, and Juice:
+http://rndjava.blogspot.co.uk/
+https://github.com/davidsowerby/v7
+

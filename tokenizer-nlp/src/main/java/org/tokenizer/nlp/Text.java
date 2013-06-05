@@ -6,12 +6,7 @@ import java.util.Set;
 public interface Text {
 
     List<Sentence> getSentences();
-
-    public interface Sentence {
-        Set<String> getFeatures();
-        String getSentence();
-        String getTreebank();
-        List<String> getChunks();
-    }
+    Set<String> getFeatures();
+    int getSentiment();
 
 }
