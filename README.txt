@@ -60,4 +60,6 @@ TDE-2 #close
 Vaadin, Shiro, and Juice:
 http://rndjava.blogspot.co.uk/
 https://github.com/davidsowerby/v7
+http://www.javacodegeeks.com/2012/05/apache-shiro-part-2-realms-database-and.html
+http://ask.metafilter.com/50594/Asking-a-girl-out-on-a-second-date
 

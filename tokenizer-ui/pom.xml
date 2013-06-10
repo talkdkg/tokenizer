@@ -204,9 +204,9 @@
 				<version>2.4.1</version>
 				<configuration>
 					<filesets>
-						<fileset>
-							<directory>src/main/webapp/VAADIN/widgetsets</directory>
-						</fileset>
+<!-- 						<fileset> -->
+<!-- 							<directory>src/main/webapp/VAADIN/widgetsets</directory> -->
+<!-- 						</fileset> -->
 					</filesets>
 				</configuration>
 			</plugin>
@@ -237,9 +237,9 @@
                             <!-- if you don't specify any modules, the plugin will find them -->
 						</configuration>
 						<goals>
-							<goal>resources</goal>
-							<goal>update-widgetset</goal>
-							<goal>compile</goal>
+<!-- 							<goal>resources</goal> -->
+<!-- 							<goal>update-widgetset</goal> -->
+<!-- 							<goal>compile</goal> -->
 						</goals>
 					</execution>
 				</executions>
@@ -263,9 +263,9 @@
 										<versionRange> [7.0.1,)
 										</versionRange>
 										<goals>
-											<goal>resources</goal>
-											<goal>update-widgetset</goal>
-											<goal>compile</goal>
+<!-- 											<goal>resources</goal> -->
+<!-- 											<goal>update-widgetset</goal> -->
+<!-- 											<goal>compile</goal> -->
 										</goals>
 									</pluginExecutionFilter>
 									<action>

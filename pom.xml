@@ -45,7 +45,7 @@
 		<version.tagsoup>1.2.1</version.tagsoup>
 		<version.tika>1.3</version.tika>
 		<version.twitter4j>3.0.3</version.twitter4j>
-		<version.zookeeper>3.4.4</version.zookeeper>
+		<version.zookeeper>3.4.5</version.zookeeper>
 		<!-- copied from tokenizer-ui -->
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<addonBaseName>dontpush-addon</addonBaseName>
