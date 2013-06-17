@@ -21,12 +21,13 @@ public class UrlSitemapIDX {
     }
 
     public String getHost() {
-        return host;
+        if (this.host == null) this.host = HttpUtils.getHost(url);
+        return this.host;
     }
 
-    public void setHost(String host) {
-        this.host = host;
-    }
+    //public void setHost(String host) {
+    //    this.host = host;
+    //}
 
     public String getUrl() {
         return url;
@@ -34,11 +35,12 @@ public class UrlSitemapIDX {
 
     public void setUrl(String url) {
         this.url = url;
+        this.host = HttpUtils.getHost(url);
     }
 
     @Override
     public String toString() {
-        return "UrlSitemapIDX [host=" + host + ", url=" + url + "]";
+        return "UrlSitemapIDX [host=" + getHost() + ", url=" + url + "]";
     }
 
 }

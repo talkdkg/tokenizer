@@ -15,28 +15,28 @@ import org.tokenizer.thrift.ThriftTokenizerService;
 
 public class TokenizerClient {
 
-    private static final Logger LOG = LoggerFactory
-            .getLogger(TokenizerClient.class);
+    private static final Logger LOG = LoggerFactory.getLogger(TokenizerClient.class);
 
     private static final String HOST = "108.175.12.244";
     private static final int PORT = 32123;
 
-    public static ThriftQueryResponse getMessageRecords(final String query,
-            final int start, final int rows) {
+    public static ThriftQueryResponse getMessageRecords(final String query, final int start, final int rows) {
         TSocket transport = null;
         ThriftQueryResponse result = null;
         try {
             transport = new TSocket(HOST, PORT);
             TProtocol protocol = new TBinaryProtocol(transport);
-            ThriftTokenizerService.Client client = new ThriftTokenizerService.Client(
-                    protocol);
+            ThriftTokenizerService.Client client = new ThriftTokenizerService.Client(protocol);
             transport.open();
             result = client.get_message_records(query, start, rows);
-        } catch (TTransportException e) {
+        }
+        catch (TTransportException e) {
             LOG.error("", e);
-        } catch (TException e) {
+        }
+        catch (TException e) {
             LOG.error("", e);
-        } finally {
+        }
+        finally {
             if (transport != null) {
                 transport.close();
             }
@@ -46,24 +46,24 @@ public class TokenizerClient {
         return result;
     }
 
-    public static ThriftQueryResponse getMessageRecords(final String query,
-            final int start, final int rows, final long startTime,
-            final long endTime) {
+    public static ThriftQueryResponse getMessageRecords(final String query, final int start, final int rows,
+        final long startTime, final long endTime) {
         TSocket transport = null;
         ThriftQueryResponse result = null;
         try {
             transport = new TSocket(HOST, PORT);
             TProtocol protocol = new TBinaryProtocol(transport);
-            ThriftTokenizerService.Client client = new ThriftTokenizerService.Client(
-                    protocol);
+            ThriftTokenizerService.Client client = new ThriftTokenizerService.Client(protocol);
             transport.open();
-            result = client.get_message_records_by_date_range(query, start,
-                    rows, startTime, endTime);
-        } catch (TTransportException e) {
+            result = client.get_message_records_by_date_range(query, start, rows, startTime, endTime);
+        }
+        catch (TTransportException e) {
             LOG.error("", e);
-        } catch (TException e) {
+        }
+        catch (TException e) {
             LOG.error("", e);
-        } finally {
+        }
+        finally {
             if (transport != null) {
                 transport.close();
             }
@@ -73,24 +73,25 @@ public class TokenizerClient {
         return result;
     }
 
-    public static ThriftQueryResponse getMessageRecords(final String query,
-            final int start, final int rows, final long startTime,
-            final long endTime, final String source) {
+    public static ThriftQueryResponse getMessageRecords(final String query, final int start, final int rows,
+        final long startTime, final long endTime, final String source) {
         TSocket transport = null;
         ThriftQueryResponse result = null;
         try {
             transport = new TSocket(HOST, PORT);
             TProtocol protocol = new TBinaryProtocol(transport);
-            ThriftTokenizerService.Client client = new ThriftTokenizerService.Client(
-                    protocol);
+            ThriftTokenizerService.Client client = new ThriftTokenizerService.Client(protocol);
             transport.open();
-            result = client.get_message_records_by_date_range_and_source(query,
-                    start, rows, startTime, endTime, source);
-        } catch (TTransportException e) {
+            result =
+                client.get_message_records_by_date_range_and_source(query, start, rows, startTime, endTime, source);
+        }
+        catch (TTransportException e) {
             LOG.error("", e);
-        } catch (TException e) {
+        }
+        catch (TException e) {
             LOG.error("", e);
-        } finally {
+        }
+        finally {
             if (transport != null) {
                 transport.close();
             }
@@ -100,23 +101,24 @@ public class TokenizerClient {
         return result;
     }
 
-    public static ThriftQueryResponse getMessageRecords(final String query,
-            final int start, final int rows, final String source) {
+    public static ThriftQueryResponse getMessageRecords(final String query, final int start, final int rows,
+        final String source) {
         TSocket transport = null;
         ThriftQueryResponse result = null;
         try {
             transport = new TSocket(HOST, PORT);
             TProtocol protocol = new TBinaryProtocol(transport);
-            ThriftTokenizerService.Client client = new ThriftTokenizerService.Client(
-                    protocol);
+            ThriftTokenizerService.Client client = new ThriftTokenizerService.Client(protocol);
             transport.open();
-            result = client.get_message_records_by_source(query, start, rows,
-                    source);
-        } catch (TTransportException e) {
+            result = client.get_message_records_by_source(query, start, rows, source);
+        }
+        catch (TTransportException e) {
             LOG.error("", e);
-        } catch (TException e) {
+        }
+        catch (TException e) {
             LOG.error("", e);
-        } finally {
+        }
+        finally {
             if (transport != null) {
                 transport.close();
             }
@@ -132,48 +134,58 @@ public class TokenizerClient {
 
         // get 10 records from record number 30 to 39:
         ThriftQueryResponse r = getMessageRecords("travel", 30, 10);
-        //System.out.println("Error: " + r.error);
-        System.out.println("Elapsed Time: " + r.elapsedTime);
-        System.out.println("Number of records found: " + r.numFound);
-        for (ThriftMessageRecord tmr : r.getMessages()) {
-            System.out.println(tmr);
+        // System.out.println("Error: " + r.error);
+        if (r != null) {
+            System.out.println("Elapsed Time: " + r.elapsedTime);
+            System.out.println("Number of records found: " + r.numFound);
+            for (ThriftMessageRecord tmr : r.getMessages()) {
+                System.out.println(tmr);
+            }
         }
-
         // get 10 records from record number 0 to 9
         // filered by date range "last month"
-        r = getMessageRecords("travel", 0, 10, System.currentTimeMillis()
-                - oneMonthMillis, System.currentTimeMillis());
-        //System.out.println("Error: " + r.error);
-        System.out.println("Elapsed Time: " + r.elapsedTime);
-        System.out.println("Number of records found: " + r.numFound);
-        for (ThriftMessageRecord tmr : r.getMessages()) {
-            System.out.println(tmr);
+        if (r != null) {
+            r =
+                getMessageRecords("travel", 0, 10, System.currentTimeMillis() - oneMonthMillis,
+                    System.currentTimeMillis());
+            // System.out.println("Error: " + r.error);
+            System.out.println("Elapsed Time: " + r.elapsedTime);
+            System.out.println("Number of records found: " + r.numFound);
+            for (ThriftMessageRecord tmr : r.getMessages()) {
+                System.out.println(tmr);
+            }
         }
 
         // get 10 records from record number 0 to 9
         // filered by date range "last month"
         // filtered by "source" (host)
-        r = getMessageRecords("travel", 0, 10, System.currentTimeMillis()
-                - oneMonthMillis, System.currentTimeMillis(), "www.amazon.com");
-        //System.out.println("Error: " + r.error);
-        System.out.println("Elapsed Time: " + r.elapsedTime);
-        System.out.println("Number of records found: " + r.numFound);
-        for (ThriftMessageRecord tmr : r.getMessages()) {
-            System.out.println(tmr);
+        r =
+            getMessageRecords("iphone", 0, 1000, System.currentTimeMillis() - oneMonthMillis,
+                System.currentTimeMillis(), "stream.twitter.com");
+
+        if (r != null) {
+            // System.out.println("Error: " + r.error);
+            System.out.println("Elapsed Time: " + r.elapsedTime);
+            System.out.println("Number of records found: " + r.numFound);
+            for (ThriftMessageRecord tmr : r.getMessages()) {
+                System.out.println(tmr);
+            }
+
         }
 
         // get 10 records from record number 0 to 9
         // filtered by "source" (host)
-        r = getMessageRecords("travel", 0, 10, "stream.twitter.com");
-        //System.out.println("Error: " + r.error);
-        System.out.println("Elapsed Time: " + r.elapsedTime);
-        System.out.println("Number of records found: " + r.numFound);
-        for (ThriftMessageRecord tmr : r.getMessages()) {
-            System.out.println(tmr);
+        if (r != null) {
+            r = getMessageRecords("travel", 0, 10, "stream.twitter.com");
+            // System.out.println("Error: " + r.error);
+            System.out.println("Elapsed Time: " + r.elapsedTime);
+            System.out.println("Number of records found: " + r.numFound);
+            for (ThriftMessageRecord tmr : r.getMessages()) {
+                System.out.println(tmr);
+            }
+
+            System.out.println(new Date(1361328830000L));
         }
-
-        System.out.println(new Date(1361328830000L));
-
     }
 
 }

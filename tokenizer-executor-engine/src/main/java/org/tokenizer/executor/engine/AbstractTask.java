@@ -100,9 +100,9 @@ public abstract class AbstractTask implements Runnable, LeaderElectionCallback {
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             } catch (ConnectionException e) {
-                LOG.error("Repository unavailable; sleeping 60 seconds...", e);
+                LOG.error("Repository unavailable; sleeping 1 second...", e);
                 try {
-                    Thread.sleep(60000);
+                    Thread.sleep(1000);
                 } catch (InterruptedException e1) {
                     Thread.currentThread().interrupt();
                 }

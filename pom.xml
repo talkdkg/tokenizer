@@ -19,9 +19,11 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<properties>
-		<version.astyanax>1.56.37</version.astyanax>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<version.astyanax>1.56.42-SNAPSHOT</version.astyanax>
 		<version.automaton>1.11-8</version.automaton>
 		<version.base64>2.3.8</version.base64>
+		<version.cassandra>1.2.5</version.cassandra>
 		<version.crawler-commons>0.2-SNAPSHOT</version.crawler-commons>
 		<version.commons-cli>1.2</version.commons-cli>
 		<version.commons-io>2.4</version.commons-io>
@@ -46,8 +48,6 @@
 		<version.tika>1.3</version.tika>
 		<version.twitter4j>3.0.3</version.twitter4j>
 		<version.zookeeper>3.4.5</version.zookeeper>
-		<!-- copied from tokenizer-ui -->
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<addonBaseName>dontpush-addon</addonBaseName>
 		<vaadin.version>7.0.2</vaadin.version>
 		<version.vaadin>${vaadin.version}</version.vaadin>
@@ -128,6 +128,7 @@
 				<artifactId>astyanax</artifactId>
 				<version>${version.astyanax}</version>
 				<exclusions>
+
 					<exclusion>
 						<artifactId>guava</artifactId>
 						<groupId>com.google.guava</groupId>
@@ -166,6 +167,20 @@
 				<artifactId>astyanax-cassandra</artifactId>
 				<version>${version.astyanax}</version>
 				<exclusions>
+
+					<exclusion>
+						<groupId>org.apache.cassandra</groupId>
+						<artifactId>cassandra-all</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.apache.cassandra</groupId>
+						<artifactId>cassandra-thrift</artifactId>
+					</exclusion>
+                    <exclusion>
+                        <groupId>org.apache.thrift</groupId>
+                        <artifactId>libthrift</artifactId>
+                    </exclusion>
+
 					<exclusion>
 						<artifactId>guava</artifactId>
 						<groupId>com.google.guava</groupId>
@@ -182,6 +197,21 @@
 				<artifactId>astyanax-thrift</artifactId>
 				<version>${version.astyanax}</version>
 				<exclusions>
+
+
+					<exclusion>
+						<groupId>org.apache.cassandra</groupId>
+						<artifactId>cassandra-all</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.apache.cassandra</groupId>
+						<artifactId>cassandra-thrift</artifactId>
+					</exclusion>
+                    <exclusion>
+                        <groupId>org.apache.thrift</groupId>
+                        <artifactId>libthrift</artifactId>
+                    </exclusion>
+
 					<exclusion>
 						<artifactId>guava</artifactId>
 						<groupId>com.google.guava</groupId>
@@ -208,6 +238,19 @@
 					</exclusion>
 				</exclusions>
 			</dependency>
+
+
+			<dependency>
+				<groupId>org.apache.cassandra</groupId>
+				<artifactId>cassandra-all</artifactId>
+				<version>${version.cassandra}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.cassandra</groupId>
+				<artifactId>cassandra-thrift</artifactId>
+				<version>${version.cassandra}</version>
+			</dependency>
+
 
 			<dependency>
 				<groupId>commons-lang</groupId>

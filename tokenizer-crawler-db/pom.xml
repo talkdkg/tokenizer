@@ -17,71 +17,55 @@
  */
  -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<artifactId>tokenizer</artifactId>
-		<groupId>org.tokenizer</groupId>
-		<version>1.0-SNAPSHOT</version>
-		<relativePath>..</relativePath>
-	</parent>
-	<artifactId>tokenizer-crawler-db</artifactId>
-	<dependencies>
-	
-		<dependency>
-			<groupId>org.tokenizer</groupId>
-			<artifactId>tokenizer-core</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>org.tokenizer</groupId>
-			<artifactId>tokenizer-nlp</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>org.tokenizer</groupId>
-			<artifactId>tokenizer-nlp-impl</artifactId>
-		</dependency>
-
-<!--
-		<dependency>
-			<groupId>com.netflix.astyanax</groupId>
-			<artifactId>astyanax</artifactId>
-		</dependency>
- -->
- 
-		<dependency>
-			<groupId>com.netflix.astyanax</groupId>
-			<artifactId>astyanax-core</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.netflix.astyanax</groupId>
-			<artifactId>astyanax-cassandra</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>com.netflix.astyanax</groupId>
-			<artifactId>astyanax-thrift</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>com.netflix.astyanax</groupId>
-			<artifactId>astyanax-queue</artifactId>
-		</dependency>
-
-
-<!-- 
-		<dependency>
-			<groupId>com.kaypok</groupId>
-			<artifactId>feature-extraction</artifactId>
-			<version>1.0-SNAPSHOT</version>
-		</dependency>
--->
-
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <artifactId>tokenizer</artifactId>
+        <groupId>org.tokenizer</groupId>
+        <version>1.0-SNAPSHOT</version>
+        <relativePath>..</relativePath>
+    </parent>
+    <artifactId>tokenizer-crawler-db</artifactId>
+    <dependencies>
+        <dependency>
+            <groupId>org.tokenizer</groupId>
+            <artifactId>tokenizer-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.tokenizer</groupId>
+            <artifactId>tokenizer-nlp</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.tokenizer</groupId>
+            <artifactId>tokenizer-nlp-impl</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.netflix.astyanax</groupId>
+            <artifactId>astyanax-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.netflix.astyanax</groupId>
+            <artifactId>astyanax-cassandra</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.netflix.astyanax</groupId>
+            <artifactId>astyanax-thrift</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.netflix.astyanax</groupId>
+            <artifactId>astyanax-queue</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.cassandra</groupId>
+            <artifactId>cassandra-thrift</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.cassandra</groupId>
+            <artifactId>cassandra-all</artifactId>
+        </dependency>
 
 		<!-- absolute path does not work in Windows... <dependency> <groupId>object-explorer</groupId> 
 			<artifactId>object-explorer</artifactId> <version>0.1</version> <scope>system</scope> 
 			<systemPath>/java/git/tokenizer/lib/object-explorer.jar</systemPath> </dependency> -->
-
-	</dependencies>
+    </dependencies>
 </project>

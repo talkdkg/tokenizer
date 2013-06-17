@@ -6,7 +6,7 @@ import com.netflix.astyanax.annotations.Component;
 
 public class TimestampUrlIDX {
 
-    private String host;
+    private String host = null;
 
     @Component(ordinal = 0)
     private long timestamp;
@@ -25,12 +25,13 @@ public class TimestampUrlIDX {
     }
 
     public String getHost() {
-        return host;
+        if (this.host == null) this.host = HttpUtils.getHost(url);
+        return this.host;
     }
 
-    public void setHost(String host) {
-        this.host = host;
-    }
+    //public void setHost(String host) {
+    //    this.host = host;
+    //}
 
     public String getUrl() {
         return url;
@@ -38,6 +39,7 @@ public class TimestampUrlIDX {
 
     public void setUrl(String url) {
         this.url = url;
+        this.host = HttpUtils.getHost(url);
     }
 
     public long getTimestamp() {
@@ -50,7 +52,7 @@ public class TimestampUrlIDX {
 
     @Override
     public String toString() {
-        return "TimestampUrlIDX [host=" + host + ", timestamp=" + timestamp + ", url=" + url + "]";
+        return "TimestampUrlIDX [host=" + getHost() + ", timestamp=" + timestamp + ", url=" + url + "]";
     }
 
 

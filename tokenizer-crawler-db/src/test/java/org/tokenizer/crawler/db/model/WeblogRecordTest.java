@@ -1,4 +1,4 @@
-package org.tokenizer.crawler.db.weblog;
+package org.tokenizer.crawler.db.model;
 
 import java.util.LinkedList;
 import java.util.List;

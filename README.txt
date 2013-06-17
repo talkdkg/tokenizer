@@ -63,3 +63,18 @@ https://github.com/davidsowerby/v7
 http://www.javacodegeeks.com/2012/05/apache-shiro-part-2-realms-database-and.html
 http://ask.metafilter.com/50594/Asking-a-girl-out-on-a-second-date
 
+
+
++ url_records
+? url_sitemap_idx CompositeType(UTF8Type)
+? timestamp_url_idx CompositeType(LongType,UTF8Type)"
++ webpage_records
++ xml_records TODO
++ message_records TODO
+? weblogs_records TODO
+? weblogs_records_idx0
+
+fetched_result_records
+url_head_records
+host_records
+

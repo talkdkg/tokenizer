@@ -182,17 +182,23 @@ public class SitemapsPageFetcherTask extends AbstractTask {
                 crawlerRepository.insert(timestampUrlIDX);
             }
 
-            if (fetchedResult.getHttpStatus() >= 200 && fetchedResult.getHttpStatus() < 300) {
+            if (fetchedResult != null && fetchedResult.getHttpStatus() >= 200 && fetchedResult.getHttpStatus() < 300) {
                 metricsCache.increment(MetricsCache.TOTAL_HTTP_RESPONSE_TIME_MS, System.currentTimeMillis() - start);
                 metricsCache.increment(MetricsCache.URL_OK_KEY);
             } else {
                 metricsCache.increment(MetricsCache.URL_ERROR_KEY);
             }
 
-            urlRecord.setContentType(fetchedResult.getContentType());
-            urlRecord.setFetchAttemptCounter(urlRecord.getFetchAttemptCounter() + 1);
-            urlRecord.setFetchedUrl(fetchedResult.getFetchedUrl());
             urlRecord.setFetchTime(System.currentTimeMillis());
+            urlRecord.setFetchAttemptCounter(urlRecord.getFetchAttemptCounter() + 1);
+            if (fetchedResult == null) {
+                urlRecord.setHttpStatus(-1);
+                crawlerRepository.update(urlRecord);
+                continue;
+            }
+            
+            urlRecord.setContentType(fetchedResult.getContentType());
+            urlRecord.setFetchedUrl(fetchedResult.getFetchedUrl());
             urlRecord.setHeaders(fetchedResult.getHeaders());
             urlRecord.setHostAddress(fetchedResult.getHostAddress());
             urlRecord.setHttpStatus(fetchedResult.getHttpStatus());
