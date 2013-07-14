@@ -40,41 +40,60 @@ import org.tokenizer.util.zookeeper.LeaderElectionCallback;
 import org.tokenizer.util.zookeeper.LeaderElectionSetupException;
 import org.tokenizer.util.zookeeper.ZooKeeperItf;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+
 /**
  * Responsible for delete existing task; only one single Master node should be
  * responsible; multiple Workers can't do "delete" concurrently
  * 
  */
-public class ExecutorMaster {
+@Singleton
+public class ExecutorMaster implements Executor {
 
-    private static final Logger LOG = LoggerFactory
-            .getLogger(ExecutorMaster.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ExecutorMaster.class);
     private LeaderElection leaderElection;
     private final ZooKeeperItf zk;
     private final WritableExecutorModel model;
     private final ExecutorModelListener listener = new MyListener();
     private final EventWorker eventWorker = new EventWorker();
 
-    public ExecutorMaster(final ZooKeeperItf zk,
-            final WritableExecutorModel model) {
+    @Inject
+    public ExecutorMaster(final ZooKeeperItf zk, final WritableExecutorModel model) {
+        
         this.zk = zk;
         this.model = model;
+        try {
+            start();
+        }
+        catch (LeaderElectionSetupException e) {
+            throw new RuntimeException(e);
+        }
+        catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        catch (KeeperException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    @PostConstruct
-    public void start() throws LeaderElectionSetupException, IOException,
-            InterruptedException, KeeperException {
+    //@PostConstruct
+    @Inject
+    public void start() throws LeaderElectionSetupException, IOException, InterruptedException, KeeperException {
         LOG.warn("start called...");
-        leaderElection = new LeaderElection(zk, "Executor Master",
-                "/org/tokenizer/executor/masters",
-                new MyLeaderElectionCallback());
+        leaderElection =
+            new LeaderElection(zk, "Executor Master", "/org/tokenizer/executor/masters", new MyLeaderElectionCallback());
     }
 
     @PreDestroy
     public void stop() {
         try {
             leaderElection.stop();
-        } catch (InterruptedException e) {
+        }
+        catch (InterruptedException e) {
             LOG.info("Interrupted while shutting down leader election.");
         }
         // Closer.close(jobClient);
@@ -94,9 +113,8 @@ public class ExecutorMaster {
             Collection<TaskInfoBean> taskInfoBeans = model.getTasks(listener);
             // push out fake events
             for (TaskInfoBean taskInfoBean : taskInfoBeans) {
-                eventWorker.putEvent(new ExecutorModelEvent(
-                        ExecutorModelEventType.TASK_UPDATED, taskInfoBean
-                                .getUuid()));
+                eventWorker
+                    .putEvent(new ExecutorModelEvent(ExecutorModelEventType.TASK_UPDATED, taskInfoBean.getUuid()));
             }
             LOG.info("Startup as Master successful.");
         }
@@ -119,8 +137,7 @@ public class ExecutorMaster {
         private boolean stop;
         private Thread thread;
 
-        public synchronized void shutdown(final boolean interrupt)
-                throws InterruptedException {
+        public synchronized void shutdown(final boolean interrupt) throws InterruptedException {
             stop = true;
             eventQueue.clear();
             if (!thread.isAlive())
@@ -146,11 +163,9 @@ public class ExecutorMaster {
             thread.start();
         }
 
-        public void putEvent(final ExecutorModelEvent event)
-                throws InterruptedException {
+        public void putEvent(final ExecutorModelEvent event) throws InterruptedException {
             if (stop)
-                throw new RuntimeException(
-                        "ExecutorMaster.EventWorker is stopped, no events should be added.");
+                throw new RuntimeException("ExecutorMaster.EventWorker is stopped, no events should be added.");
             eventQueue.put(event);
         }
 
@@ -159,8 +174,7 @@ public class ExecutorMaster {
             long startedAt = System.currentTimeMillis();
             while (!stop && !Thread.interrupted()) {
                 try {
-                    ExecutorModelEvent event = eventQueue.poll(10000,
-                            TimeUnit.MILLISECONDS);
+                    ExecutorModelEvent event = eventQueue.poll(10000, TimeUnit.MILLISECONDS);
                     if (event == null) {
                         continue;
                     }
@@ -168,33 +182,31 @@ public class ExecutorMaster {
                     if (stop || Thread.interrupted())
                         return;
                     int queueSize = eventQueue.size();
-                    if (queueSize >= 10
-                            && (System.currentTimeMillis() - startedAt > 5000)) {
-                        LOG.warn("EventWorker queue getting large, size = "
-                                + queueSize);
+                    if (queueSize >= 10 && (System.currentTimeMillis() - startedAt > 5000)) {
+                        LOG.warn("EventWorker queue getting large, size = " + queueSize);
                     }
                     if (event.getType() == ExecutorModelEventType.TASK_ADDED
-                            || event.getType() == ExecutorModelEventType.TASK_UPDATED) {
+                        || event.getType() == ExecutorModelEventType.TASK_UPDATED) {
                         TaskInfoBean taskDefinition = null;
                         try {
                             taskDefinition = model.getTask(event.getUuid());
-                        } catch (TaskNotFoundException e) {
+                        }
+                        catch (TaskNotFoundException e) {
                             // ignore
                         }
                         if (taskDefinition != null) {
-                            if (taskDefinition.getTaskConfiguration()
-                                    .getGeneralState() == TaskGeneralState.DELETE_REQUESTED) {
+                            if (taskDefinition.getTaskConfiguration().getGeneralState() == TaskGeneralState.DELETE_REQUESTED) {
                                 model.deleteTask(taskDefinition.getUuid());
                                 continue;
                             }
                         }
                     }
-                } catch (InterruptedException e) {
+                }
+                catch (InterruptedException e) {
                     return;
-                } catch (Throwable t) {
-                    LOG.error(
-                            "Error processing executor model event in ExecutorMaster.",
-                            t);
+                }
+                catch (Throwable t) {
+                    LOG.error("Error processing executor model event in ExecutorMaster.", t);
                 }
             }
         }
@@ -206,7 +218,8 @@ public class ExecutorMaster {
         public void process(final ExecutorModelEvent event) {
             try {
                 eventWorker.putEvent(event);
-            } catch (InterruptedException e) {
+            }
+            catch (InterruptedException e) {
                 LOG.info("ExecutorMaster.ExecutorModelListener interrupted.");
             }
         }

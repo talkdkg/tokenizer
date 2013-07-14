@@ -1,13 +1,7 @@
 package org.tokenizer.crawler.db;
 
-import java.util.ArrayList;
-import java.util.List;
-import org.apache.nutch.net.URLFilter;
-import org.junit.*;
-import static org.junit.Assert.*;
-
-import org.tokenizer.crawler.db.model.FetchedResultRecord;
-import org.tokenizer.crawler.db.model.WeblogRecord;
+import org.junit.After;
+import org.junit.Before;
 
 /**
  * The class <code>CrawlerRepositoryTest</code> contains tests for the class <code>{@link CrawlerRepository}</code>.

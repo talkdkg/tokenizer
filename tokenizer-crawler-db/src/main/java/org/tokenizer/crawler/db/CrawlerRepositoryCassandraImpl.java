@@ -31,23 +31,24 @@ import org.tokenizer.crawler.db.model.UrlHeadRecord;
 import org.tokenizer.crawler.db.model.UrlSitemapIDX;
 import org.tokenizer.crawler.db.model.WeblogRecord;
 import org.tokenizer.crawler.db.model.WeblogRecord.Weblog;
+import org.tokenizer.crawler.db.module.NlpToolsProvider;
 import org.tokenizer.nlp.NlpTools;
 import org.tokenizer.nlp.Text;
 
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableMap;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import com.netflix.astyanax.AstyanaxContext;
 import com.netflix.astyanax.ExceptionCallback;
 import com.netflix.astyanax.Keyspace;
 import com.netflix.astyanax.MutationBatch;
 import com.netflix.astyanax.RowCallback;
-import com.netflix.astyanax.connectionpool.NodeDiscoveryType;
 import com.netflix.astyanax.connectionpool.OperationResult;
 import com.netflix.astyanax.connectionpool.exceptions.BadRequestException;
 import com.netflix.astyanax.connectionpool.exceptions.ConnectionException;
 import com.netflix.astyanax.connectionpool.exceptions.NotFoundException;
 import com.netflix.astyanax.connectionpool.impl.ConnectionPoolConfigurationImpl;
-import com.netflix.astyanax.connectionpool.impl.ConnectionPoolType;
 import com.netflix.astyanax.connectionpool.impl.CountingConnectionPoolMonitor;
 import com.netflix.astyanax.ddl.ColumnFamilyDefinition;
 import com.netflix.astyanax.ddl.FieldMetadata;
@@ -78,6 +79,7 @@ import com.netflix.astyanax.util.RangeBuilder;
  * @author Fuad
  * 
  */
+@Singleton
 public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
 
     protected static Logger LOG = LoggerFactory.getLogger(CrawlerRepositoryCassandraImpl.class);
@@ -191,15 +193,21 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
 
     private NlpTools nlpTools;
 
+    @Inject
     public CrawlerRepositoryCassandraImpl(NlpTools nlpTools) {
         this.nlpTools = nlpTools;
+        try {
+            setup();
+        } catch (ConnectionException | InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     CrawlerRepositoryCassandraImpl(int port) {
         this.port = port;
     }
 
-    @PostConstruct
+    //@PostConstruct
     public void setup() throws ConnectionException, InterruptedException {
 
         keyspaceContext = new AstyanaxContext.Builder()

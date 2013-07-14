@@ -73,7 +73,9 @@ public class StateWatchingZooKeeper extends ZooKeeperImpl {
             final int sessionTimeout, final int startupTimeOut)
             throws IOException {
         this.requestedSessionTimeout = sessionTimeout;
+        
         this.sessionTimeout = sessionTimeout;
+        
         ZooKeeper zk = new ZooKeeper(connectString, sessionTimeout,
                 new MyWatcher());
         setDelegate(zk);

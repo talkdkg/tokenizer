@@ -32,6 +32,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import javax.annotation.PreDestroy;
 
+
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.WatchedEvent;
@@ -57,6 +58,8 @@ import org.tokenizer.util.zookeeper.ZkUtil;
 import org.tokenizer.util.zookeeper.ZooKeeperItf;
 import org.tokenizer.util.zookeeper.ZooKeeperOperation;
 
+import com.google.inject.Inject;
+
 public class ExecutorModelImpl implements WritableExecutorModel {
 
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory
@@ -78,6 +81,7 @@ public class ExecutorModelImpl implements WritableExecutorModel {
     private static final String EXECUTOR_COLLECTION_PATH = "/org/tokenizer/executor/tasks";
     private static final String EXECUTOR_TRASH_PATH = "/org/tokenizer/executor/tasks-trash";
 
+    @Inject
     public ExecutorModelImpl(final ZooKeeperItf zk)
             throws InterruptedException, KeeperException {
         this.zk = zk;

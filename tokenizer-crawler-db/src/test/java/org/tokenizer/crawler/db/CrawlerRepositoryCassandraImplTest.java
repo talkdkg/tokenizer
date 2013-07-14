@@ -4,8 +4,6 @@ import static org.junit.Assert.assertNotNull;
 
 import java.util.List;
 
-import org.apache.nutch.net.URLFilter;
-import org.apache.nutch.urlfilter.automaton.AutomatonURLFilter;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -135,45 +133,6 @@ public class CrawlerRepositoryCassandraImplTest {
         assertNotNull(result);
     }
 
-    /**
-     * Run the void filter(String,URLFilter) method test.
-     * 
-     * @throws Exception
-     * 
-     * @generatedBy CodePro at 4/1/13 2:52 PM
-     */
-    @Test
-    public void testFilter_1() throws Exception {
-        CrawlerRepositoryCassandraImpl fixture = new CrawlerRepositoryCassandraImpl(1);
-        fixture.setSeeds("");
-        fixture.keyspace = new TestKeyspace("");
-        String host = "";
-        URLFilter urlFilter = new AutomatonURLFilter();
-
-        fixture.filter(host, urlFilter);
-
-        // add additional test code here
-    }
-
-    /**
-     * Run the void filter(String,URLFilter) method test.
-     * 
-     * @throws Exception
-     * 
-     * @generatedBy CodePro at 4/1/13 2:52 PM
-     */
-    @Test
-    public void testFilter_2() throws Exception {
-        CrawlerRepositoryCassandraImpl fixture = new CrawlerRepositoryCassandraImpl(1);
-        fixture.setSeeds("");
-        fixture.keyspace = new TestKeyspace("");
-        String host = "";
-        URLFilter urlFilter = new AutomatonURLFilter();
-
-        fixture.filter(host, urlFilter);
-
-        // add additional test code here
-    }
 
     /**
      * Run the void getKeyspaceDefinition() method test.

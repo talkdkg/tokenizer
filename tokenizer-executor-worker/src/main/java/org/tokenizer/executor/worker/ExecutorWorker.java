@@ -65,12 +65,16 @@ import org.tokenizer.executor.model.configuration.WeblogsSubscriberTaskConfigura
 import org.tokenizer.util.zookeeper.LeaderElectionSetupException;
 import org.tokenizer.util.zookeeper.ZooKeeperItf;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+
 /**
  * Worker is responsible for starting/stopping tasks.
  * 
  * <p>
  * Worker does not shut down the tasks when the ZooKeeper connection is lost.
  */
+@Singleton
 public class ExecutorWorker {
 
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ExecutorWorker.class);
@@ -84,6 +88,7 @@ public class ExecutorWorker {
     /** will be shared between tasks; multithreaded access */
     private final HostLocker hostLocker;
 
+    @Inject
     public ExecutorWorker(final WritableExecutorModel executorModel, final ZooKeeperItf zk,
             final CrawlerRepository repository) throws IOException, TaskNotFoundException, InterruptedException,
             KeeperException {
@@ -91,9 +96,10 @@ public class ExecutorWorker {
         this.zk = zk;
         this.repository = repository;
         hostLocker = new HostLocker(zk);
+        init();
     }
 
-    @PostConstruct
+    //@PostConstruct
     public void init() {
         eventWorkerThread = new Thread(new EventWorker(), "ExecutorWorker.EventWorker");
         eventWorkerThread.start();
@@ -108,7 +114,7 @@ public class ExecutorWorker {
         }
     }
 
-    @PreDestroy
+    //@PreDestroy
     public void stop() {
         eventWorkerThread.interrupt();
         try {
