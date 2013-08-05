@@ -25,7 +25,6 @@ public class StringToByteArrayConverter implements Converter<String, byte[]> {
 
     private static final long serialVersionUID = 1L;
 
-    @Override
     public byte[] convertToModel(String value, final Locale locale)
             throws ConversionException {
         if (value == null)
@@ -34,7 +33,6 @@ public class StringToByteArrayConverter implements Converter<String, byte[]> {
         return MD5.hex2Byte(value);
     }
 
-    @Override
     public String convertToPresentation(final byte[] value, final Locale locale)
             throws ConversionException {
         if (value == null)
@@ -50,5 +48,19 @@ public class StringToByteArrayConverter implements Converter<String, byte[]> {
     @Override
     public Class<String> getPresentationType() {
         return String.class;
+    }
+
+    @Override
+    public byte[] convertToModel(String value, Class<? extends byte[]> targetType, Locale locale)
+        throws com.vaadin.data.util.converter.Converter.ConversionException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public String convertToPresentation(byte[] value, Class<? extends String> targetType, Locale locale)
+        throws com.vaadin.data.util.converter.Converter.ConversionException {
+        // TODO Auto-generated method stub
+        return null;
     }
 }

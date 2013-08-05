@@ -32,7 +32,6 @@ import com.vaadin.data.util.converter.Converter;
  */
 public class MoneyConverter implements Converter<String, Money> {
 
-	@Override
 	public Money convertToModel(String value, Locale locale)
 			throws com.vaadin.data.util.converter.Converter.ConversionException {
 
@@ -55,7 +54,6 @@ public class MoneyConverter implements Converter<String, Money> {
 
 	}
 
-	@Override
 	public String convertToPresentation(Money value, Locale locale)
 			throws com.vaadin.data.util.converter.Converter.ConversionException {
 		return value.toString();
@@ -70,5 +68,19 @@ public class MoneyConverter implements Converter<String, Money> {
 	public Class<String> getPresentationType() {
 		return String.class;
 	}
+
+    @Override
+    public Money convertToModel(String value, Class<? extends Money> targetType, Locale locale)
+        throws com.vaadin.data.util.converter.Converter.ConversionException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public String convertToPresentation(Money value, Class<? extends String> targetType, Locale locale)
+        throws com.vaadin.data.util.converter.Converter.ConversionException {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
 }

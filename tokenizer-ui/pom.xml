@@ -76,6 +76,11 @@
     </pluginRepositories>
     <dependencies>
         <dependency>
+            <groupId>uk.co.q3c</groupId>
+            <artifactId>v7</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
             <groupId>com.google.inject</groupId>
             <artifactId>guice</artifactId>
         </dependency>
@@ -202,23 +207,23 @@
         <dependency>
             <groupId>com.vaadin</groupId>
             <artifactId>vaadin-server</artifactId>
-            <version>${version.vaadin}</version>
+            <version>${vaadin.version}</version>
         </dependency>
         <dependency>
             <groupId>com.vaadin</groupId>
             <artifactId>vaadin-client-compiled</artifactId>
-            <version>${version.vaadin}</version>
+            <version>${vaadin.version}</version>
         </dependency>
         <dependency>
             <groupId>com.vaadin</groupId>
             <artifactId>vaadin-client</artifactId>
-            <version>${version.vaadin}</version>
+            <version>${vaadin.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.vaadin</groupId>
             <artifactId>vaadin-themes</artifactId>
-            <version>${version.vaadin}</version>
+            <version>${vaadin.version}</version>
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
@@ -235,19 +240,6 @@
             <groupId>net.sf.jung</groupId>
             <artifactId>jung-samples</artifactId>
         </dependency>
-        
-<!--         <dependency>
-            <groupId>org.vaadin.addons</groupId>
-            <artifactId>customfield</artifactId>
-            <version>1.0.1-SNAPSHOT</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>vaadin</artifactId>
-                    <groupId>com.vaadin</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>
- -->
         <dependency>
             <groupId>org.vaadin.addons.lazyquerycontainer</groupId>
             <artifactId>vaadin-lazyquerycontainer</artifactId>
@@ -256,7 +248,7 @@
         <dependency>
             <groupId>com.vaadin.addon</groupId>
             <artifactId>vaadin-charts</artifactId>
-            <version>1.0.0-beta4</version>
+            <version>${vaadin.charts.version}</version>
         </dependency>
         <dependency>
             <groupId>org.reflections</groupId>
@@ -305,6 +297,14 @@
     </dependencies>
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.7</source>
+                    <target>1.7</target>
+                </configuration>
+            </plugin>
  			<!-- As we are doing "inplace" GWT compilation, ensure the widgetset -->
 			<!-- directory is cleaned properly -->
             <plugin>
@@ -312,9 +312,9 @@
                 <version>2.4.1</version>
                 <configuration>
                     <filesets>
-<!-- 						<fileset> -->
-<!-- 							<directory>src/main/webapp/VAADIN/widgetsets</directory> -->
-<!-- 						</fileset> -->
+                        <fileset>
+    <!--                         <directory>src/main/webapp/VAADIN/widgetsets</directory>
+     -->                    </fileset>
                     </filesets>
                 </configuration>
             </plugin>
@@ -323,7 +323,8 @@
                 <artifactId>vaadin-maven-plugin</artifactId>
                 <version>${vaadin.plugin.version}</version>
                 <configuration>
-                    <extraJvmArgs>-Xms1024M -Xmx1024M -Xss2048k</extraJvmArgs>
+                    <extraJvmArgs>-Xmx512M -Xss1024k</extraJvmArgs>
+                    <!-- <runTarget>mobilemail</runTarget> -->
                     <!-- We are doing "inplace" but into subdir VAADIN/widgetsets. This 
                         way compatible with Vaadin eclipse plugin. -->
                     <webappDirectory>${basedir}/src/main/webapp/VAADIN/widgetsets 
@@ -342,19 +343,28 @@
                     <execution>
                         <configuration>
                             <!-- if you don't specify any modules, the plugin will find them -->
+                            <!-- <modules> <module>com.vaadin.demo.mobilemail.gwt.ColorPickerWidgetSet</module> 
+                                </modules> -->
                         </configuration>
                         <goals>
-<!-- 							<goal>resources</goal> -->
-<!-- 							<goal>update-widgetset</goal> -->
-<!-- 							<goal>compile</goal> -->
-                        </goals>
+<!--                             <goal>clean</goal>
+                            <goal>resources</goal>
+                            <goal>update-theme</goal>
+                            <goal>update-widgetset</goal>
+                            <goal>compile-theme</goal>
+                            <goal>compile</goal>
+ -->                        </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.mortbay.jetty</groupId>
+                <artifactId>jetty-maven-plugin</artifactId>
             </plugin>
         </plugins>
         <pluginManagement>
             <plugins>
-				<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+                <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
                 <plugin>
                     <groupId>org.eclipse.m2e</groupId>
                     <artifactId>lifecycle-mapping</artifactId>
@@ -365,16 +375,17 @@
                                 <pluginExecution>
                                     <pluginExecutionFilter>
                                         <groupId>com.vaadin</groupId>
-                                        <artifactId> vaadin-maven-plugin 
-                                        </artifactId>
-                                        <versionRange> [7.0.1,) 
-                                        </versionRange>
-                                        <goals>
-<!-- 											<goal>resources</goal> -->
-<!-- 											<goal>update-widgetset</goal> -->
-<!-- 											<goal>compile</goal> -->
+                                        <artifactId>vaadin-maven-plugin</artifactId>
+                                        <versionRange>[7.1.0,)</versionRange>
+<!--                                         <goals>
+                                            <goal>clean</goal>
+                                            <goal>resources</goal>
+                                            <goal>update-theme</goal>
+                                            <goal>update-widgetset</goal>
+                                            <goal>compile-theme</goal>
+                                            <goal>compile</goal>
                                         </goals>
-                                    </pluginExecutionFilter>
+ -->                                    </pluginExecutionFilter>
                                     <action>
                                         <ignore></ignore>
                                     </action>

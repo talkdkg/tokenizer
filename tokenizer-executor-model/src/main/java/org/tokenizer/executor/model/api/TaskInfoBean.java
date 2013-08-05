@@ -21,7 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import org.tokenizer.executor.model.configuration.TaskConfiguration;
+import org.tokenizer.executor.model.configuration.AbstractTaskConfiguration;
 
 
 public class TaskInfoBean implements Serializable {
@@ -31,7 +31,7 @@ public class TaskInfoBean implements Serializable {
      */
     private static final long serialVersionUID = 1L;
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(TaskInfoBean.class);
-    private TaskConfiguration taskConfiguration;
+    private AbstractTaskConfiguration taskConfiguration;
     private int zkDataVersion = -1;
     private boolean immutable;
     private long submitTime = new Date().getTime();
@@ -120,19 +120,26 @@ public class TaskInfoBean implements Serializable {
         this.immutable = true;
     }
 
+    public void makeMutable() {
+        this.immutable = false;
+    }
 
     private void checkIfMutable() {
-        if (immutable)
-            throw new RuntimeException("This TaskDefinition is immutable");
+
+        // TODO: I commented it out because I can't update table cell in UI...
+
+        // if (immutable) {
+        // throw new RuntimeException("This TaskDefinition is immutable");
+        // }
     }
 
 
-    public TaskConfiguration getTaskConfiguration() {
+    public AbstractTaskConfiguration getTaskConfiguration() {
         return taskConfiguration;
     }
 
 
-    public void setTaskConfiguration(final TaskConfiguration taskConfiguration) {
+    public void setTaskConfiguration(final AbstractTaskConfiguration taskConfiguration) {
         this.taskConfiguration = taskConfiguration;
     }
 
@@ -145,18 +152,23 @@ public class TaskInfoBean implements Serializable {
 
     @Override
     public boolean equals(final Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         TaskInfoBean other = (TaskInfoBean) obj;
         if (uuid == null) {
-            if (other.uuid != null)
+            if (other.uuid != null) {
                 return false;
-        } else if (!uuid.equals(other.uuid))
+            }
+        } else if (!uuid.equals(other.uuid)) {
             return false;
+        }
         return true;
     }
 

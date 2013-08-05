@@ -1,17 +1,15 @@
 /*
- * Copyright 2007-2012 Tokenizer Inc.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * TOKENIZER CONFIDENTIAL 
+ * 
+ * Copyright © 2013 Tokenizer Inc. All rights reserved. 
+ * 
+ * NOTICE: All information contained herein is, and remains the property of Tokenizer Inc. 
+ * The intellectual and technical concepts contained herein are proprietary to Tokenizer Inc. 
+ * and may be covered by U.S. and Foreign Patents, patents in process, and are 
+ * protected by trade secret or copyright law. 
+ * 
+ * Dissemination of this information or reproduction of this material is strictly 
+ * forbidden unless prior written permission is obtained from Tokenizer Inc.
  */
 package org.tokenizer.executor.engine;
 
@@ -22,7 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tokenizer.crawler.db.CrawlerRepository;
 import org.tokenizer.executor.model.api.WritableExecutorModel;
-import org.tokenizer.executor.model.configuration.TaskConfiguration;
+import org.tokenizer.executor.model.configuration.AbstractTaskConfiguration;
 import org.tokenizer.util.Logs;
 import org.tokenizer.util.zookeeper.LeaderElection;
 import org.tokenizer.util.zookeeper.LeaderElectionCallback;
@@ -31,11 +29,10 @@ import org.tokenizer.util.zookeeper.ZooKeeperItf;
 
 import com.netflix.astyanax.connectionpool.exceptions.ConnectionException;
 
-public abstract class AbstractTask implements Runnable, LeaderElectionCallback {
+public abstract class AbstractTask<T extends AbstractTaskConfiguration> implements Runnable, LeaderElectionCallback {
 
     // not static, and not final: abstract
-    protected Logger LOG = LoggerFactory.getLogger(getClass()
-            .getCanonicalName());
+    protected Logger LOG = LoggerFactory.getLogger(getClass().getCanonicalName());
     protected final UUID uuid;
     protected final String friendlyName;
     protected final ZooKeeperItf zk;
@@ -46,6 +43,31 @@ public abstract class AbstractTask implements Runnable, LeaderElectionCallback {
     protected Thread thread;
     protected LeaderElection leaderElection;
 
+    protected T taskConfiguration;
+
+    //@formatter:off
+    public AbstractTask(
+            final UUID uuid, 
+            final String friendlyName,
+            final ZooKeeperItf zk, 
+            final T taskConfiguration, 
+            final CrawlerRepository crawlerRepository,
+            final WritableExecutorModel model, 
+            final HostLocker hostLocker) {
+        //@formatter:on
+
+        this.uuid = uuid;
+        this.friendlyName = friendlyName;
+        this.zk = zk;
+        this.taskConfiguration = taskConfiguration;
+        this.crawlerRepository = crawlerRepository;
+        this.model = model;
+        this.hostLocker = hostLocker;
+        this.metricsCache = new MetricsCache(uuid, model);
+        LOG.debug("Resetting; it will produce TASK_DEFINITION_UPDATED event");
+        // this.metricsCache.reset();
+    }
+
     public UUID getUuid() {
         return uuid;
     }
@@ -54,24 +76,12 @@ public abstract class AbstractTask implements Runnable, LeaderElectionCallback {
         return friendlyName;
     }
 
-    public abstract TaskConfiguration getTaskConfiguration();
+    public T getTaskConfiguration() {
+        return this.taskConfiguration;
+    }
 
-    public abstract void setTaskConfiguration(
-            TaskConfiguration taskConfiguration);
-
-    public AbstractTask(final UUID uuid, final String friendlyName,
-            final ZooKeeperItf zk, final CrawlerRepository crawlerRepository,
-            final WritableExecutorModel model, final HostLocker hostLocker) {
-
-        this.uuid = uuid;
-        this.friendlyName = friendlyName;
-        this.zk = zk;
-        this.crawlerRepository = crawlerRepository;
-        this.model = model;
-        this.hostLocker = hostLocker;
-        this.metricsCache = new MetricsCache(uuid, model);
-        LOG.debug("Resetting; it will produce TASK_DEFINITION_UPDATED event");
-        // this.metricsCache.reset();
+    public void setTaskConfiguration(T taskConfiguration) {
+        this.taskConfiguration = taskConfiguration;
     }
 
     public MetricsCache getMetricsCache() {
@@ -84,8 +94,9 @@ public abstract class AbstractTask implements Runnable, LeaderElectionCallback {
 
     protected synchronized void shutdown() throws InterruptedException {
         LOG.warn("shutdown...");
-        if (thread == null || !thread.isAlive())
+        if (thread == null || !thread.isAlive()) {
             return;
+        }
         thread.interrupt();
         Logs.logThreadJoin(thread);
         thread.join();
@@ -97,27 +108,27 @@ public abstract class AbstractTask implements Runnable, LeaderElectionCallback {
         while (!Thread.interrupted()) {
             try {
                 process();
-            } catch (InterruptedException e) {
+            }
+            catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
-            } catch (ConnectionException e) {
+            }
+            catch (ConnectionException e) {
                 LOG.error("Repository unavailable; sleeping 1 second...", e);
                 try {
                     Thread.sleep(1000);
-                } catch (InterruptedException e1) {
+                }
+                catch (InterruptedException e1) {
                     Thread.currentThread().interrupt();
                 }
             }
         }
     }
 
-    public void start() throws InterruptedException,
-            LeaderElectionSetupException, KeeperException {
+    public void start() throws InterruptedException, LeaderElectionSetupException, KeeperException {
         if (leaderElection == null) {
-            leaderElection = new LeaderElection(zk, "Master "
-                    + this.getClass().getCanonicalName(),
-                    "/org/tokenizer/executor/engine/"
-                            + this.getClass().getCanonicalName() + "/"
-                            + this.uuid, this);
+            leaderElection =
+                new LeaderElection(zk, "Master " + this.getClass().getCanonicalName(),
+                    "/org/tokenizer/executor/engine/" + this.getClass().getCanonicalName() + "/" + this.uuid, this);
         }
     }
 
@@ -130,7 +141,8 @@ public abstract class AbstractTask implements Runnable, LeaderElectionCallback {
             this.leaderElection = null;
             shutdown();
             LOG.warn("Stopped.");
-        } catch (InterruptedException e) {
+        }
+        catch (InterruptedException e) {
             if (thread != null) {
                 thread.interrupt();
             }
@@ -139,8 +151,7 @@ public abstract class AbstractTask implements Runnable, LeaderElectionCallback {
         }
     }
 
-    protected abstract void process() throws InterruptedException,
-            ConnectionException;
+    protected abstract void process() throws InterruptedException, ConnectionException;
 
     @Override
     public void activateAsLeader() throws Exception {
@@ -150,7 +161,8 @@ public abstract class AbstractTask implements Runnable, LeaderElectionCallback {
             thread.interrupt();
             Logs.logThreadJoin(thread);
             thread.join();
-        } else {
+        }
+        else {
             thread = new Thread(this, uuid.toString() + ": " + friendlyName);
             thread.setDaemon(true);
             thread.start();
@@ -164,4 +176,5 @@ public abstract class AbstractTask implements Runnable, LeaderElectionCallback {
         shutdown();
         LOG.warn("Deactivated as Leader.");
     }
+
 }

@@ -27,14 +27,10 @@ import java.util.Set;
 import org.apache.commons.io.IOUtils;
 import org.reflections.Reflections;
 import org.springframework.context.ApplicationContext;
-import org.tokenizer.core.context.ApplicationContextProvider;
-import org.tokenizer.crawler.db.CrawlerRepository;
-import org.tokenizer.executor.model.api.WritableExecutorModel;
-import org.tokenizer.ui.components.MessageSearchComponent;
-import org.tokenizer.ui.components.TaskInfoComponent;
-import org.tokenizer.ui.components.UrlSearchComponent;
-import org.tokenizer.ui.demo.AbstractScreen;
-import org.tokenizer.ui.demo.SkipFromDemo;
+import org.tokenizer.ui.v7.view.AbstractScreen;
+import org.tokenizer.ui.v7.view.MessageSearchComponent;
+import org.tokenizer.ui.v7.view.TaskInfoComponent;
+import org.tokenizer.ui.v7.view.UrlSearchComponent;
 
 import com.vaadin.addon.charts.ChartOptions;
 import com.vaadin.addon.charts.themes.GrayTheme;
@@ -71,8 +67,7 @@ import com.vaadin.ui.VerticalLayout;
 public class MyVaadinUI extends UI {
 
     private static final long serialVersionUID = 1L;
-    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory
-            .getLogger(MyVaadinUI.class);
+    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(MyVaadinUI.class);
 
     private TaskInfoComponent taskInfoComponent;
     private UrlSearchComponent urlSearchComponent;
@@ -88,39 +83,31 @@ public class MyVaadinUI extends UI {
     static {
         Reflections reflections = new Reflections("org.tokenizer.ui.demo");
 
-        Set<Class<? extends AbstractScreen>> subTypes = reflections
-                .getSubTypesOf(AbstractScreen.class);
+        Set<Class<? extends AbstractScreen>> subTypes = reflections.getSubTypesOf(AbstractScreen.class);
 
-        Map<String, List<Class<? extends AbstractScreen>>> grouped = new HashMap<String, List<Class<? extends AbstractScreen>>>();
+        Map<String, List<Class<? extends AbstractScreen>>> grouped =
+            new HashMap<String, List<Class<? extends AbstractScreen>>>();
 
         for (Class<? extends AbstractScreen> class1 : subTypes) {
-            if (class1.getAnnotation(SkipFromDemo.class) != null) {
-                continue;
-            }
             Package package1 = class1.getPackage();
             String name = package1.getName();
             name = name.substring(name.lastIndexOf(".") + 1);
 
-            List<Class<? extends AbstractScreen>> list = grouped
-                    .get(name);
+            List<Class<? extends AbstractScreen>> list = grouped.get(name);
             if (list == null) {
                 list = new ArrayList<Class<? extends AbstractScreen>>();
                 grouped.put(name, list);
             }
             list.add(class1);
-            Collections
-                    .sort(list,
-                            new Comparator<Class<? extends AbstractScreen>>() {
+            Collections.sort(list, new Comparator<Class<? extends AbstractScreen>>() {
 
-                                @Override
-                                public int compare(
-                                        final Class<? extends AbstractScreen> o1,
-                                        final Class<? extends AbstractScreen> o2) {
-                                    String simpleName = o1.getSimpleName();
-                                    String simpleName2 = o2.getSimpleName();
-                                    return simpleName.compareTo(simpleName2);
-                                }
-                            });
+                @Override
+                public int compare(final Class<? extends AbstractScreen> o1, final Class<? extends AbstractScreen> o2) {
+                    String simpleName = o1.getSimpleName();
+                    String simpleName2 = o2.getSimpleName();
+                    return simpleName.compareTo(simpleName2);
+                }
+            });
         }
         tests = grouped;
     }
@@ -133,36 +120,12 @@ public class MyVaadinUI extends UI {
         return applicationContext;
     }
 
-    private static CrawlerRepository repository;
-    private static WritableExecutorModel model;
-
-    public static CrawlerRepository getRepository() {
-        return repository;
-    }
-
-    public static WritableExecutorModel getModel() {
-        return model;
-    }
-
     @Override
     public void init(final VaadinRequest request) {
-        applicationContext = ApplicationContextProvider.getApplicationContext();
-        model = (WritableExecutorModel) applicationContext
-                .getBean("executorModel");
-        repository = (CrawlerRepository) applicationContext
-                .getBean("crawlerRepository");
         buildMainLayout();
     }
 
     private void buildMainLayout() {
-
-        /*
-        layout = new VerticalLayout();
-        layout.addComponent(buildToolbar());
-        mainPanel = new Panel();
-        layout.addComponent(mainPanel);
-        setContent(layout);
-        */
 
         final TabSheet tabSheet = new TabSheet();
         tabSheet.setSizeFull();
@@ -173,7 +136,7 @@ public class MyVaadinUI extends UI {
 
         VerticalLayout verticalLayout = new VerticalLayout();
         verticalLayout.setSizeFull();
-        //verticalLayout.addComponent(logoc);
+        // verticalLayout.addComponent(logoc);
         verticalLayout.addComponent(horizontalSplitPanel);
         verticalLayout.setExpandRatio(horizontalSplitPanel, 1);
         setContent(verticalLayout);
@@ -188,8 +151,7 @@ public class MyVaadinUI extends UI {
         themeSelector.addItem(GrayTheme.class);
         themeSelector.setItemCaption(GrayTheme.class, "Gray");
         themeSelector.addItem(HighChartsDefaultTheme.class);
-        themeSelector
-                .setItemCaption(HighChartsDefaultTheme.class, "Highcharts");
+        themeSelector.setItemCaption(HighChartsDefaultTheme.class, "Highcharts");
         themeSelector.setImmediate(true);
         themeSelector.select(VaadinTheme.class);
         themeSelector.addValueChangeListener(new ValueChangeListener() {
@@ -197,13 +159,11 @@ public class MyVaadinUI extends UI {
             @Override
             public void valueChange(final ValueChangeEvent event) {
                 @SuppressWarnings("unchecked")
-                Class<? extends Theme> value = (Class<? extends Theme>) event
-                        .getProperty().getValue();
+                Class<? extends Theme> value = (Class<? extends Theme>) event.getProperty().getValue();
                 try {
-                    ChartOptions.get().setTheme(
-                            (com.vaadin.addon.charts.model.style.Theme) value
-                                    .newInstance());
-                } catch (Exception e) {
+                    ChartOptions.get().setTheme((com.vaadin.addon.charts.model.style.Theme) value.newInstance());
+                }
+                catch (Exception e) {
                     throw new RuntimeException(e);
                 }
             }
@@ -226,37 +186,34 @@ public class MyVaadinUI extends UI {
         tree.addValueChangeListener(new ValueChangeListener() {
 
             private static final long serialVersionUID = 1L;
-            
+
             @Override
             public void valueChange(final ValueChangeEvent event) {
                 Object value2 = event.getProperty().getValue();
                 if (value2 instanceof Class) {
                     try {
                         Class value = (Class) value2;
-                        AbstractScreen newInstance = (AbstractScreen) value
-                                .newInstance();
+                        AbstractScreen newInstance = (AbstractScreen) value.newInstance();
                         tabSheet.removeAllComponents();
                         tabSheet.addTab(newInstance, "Graph");
 
-                        String r = "/" + value.getName().replace(".", "/")
-                                + ".java";
+                        String r = "/" + value.getName().replace(".", "/") + ".java";
                         r = value.getSimpleName() + ".java";
-                        InputStream resourceAsStream = newInstance.getClass()
-                                .getResourceAsStream(r);
+                        InputStream resourceAsStream = newInstance.getClass().getResourceAsStream(r);
                         String code = IOUtils.toString(resourceAsStream);
-                        Label c = new Label("<pre class='prettyprint'>" + code
-                                + "</pre>");
+                        Label c = new Label("<pre class='prettyprint'>" + code + "</pre>");
                         c.setContentMode(ContentMode.HTML);
                         tabSheet.addTab(c, "Source");
 
-                        Page.getCurrent().setUriFragment(value.getSimpleName(),
-                                false);
+                        Page.getCurrent().setUriFragment(value.getSimpleName(), false);
 
-                    } catch (Exception e) {
+                    }
+                    catch (Exception e) {
                         // TODO Auto-generated catch block
                         // e.printStackTrace();
                     }
-                } else {
+                }
+                else {
                     tree.expandItemsRecursively(value2);
                 }
             }
@@ -266,19 +223,18 @@ public class MyVaadinUI extends UI {
 
     private Component buildToolbar() {
         ComponentContainer componentContainer = new HorizontalLayout();
-        Button tasksManager = new Button("Tasks Manager",
-                new Button.ClickListener() {
+        Button tasksManager = new Button("Tasks Manager", new Button.ClickListener() {
 
-                    private static final long serialVersionUID = 1L;
+            private static final long serialVersionUID = 1L;
 
-                    @Override
-                    public void buttonClick(final ClickEvent event) {
-                        if (taskInfoComponent == null) {
-                            taskInfoComponent = new TaskInfoComponent();
-                        }
-                        mainPanel.setContent(taskInfoComponent);
-                    }
-                });
+            @Override
+            public void buttonClick(final ClickEvent event) {
+                if (taskInfoComponent == null) {
+                    // taskInfoComponent = new TaskInfoComponent();
+                }
+                // mainPanel.setContent(taskInfoComponent);
+            }
+        });
         Button urlSearch = new Button("URL Search", new Button.ClickListener() {
 
             private static final long serialVersionUID = 1L;
@@ -286,24 +242,23 @@ public class MyVaadinUI extends UI {
             @Override
             public void buttonClick(final ClickEvent event) {
                 if (urlSearchComponent == null) {
-                    urlSearchComponent = new UrlSearchComponent();
+                   // urlSearchComponent = new UrlSearchComponent();
                 }
                 mainPanel.setContent(urlSearchComponent);
             }
         });
-        Button messageSearch = new Button("Message Search",
-                new Button.ClickListener() {
+        Button messageSearch = new Button("Message Search", new Button.ClickListener() {
 
-                    private static final long serialVersionUID = 1L;
+            private static final long serialVersionUID = 1L;
 
-                    @Override
-                    public void buttonClick(final ClickEvent event) {
-                        if (messageSearchComponent == null) {
-                            messageSearchComponent = new MessageSearchComponent();
-                        }
-                        mainPanel.setContent(messageSearchComponent);
-                    }
-                });
+            @Override
+            public void buttonClick(final ClickEvent event) {
+                if (messageSearchComponent == null) {
+                    messageSearchComponent = new MessageSearchComponent();
+                }
+                mainPanel.setContent(messageSearchComponent);
+            }
+        });
         componentContainer.addComponent(tasksManager);
         componentContainer.addComponent(urlSearch);
         componentContainer.addComponent(messageSearch);
@@ -313,19 +268,16 @@ public class MyVaadinUI extends UI {
     private HierarchicalContainer getContainer() {
 
         HierarchicalContainer hierarchicalContainer = new HierarchicalContainer();
-        hierarchicalContainer.addContainerProperty("displayName", String.class,
-                "");
+        hierarchicalContainer.addContainerProperty("displayName", String.class, "");
 
         for (String g : GROUP_ORDER) {
             String group = g.replaceAll(" ", "").toLowerCase();
             Item groupItem = hierarchicalContainer.addItem(group);
             groupItem.getItemProperty("displayName").setValue(g);
-            List<Class<? extends AbstractScreen>> list = tests
-                    .get(group);
+            List<Class<? extends AbstractScreen>> list = tests.get(group);
             for (Class<? extends AbstractScreen> class1 : list) {
                 Item testItem = hierarchicalContainer.addItem(class1);
-                testItem.getItemProperty("displayName").setValue(
-                        class1.getSimpleName());
+                testItem.getItemProperty("displayName").setValue(class1.getSimpleName());
                 hierarchicalContainer.setParent(class1, group);
                 hierarchicalContainer.setChildrenAllowed(class1, false);
             }

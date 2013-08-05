@@ -11,7 +11,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
 
-import org.tokenizer.core.util.HttpUtils;
 import org.tokenizer.core.util.xml.HXPathExpression;
 import org.tokenizer.core.util.xml.LocalXPathFactory;
 import org.tokenizer.crawler.db.CrawlerRepository;
@@ -22,7 +21,6 @@ import org.tokenizer.executor.engine.HostLocker;
 import org.tokenizer.executor.engine.MetricsCache;
 import org.tokenizer.executor.model.api.WritableExecutorModel;
 import org.tokenizer.executor.model.configuration.MessageParserTaskConfiguration;
-import org.tokenizer.executor.model.configuration.TaskConfiguration;
 import org.tokenizer.util.zookeeper.ZooKeeperItf;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
@@ -30,8 +28,8 @@ import org.xml.sax.SAXException;
 
 import com.netflix.astyanax.connectionpool.exceptions.ConnectionException;
 
-public class MessageParserTask extends AbstractTask {
-    MessageParserTaskConfiguration taskConfiguration;
+public class MessageParserTask extends AbstractTask<MessageParserTaskConfiguration> {
+
     // single thread only!
     private HXPathExpression topicXPathExpression;
     private HXPathExpression authorXPathExpression;
@@ -43,11 +41,13 @@ public class MessageParserTask extends AbstractTask {
     private HXPathExpression userRatingXPathExpression;
 
     public MessageParserTask(final UUID uuid, final String friendlyName,
-            final ZooKeeperItf zk, final TaskConfiguration taskConfiguration,
+ final ZooKeeperItf zk,
+        final MessageParserTaskConfiguration taskConfiguration,
             final CrawlerRepository crawlerRepository,
             final WritableExecutorModel model, final HostLocker hostLocker) {
-        super(uuid, friendlyName, zk, crawlerRepository, model, hostLocker);
-        this.taskConfiguration = (MessageParserTaskConfiguration) taskConfiguration;
+
+        super(uuid, friendlyName, zk, taskConfiguration, crawlerRepository, model, hostLocker);
+
         try {
             topicXPathExpression = new HXPathExpression(LocalXPathFactory
                     .newXPath().compile(this.taskConfiguration.getTopicXPath()));
@@ -109,8 +109,9 @@ public class MessageParserTask extends AbstractTask {
                 && userRatingXPathExpression == null
                 && titleXPathExpression == null
                 && contentXPathExpression == null
-                && dateXPathExpression == null)
+                && dateXPathExpression == null) {
             return;
+        }
         List<XmlRecord> xmlRecords = crawlerRepository.listXmlRecords(
                 taskConfiguration.getHost(),
                 taskConfiguration.getParseAttemptCounter(), 100);
@@ -144,8 +145,9 @@ public class MessageParserTask extends AbstractTask {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         DocumentBuilder db = dbf.newDocumentBuilder();
         Document node = db.parse(source);
-        if (node == null)
+        if (node == null) {
             return null;
+        }
         String topic = (topicXPathExpression == null ? null
                 : topicXPathExpression.evalAsString(node));
         String author = (authorXPathExpression == null ? null
@@ -173,13 +175,4 @@ public class MessageParserTask extends AbstractTask {
         return messageRecord;
     }
 
-    @Override
-    public TaskConfiguration getTaskConfiguration() {
-        return this.taskConfiguration;
-    }
-
-    @Override
-    public void setTaskConfiguration(final TaskConfiguration taskConfiguration) {
-        this.taskConfiguration = (MessageParserTaskConfiguration) taskConfiguration;
-    }
 }

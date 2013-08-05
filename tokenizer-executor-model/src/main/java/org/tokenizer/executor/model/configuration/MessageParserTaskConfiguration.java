@@ -15,7 +15,7 @@
  */
 package org.tokenizer.executor.model.configuration;
 
-public class MessageParserTaskConfiguration extends TaskConfiguration {
+public class MessageParserTaskConfiguration extends AbstractTaskConfiguration {
 
     private static final long serialVersionUID = 1L;
     private String host;

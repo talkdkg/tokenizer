@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrQuery.ORDER;
 import org.apache.solr.client.solrj.SolrServerException;
-import org.tokenizer.ui.components.MessageSearchComponent;
+import org.tokenizer.ui.v7.view.MessageSearchComponent;
 
 import com.vaadin.ui.Component;
 

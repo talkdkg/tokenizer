@@ -16,7 +16,7 @@
 package org.tokenizer.executor.model.configuration;
 
 public class SimpleMultithreadedFetcherTaskConfiguration extends
-        TaskConfiguration {
+        AbstractTaskConfiguration {
 
     private static final long serialVersionUID = 1L;
 

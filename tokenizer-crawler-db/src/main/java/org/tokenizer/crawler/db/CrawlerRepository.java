@@ -1,3 +1,16 @@
+/*
+ * TOKENIZER CONFIDENTIAL 
+ * 
+ * Copyright © 2013 Tokenizer Inc. All rights reserved. 
+ * 
+ * NOTICE: All information contained herein is, and remains the property of Tokenizer Inc. 
+ * The intellectual and technical concepts contained herein are proprietary to Tokenizer Inc. 
+ * and may be covered by U.S. and Foreign Patents, patents in process, and are 
+ * protected by trade secret or copyright law. 
+ * 
+ * Dissemination of this information or reproduction of this material is strictly 
+ * forbidden unless prior written permission is obtained from Tokenizer Inc.
+ */
 package org.tokenizer.crawler.db;
 
 import java.util.ArrayList;
@@ -12,18 +25,17 @@ import org.tokenizer.crawler.db.model.UrlHeadRecord;
 import org.tokenizer.crawler.db.model.UrlSitemapIDX;
 import org.tokenizer.crawler.db.model.WeblogRecord;
 
-import com.google.inject.Singleton;
 import com.netflix.astyanax.connectionpool.exceptions.ConnectionException;
 
 public interface CrawlerRepository {
 
     void insert(final UrlRecord urlRecord) throws ConnectionException;
 
-    void insertIfNotExists(UrlRecord urlRecord) throws ConnectionException;
-
     void update(UrlRecord urlRecord) throws ConnectionException;
 
     void delete(final UrlRecord urlRecord) throws ConnectionException;
+
+    void deleteWebpageRecord(final byte[] webpageDigest) throws ConnectionException;
 
     void filter(final String host, final URLFilter urlFilter);
 
@@ -32,12 +44,12 @@ public interface CrawlerRepository {
     List<UrlRecord> listUrlRecords(final String[] keys) throws ConnectionException;
 
     List<UrlRecord> listUrlRecordsByFetchAttemptCounter(final String host, final int httpResponseCode,
-            final int maxResults) throws ConnectionException;
+        final int maxResults) throws ConnectionException;
 
     List<UrlRecord> listUrlRecords(final String host, final int httpResponseCode, byte[] startRowkey, int count)
-            throws ConnectionException;
+        throws ConnectionException;
 
-    UrlRecord loadUrlRecord(final String baseUrl) throws ConnectionException;
+    UrlRecord loadUrlRecord(final String url) throws ConnectionException;
 
     int countUrlRecords() throws ConnectionException;
 
@@ -50,7 +62,7 @@ public interface CrawlerRepository {
     WebpageRecord getWebpageRecord(byte[] digest) throws ConnectionException;
 
     List<WebpageRecord> listWebpageRecords(final String host, final int splitAttemptCounter, final int maxResults)
-            throws ConnectionException;
+        throws ConnectionException;
 
     int countWebpageRecords(final String host, final int splitAttemptCounter) throws ConnectionException;
 
@@ -59,7 +71,7 @@ public interface CrawlerRepository {
     void updateParseAttemptCounter(final XmlRecord xmlRecord) throws ConnectionException;
 
     List<XmlRecord> listXmlRecords(final String host, final int parseAttemptCounter, final int maxResults)
-            throws ConnectionException;
+        throws ConnectionException;
 
     List<XmlRecord> listXmlRecords(final byte[][] keys) throws ConnectionException;
 

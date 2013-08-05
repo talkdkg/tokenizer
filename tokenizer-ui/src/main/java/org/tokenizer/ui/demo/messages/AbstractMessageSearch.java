@@ -31,9 +31,8 @@ import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.client.solrj.response.RangeFacet;
 import org.apache.solr.common.util.NamedList;
 import org.tokenizer.core.solr.SolrUtils;
-import org.tokenizer.ui.components.MessageSearchComponent;
-import org.tokenizer.ui.demo.AbstractScreen;
-import org.tokenizer.ui.demo.SkipFromDemo;
+import org.tokenizer.ui.v7.view.AbstractScreen;
+import org.tokenizer.ui.v7.view.MessageSearchComponent;
 import org.vaadin.addons.lazyquerycontainer.LazyQueryContainer;
 import org.vaadin.addons.lazyquerycontainer.Query;
 import org.vaadin.addons.lazyquerycontainer.QueryDefinition;
@@ -60,7 +59,6 @@ import com.vaadin.ui.Table.ColumnGenerator;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 
-@SkipFromDemo
 public abstract class AbstractMessageSearch extends AbstractScreen {
 
     @Override
@@ -73,11 +71,9 @@ public abstract class AbstractMessageSearch extends AbstractScreen {
 
     private static final long serialVersionUID = 1L;
 
-    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory
-            .getLogger(MessageSearchComponent.class);
+    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(MessageSearchComponent.class);
     private static final int COMMON_FIELD_WIDTH = 48;
-    protected static SolrServer solrServer = SolrUtils
-            .getSolrServerForMessages();
+    protected static SolrServer solrServer = SolrUtils.getSolrServerForMessages();
 
     private VerticalLayout mainLayout;
     MyQuery myQuery;
@@ -129,9 +125,9 @@ public abstract class AbstractMessageSearch extends AbstractScreen {
                 Component newSearchResultsComponent = buildSearchResults();
                 if (searchResultsComponent == null) {
                     mainLayout.addComponent(newSearchResultsComponent);
-                } else {
-                    mainLayout.replaceComponent(searchResultsComponent,
-                            newSearchResultsComponent);
+                }
+                else {
+                    mainLayout.replaceComponent(searchResultsComponent, newSearchResultsComponent);
                 }
                 searchResultsComponent = newSearchResultsComponent;
             }
@@ -289,11 +285,9 @@ public abstract class AbstractMessageSearch extends AbstractScreen {
 
         @Override
         public String toString() {
-            return "MessageBean [id=" + id + ", host=" + host + ", content="
-                    + content + ", age=" + age + ", author=" + author
-                    + ", date=" + date + ", sex=" + sex + ", title=" + title
-                    + ", topic=" + topic + ", userRating=" + userRating
-                    + ", highlightSnippet=" + highlightSnippet + "]";
+            return "MessageBean [id=" + id + ", host=" + host + ", content=" + content + ", age=" + age + ", author="
+                + author + ", date=" + date + ", sex=" + sex + ", title=" + title + ", topic=" + topic
+                + ", userRating=" + userRating + ", highlightSnippet=" + highlightSnippet + "]";
         }
 
     }
@@ -306,27 +300,18 @@ public abstract class AbstractMessageSearch extends AbstractScreen {
         table.setImmediate(true);
         table.setNullSelectionAllowed(false);
         MyLazyQueryFactory myLazyQueryFactory = new MyLazyQueryFactory();
-        lazyQueryContainer = new LazyQueryContainer(myLazyQueryFactory, false,
-                100);
-        //lazyQueryContainer.addContainerProperty("id", String.class, "", true,
-        //        false);
-        lazyQueryContainer.addContainerProperty("host", String.class, "", true,
-                false);
-        lazyQueryContainer.addContainerProperty("date", Date.class,
-                new Date(0), true, false);
-        lazyQueryContainer.addContainerProperty("topic", String.class, "",
-                true, false);
-        lazyQueryContainer.addContainerProperty("author", String.class, "",
-                true, false);
-        lazyQueryContainer.addContainerProperty("title", String.class, "",
-                true, false);
-        lazyQueryContainer.addContainerProperty("highlightSnippet",
-                String.class, "", true, false);
+        lazyQueryContainer = new LazyQueryContainer(myLazyQueryFactory, false, 100);
+        // lazyQueryContainer.addContainerProperty("id", String.class, "", true,
+        // false);
+        lazyQueryContainer.addContainerProperty("host", String.class, "", true, false);
+        lazyQueryContainer.addContainerProperty("date", Date.class, new Date(0), true, false);
+        lazyQueryContainer.addContainerProperty("topic", String.class, "", true, false);
+        lazyQueryContainer.addContainerProperty("author", String.class, "", true, false);
+        lazyQueryContainer.addContainerProperty("title", String.class, "", true, false);
+        lazyQueryContainer.addContainerProperty("highlightSnippet", String.class, "", true, false);
         table.setContainerDataSource(lazyQueryContainer);
-        table.setVisibleColumns(new String[] { "host", "date", "topic",
-                "author", "title", "highlightSnippet" });
-        table.setColumnHeaders(new String[] { "Host", "Date", "Topic",
-                "Author", "Title", "Content" });
+        table.setVisibleColumns(new String[] { "host", "date", "topic", "author", "title", "highlightSnippet" });
+        table.setColumnHeaders(new String[] { "Host", "Date", "Topic", "Author", "Title", "Content" });
         table.addValueChangeListener(new ValueChangeListener() {
 
             private static final long serialVersionUID = 1L;
@@ -334,27 +319,25 @@ public abstract class AbstractMessageSearch extends AbstractScreen {
             @Override
             public void valueChange(final ValueChangeEvent event) {
                 Object itemId = table.getValue();
-                BeanItem<MessageBean> o = (BeanItem<MessageBean>) table
-                        .getItem(itemId);
+                BeanItem<MessageBean> o = (BeanItem<MessageBean>) table.getItem(itemId);
                 currentBean = o.getBean();
                 LOG.warn(currentBean.toString());
                 /*
-                Component newCrawledContentTabSheet = buildCrawledContentTabSheet();
-                if (crawledContentTabSheet == null) {
-                    mainLayout.addComponent(newCrawledContentTabSheet);
-                } else {
-                    mainLayout.replaceComponent(crawledContentTabSheet,
-                            newCrawledContentTabSheet);
-                }
-                crawledContentTabSheet = newCrawledContentTabSheet;
-                */
+                 * Component newCrawledContentTabSheet = buildCrawledContentTabSheet();
+                 * if (crawledContentTabSheet == null) {
+                 * mainLayout.addComponent(newCrawledContentTabSheet);
+                 * } else {
+                 * mainLayout.replaceComponent(crawledContentTabSheet,
+                 * newCrawledContentTabSheet);
+                 * }
+                 * crawledContentTabSheet = newCrawledContentTabSheet;
+                 */
             }
         });
         table.addGeneratedColumn("highlightSnippet", new ColumnGenerator() {
 
             @Override
-            public Object generateCell(final Table source, final Object itemId,
-                    final Object columnId) {
+            public Object generateCell(final Table source, final Object itemId, final Object columnId) {
                 final Item item = source.getItem(itemId);
                 final Property prop = item.getItemProperty(columnId);
                 final String text = (String) prop.getValue();
@@ -364,13 +347,11 @@ public abstract class AbstractMessageSearch extends AbstractScreen {
         });
         layout.addComponent(table);
 
-        Label label = new Label("Elapsed time: "
-                + queryResponse.getElapsedTime() + "(ms)");
+        Label label = new Label("Elapsed time: " + queryResponse.getElapsedTime() + "(ms)");
         layout.addComponent(label);
         label = new Label("Query time: " + queryResponse.getQTime() + "(ms)");
         layout.addComponent(label);
-        label = new Label("Total found: "
-                + queryResponse.getResults().getNumFound());
+        label = new Label("Total found: " + queryResponse.getResults().getNumFound());
         layout.addComponent(label);
 
         Component facets = buildFacets();
@@ -386,8 +367,7 @@ public abstract class AbstractMessageSearch extends AbstractScreen {
         private QueryDefinition queryDefinition;
 
         @Override
-        public Query constructQuery(final Object[] sortPropertyIds,
-                final boolean[] ascendingStates) {
+        public Query constructQuery(final Object[] sortPropertyIds, final boolean[] ascendingStates) {
             LOG.debug("query constructor called...");
             return new MyLazyQuery();
         }
@@ -416,7 +396,8 @@ public abstract class AbstractMessageSearch extends AbstractScreen {
                 LOG.debug("Querying Solr... {}", solrQuery);
                 queryResponse = solrServer.query(solrQuery);
                 numFound = queryResponse.getResults().getNumFound();
-            } catch (SolrServerException e) {
+            }
+            catch (SolrServerException e) {
             }
         }
 
@@ -433,8 +414,7 @@ public abstract class AbstractMessageSearch extends AbstractScreen {
 
         @Override
         public List<Item> loadItems(final int startIndex, final int count) {
-            LOG.debug("loadItems() called... startIndex: {}, count: {}",
-                    startIndex, count);
+            LOG.debug("loadItems() called... startIndex: {}, count: {}", startIndex, count);
             SolrQuery solrQuery = new SolrQuery();
             solrQuery.setQuery(myQuery.getQuery());
             // solrQuery.setFilterQueries("httpResponseCode:"
@@ -455,7 +435,8 @@ public abstract class AbstractMessageSearch extends AbstractScreen {
             try {
                 LOG.debug("Querying Solr... {}", solrQuery);
                 queryResponse = solrServer.query(solrQuery);
-            } catch (SolrServerException e) {
+            }
+            catch (SolrServerException e) {
                 LOG.error(e.getMessage());
                 beans = new ArrayList<MessageBean>();
             }
@@ -464,8 +445,7 @@ public abstract class AbstractMessageSearch extends AbstractScreen {
             for (MessageBean bean : beans) {
                 String id = bean.getId();
                 if (queryResponse.getHighlighting().get(id) != null) {
-                    List<String> highlightSnippets = queryResponse
-                            .getHighlighting().get(id).get("content_en");
+                    List<String> highlightSnippets = queryResponse.getHighlighting().get(id).get("content_en");
                     bean.setHighlightSnippet(highlightSnippets.get(0));
                 }
                 LOG.debug(bean.toString());
@@ -478,8 +458,7 @@ public abstract class AbstractMessageSearch extends AbstractScreen {
         }
 
         @Override
-        public void saveItems(final List<Item> arg0, final List<Item> arg1,
-                final List<Item> arg2) {
+        public void saveItems(final List<Item> arg0, final List<Item> arg1, final List<Item> arg2) {
             throw new UnsupportedOperationException();
         }
 

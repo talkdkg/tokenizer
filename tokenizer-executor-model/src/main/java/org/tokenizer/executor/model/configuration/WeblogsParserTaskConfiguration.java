@@ -15,7 +15,7 @@
  */
 package org.tokenizer.executor.model.configuration;
 
-public class WeblogsParserTaskConfiguration extends TaskConfiguration {
+public class WeblogsParserTaskConfiguration extends AbstractTaskConfiguration {
 
     private static final long serialVersionUID = 1L;
 

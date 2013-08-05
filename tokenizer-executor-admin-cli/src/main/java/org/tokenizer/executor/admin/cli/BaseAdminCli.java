@@ -29,7 +29,7 @@ import org.apache.commons.io.FileUtils;
 import org.tokenizer.core.cli.BaseZkCliTool;
 import org.tokenizer.executor.model.api.TaskGeneralState;
 import org.tokenizer.executor.model.api.WritableExecutorModel;
-import org.tokenizer.executor.model.configuration.TaskConfiguration;
+import org.tokenizer.executor.model.configuration.AbstractTaskConfiguration;
 import org.tokenizer.executor.model.impl.ExecutorModelImpl;
 import org.tokenizer.util.io.Closer;
 import org.tokenizer.util.zookeeper.StateWatchingZooKeeper;
@@ -44,7 +44,7 @@ public abstract class BaseAdminCli extends BaseZkCliTool {
     protected Option buildStateOption;
     protected Option outputFileOption;
     protected UUID uuid;
-    protected TaskConfiguration taskConfiguration;
+    protected AbstractTaskConfiguration taskConfiguration;
     protected String outputFileName;
     protected TaskGeneralState generalState;
     protected WritableExecutorModel model;

@@ -15,7 +15,7 @@
  */
 package org.tokenizer.executor.model.configuration;
 
-public class SitemapsFetcherTaskConfiguration extends TaskConfiguration {
+public class SitemapsFetcherTaskConfiguration extends AbstractTaskConfiguration {
 
     private static final long serialVersionUID = 1L;
 

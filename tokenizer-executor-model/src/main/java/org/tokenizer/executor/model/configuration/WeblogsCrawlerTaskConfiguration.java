@@ -15,7 +15,7 @@
  */
 package org.tokenizer.executor.model.configuration;
 
-public class WeblogsCrawlerTaskConfiguration extends TaskConfiguration {
+public class WeblogsCrawlerTaskConfiguration extends AbstractTaskConfiguration {
 
     private static final long serialVersionUID = 1L;
 

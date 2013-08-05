@@ -35,7 +35,6 @@ import org.tokenizer.executor.engine.AbstractTask;
 import org.tokenizer.executor.engine.HostLocker;
 import org.tokenizer.executor.engine.MetricsCache;
 import org.tokenizer.executor.model.api.WritableExecutorModel;
-import org.tokenizer.executor.model.configuration.TaskConfiguration;
 import org.tokenizer.util.zookeeper.ZooKeeperItf;
 
 import twitter4j.FilterQuery;
@@ -53,7 +52,7 @@ import twitter4j.auth.AccessToken;
 import com.cybozu.labs.langdetect.LangDetectException;
 import com.netflix.astyanax.connectionpool.exceptions.ConnectionException;
 
-public class TweetCollectorTask extends AbstractTask {
+public class TweetCollectorTask extends AbstractTask<TweetCollectorTaskConfiguration> {
 
     private final Twitter twitter;
     private final String consumerKey = TokenizerConfig.getString("twitter.consumerKey");
@@ -70,15 +69,15 @@ public class TweetCollectorTask extends AbstractTask {
         System.setProperty("twitter4j.http.connectionTimeout", "10000");
     }
     Collection<String> input = new TreeSet<String>();
-    private TweetCollectorTaskConfiguration taskConfiguration;
     BlockingQueue<Status> queue;
     TwitterStream stream;
 
     public TweetCollectorTask(final UUID uuid, final String friendlyName, final ZooKeeperItf zk,
-            final TaskConfiguration taskConfiguration, final CrawlerRepository crawlerRepository,
+        final TweetCollectorTaskConfiguration taskConfiguration, final CrawlerRepository crawlerRepository,
             final WritableExecutorModel model, final HostLocker hostLocker) {
-        super(uuid, friendlyName, zk, crawlerRepository, model, hostLocker);
-        this.taskConfiguration = (TweetCollectorTaskConfiguration) taskConfiguration;
+
+        super(uuid, friendlyName, zk, taskConfiguration, crawlerRepository, model, hostLocker);
+
         BufferedReader bufferedReader = new BufferedReader(new StringReader(this.taskConfiguration.getKeywords()));
         String line = null;
         try {
@@ -114,8 +113,9 @@ public class TweetCollectorTask extends AbstractTask {
 
             @Override
             public void onStatus(final Status status) {
-                if (isEmpty(status.getUser().getScreenName()))
+                if (isEmpty(status.getUser().getScreenName())) {
                     return;
+                }
 
                 /*
                  * if (!status.getUser().getLang().equals("en")) return;
@@ -167,14 +167,17 @@ public class TweetCollectorTask extends AbstractTask {
 
             @Override
             public void onStatus(final Status status) {
-                if (isEmpty(status.getUser().getScreenName()))
+                if (isEmpty(status.getUser().getScreenName())) {
                     return;
-                if (!status.getUser().getLang().equals("en"))
+                }
+                if (!status.getUser().getLang().equals("en")) {
                     return;
+                }
 
                 try {
-                    if (!LanguageDetector.detect(status.getText()).equals("en"))
+                    if (!LanguageDetector.detect(status.getText()).equals("en")) {
                         return;
+                    }
                 } catch (LangDetectException e) {
                     LOG.debug(e.getMessage());
                     return;
@@ -211,21 +214,12 @@ public class TweetCollectorTask extends AbstractTask {
         return stream;
     }
 
-    @Override
-    public TaskConfiguration getTaskConfiguration() {
-        return this.taskConfiguration;
-    }
-
-    @Override
-    public void setTaskConfiguration(final TaskConfiguration taskConfiguration) {
-        this.taskConfiguration = (TweetCollectorTaskConfiguration) taskConfiguration;
-    }
 
     @Override
     protected void process() throws InterruptedException, ConnectionException {
         if (stream == null) {
             try {
-                if (taskConfiguration.isSampleStream()) {
+                if (this.taskConfiguration.isSampleStream()) {
                     stream = sampleStream(queue);
                 } else {
                     stream = streamingTwitter(input, queue);

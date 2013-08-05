@@ -15,7 +15,7 @@
  */
 package org.tokenizer.executor.model.configuration;
 
-public class HtmlSplitterTaskConfiguration extends TaskConfiguration {
+public class HtmlSplitterTaskConfiguration extends AbstractTaskConfiguration {
 
     private static final long serialVersionUID = 1L;
     private String xpath;

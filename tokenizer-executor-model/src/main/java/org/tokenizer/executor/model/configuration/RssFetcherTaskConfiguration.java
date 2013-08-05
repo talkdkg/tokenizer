@@ -18,7 +18,7 @@ package org.tokenizer.executor.model.configuration;
 import java.util.Set;
 import java.util.TreeSet;
 
-public class RssFetcherTaskConfiguration extends TaskConfiguration {
+public class RssFetcherTaskConfiguration extends AbstractTaskConfiguration {
 
     private static final long serialVersionUID = 1L;
     private Set<String> seeds = new TreeSet<String>();

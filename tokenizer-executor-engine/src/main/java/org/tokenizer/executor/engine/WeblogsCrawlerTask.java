@@ -1,3 +1,16 @@
+/*
+ * TOKENIZER CONFIDENTIAL 
+ * 
+ * Copyright © 2013 Tokenizer Inc. All rights reserved. 
+ * 
+ * NOTICE: All information contained herein is, and remains the property of Tokenizer Inc. 
+ * The intellectual and technical concepts contained herein are proprietary to Tokenizer Inc. 
+ * and may be covered by U.S. and Foreign Patents, patents in process, and are 
+ * protected by trade secret or copyright law. 
+ * 
+ * Dissemination of this information or reproduction of this material is strictly 
+ * forbidden unless prior written permission is obtained from Tokenizer Inc.
+ */
 package org.tokenizer.executor.engine;
 
 import java.util.ArrayList;
@@ -23,7 +36,6 @@ import org.tokenizer.crawler.db.model.UrlHeadRecord;
 import org.tokenizer.crawler.db.model.WeblogRecord;
 import org.tokenizer.crawler.db.model.WeblogRecord.Weblog;
 import org.tokenizer.executor.model.api.WritableExecutorModel;
-import org.tokenizer.executor.model.configuration.TaskConfiguration;
 import org.tokenizer.executor.model.configuration.WeblogsCrawlerTaskConfiguration;
 import org.tokenizer.util.zookeeper.ZooKeeperItf;
 
@@ -37,9 +49,8 @@ import crawlercommons.fetcher.http.BaseHttpFetcher.RedirectMode;
 import crawlercommons.fetcher.http.SimpleHttpFetcher;
 import crawlercommons.fetcher.http.UserAgent;
 
-public class WeblogsCrawlerTask extends AbstractTask {
+public class WeblogsCrawlerTask extends AbstractTask<WeblogsCrawlerTaskConfiguration> {
 
-    private WeblogsCrawlerTaskConfiguration taskConfiguration;
     private static final int DEFAULT_MAX_THREADS = 1024;
     private final SimpleHttpFetcher httpClient;
 
@@ -49,16 +60,14 @@ public class WeblogsCrawlerTask extends AbstractTask {
     private static BaseUrlNormalizer urlNormalizer = new SimpleUrlNormalizer();
 
     public WeblogsCrawlerTask(UUID uuid, String friendlyName, ZooKeeperItf zk,
-            final TaskConfiguration taskConfiguration,
-            CrawlerRepository crawlerRepository, WritableExecutorModel model,
-            HostLocker hostLocker) {
-        super(uuid, friendlyName, zk, crawlerRepository, model, hostLocker);
-        this.taskConfiguration = (WeblogsCrawlerTaskConfiguration) taskConfiguration;
-        UserAgent userAgent = new UserAgent(
-                this.taskConfiguration.getAgentName(),
-                this.taskConfiguration.getEmailAddress(),
-                this.taskConfiguration.getWebAddress(),
-                UserAgent.DEFAULT_BROWSER_VERSION, "2.1");
+        final WeblogsCrawlerTaskConfiguration taskConfiguration, CrawlerRepository crawlerRepository,
+        WritableExecutorModel model, HostLocker hostLocker) {
+
+        super(uuid, friendlyName, zk, taskConfiguration, crawlerRepository, model, hostLocker);
+
+        UserAgent userAgent =
+            new UserAgent(this.taskConfiguration.getAgentName(), this.taskConfiguration.getEmailAddress(),
+                this.taskConfiguration.getWebAddress(), UserAgent.DEFAULT_BROWSER_VERSION, "2.1");
         LOG.warn("userAgent: {}", userAgent.getUserAgentString());
         httpClient = new SimpleHttpFetcher(DEFAULT_MAX_THREADS, userAgent);
         httpClient.setSocketTimeout(30000);
@@ -66,16 +75,6 @@ public class WeblogsCrawlerTask extends AbstractTask {
         httpClient.setRedirectMode(RedirectMode.FOLLOW_NONE);
         httpClient.setDefaultMaxContentSize(1024 * 1024);
 
-    }
-
-    @Override
-    public TaskConfiguration getTaskConfiguration() {
-        return taskConfiguration;
-    }
-
-    @Override
-    public void setTaskConfiguration(TaskConfiguration taskConfiguration) {
-        this.taskConfiguration = (WeblogsCrawlerTaskConfiguration) taskConfiguration;
     }
 
     @Override
@@ -90,37 +89,43 @@ public class WeblogsCrawlerTask extends AbstractTask {
             try {
                 LOG.debug("trying url: {}", url);
                 fetchedResult = httpClient.get(url, null);
-            } catch (RedirectFetchException e) {
+            }
+            catch (RedirectFetchException e) {
                 String redirectedUrl = e.getRedirectedUrl();
                 try {
                     LOG.debug("trying redirected url: {}", redirectedUrl);
                     fetchedResult = httpClient.get(redirectedUrl, null);
-                } catch (RedirectFetchException e1) {
+                }
+                catch (RedirectFetchException e1) {
                     String redirectedUrl2 = e.getRedirectedUrl();
                     LOG.error("secondary redirect: {}", redirectedUrl2);
-                } catch (HttpFetchException e1) {
+                }
+                catch (HttpFetchException e1) {
                     LOG.error(e1.getMessage());
-                } catch (BaseFetchException e1) {
-                    if (e1.getMessage().contains("Aborted due to INTERRUPTED"))
+                }
+                catch (BaseFetchException e1) {
+                    if (e1.getMessage().contains("Aborted due to INTERRUPTED")) {
                         throw new InterruptedException("Aborted...");
+                    }
                     LOG.error(e1.getMessage());
                 }
                 metricsCache.increment(MetricsCache.REDIRECT_COUNT);
-            } catch (HttpFetchException e) {
+            }
+            catch (HttpFetchException e) {
                 LOG.error(e.getMessage());
-            } catch (BaseFetchException e) {
-                if (e.getMessage().contains("Aborted due to INTERRUPTED"))
+            }
+            catch (BaseFetchException e) {
+                if (e.getMessage().contains("Aborted due to INTERRUPTED")) {
                     throw new InterruptedException("Aborted...");
+                }
                 metricsCache.increment(MetricsCache.OTHER_ERRORS);
                 LOG.error(e.getMessage());
             }
             if (fetchedResult != null) {
-                FetchedResultRecord fetchedResultRecord = new FetchedResultRecord(
-                        url, new Date(), fetchedResult);
+                FetchedResultRecord fetchedResultRecord = new FetchedResultRecord(url, new Date(), fetchedResult);
                 crawlerRepository.insert(fetchedResultRecord);
 
-                List<Outlink> outlinks = parse(fetchedResultRecord
-                        .getFetchedResult());
+                List<Outlink> outlinks = parse(fetchedResultRecord.getFetchedResult());
 
                 Set<String> newUrls = new HashSet<String>();
 
@@ -145,10 +150,9 @@ public class WeblogsCrawlerTask extends AbstractTask {
                     int httpStatus = 0;
                     String reasonPhrase = null;
 
-                    UrlHeadRecord urlHeadRecord = new UrlHeadRecord(baseUrl,
-                            fetchedUrl, fetchTime, contentType, headers,
-                            newBaseUrl, numRedirects, hostAddress, httpStatus,
-                            reasonPhrase);
+                    UrlHeadRecord urlHeadRecord =
+                        new UrlHeadRecord(baseUrl, fetchedUrl, fetchTime, contentType, headers, newBaseUrl,
+                            numRedirects, hostAddress, httpStatus, reasonPhrase);
 
                     crawlerRepository.insertIfNotExists(urlHeadRecord);
                 }
@@ -158,11 +162,11 @@ public class WeblogsCrawlerTask extends AbstractTask {
         }
     }
 
-    private List<Outlink> parse(final FetchedResult fetchedResult)
-            throws InterruptedException, ConnectionException {
+    private List<Outlink> parse(final FetchedResult fetchedResult) throws InterruptedException, ConnectionException {
         ParsedDatum parsed = parser.parse(fetchedResult);
-        if (parsed == null)
+        if (parsed == null) {
             return null;
+        }
         Outlink[] outlinks = parsed.getOutlinks();
 
         List<Outlink> list = new ArrayList<Outlink>();
@@ -178,8 +182,7 @@ public class WeblogsCrawlerTask extends AbstractTask {
                 continue;
             }
 
-            Outlink o = new Outlink(url, outlink.getAnchor(),
-                    outlink.getRelAttributes());
+            Outlink o = new Outlink(url, outlink.getAnchor(), outlink.getRelAttributes());
             list.add(o);
         }
         return list;

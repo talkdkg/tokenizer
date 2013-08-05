@@ -26,7 +26,6 @@ public class StringToTaskGeneralStateConverter implements
 
     private static final long serialVersionUID = 1L;
 
-    @Override
     public TaskGeneralState convertToModel(String value, final Locale locale)
             throws ConversionException {
         if (value == null)
@@ -42,7 +41,6 @@ public class StringToTaskGeneralStateConverter implements
                 + " into TaskGeneralState enum");
     }
 
-    @Override
     public String convertToPresentation(final TaskGeneralState value,
             final Locale locale) throws ConversionException {
         if (value == null)
@@ -58,5 +56,19 @@ public class StringToTaskGeneralStateConverter implements
     @Override
     public Class<String> getPresentationType() {
         return String.class;
+    }
+
+    @Override
+    public TaskGeneralState convertToModel(String value, Class<? extends TaskGeneralState> targetType, Locale locale)
+        throws com.vaadin.data.util.converter.Converter.ConversionException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public String convertToPresentation(TaskGeneralState value, Class<? extends String> targetType, Locale locale)
+        throws com.vaadin.data.util.converter.Converter.ConversionException {
+        // TODO Auto-generated method stub
+        return null;
     }
 }

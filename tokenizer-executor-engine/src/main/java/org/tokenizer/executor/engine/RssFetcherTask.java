@@ -1,17 +1,15 @@
 /*
- * Copyright 2007-2012 Tokenizer Inc.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * TOKENIZER CONFIDENTIAL 
+ * 
+ * Copyright © 2013 Tokenizer Inc. All rights reserved. 
+ * 
+ * NOTICE: All information contained herein is, and remains the property of Tokenizer Inc. 
+ * The intellectual and technical concepts contained herein are proprietary to Tokenizer Inc. 
+ * and may be covered by U.S. and Foreign Patents, patents in process, and are 
+ * protected by trade secret or copyright law. 
+ * 
+ * Dissemination of this information or reproduction of this material is strictly 
+ * forbidden unless prior written permission is obtained from Tokenizer Inc.
  */
 package org.tokenizer.executor.engine;
 
@@ -23,13 +21,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.tokenizer.core.http.FetcherUtils;
 import org.tokenizer.crawler.db.CrawlerRepository;
 import org.tokenizer.executor.model.api.WritableExecutorModel;
 import org.tokenizer.executor.model.configuration.RssFetcherTaskConfiguration;
-import org.tokenizer.executor.model.configuration.TaskConfiguration;
 import org.tokenizer.util.zookeeper.ZooKeeperItf;
 
 import com.netflix.astyanax.connectionpool.exceptions.ConnectionException;
@@ -46,25 +41,22 @@ import com.sun.syndication.io.FeedException;
 
 import crawlercommons.fetcher.http.SimpleHttpFetcher;
 
-public class RssFetcherTask extends AbstractTask {
+public class RssFetcherTask extends AbstractTask<RssFetcherTaskConfiguration> {
 
-    SimpleHttpFetcher simpleHttpClient = new SimpleHttpFetcher(
-            FetcherUtils.USER_AGENT);
+    SimpleHttpFetcher simpleHttpClient = new SimpleHttpFetcher(FetcherUtils.USER_AGENT);
     static FeedFetcherCache feedInfoCache = HashMapFeedInfoCache.getInstance();
     static FeedFetcher feedFetcher = new HttpURLFeedFetcher(feedInfoCache);
-    private RssFetcherTaskConfiguration taskConfiguration;
 
-    public RssFetcherTask(final UUID uuid, final String friendlyName,
-            final ZooKeeperItf zk, final TaskConfiguration taskConfiguration,
-            final CrawlerRepository repository,
-            final WritableExecutorModel fetcherModel,
-            final HostLocker hostLocker) {
-        super(uuid, friendlyName, zk, repository, fetcherModel, hostLocker);
-        this.taskConfiguration = (RssFetcherTaskConfiguration) taskConfiguration;
-        RssFetcherTask.feedFetcher.setUserAgent(FetcherUtils.USER_AGENT
-                .getUserAgentString());
+    public RssFetcherTask(final UUID uuid, final String friendlyName, final ZooKeeperItf zk,
+        final RssFetcherTaskConfiguration taskConfiguration, final CrawlerRepository repository,
+        final WritableExecutorModel fetcherModel, final HostLocker hostLocker) {
+
+        super(uuid, friendlyName, zk, taskConfiguration, repository, fetcherModel, hostLocker);
+
+        RssFetcherTask.feedFetcher.setUserAgent(FetcherUtils.USER_AGENT.getUserAgentString());
         FetcherEventListenerImpl listener = new RssFetcherTask.FetcherEventListenerImpl();
         RssFetcherTask.feedFetcher.addFetcherEventListener(listener);
+
     }
 
     class FetcherEventListenerImpl implements FetcherListener {
@@ -77,17 +69,18 @@ public class RssFetcherTask extends AbstractTask {
             String eventType = event.getEventType();
             if (FetcherEvent.EVENT_TYPE_FEED_POLLED.equals(eventType)) {
                 LOG.debug("EVENT: Feed Polled. URL = {}", event.getUrlString());
-            } else if (FetcherEvent.EVENT_TYPE_FEED_RETRIEVED.equals(eventType)) {
-                LOG.debug("EVENT: Feed Retrieved. URL = {}",
-                        event.getUrlString());
+            }
+            else if (FetcherEvent.EVENT_TYPE_FEED_RETRIEVED.equals(eventType)) {
+                LOG.debug("EVENT: Feed Retrieved. URL = {}", event.getUrlString());
                 try {
                     process(event.getFeed());
-                } catch (Throwable e) {
+                }
+                catch (Throwable e) {
                     LOG.error("", e);
                 }
-            } else if (FetcherEvent.EVENT_TYPE_FEED_UNCHANGED.equals(eventType)) {
-                LOG.debug("EVENT: Feed Unchanged. URL = {}"
-                        + event.getUrlString());
+            }
+            else if (FetcherEvent.EVENT_TYPE_FEED_UNCHANGED.equals(eventType)) {
+                LOG.debug("EVENT: Feed Unchanged. URL = {}" + event.getUrlString());
             }
         }
     }
@@ -101,16 +94,19 @@ public class RssFetcherTask extends AbstractTask {
                 LOG.info("Retrieving feed " + feedUrl);
                 SyndFeed feed = feedFetcher.retrieveFeed(feedUrl);
                 LOG.info(feedUrl + " retrieved");
-                LOG.info(feedUrl + " has a title: " + feed.getTitle()
-                        + " and contains " + feed.getEntries().size()
-                        + " entries.");
-            } catch (MalformedURLException e) {
+                LOG.info(feedUrl + " has a title: " + feed.getTitle() + " and contains " + feed.getEntries().size()
+                    + " entries.");
+            }
+            catch (MalformedURLException e) {
                 LOG.error("", e);
-            } catch (IOException e) {
+            }
+            catch (IOException e) {
                 LOG.error("", e);
-            } catch (FeedException e) {
+            }
+            catch (FeedException e) {
                 LOG.error("", e);
-            } catch (FetcherException e) {
+            }
+            catch (FetcherException e) {
                 LOG.error("", e);
             }
         }
@@ -131,8 +127,7 @@ public class RssFetcherTask extends AbstractTask {
         }
     }
 
-    private static Cache<SyndEntry, String> cache = new Cache<SyndEntry, String>(
-            16 * 1024);
+    private static Cache<SyndEntry, String> cache = new Cache<SyndEntry, String>(16 * 1024);
 
     private void process(final SyndFeed feed) throws InterruptedException {
         @SuppressWarnings("unchecked")
@@ -141,7 +136,8 @@ public class RssFetcherTask extends AbstractTask {
             String test = cache.get(entry);
             if (test == null) {
                 cache.put(entry, "");
-            } else {
+            }
+            else {
                 continue;
             }
             // TODO:
@@ -150,13 +146,5 @@ public class RssFetcherTask extends AbstractTask {
         }
     }
 
-    @Override
-    public TaskConfiguration getTaskConfiguration() {
-        return this.taskConfiguration;
-    }
 
-    @Override
-    public void setTaskConfiguration(final TaskConfiguration taskConfiguration) {
-        this.taskConfiguration = (RssFetcherTaskConfiguration) taskConfiguration;
-    }
 }

@@ -1,13 +1,24 @@
+/*
+ * TOKENIZER CONFIDENTIAL 
+ * 
+ * Copyright © 2013 Tokenizer Inc. All rights reserved. 
+ * 
+ * NOTICE: All information contained herein is, and remains the property of Tokenizer Inc. 
+ * The intellectual and technical concepts contained herein are proprietary to Tokenizer Inc. 
+ * and may be covered by U.S. and Foreign Patents, patents in process, and are 
+ * protected by trade secret or copyright law. 
+ * 
+ * Dissemination of this information or reproduction of this material is strictly 
+ * forbidden unless prior written permission is obtained from Tokenizer Inc.
+ */
 package org.tokenizer.executor.engine;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import org.apache.http.client.methods.HttpHead;
 import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.nutch.net.URLFilter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.tokenizer.core.datum.Outlink;
 import org.tokenizer.core.datum.ParsedDatum;
 import org.tokenizer.core.parser.SimpleParser;
@@ -18,13 +29,10 @@ import org.tokenizer.core.urls.SimpleUrlValidator;
 import org.tokenizer.core.util.HttpUtils;
 import org.tokenizer.core.util.ParserPolicy;
 import org.tokenizer.crawler.db.CrawlerRepository;
-import org.tokenizer.crawler.db.UrlRecord;
 import org.tokenizer.crawler.db.model.FetchedResultRecord;
 import org.tokenizer.crawler.db.model.HostRecord;
 import org.tokenizer.crawler.db.model.UrlHeadRecord;
 import org.tokenizer.executor.model.api.WritableExecutorModel;
-import org.tokenizer.executor.model.configuration.TaskConfiguration;
-import org.tokenizer.executor.model.configuration.WeblogsCrawlerTaskConfiguration;
 import org.tokenizer.executor.model.configuration.WeblogsParserTaskConfiguration;
 import org.tokenizer.util.zookeeper.ZooKeeperItf;
 
@@ -34,14 +42,11 @@ import crawlercommons.fetcher.BaseFetchException;
 import crawlercommons.fetcher.FetchedResult;
 import crawlercommons.fetcher.Payload;
 import crawlercommons.fetcher.RedirectFetchException;
-import crawlercommons.fetcher.http.SimpleHttpFetcher;
-import crawlercommons.fetcher.http.UserAgent;
 import crawlercommons.fetcher.http.BaseHttpFetcher.RedirectMode;
-import org.apache.http.client.methods.*;
+import crawlercommons.fetcher.http.UserAgent;
 
-public class WeblogsParserTask extends AbstractTask {
+public class WeblogsParserTask extends AbstractTask<WeblogsParserTaskConfiguration> {
 
-    private WeblogsParserTaskConfiguration taskConfiguration;
     private static final int DEFAULT_MAX_THREADS = 1024;
     private final SimpleHttpFetcher2 httpClient;
     private final ParserPolicy parserPolicy = new ParserPolicy();
@@ -50,16 +55,14 @@ public class WeblogsParserTask extends AbstractTask {
     private static BaseUrlNormalizer urlNormalizer = new SimpleUrlNormalizer();
 
     public WeblogsParserTask(UUID uuid, String friendlyName, ZooKeeperItf zk,
-            final TaskConfiguration taskConfiguration,
-            CrawlerRepository crawlerRepository, WritableExecutorModel model,
-            HostLocker hostLocker) {
-        super(uuid, friendlyName, zk, crawlerRepository, model, hostLocker);
-        this.taskConfiguration = (WeblogsParserTaskConfiguration) taskConfiguration;
-        UserAgent userAgent = new UserAgent(
-                this.taskConfiguration.getAgentName(),
-                this.taskConfiguration.getEmailAddress(),
-                this.taskConfiguration.getWebAddress(),
-                UserAgent.DEFAULT_BROWSER_VERSION, "2.1");
+        final WeblogsParserTaskConfiguration taskConfiguration, CrawlerRepository crawlerRepository,
+        WritableExecutorModel model, HostLocker hostLocker) {
+
+        super(uuid, friendlyName, zk, taskConfiguration, crawlerRepository, model, hostLocker);
+
+        UserAgent userAgent =
+            new UserAgent(this.taskConfiguration.getAgentName(), this.taskConfiguration.getEmailAddress(),
+                this.taskConfiguration.getWebAddress(), UserAgent.DEFAULT_BROWSER_VERSION, "2.1");
         LOG.warn("userAgent: {}", userAgent.getUserAgentString());
         httpClient = new SimpleHttpFetcher2(DEFAULT_MAX_THREADS, userAgent);
         httpClient.setSocketTimeout(30000);
@@ -70,30 +73,18 @@ public class WeblogsParserTask extends AbstractTask {
     }
 
     @Override
-    public TaskConfiguration getTaskConfiguration() {
-        return taskConfiguration;
-    }
-
-    @Override
-    public void setTaskConfiguration(TaskConfiguration taskConfiguration) {
-        this.taskConfiguration = (WeblogsParserTaskConfiguration) taskConfiguration;
-    }
-
-    @Override
     protected void process() throws InterruptedException, ConnectionException {
         LOG.info("processing...");
 
-        List<HostRecord> hostRecords = crawlerRepository.listHostRecords("com",
-                0, 1000);
+        List<HostRecord> hostRecords = crawlerRepository.listHostRecords("com", 0, 1000);
 
         for (HostRecord hostRecord : hostRecords) {
             LOG.debug(hostRecord.toString());
-            List<FetchedResultRecord> fetchedResultRecords = crawlerRepository
-                    .listFetchedResultRecords(hostRecord.getHost());
+            List<FetchedResultRecord> fetchedResultRecords =
+                crawlerRepository.listFetchedResultRecords(hostRecord.getHost());
             for (FetchedResultRecord fetchedResultRecord : fetchedResultRecords) {
                 LOG.debug(fetchedResultRecord.toString());
-                List<Outlink> outlinks = parse(fetchedResultRecord
-                        .getFetchedResult());
+                List<Outlink> outlinks = parse(fetchedResultRecord.getFetchedResult());
 
                 int i = 0;
                 for (Outlink outlink : outlinks) {
@@ -101,22 +92,21 @@ public class WeblogsParserTask extends AbstractTask {
                     String url = outlink.getToUrl();
                     HttpRequestBase request = new HttpHead();
                     try {
-                        FetchedResult fetchedResult = httpClient.fetch(request,
-                                url, new Payload());
-                        LOG.debug(i + " url: {}; content type: {}", url,
-                                fetchedResult.getContentType());
-                        
+                        FetchedResult fetchedResult = httpClient.fetch(request, url, new Payload());
+                        LOG.debug(i + " url: {}; content type: {}", url, fetchedResult.getContentType());
+
                         UrlHeadRecord urlHeadRecord = new UrlHeadRecord(fetchedResult);
                         crawlerRepository.insertIfNotExists(urlHeadRecord);
-                        
-                        
-                    } catch (RedirectFetchException e) {
+
+                    }
+                    catch (RedirectFetchException e) {
                         String redirectedUrl2 = e.getRedirectedUrl();
                         LOG.error("secondary redirect: {}", redirectedUrl2);
-                    } catch (BaseFetchException e) {
-                        if (e.getMessage().contains(
-                                "Aborted due to INTERRUPTED"))
+                    }
+                    catch (BaseFetchException e) {
+                        if (e.getMessage().contains("Aborted due to INTERRUPTED")) {
                             throw new InterruptedException("Aborted...");
+                        }
                         e.printStackTrace();
                     }
 
@@ -126,11 +116,11 @@ public class WeblogsParserTask extends AbstractTask {
 
     }
 
-    private List<Outlink> parse(final FetchedResult fetchedResult)
-            throws InterruptedException, ConnectionException {
+    private List<Outlink> parse(final FetchedResult fetchedResult) throws InterruptedException, ConnectionException {
         ParsedDatum parsed = parser.parse(fetchedResult);
-        if (parsed == null)
+        if (parsed == null) {
             return null;
+        }
         Outlink[] outlinks = parsed.getOutlinks();
 
         List<Outlink> list = new ArrayList<Outlink>();
@@ -146,8 +136,7 @@ public class WeblogsParserTask extends AbstractTask {
                 continue;
             }
 
-            Outlink o = new Outlink(url, outlink.getAnchor(),
-                    outlink.getRelAttributes());
+            Outlink o = new Outlink(url, outlink.getAnchor(), outlink.getRelAttributes());
             list.add(o);
         }
         return list;

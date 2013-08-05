@@ -15,8 +15,8 @@
  */
 package org.tokenizer.ui.demo.messages;
 
-import org.tokenizer.ui.components.MessageSearchComponent;
-import org.tokenizer.ui.demo.AbstractScreen;
+import org.tokenizer.ui.v7.view.AbstractScreen;
+import org.tokenizer.ui.v7.view.MessageSearchComponent;
 
 import com.vaadin.ui.Component;
 

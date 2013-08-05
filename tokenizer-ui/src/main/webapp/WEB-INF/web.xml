@@ -1,17 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<web-app xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd" version="3.0">
+<web-app id="WebApp_ID" version="3.0" xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
+      http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
     <display-name>Tokenizer-UI</display-name>
-    <!-- 
     <context-param>
-        <param-name>contextConfigLocation</param-name>
-        <param-value>
-            classpath*:META-INF/tokenizer-executor-context.xml
-        </param-value>
-    </context-param>
-     -->
-    <context-param>
-        <description>Vaadin production mode</description>
+        <description>Vaadin Production Mode</description>
         <param-name>productionMode</param-name>
         <param-value>false</param-value>
     </context-param>
@@ -24,16 +17,11 @@
         <url-pattern>/*</url-pattern>
     </filter-mapping>
     <listener>
-        <listener-class>org.tokenizer.ui.demo.guice.DemoGuiceServletInjector</listener-class>
+        <listener-class>org.tokenizer.ui.v7.modules.MainGuiceServletInjector</listener-class>
     </listener>
-    <!-- 
-    <listener>
-        <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
-    </listener>
-     -->
     <servlet>
         <servlet-name>V7 Application</servlet-name>
-        <servlet-class>org.tokenizer.ui.base.guice.BaseServlet</servlet-class>
+        <servlet-class>uk.co.q3c.v7.base.guice.BaseServlet</servlet-class>
         <init-param>
             <description>something dummy; ignore</description>
             <param-name>UI</param-name>
@@ -44,27 +32,17 @@
             <param-name>widgetset</param-name>
             <param-value>org.tokenizer.ui.MyWidgetSet</param-value>
         </init-param>
-    </servlet>
-    <servlet>
-        <servlet-name>VaadinServlet</servlet-name>
-        <servlet-class>com.vaadin.server.VaadinServlet</servlet-class>
         <init-param>
-            <description>Vaadin UI to display</description>
-            <param-name>UI</param-name>
-            <param-value>org.tokenizer.ui.MyVaadinUI</param-value>
+            <param-name>pushmode</param-name>
+            <param-value>automatic</param-value>
         </init-param>
         <init-param>
-            <param-name>widgetset</param-name>
-            <param-value>org.tokenizer.ui.MyWidgetSet</param-value>
+            <param-name>legacyPropertyToString</param-name>
+            <!--  false, warning, true -->
+            <param-value>warning</param-value>
         </init-param>
+        <async-supported>true</async-supported>
     </servlet>
-    
-<!--
-    <servlet-mapping>
-        <servlet-name>VaadinServlet</servlet-name>
-        <url-pattern>/*</url-pattern>
-    </servlet-mapping>
- -->
     <servlet-mapping>
         <servlet-name>V7 Application</servlet-name>
         <url-pattern>/*</url-pattern>

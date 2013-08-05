@@ -27,7 +27,7 @@ import org.codehaus.jackson.node.JsonNodeFactory;
 import org.codehaus.jackson.node.ObjectNode;
 import org.tokenizer.core.util.JavaSerializationUtils;
 import org.tokenizer.executor.model.api.TaskInfoBean;
-import org.tokenizer.executor.model.configuration.TaskConfiguration;
+import org.tokenizer.executor.model.configuration.AbstractTaskConfiguration;
 import org.tokenizer.util.json.JsonFormat;
 import org.tokenizer.util.json.JsonUtil;
 
@@ -82,7 +82,7 @@ public class TaskInfoBeanConverter {
         }
         task.setMetricsUpdateTimestamp(JsonUtil.getLong(info,
                 "metricsUpdateTimestamp"));
-        TaskConfiguration config = (TaskConfiguration) JavaSerializationUtils
+        AbstractTaskConfiguration config = (AbstractTaskConfiguration) JavaSerializationUtils
                 .deserialize(configuration);
         task.setTaskConfiguration(config);
         return task;

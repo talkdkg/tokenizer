@@ -16,9 +16,9 @@
 package org.tokenizer.executor.engine.twitter;
 
 import org.tokenizer.core.StringPool;
-import org.tokenizer.executor.model.configuration.TaskConfiguration;
+import org.tokenizer.executor.model.configuration.AbstractTaskConfiguration;
 
-public class TweetCollectorTaskConfiguration extends TaskConfiguration {
+public class TweetCollectorTaskConfiguration extends AbstractTaskConfiguration {
 
     private static final long serialVersionUID = 1L;
     private String keywords = StringPool.EMPTY;
