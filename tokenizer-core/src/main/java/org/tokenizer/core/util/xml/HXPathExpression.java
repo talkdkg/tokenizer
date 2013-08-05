@@ -1,7 +1,7 @@
 /*
  * TOKENIZER CONFIDENTIAL 
  * 
- * Copyright © 2013 Tokenizer Inc. All rights reserved. 
+ * Copyright 2013 Tokenizer Inc. All rights reserved. 
  * 
  * NOTICE: All information contained herein is, and remains the property of Tokenizer Inc. 
  * The intellectual and technical concepts contained herein are proprietary to Tokenizer Inc. 
