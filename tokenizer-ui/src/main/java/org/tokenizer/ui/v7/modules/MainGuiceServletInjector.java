@@ -25,6 +25,7 @@ import uk.co.q3c.v7.base.config.V7Ini;
 import uk.co.q3c.v7.base.guice.BaseGuiceServletInjector;
 
 import com.google.inject.Module;
+
 //import org.tokenizer.ui.demo.dao.DemoDAOModule;
 
 public class MainGuiceServletInjector extends BaseGuiceServletInjector {
@@ -32,7 +33,6 @@ public class MainGuiceServletInjector extends BaseGuiceServletInjector {
     @Override
     protected void addAppModules(List<Module> modules, V7Ini ini) {
 
- 
         modules.add(new DemoModule());
         modules.add(new ZkModule(ini));
         modules.add(new CrawlerRepositoryModule(ini));

@@ -27,8 +27,7 @@ import com.vaadin.ui.Table;
 
 public class FacetedMessageSearch extends AbstractMessageSearch {
 
-    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory
-            .getLogger(FacetedMessageSearch.class);
+    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(FacetedMessageSearch.class);
 
     FacetField hostFacetField;
     FacetField featureFacetField;

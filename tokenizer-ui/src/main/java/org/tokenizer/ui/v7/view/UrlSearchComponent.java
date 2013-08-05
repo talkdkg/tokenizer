@@ -128,8 +128,7 @@ public class UrlSearchComponent extends CustomComponent {
                 Component newSearchResultsComponent = buildSearchResults();
                 if (searchResultsComponent == null) {
                     mainLayout.addComponent(newSearchResultsComponent);
-                }
-                else {
+                } else {
                     mainLayout.replaceComponent(searchResultsComponent, newSearchResultsComponent);
                 }
                 searchResultsComponent = newSearchResultsComponent;
@@ -157,8 +156,7 @@ public class UrlSearchComponent extends CustomComponent {
         solrQuery.setSortField("_docid_", ORDER.asc);
         try {
             queryResponse = solrServer.query(solrQuery);
-        }
-        catch (SolrServerException e) {
+        } catch (SolrServerException e) {
             LOG.error(e.getMessage());
             beans = new ArrayList<UrlBean>();
         }
@@ -202,8 +200,7 @@ public class UrlSearchComponent extends CustomComponent {
                 Component newCrawledContentTabSheet = buildCrawledContentTabSheet();
                 if (crawledContentTabSheet == null) {
                     mainLayout.addComponent(newCrawledContentTabSheet);
-                }
-                else {
+                } else {
                     mainLayout.replaceComponent(crawledContentTabSheet, newCrawledContentTabSheet);
                 }
                 crawledContentTabSheet = newCrawledContentTabSheet;
@@ -351,11 +348,9 @@ public class UrlSearchComponent extends CustomComponent {
                 form.addComponent(field);
                 messageLayout.addComponent(panel);
             }
-        }
-        catch (ConnectionException e) {
+        } catch (ConnectionException e) {
             LOG.error("", e);
-        }
-        catch (UnsupportedEncodingException e) {
+        } catch (UnsupportedEncodingException e) {
             LOG.error("", e);
             html = e.getMessage();
         }
@@ -436,7 +431,7 @@ public class UrlSearchComponent extends CustomComponent {
         @Override
         public String toString() {
             return "UrlBean [id=" + id + ", host=" + host + ", url=" + url + ", highlightSnippet=" + highlightSnippet
-                + "]";
+                    + "]";
         }
     }
 
@@ -452,8 +447,7 @@ public class UrlSearchComponent extends CustomComponent {
             try {
                 Integer.parseInt(myQuery.getHttpResponseCode());
                 solrQuery.setFilterQueries("httpResponseCode:" + myQuery.getHttpResponseCode());
-            }
-            catch (NumberFormatException e) {
+            } catch (NumberFormatException e) {
             }
             solrQuery.setStart(0);
             solrQuery.setRows(0);
@@ -462,8 +456,7 @@ public class UrlSearchComponent extends CustomComponent {
                 LOG.debug("Querying Solr... {}", solrQuery);
                 queryResponse = solrServer.query(solrQuery);
                 numFound = queryResponse.getResults().getNumFound();
-            }
-            catch (SolrServerException e) {
+            } catch (SolrServerException e) {
             }
         }
 
@@ -487,8 +480,7 @@ public class UrlSearchComponent extends CustomComponent {
             try {
                 Integer.parseInt(myQuery.getHttpResponseCode());
                 solrQuery.setFilterQueries("httpResponseCode:" + myQuery.getHttpResponseCode());
-            }
-            catch (NumberFormatException e) {
+            } catch (NumberFormatException e) {
             }
             // solrQuery.setFacet(true);
             // solrQuery.setFacetMinCount(10);
@@ -504,8 +496,7 @@ public class UrlSearchComponent extends CustomComponent {
             try {
                 LOG.debug("Querying Solr... {}", solrQuery);
                 queryResponse = solrServer.query(solrQuery);
-            }
-            catch (SolrServerException e) {
+            } catch (SolrServerException e) {
                 LOG.error(e.getMessage());
                 beans = new ArrayList<UrlBean>();
             }

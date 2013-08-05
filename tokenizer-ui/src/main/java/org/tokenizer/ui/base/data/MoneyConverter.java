@@ -30,53 +30,53 @@ import com.vaadin.data.util.converter.Converter;
  */
 public class MoneyConverter implements Converter<String, Money> {
 
-	public Money convertToModel(String value, Locale locale)
-			throws com.vaadin.data.util.converter.Converter.ConversionException {
+    public Money convertToModel(String value, Locale locale)
+            throws com.vaadin.data.util.converter.Converter.ConversionException {
 
-		CurrencyUnit uk = CurrencyUnit.getInstance(Locale.UK);
-		MoneyFormatter ukFormat = new MoneyFormatterBuilder().appendCurrencyCode()
-				.appendAmount(MoneyAmountStyle.ASCII_DECIMAL_POINT_GROUP3_COMMA).toFormatter();
-		try {
+        CurrencyUnit uk = CurrencyUnit.getInstance(Locale.UK);
+        MoneyFormatter ukFormat = new MoneyFormatterBuilder().appendCurrencyCode()
+                .appendAmount(MoneyAmountStyle.ASCII_DECIMAL_POINT_GROUP3_COMMA).toFormatter();
+        try {
 
-			Money money = ukFormat.parseMoney(uk.getCurrencyCode() + value);
-			return money;
-		} catch (MoneyFormatException mfe) {
-			if (value.contains(uk.getSymbol())) {
-				String cleanedValue = value.replace(uk.getSymbol(), "");
-				Money money = ukFormat.parseMoney(uk.getCurrencyCode() + cleanedValue);
-				return money;
-			} else {
-				throw mfe;
-			}
-		}
+            Money money = ukFormat.parseMoney(uk.getCurrencyCode() + value);
+            return money;
+        } catch (MoneyFormatException mfe) {
+            if (value.contains(uk.getSymbol())) {
+                String cleanedValue = value.replace(uk.getSymbol(), "");
+                Money money = ukFormat.parseMoney(uk.getCurrencyCode() + cleanedValue);
+                return money;
+            } else {
+                throw mfe;
+            }
+        }
 
-	}
+    }
 
-	public String convertToPresentation(Money value, Locale locale)
-			throws com.vaadin.data.util.converter.Converter.ConversionException {
-		return value.toString();
-	}
+    public String convertToPresentation(Money value, Locale locale)
+            throws com.vaadin.data.util.converter.Converter.ConversionException {
+        return value.toString();
+    }
 
-	@Override
-	public Class<Money> getModelType() {
-		return Money.class;
-	}
+    @Override
+    public Class<Money> getModelType() {
+        return Money.class;
+    }
 
-	@Override
-	public Class<String> getPresentationType() {
-		return String.class;
-	}
+    @Override
+    public Class<String> getPresentationType() {
+        return String.class;
+    }
 
     @Override
     public Money convertToModel(String value, Class<? extends Money> targetType, Locale locale)
-        throws com.vaadin.data.util.converter.Converter.ConversionException {
+            throws com.vaadin.data.util.converter.Converter.ConversionException {
         // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     public String convertToPresentation(Money value, Class<? extends String> targetType, Locale locale)
-        throws com.vaadin.data.util.converter.Converter.ConversionException {
+            throws com.vaadin.data.util.converter.Converter.ConversionException {
         // TODO Auto-generated method stub
         return null;
     }

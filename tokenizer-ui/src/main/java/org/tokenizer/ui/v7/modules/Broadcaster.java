@@ -24,7 +24,7 @@ public class Broadcaster implements Serializable {
      * 
      */
     private static final long serialVersionUID = 1L;
-    
+
     static ExecutorService executorService = Executors.newSingleThreadExecutor();
 
     public interface BroadcastListener {

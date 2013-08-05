@@ -23,18 +23,17 @@ import java.util.EnumMap;
  */
 public class DemoLabels_de extends DemoLabels {
 
-	private static final EnumMap<DemoLabelKeys, String> map = new EnumMap<DemoLabelKeys, String>(
-			DemoLabelKeys.class);
-	// TODO make map unmodifiable
-	static {
-		map.put(DemoLabelKeys.Yes, "ja");
-		map.put(DemoLabelKeys.No, "nein");
+    private static final EnumMap<DemoLabelKeys, String> map = new EnumMap<DemoLabelKeys, String>(DemoLabelKeys.class);
+    // TODO make map unmodifiable
+    static {
+        map.put(DemoLabelKeys.Yes, "ja");
+        map.put(DemoLabelKeys.No, "nein");
 
-	}
+    }
 
-	@Override
-	public EnumMap<DemoLabelKeys, String> getMap() {
-		return map;
-	}
+    @Override
+    public EnumMap<DemoLabelKeys, String> getMap() {
+        return map;
+    }
 
 }

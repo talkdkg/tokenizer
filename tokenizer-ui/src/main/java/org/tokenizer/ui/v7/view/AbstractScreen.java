@@ -16,13 +16,11 @@ package org.tokenizer.ui.v7.view;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.VerticalLayout;
 
-
 public abstract class AbstractScreen extends VerticalLayout {
 
     private static final long serialVersionUID = 1L;
 
-    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory
-            .getLogger(AbstractScreen.class);
+    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(AbstractScreen.class);
 
     protected static final int COMMON_FIELD_WIDTH = 48;
 

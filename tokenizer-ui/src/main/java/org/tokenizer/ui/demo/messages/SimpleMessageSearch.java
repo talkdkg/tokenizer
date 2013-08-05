@@ -24,8 +24,7 @@ import com.vaadin.ui.Component;
 
 public class SimpleMessageSearch extends AbstractMessageSearch {
 
-    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory
-            .getLogger(MessageSearchComponent.class);
+    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(MessageSearchComponent.class);
 
     @Override
     protected void initialQuerySolr(final MyQuery q) {

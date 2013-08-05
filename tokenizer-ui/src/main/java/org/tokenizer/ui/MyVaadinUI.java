@@ -83,8 +83,7 @@ public class MyVaadinUI extends UI {
 
         Set<Class<? extends AbstractScreen>> subTypes = reflections.getSubTypesOf(AbstractScreen.class);
 
-        Map<String, List<Class<? extends AbstractScreen>>> grouped =
-            new HashMap<String, List<Class<? extends AbstractScreen>>>();
+        Map<String, List<Class<? extends AbstractScreen>>> grouped = new HashMap<String, List<Class<? extends AbstractScreen>>>();
 
         for (Class<? extends AbstractScreen> class1 : subTypes) {
             Package package1 = class1.getPackage();
@@ -154,14 +153,14 @@ public class MyVaadinUI extends UI {
         themeSelector.select(VaadinTheme.class);
         themeSelector.addValueChangeListener(new ValueChangeListener() {
             private static final long serialVersionUID = 1L;
+
             @Override
             public void valueChange(final ValueChangeEvent event) {
                 @SuppressWarnings("unchecked")
                 Class<? extends Theme> value = (Class<? extends Theme>) event.getProperty().getValue();
                 try {
                     ChartOptions.get().setTheme((com.vaadin.addon.charts.model.style.Theme) value.newInstance());
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
             }
@@ -205,13 +204,11 @@ public class MyVaadinUI extends UI {
 
                         Page.getCurrent().setUriFragment(value.getSimpleName(), false);
 
-                    }
-                    catch (Exception e) {
+                    } catch (Exception e) {
                         // TODO Auto-generated catch block
                         // e.printStackTrace();
                     }
-                }
-                else {
+                } else {
                     tree.expandItemsRecursively(value2);
                 }
             }
@@ -240,7 +237,7 @@ public class MyVaadinUI extends UI {
             @Override
             public void buttonClick(final ClickEvent event) {
                 if (urlSearchComponent == null) {
-                   // urlSearchComponent = new UrlSearchComponent();
+                    // urlSearchComponent = new UrlSearchComponent();
                 }
                 mainPanel.setContent(urlSearchComponent);
             }

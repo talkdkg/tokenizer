@@ -23,16 +23,14 @@ public class ConfigConverter implements Converter<String, byte[]> {
 
     private static final long serialVersionUID = 1L;
 
-    public byte[] convertToModel(String value, final Locale locale)
-            throws ConversionException {
+    public byte[] convertToModel(String value, final Locale locale) throws ConversionException {
         if (value == null)
             return null;
         value = value.trim();
         return MD5.hex2Byte(value);
     }
 
-    public String convertToPresentation(final byte[] value, final Locale locale)
-            throws ConversionException {
+    public String convertToPresentation(final byte[] value, final Locale locale) throws ConversionException {
         if (value == null)
             return null;
         return value.toString();
@@ -50,14 +48,14 @@ public class ConfigConverter implements Converter<String, byte[]> {
 
     @Override
     public byte[] convertToModel(String value, Class<? extends byte[]> targetType, Locale locale)
-        throws com.vaadin.data.util.converter.Converter.ConversionException {
+            throws com.vaadin.data.util.converter.Converter.ConversionException {
         // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     public String convertToPresentation(byte[] value, Class<? extends String> targetType, Locale locale)
-        throws com.vaadin.data.util.converter.Converter.ConversionException {
+            throws com.vaadin.data.util.converter.Converter.ConversionException {
         // TODO Auto-generated method stub
         return null;
     }

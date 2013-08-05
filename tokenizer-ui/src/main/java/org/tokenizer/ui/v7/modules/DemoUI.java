@@ -36,7 +36,8 @@ public class DemoUI extends ScopedUI implements Broadcaster.BroadcastListener {
     private VerticalLayout layout;
 
     @Inject
-    protected DemoUI(final V7Navigator navigator, final ErrorHandler errorHandler, final ConverterFactory converterFactory) {
+    protected DemoUI(final V7Navigator navigator, final ErrorHandler errorHandler,
+            final ConverterFactory converterFactory) {
         super(navigator, errorHandler, converterFactory);
     }
 
@@ -94,7 +95,7 @@ public class DemoUI extends ScopedUI implements Broadcaster.BroadcastListener {
         access(new Runnable() {
             @Override
             public void run() {
-                   //
+                //
             }
         });
     }

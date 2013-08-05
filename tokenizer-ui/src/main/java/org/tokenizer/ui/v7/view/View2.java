@@ -22,22 +22,22 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
 
 public class View2 implements V7View {
-	private final Label label;
+    private final Label label;
 
-	@Inject
-	public View2() {
-		super();
-		label = new Label(this.getClass().getName());
-	}
+    @Inject
+    public View2() {
+        super();
+        label = new Label(this.getClass().getName());
+    }
 
-	@Override
-	public void enter(V7ViewChangeEvent event) {
+    @Override
+    public void enter(V7ViewChangeEvent event) {
 
-	}
+    }
 
-	@Override
-	public Component getUiComponent() {
-		return label;
-	}
+    @Override
+    public Component getUiComponent() {
+        return label;
+    }
 
 }

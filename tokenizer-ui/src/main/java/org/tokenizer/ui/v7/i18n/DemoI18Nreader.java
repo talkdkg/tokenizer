@@ -20,18 +20,18 @@ import uk.co.q3c.v7.i18n.I18NKeys;
 
 public class DemoI18Nreader implements I18NAnnotationReader {
 
-	@Override
-	public I18NKeys<?> caption(Annotation annotation) {
-		return ((DemoI18N) annotation).caption();
-	}
+    @Override
+    public I18NKeys<?> caption(Annotation annotation) {
+        return ((DemoI18N) annotation).caption();
+    }
 
-	@Override
-	public I18NKeys<?> description(Annotation annotation) {
-		return ((DemoI18N) annotation).description();
-	}
+    @Override
+    public I18NKeys<?> description(Annotation annotation) {
+        return ((DemoI18N) annotation).description();
+    }
 
-	@Override
-	public I18NKeys<?> value(Annotation annotation) {
-		return ((DemoI18N) annotation).value();
-	}
+    @Override
+    public I18NKeys<?> value(Annotation annotation) {
+        return ((DemoI18N) annotation).value();
+    }
 }

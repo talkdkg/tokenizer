@@ -123,8 +123,7 @@ public abstract class AbstractMessageSearch extends AbstractScreen {
                 Component newSearchResultsComponent = buildSearchResults();
                 if (searchResultsComponent == null) {
                     mainLayout.addComponent(newSearchResultsComponent);
-                }
-                else {
+                } else {
                     mainLayout.replaceComponent(searchResultsComponent, newSearchResultsComponent);
                 }
                 searchResultsComponent = newSearchResultsComponent;
@@ -284,8 +283,8 @@ public abstract class AbstractMessageSearch extends AbstractScreen {
         @Override
         public String toString() {
             return "MessageBean [id=" + id + ", host=" + host + ", content=" + content + ", age=" + age + ", author="
-                + author + ", date=" + date + ", sex=" + sex + ", title=" + title + ", topic=" + topic
-                + ", userRating=" + userRating + ", highlightSnippet=" + highlightSnippet + "]";
+                    + author + ", date=" + date + ", sex=" + sex + ", title=" + title + ", topic=" + topic
+                    + ", userRating=" + userRating + ", highlightSnippet=" + highlightSnippet + "]";
         }
 
     }
@@ -394,8 +393,7 @@ public abstract class AbstractMessageSearch extends AbstractScreen {
                 LOG.debug("Querying Solr... {}", solrQuery);
                 queryResponse = solrServer.query(solrQuery);
                 numFound = queryResponse.getResults().getNumFound();
-            }
-            catch (SolrServerException e) {
+            } catch (SolrServerException e) {
             }
         }
 
@@ -433,8 +431,7 @@ public abstract class AbstractMessageSearch extends AbstractScreen {
             try {
                 LOG.debug("Querying Solr... {}", solrQuery);
                 queryResponse = solrServer.query(solrQuery);
-            }
-            catch (SolrServerException e) {
+            } catch (SolrServerException e) {
                 LOG.error(e.getMessage());
                 beans = new ArrayList<MessageBean>();
             }

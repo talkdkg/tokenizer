@@ -72,8 +72,7 @@ public class MessageSearchComponent extends CustomComponent {
 
     private static final long serialVersionUID = 1L;
 
-    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory
-            .getLogger(MessageSearchComponent.class);
+    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(MessageSearchComponent.class);
     private static final int COMMON_FIELD_WIDTH = 48;
     private static SolrServer solrServer = SolrUtils.getSolrServerForMessages();
 
@@ -134,8 +133,7 @@ public class MessageSearchComponent extends CustomComponent {
                 if (searchResultsComponent == null) {
                     mainLayout.addComponent(newSearchResultsComponent);
                 } else {
-                    mainLayout.replaceComponent(searchResultsComponent,
-                            newSearchResultsComponent);
+                    mainLayout.replaceComponent(searchResultsComponent, newSearchResultsComponent);
                 }
                 searchResultsComponent = newSearchResultsComponent;
             }
@@ -161,17 +159,16 @@ public class MessageSearchComponent extends CustomComponent {
         solrQuery.setQuery(q.getQuery());
         solrQuery.setFacet(true);
         solrQuery.setFacetMinCount(10);
-        //solrQuery.addFacetField("host_s");
-        //solrQuery.setHighlight(true);
-        //solrQuery.setHighlightSnippets(1);
-        //solrQuery.setHighlightFragsize(4096);
-        //solrQuery.setParam("hl.fl", "content_en");
+        // solrQuery.addFacetField("host_s");
+        // solrQuery.setHighlight(true);
+        // solrQuery.setHighlightSnippets(1);
+        // solrQuery.setHighlightFragsize(4096);
+        // solrQuery.setParam("hl.fl", "content_en");
         solrQuery.setRows(0);
 
         // Date Range Faceting
         // http://wiki.apache.org/solr/VariableRangeGaps#facet.range.spec
-        solrQuery.addDateRangeFacet("date_tdt", new Date(0), new Date(),
-                "+1HOUR");
+        solrQuery.addDateRangeFacet("date_tdt", new Date(0), new Date(), "+1HOUR");
 
         solrQuery.addFacetPivotField("feature_ss,sentiment_s");
 
@@ -349,11 +346,9 @@ public class MessageSearchComponent extends CustomComponent {
 
         @Override
         public String toString() {
-            return "MessageBean [id=" + id + ", host=" + host + ", content="
-                    + content + ", age=" + age + ", author=" + author
-                    + ", date=" + date + ", sex=" + sex + ", title=" + title
-                    + ", topic=" + topic + ", userRating=" + userRating
-                    + ", highlightSnippet=" + highlightSnippet + "]";
+            return "MessageBean [id=" + id + ", host=" + host + ", content=" + content + ", age=" + age + ", author="
+                    + author + ", date=" + date + ", sex=" + sex + ", title=" + title + ", topic=" + topic
+                    + ", userRating=" + userRating + ", highlightSnippet=" + highlightSnippet + "]";
         }
 
     }
@@ -366,27 +361,18 @@ public class MessageSearchComponent extends CustomComponent {
         table.setImmediate(true);
         table.setNullSelectionAllowed(false);
         MyLazyQueryFactory myLazyQueryFactory = new MyLazyQueryFactory();
-        lazyQueryContainer = new LazyQueryContainer(myLazyQueryFactory, false,
-                100);
-        //lazyQueryContainer.addContainerProperty("id", String.class, "", true,
-        //        false);
-        lazyQueryContainer.addContainerProperty("host", String.class, "", true,
-                false);
-        lazyQueryContainer.addContainerProperty("date", Date.class,
-                new Date(0), true, false);
-        lazyQueryContainer.addContainerProperty("topic", String.class, "",
-                true, false);
-        lazyQueryContainer.addContainerProperty("author", String.class, "",
-                true, false);
-        lazyQueryContainer.addContainerProperty("title", String.class, "",
-                true, false);
-        lazyQueryContainer.addContainerProperty("highlightSnippet",
-                String.class, "", true, false);
+        lazyQueryContainer = new LazyQueryContainer(myLazyQueryFactory, false, 100);
+        // lazyQueryContainer.addContainerProperty("id", String.class, "", true,
+        // false);
+        lazyQueryContainer.addContainerProperty("host", String.class, "", true, false);
+        lazyQueryContainer.addContainerProperty("date", Date.class, new Date(0), true, false);
+        lazyQueryContainer.addContainerProperty("topic", String.class, "", true, false);
+        lazyQueryContainer.addContainerProperty("author", String.class, "", true, false);
+        lazyQueryContainer.addContainerProperty("title", String.class, "", true, false);
+        lazyQueryContainer.addContainerProperty("highlightSnippet", String.class, "", true, false);
         table.setContainerDataSource(lazyQueryContainer);
-        table.setVisibleColumns(new String[] { "host", "date", "topic",
-                "author", "title", "highlightSnippet" });
-        table.setColumnHeaders(new String[] { "Host", "Date", "Topic",
-                "Author", "Title", "Content" });
+        table.setVisibleColumns(new String[] { "host", "date", "topic", "author", "title", "highlightSnippet" });
+        table.setColumnHeaders(new String[] { "Host", "Date", "Topic", "Author", "Title", "Content" });
         table.addValueChangeListener(new ValueChangeListener() {
 
             private static final long serialVersionUID = 1L;
@@ -394,27 +380,25 @@ public class MessageSearchComponent extends CustomComponent {
             @Override
             public void valueChange(final ValueChangeEvent event) {
                 Object itemId = table.getValue();
-                BeanItem<MessageBean> o = (BeanItem<MessageBean>) table
-                        .getItem(itemId);
+                BeanItem<MessageBean> o = (BeanItem<MessageBean>) table.getItem(itemId);
                 currentBean = o.getBean();
                 LOG.warn(currentBean.toString());
                 /*
-                Component newCrawledContentTabSheet = buildCrawledContentTabSheet();
-                if (crawledContentTabSheet == null) {
-                    mainLayout.addComponent(newCrawledContentTabSheet);
-                } else {
-                    mainLayout.replaceComponent(crawledContentTabSheet,
-                            newCrawledContentTabSheet);
-                }
-                crawledContentTabSheet = newCrawledContentTabSheet;
-                */
+                 * Component newCrawledContentTabSheet = buildCrawledContentTabSheet();
+                 * if (crawledContentTabSheet == null) {
+                 * mainLayout.addComponent(newCrawledContentTabSheet);
+                 * } else {
+                 * mainLayout.replaceComponent(crawledContentTabSheet,
+                 * newCrawledContentTabSheet);
+                 * }
+                 * crawledContentTabSheet = newCrawledContentTabSheet;
+                 */
             }
         });
         table.addGeneratedColumn("highlightSnippet", new ColumnGenerator() {
 
             @Override
-            public Object generateCell(final Table source, final Object itemId,
-                    final Object columnId) {
+            public Object generateCell(final Table source, final Object itemId, final Object columnId) {
                 final Item item = source.getItem(itemId);
                 final Property prop = item.getItemProperty(columnId);
                 final String text = (String) prop.getValue();
@@ -424,13 +408,11 @@ public class MessageSearchComponent extends CustomComponent {
         });
         layout.addComponent(table);
 
-        Label label = new Label("Elapsed time: "
-                + queryResponse.getElapsedTime() + "(ms)");
+        Label label = new Label("Elapsed time: " + queryResponse.getElapsedTime() + "(ms)");
         layout.addComponent(label);
         label = new Label("Query time: " + queryResponse.getQTime() + "(ms)");
         layout.addComponent(label);
-        label = new Label("Total found: "
-                + queryResponse.getResults().getNumFound());
+        label = new Label("Total found: " + queryResponse.getResults().getNumFound());
         layout.addComponent(label);
 
         Component component = buildFacets();
@@ -444,8 +426,7 @@ public class MessageSearchComponent extends CustomComponent {
         private QueryDefinition queryDefinition;
 
         @Override
-        public Query constructQuery(final Object[] sortPropertyIds,
-                final boolean[] ascendingStates) {
+        public Query constructQuery(final Object[] sortPropertyIds, final boolean[] ascendingStates) {
             LOG.debug("query constructor called...");
             return new MyLazyQuery();
         }
@@ -492,8 +473,7 @@ public class MessageSearchComponent extends CustomComponent {
 
         @Override
         public List<Item> loadItems(final int startIndex, final int count) {
-            LOG.debug("loadItems() called... startIndex: {}, count: {}",
-                    startIndex, count);
+            LOG.debug("loadItems() called... startIndex: {}, count: {}", startIndex, count);
             SolrQuery solrQuery = new SolrQuery();
             solrQuery.setQuery(myQuery.getQuery());
             // solrQuery.setFilterQueries("httpResponseCode:"
@@ -524,8 +504,7 @@ public class MessageSearchComponent extends CustomComponent {
             for (MessageBean bean : beans) {
                 String id = bean.getId();
                 if (queryResponse.getHighlighting().get(id) != null) {
-                    List<String> highlightSnippets = queryResponse
-                            .getHighlighting().get(id).get("content_en");
+                    List<String> highlightSnippets = queryResponse.getHighlighting().get(id).get("content_en");
                     bean.setHighlightSnippet(highlightSnippets.get(0));
                 }
                 LOG.debug(bean.toString());
@@ -538,8 +517,7 @@ public class MessageSearchComponent extends CustomComponent {
         }
 
         @Override
-        public void saveItems(final List<Item> arg0, final List<Item> arg1,
-                final List<Item> arg2) {
+        public void saveItems(final List<Item> arg0, final List<Item> arg1, final List<Item> arg2) {
             throw new UnsupportedOperationException();
         }
 
@@ -596,8 +574,8 @@ public class MessageSearchComponent extends CustomComponent {
 
     protected Component getTimelineChart() {
         Chart chart = new Chart(ChartType.BAR);
-        //chart.setWidth("400px");
-        //chart.setHeight("300px");
+        // chart.setWidth("400px");
+        // chart.setHeight("300px");
 
         // Modify the default configuration a bit
         Configuration conf = chart.getConfiguration();
@@ -630,8 +608,7 @@ public class MessageSearchComponent extends CustomComponent {
         // Set the Y axis title
         YAxis yaxis = new YAxis();
         yaxis.setTitle("Number of Messages");
-        yaxis.getLabels().setFormatter(
-                "function() {return Math.floor(this.value/10) + \'(x10)\';}");
+        yaxis.getLabels().setFormatter("function() {return Math.floor(this.value/10) + \'(x10)\';}");
         yaxis.getLabels().setStep(2);
         conf.addyAxis(yaxis);
         return chart;
@@ -641,10 +618,10 @@ public class MessageSearchComponent extends CustomComponent {
     protected Component getFeaturesSentimentChart() {
         Chart chart = new Chart(ChartType.BAR);
 
-        //chart.setWidth("100%");
-        //chart.setHeight("100%");
+        // chart.setWidth("100%");
+        // chart.setHeight("100%");
 
-        //AbstractVaadinChartExample
+        // AbstractVaadinChartExample
 
         Configuration conf = chart.getConfiguration();
 
@@ -652,7 +629,7 @@ public class MessageSearchComponent extends CustomComponent {
 
         XAxis x = new XAxis();
 
-        //NamedList<List<PivotField>> facetPivot
+        // NamedList<List<PivotField>> facetPivot
 
         List<PivotField> pivotFields = facetPivot.get("feature_ss,sentiment_s");
 
@@ -678,7 +655,7 @@ public class MessageSearchComponent extends CustomComponent {
         }
 
         x.setCategories(categories);
-        //x.setCategories("Apples", "Oranges", "Pears", "Grapes", "Bananas");
+        // x.setCategories("Apples", "Oranges", "Pears", "Grapes", "Bananas");
 
         conf.addxAxis(x);
 

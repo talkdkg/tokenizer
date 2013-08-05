@@ -22,16 +22,14 @@ public class StringToUuidConverter implements Converter<String, UUID> {
 
     private static final long serialVersionUID = 1L;
 
-    public UUID convertToModel(String value, final Locale locale)
-            throws ConversionException {
+    public UUID convertToModel(String value, final Locale locale) throws ConversionException {
         if (value == null)
             return null;
         value = value.trim();
         return UUID.fromString(value);
     }
 
-    public String convertToPresentation(final UUID value, final Locale locale)
-            throws ConversionException {
+    public String convertToPresentation(final UUID value, final Locale locale) throws ConversionException {
         if (value == null)
             return null;
         return value.toString();
@@ -49,14 +47,14 @@ public class StringToUuidConverter implements Converter<String, UUID> {
 
     @Override
     public UUID convertToModel(String value, Class<? extends UUID> targetType, Locale locale)
-        throws com.vaadin.data.util.converter.Converter.ConversionException {
+            throws com.vaadin.data.util.converter.Converter.ConversionException {
         // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     public String convertToPresentation(UUID value, Class<? extends String> targetType, Locale locale)
-        throws com.vaadin.data.util.converter.Converter.ConversionException {
+            throws com.vaadin.data.util.converter.Converter.ConversionException {
         // TODO Auto-generated method stub
         return null;
     }

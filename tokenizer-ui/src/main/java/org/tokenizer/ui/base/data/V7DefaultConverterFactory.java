@@ -21,21 +21,21 @@ import com.vaadin.data.util.converter.DefaultConverterFactory;
 
 public class V7DefaultConverterFactory extends DefaultConverterFactory {
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public <PRESENTATION, MODEL> Converter<PRESENTATION, MODEL> createConverter(Class<PRESENTATION> presentationType,
-			Class<MODEL> modelType) {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <PRESENTATION, MODEL> Converter<PRESENTATION, MODEL> createConverter(Class<PRESENTATION> presentationType,
+            Class<MODEL> modelType) {
 
-		if (modelType == DateTime.class) {
-			return (Converter<PRESENTATION, MODEL>) new DateTimeConverter();
-		}
+        if (modelType == DateTime.class) {
+            return (Converter<PRESENTATION, MODEL>) new DateTimeConverter();
+        }
 
-		if (modelType == Money.class) {
-			return (Converter<PRESENTATION, MODEL>) new MoneyConverter();
-		}
+        if (modelType == Money.class) {
+            return (Converter<PRESENTATION, MODEL>) new MoneyConverter();
+        }
 
-		return super.createConverter(presentationType, modelType);
+        return super.createConverter(presentationType, modelType);
 
-	}
+    }
 
 }

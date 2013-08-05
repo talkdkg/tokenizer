@@ -19,13 +19,11 @@ import org.tokenizer.executor.model.api.TaskGeneralState;
 
 import com.vaadin.data.util.converter.Converter;
 
-public class StringToTaskGeneralStateConverter implements
-        Converter<String, TaskGeneralState> {
+public class StringToTaskGeneralStateConverter implements Converter<String, TaskGeneralState> {
 
     private static final long serialVersionUID = 1L;
 
-    public TaskGeneralState convertToModel(String value, final Locale locale)
-            throws ConversionException {
+    public TaskGeneralState convertToModel(String value, final Locale locale) throws ConversionException {
         if (value == null)
             return null;
         value = value.trim();
@@ -35,12 +33,10 @@ public class StringToTaskGeneralStateConverter implements
             return TaskGeneralState.START_REQUESTED;
         if (value.equals("STOP_REQUESTED"))
             return TaskGeneralState.STOP_REQUESTED;
-        throw new RuntimeException("Can't convert " + value
-                + " into TaskGeneralState enum");
+        throw new RuntimeException("Can't convert " + value + " into TaskGeneralState enum");
     }
 
-    public String convertToPresentation(final TaskGeneralState value,
-            final Locale locale) throws ConversionException {
+    public String convertToPresentation(final TaskGeneralState value, final Locale locale) throws ConversionException {
         if (value == null)
             return null;
         return value.toString();
@@ -58,14 +54,14 @@ public class StringToTaskGeneralStateConverter implements
 
     @Override
     public TaskGeneralState convertToModel(String value, Class<? extends TaskGeneralState> targetType, Locale locale)
-        throws com.vaadin.data.util.converter.Converter.ConversionException {
+            throws com.vaadin.data.util.converter.Converter.ConversionException {
         // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     public String convertToPresentation(TaskGeneralState value, Class<? extends String> targetType, Locale locale)
-        throws com.vaadin.data.util.converter.Converter.ConversionException {
+            throws com.vaadin.data.util.converter.Converter.ConversionException {
         // TODO Auto-generated method stub
         return null;
     }

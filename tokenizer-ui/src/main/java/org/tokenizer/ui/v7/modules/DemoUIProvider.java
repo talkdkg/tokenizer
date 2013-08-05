@@ -29,7 +29,7 @@ public class DemoUIProvider extends ScopedUIProvider {
 
     @Inject
     protected DemoUIProvider(final Injector injector, final Map<String, Provider<UI>> uiProMap,
-        final UIKeyProvider uiKeyProvider) {
+            final UIKeyProvider uiKeyProvider) {
         super(injector, uiProMap, uiKeyProvider);
     }
 

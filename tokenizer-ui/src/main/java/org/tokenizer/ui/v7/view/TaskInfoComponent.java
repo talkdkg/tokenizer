@@ -144,7 +144,7 @@ public class TaskInfoComponent extends CustomComponent implements Broadcaster.Br
     }
 
     private void buildClassicRobotTaskConfigurationForm(final FieldGroup fieldGroup,
-        final ComponentContainer componentContainer) {
+            final ComponentContainer componentContainer) {
         buildBaseTaskConfigurationForm(fieldGroup, componentContainer);
         TextField host = new TextField("Host:");
         host.setWidth(COMMON_FIELD_WIDTH, Unit.EM);
@@ -177,7 +177,7 @@ public class TaskInfoComponent extends CustomComponent implements Broadcaster.Br
     }
 
     private void buildHtmlSplitterTaskConfigurationForm(final FieldGroup fieldGroup,
-        final ComponentContainer componentContainer) {
+            final ComponentContainer componentContainer) {
         buildBaseTaskConfigurationForm(fieldGroup, componentContainer);
         TextField host = new TextField("Host");
         host.setWidth(COMMON_FIELD_WIDTH, Unit.EM);
@@ -195,7 +195,7 @@ public class TaskInfoComponent extends CustomComponent implements Broadcaster.Br
     }
 
     private void buildMessageParserTaskConfigurationForm(final FieldGroup fieldGroup,
-        final ComponentContainer componentContainer) {
+            final ComponentContainer componentContainer) {
         buildBaseTaskConfigurationForm(fieldGroup, componentContainer);
         TextField host = new TextField("Host");
         host.setWidth(COMMON_FIELD_WIDTH, Unit.EM);
@@ -241,7 +241,7 @@ public class TaskInfoComponent extends CustomComponent implements Broadcaster.Br
     }
 
     private void buildTweetCollectorTaskConfigurationForm(final FieldGroup fieldGroup,
-        final ComponentContainer componentContainer) {
+            final ComponentContainer componentContainer) {
         buildBaseTaskConfigurationForm(fieldGroup, componentContainer);
         TextArea keywords = new TextArea("keywords");
         keywords.setRows(40);
@@ -251,8 +251,7 @@ public class TaskInfoComponent extends CustomComponent implements Broadcaster.Br
         componentContainer.addComponent(formControls);
     }
 
-    private void
-        buildBaseTaskConfigurationForm(final FieldGroup fieldGroup, final ComponentContainer componentContainer) {
+    private void buildBaseTaskConfigurationForm(final FieldGroup fieldGroup, final ComponentContainer componentContainer) {
         TextField name = new TextField("Name:");
         name.setWidth(COMMON_FIELD_WIDTH, Unit.EM);
         ComboBox state = new ComboBox("Execution State:");
@@ -268,7 +267,7 @@ public class TaskInfoComponent extends CustomComponent implements Broadcaster.Br
     }
 
     private void buildWeblogsSubscriberTaskConfigurationForm(final FieldGroup fieldGroup,
-        final ComponentContainer componentContainer) {
+            final ComponentContainer componentContainer) {
         buildBaseTaskConfigurationForm(fieldGroup, componentContainer);
         TextField url = new TextField("URL:");
         url.setWidth(COMMON_FIELD_WIDTH, Unit.EM);
@@ -293,7 +292,7 @@ public class TaskInfoComponent extends CustomComponent implements Broadcaster.Br
     }
 
     private void buildWeblogsCrawlerTaskConfigurationForm(final FieldGroup fieldGroup,
-        final ComponentContainer componentContainer) {
+            final ComponentContainer componentContainer) {
         buildBaseTaskConfigurationForm(fieldGroup, componentContainer);
         TextField url = new TextField("URL:");
         url.setWidth(COMMON_FIELD_WIDTH, Unit.EM);
@@ -318,7 +317,7 @@ public class TaskInfoComponent extends CustomComponent implements Broadcaster.Br
     }
 
     private void buildSitemapsFetcherTaskConfigurationForm(final FieldGroup fieldGroup,
-        final ComponentContainer componentContainer) {
+            final ComponentContainer componentContainer) {
         buildBaseTaskConfigurationForm(fieldGroup, componentContainer);
 
         TextField host = new TextField("Host:");
@@ -348,7 +347,7 @@ public class TaskInfoComponent extends CustomComponent implements Broadcaster.Br
     }
 
     private void buildSitemapsPageFetcherTaskConfigurationForm(final FieldGroup fieldGroup,
-        final ComponentContainer componentContainer) {
+            final ComponentContainer componentContainer) {
         buildBaseTaskConfigurationForm(fieldGroup, componentContainer);
 
         TextField host = new TextField("Host:");
@@ -378,7 +377,7 @@ public class TaskInfoComponent extends CustomComponent implements Broadcaster.Br
     }
 
     private void buildSitemapsLinkedPageFetcherTaskConfigurationForm(final FieldGroup fieldGroup,
-        final ComponentContainer componentContainer) {
+            final ComponentContainer componentContainer) {
         buildBaseTaskConfigurationForm(fieldGroup, componentContainer);
 
         TextField host = new TextField("Host:");
@@ -459,7 +458,7 @@ public class TaskInfoComponent extends CustomComponent implements Broadcaster.Br
         // table.sort(new Object[] { "name", "implementationName" },
         // new boolean[] { true, true });
         table.setVisibleColumns(new String[] { "name", "implementationName", "submitDate", "generalState",
-            "zkDataVersion" });
+                "zkDataVersion" });
         table.setColumnHeaders(new String[] { "Name", "Implementation", "Date", "State", "Version" });
     }
 
@@ -483,13 +482,11 @@ public class TaskInfoComponent extends CustomComponent implements Broadcaster.Br
                     taskConfigurationFieldGroup.commit();
                     if (newTaskMode) {
                         update(newTask);
-                    }
-                    else {
+                    } else {
                         update(currentTask);
                     }
                     setReadOnly(true);
-                }
-                catch (CommitException e) {
+                } catch (CommitException e) {
                     LOG.error("", e);
                 }
             }
@@ -522,51 +519,39 @@ public class TaskInfoComponent extends CustomComponent implements Broadcaster.Br
         ComponentContainer newComponent;
         if (!newTaskMode & readOnly) {
             newComponent = buildTaskInfoBeanComponent(currentTask);
-        }
-        else if (newTaskMode) {
+        } else if (newTaskMode) {
             taskConfigurationFieldGroup = new FieldGroup();
             newComponent = new FormLayout();
             buildSelectTaskImplementationForm(taskConfigurationFieldGroup, newComponent);
-        }
-        else {
+        } else {
             taskConfigurationFieldGroup = new FieldGroup();
             newComponent = new FormLayout();
             if (currentTask.getTaskConfiguration() instanceof HtmlSplitterTaskConfiguration) {
                 buildHtmlSplitterTaskConfigurationForm(taskConfigurationFieldGroup, newComponent);
-            }
-            else if (currentTask.getTaskConfiguration() instanceof MessageParserTaskConfiguration) {
+            } else if (currentTask.getTaskConfiguration() instanceof MessageParserTaskConfiguration) {
                 buildMessageParserTaskConfigurationForm(taskConfigurationFieldGroup, newComponent);
-            }
-            else if (currentTask.getTaskConfiguration() instanceof TweetCollectorTaskConfiguration) {
+            } else if (currentTask.getTaskConfiguration() instanceof TweetCollectorTaskConfiguration) {
                 buildTweetCollectorTaskConfigurationForm(taskConfigurationFieldGroup, newComponent);
-            }
-            else if (currentTask.getTaskConfiguration() instanceof ClassicRobotTaskConfiguration) {
+            } else if (currentTask.getTaskConfiguration() instanceof ClassicRobotTaskConfiguration) {
                 buildClassicRobotTaskConfigurationForm(taskConfigurationFieldGroup, newComponent);
-            }
-            else if (currentTask.getTaskConfiguration() instanceof WeblogsSubscriberTaskConfiguration) {
+            } else if (currentTask.getTaskConfiguration() instanceof WeblogsSubscriberTaskConfiguration) {
                 buildWeblogsSubscriberTaskConfigurationForm(taskConfigurationFieldGroup, newComponent);
-            }
-            else if (currentTask.getTaskConfiguration() instanceof RssFetcherTaskConfiguration) {
-            }
-            else if (currentTask.getTaskConfiguration() instanceof SimpleMultithreadedFetcherTaskConfiguration) {
-            }
-            else if (currentTask.getTaskConfiguration() instanceof SitemapsFetcherTaskConfiguration) {
+            } else if (currentTask.getTaskConfiguration() instanceof RssFetcherTaskConfiguration) {
+            } else if (currentTask.getTaskConfiguration() instanceof SimpleMultithreadedFetcherTaskConfiguration) {
+            } else if (currentTask.getTaskConfiguration() instanceof SitemapsFetcherTaskConfiguration) {
                 buildSitemapsFetcherTaskConfigurationForm(taskConfigurationFieldGroup, newComponent);
-            }
-            else if (currentTask.getTaskConfiguration() instanceof SitemapsPageFetcherTaskConfiguration) {
+            } else if (currentTask.getTaskConfiguration() instanceof SitemapsPageFetcherTaskConfiguration) {
                 buildSitemapsPageFetcherTaskConfigurationForm(taskConfigurationFieldGroup, newComponent);
-            }
-            else if (currentTask.getTaskConfiguration() instanceof SitemapsLinkedPageFetcherTaskConfiguration) {
+            } else if (currentTask.getTaskConfiguration() instanceof SitemapsLinkedPageFetcherTaskConfiguration) {
                 buildSitemapsLinkedPageFetcherTaskConfigurationForm(taskConfigurationFieldGroup, newComponent);
-            }
-            else if (currentTask.getTaskConfiguration() instanceof WeblogsCrawlerTaskConfiguration) {
+            } else if (currentTask.getTaskConfiguration() instanceof WeblogsCrawlerTaskConfiguration) {
                 buildWeblogsCrawlerTaskConfigurationForm(taskConfigurationFieldGroup, newComponent);
-            }
-            else if (currentTask.getTaskConfiguration() instanceof WeblogsParserTaskConfiguration) {
+            } else if (currentTask.getTaskConfiguration() instanceof WeblogsParserTaskConfiguration) {
                 buildWeblogsParserTaskConfigurationForm(taskConfigurationFieldGroup, newComponent);
             }
 
-            BeanItem<AbstractTaskConfiguration> item = new BeanItem<AbstractTaskConfiguration>(currentTask.getTaskConfiguration());
+            BeanItem<AbstractTaskConfiguration> item = new BeanItem<AbstractTaskConfiguration>(
+                    currentTask.getTaskConfiguration());
             taskConfigurationFieldGroup.setItemDataSource(item);
         }
         // LOG.debug("Replacing task info component...");
@@ -588,8 +573,7 @@ public class TaskInfoComponent extends CustomComponent implements Broadcaster.Br
                     boolean propertyAdded = false;
                     try {
                         task = model.getTask(uuid);
-                    }
-                    catch (TaskNotFoundException e) {
+                    } catch (TaskNotFoundException e) {
                         /*
                          * this will also handle
                          * ExecutorModelEventType.TASK_DEFINITION_REMOVED
@@ -599,10 +583,8 @@ public class TaskInfoComponent extends CustomComponent implements Broadcaster.Br
                         return;
                     }
 
-
                     if (event.getType() == ExecutorModelEventType.TASK_ADDED) {
-                    }
-                    else if (event.getType() == ExecutorModelEventType.TASK_UPDATED) {
+                    } else if (event.getType() == ExecutorModelEventType.TASK_UPDATED) {
                     }
 
                     for (TaskInfoBean t : tasks) {
@@ -621,7 +603,7 @@ public class TaskInfoComponent extends CustomComponent implements Broadcaster.Br
                     table.getContainerProperty(task, "zkDataVersion").setValue(task.getZkDataVersion());
                     table.getContainerProperty(task, "generalState").setValue(task.getGeneralState());
                     table.getContainerProperty(task, "name").setValue(task.getName());
-                    
+
                 }
             });
 
@@ -633,14 +615,11 @@ public class TaskInfoComponent extends CustomComponent implements Broadcaster.Br
         if (newTaskMode) {
             try {
                 model.addTask(task);
-            }
-            catch (TaskExistsException e) {
+            } catch (TaskExistsException e) {
                 LOG.error(e.getMessage());
-            }
-            catch (TaskModelException e) {
+            } catch (TaskModelException e) {
                 LOG.error(e.getMessage());
-            }
-            catch (TaskValidityException e) {
+            } catch (TaskValidityException e) {
                 LOG.error(e.getMessage());
             }
             return task;
@@ -656,20 +635,20 @@ public class TaskInfoComponent extends CustomComponent implements Broadcaster.Br
         }
         boolean changes = false;
         if (task.getTaskConfiguration() != null
-            && !task.getTaskConfiguration().equals(mutableTask.getTaskConfiguration())) {
+                && !task.getTaskConfiguration().equals(mutableTask.getTaskConfiguration())) {
             mutableTask.setTaskConfiguration(task.getTaskConfiguration());
             changes = true;
         }
         if (task.getTaskConfiguration().getGeneralState() != null
-            && task.getTaskConfiguration().getGeneralState() != mutableTask.getTaskConfiguration().getGeneralState()) {
+                && task.getTaskConfiguration().getGeneralState() != mutableTask.getTaskConfiguration()
+                        .getGeneralState()) {
             mutableTask.getTaskConfiguration().setGeneralState(task.getTaskConfiguration().getGeneralState());
             changes = true;
         }
         if (changes) {
             updateTask(mutableTask, lock);
             LOG.debug("Task definition updated: {}", uuid);
-        }
-        else {
+        } else {
             LOG.debug("Task already matches the specified settings, did not update it.");
         }
         unlockTask(lock, mutableTask);
@@ -680,33 +659,26 @@ public class TaskInfoComponent extends CustomComponent implements Broadcaster.Br
         String lock = null;
         try {
             lock = model.lockTaskInternal(uuid, false);
-        }
-        catch (ZkLockException e) {
+        } catch (ZkLockException e) {
             LOG.error("", e);
-        }
-        catch (TaskNotFoundException e) {
+        } catch (TaskNotFoundException e) {
             LOG.warn("Task not found: {}", uuid);
-        }
-        catch (InterruptedException e) {
+        } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-        }
-        catch (KeeperException e) {
+        } catch (KeeperException e) {
             LOG.error("", e);
-        }
-        catch (TaskModelException e) {
+        } catch (TaskModelException e) {
             LOG.error(e.getMessage());
         }
         return lock;
     }
 
     public void unlockTask(final String lock, final TaskInfoBean mutableTask) {
-        boolean ignoreMissing =
-            mutableTask.getTaskConfiguration().getGeneralState() != null
+        boolean ignoreMissing = mutableTask.getTaskConfiguration().getGeneralState() != null
                 && mutableTask.getTaskConfiguration().getGeneralState() == TaskGeneralState.DELETE_REQUESTED;
         try {
             model.unlockTask(lock, ignoreMissing);
-        }
-        catch (ZkLockException e) {
+        } catch (ZkLockException e) {
             LOG.error("", e);
         }
     }
@@ -715,14 +687,11 @@ public class TaskInfoComponent extends CustomComponent implements Broadcaster.Br
         TaskInfoBean mutableTask = null;
         try {
             mutableTask = model.getMutableTask(uuid);
-        }
-        catch (InterruptedException e) {
+        } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-        }
-        catch (KeeperException e) {
+        } catch (KeeperException e) {
             LOG.error("", e);
-        }
-        catch (TaskNotFoundException e) {
+        } catch (TaskNotFoundException e) {
             LOG.error("", e);
         }
         return mutableTask;
@@ -731,26 +700,19 @@ public class TaskInfoComponent extends CustomComponent implements Broadcaster.Br
     public void updateTask(final TaskInfoBean mutableTask, final String lock) {
         try {
             model.updateTask(mutableTask, lock);
-        }
-        catch (InterruptedException e) {
+        } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-        }
-        catch (KeeperException e) {
+        } catch (KeeperException e) {
             LOG.error("", e);
-        }
-        catch (TaskNotFoundException e) {
+        } catch (TaskNotFoundException e) {
             LOG.warn("Task not found: {}", mutableTask);
-        }
-        catch (TaskConcurrentModificationException e) {
+        } catch (TaskConcurrentModificationException e) {
             LOG.error("", e);
-        }
-        catch (ZkLockException e) {
+        } catch (ZkLockException e) {
             LOG.error("", e);
-        }
-        catch (TaskUpdateException e) {
+        } catch (TaskUpdateException e) {
             LOG.error("", e);
-        }
-        catch (TaskValidityException e) {
+        } catch (TaskValidityException e) {
             LOG.error("", e);
         }
     }
@@ -793,7 +755,7 @@ public class TaskInfoComponent extends CustomComponent implements Broadcaster.Br
     }
 
     private void buildSelectTaskImplementationForm(final FieldGroup fieldGroup,
-        final ComponentContainer componentContainer) {
+            final ComponentContainer componentContainer) {
         ComboBox type = new ComboBox("Type");
         type.setNewItemsAllowed(false);
         type.setNullSelectionAllowed(false);
@@ -822,45 +784,37 @@ public class TaskInfoComponent extends CustomComponent implements Broadcaster.Br
                 if ("ClassicRobotTask".equals(selected)) {
                     newTask.setTaskConfiguration(new ClassicRobotTaskConfiguration());
                     buildClassicRobotTaskConfigurationForm(taskConfigurationFieldGroup, newComponent);
-                }
-                else if ("SitemapsFetcherTask".equals(selected)) {
+                } else if ("SitemapsFetcherTask".equals(selected)) {
                     newTask.setTaskConfiguration(new SitemapsFetcherTaskConfiguration());
                     buildSitemapsFetcherTaskConfigurationForm(taskConfigurationFieldGroup, newComponent);
-                }
-                else if ("SitemapsPageFetcherTask".equals(selected)) {
+                } else if ("SitemapsPageFetcherTask".equals(selected)) {
                     newTask.setTaskConfiguration(new SitemapsPageFetcherTaskConfiguration());
                     buildSitemapsPageFetcherTaskConfigurationForm(taskConfigurationFieldGroup, newComponent);
-                }
-                else if ("SitemapsLinkedPageFetcherTask".equals(selected)) {
+                } else if ("SitemapsLinkedPageFetcherTask".equals(selected)) {
                     newTask.setTaskConfiguration(new SitemapsLinkedPageFetcherTaskConfiguration());
                     buildSitemapsLinkedPageFetcherTaskConfigurationForm(taskConfigurationFieldGroup, newComponent);
-                }
-                else if ("HtmlSplitterTask".equals(selected)) {
+                } else if ("HtmlSplitterTask".equals(selected)) {
                     newTask.setTaskConfiguration(new HtmlSplitterTaskConfiguration());
                     buildHtmlSplitterTaskConfigurationForm(taskConfigurationFieldGroup, newComponent);
-                }
-                else if ("MessageParserTask".equals(selected)) {
+                } else if ("MessageParserTask".equals(selected)) {
                     newTask.setTaskConfiguration(new MessageParserTaskConfiguration());
                     buildMessageParserTaskConfigurationForm(taskConfigurationFieldGroup, newComponent);
-                }
-                else if ("TweetCollectorTask".equals(selected)) {
+                } else if ("TweetCollectorTask".equals(selected)) {
                     newTask.setTaskConfiguration(new TweetCollectorTaskConfiguration());
                     buildTweetCollectorTaskConfigurationForm(taskConfigurationFieldGroup, newComponent);
-                }
-                else if ("WeblogsSubscriberTask".equals(selected)) {
+                } else if ("WeblogsSubscriberTask".equals(selected)) {
                     newTask.setTaskConfiguration(new WeblogsSubscriberTaskConfiguration());
                     buildWeblogsSubscriberTaskConfigurationForm(taskConfigurationFieldGroup, newComponent);
-                }
-                else if ("WeblogsCrawlerTask".equals(selected)) {
+                } else if ("WeblogsCrawlerTask".equals(selected)) {
                     newTask.setTaskConfiguration(new WeblogsCrawlerTaskConfiguration());
                     buildWeblogsCrawlerTaskConfigurationForm(taskConfigurationFieldGroup, newComponent);
-                }
-                else if ("WeblogsParserTask".equals(selected)) {
+                } else if ("WeblogsParserTask".equals(selected)) {
                     newTask.setTaskConfiguration(new WeblogsParserTaskConfiguration());
                     buildWeblogsParserTaskConfigurationForm(taskConfigurationFieldGroup, newComponent);
                 }
 
-                BeanItem<AbstractTaskConfiguration> item = new BeanItem<AbstractTaskConfiguration>(newTask.getTaskConfiguration());
+                BeanItem<AbstractTaskConfiguration> item = new BeanItem<AbstractTaskConfiguration>(newTask
+                        .getTaskConfiguration());
                 taskConfigurationFieldGroup.setItemDataSource(item);
                 mainLayout.replaceComponent(taskFieldsComponent, newComponent);
                 taskFieldsComponent = newComponent;
@@ -871,7 +825,7 @@ public class TaskInfoComponent extends CustomComponent implements Broadcaster.Br
     }
 
     private void buildWeblogsParserTaskConfigurationForm(final FieldGroup fieldGroup,
-        final ComponentContainer componentContainer) {
+            final ComponentContainer componentContainer) {
         buildBaseTaskConfigurationForm(fieldGroup, componentContainer);
         TextField url = new TextField("URL:");
         url.setWidth(COMMON_FIELD_WIDTH, Unit.EM);
