@@ -25,88 +25,87 @@ import org.xaloon.core.api.user.model.User;
  * @author vytautas r.
  */
 public interface Image extends FileDescriptor {
-	/**
-	 * Gets thumbnail.
-	 * 
-	 * @return thumbnail
-	 */
-	FileDescriptor getThumbnail();
+    /**
+     * Gets thumbnail.
+     * 
+     * @return thumbnail
+     */
+    FileDescriptor getThumbnail();
 
-	/**
-	 * Sets thumbnail.
-	 * 
-	 * @param thumbnail
-	 *            thumbnail
-	 */
-	void setThumbnail(FileDescriptor thumbnail);
+    /**
+     * Sets thumbnail.
+     * 
+     * @param thumbnail
+     *            thumbnail
+     */
+    void setThumbnail(FileDescriptor thumbnail);
 
-	/**
-	 * Gets title.
-	 * 
-	 * @return title
-	 */
-	String getTitle();
+    /**
+     * Gets title.
+     * 
+     * @return title
+     */
+    String getTitle();
 
-	/**
-	 * Sets title.
-	 * 
-	 * @param title
-	 *            title
-	 */
-	void setTitle(String title);
+    /**
+     * Sets title.
+     * 
+     * @param title
+     *            title
+     */
+    void setTitle(String title);
 
-	/**
-	 * Gets description.
-	 * 
-	 * @return description
-	 */
-	String getDescription();
+    /**
+     * Gets description.
+     * 
+     * @return description
+     */
+    String getDescription();
 
-	/**
-	 * Sets description.
-	 * 
-	 * @param description
-	 *            description
-	 */
-	void setDescription(String description);
+    /**
+     * Sets description.
+     * 
+     * @param description
+     *            description
+     */
+    void setDescription(String description);
 
-	/**
-	 * Gets owner.
-	 * 
-	 * @return owner
-	 */
-	User getOwner();
+    /**
+     * Gets owner.
+     * 
+     * @return owner
+     */
+    User getOwner();
 
-	/**
-	 * Sets owner.
-	 * 
-	 * @param owner
-	 *            owner
-	 */
-	void setOwner(User owner);
+    /**
+     * Sets owner.
+     * 
+     * @param owner
+     *            owner
+     */
+    void setOwner(User owner);
 
-	/**
-	 * Gets tags.
-	 * 
-	 * @return tags
-	 */
-	List<? extends KeyValue<String, String>> getTags();
+    /**
+     * Gets tags.
+     * 
+     * @return tags
+     */
+    List<? extends KeyValue<String, String>> getTags();
 
-	/**
-	 * Sets tags.
-	 * 
-	 * @param tags
-	 *            tags
-	 */
-	void setTags(List<? extends KeyValue<String, String>> tags);
+    /**
+     * Sets tags.
+     * 
+     * @param tags
+     *            tags
+     */
+    void setTags(List<? extends KeyValue<String, String>> tags);
 
+    /**
+     * Add additional resized file descriptors if necessary
+     * 
+     * @return
+     */
+    List<? extends FileDescriptor> getAdditionalSizes();
 
-	/**
-	 * Add additional resized file descriptors if necessary
-	 * 
-	 * @return
-	 */
-	List<? extends FileDescriptor> getAdditionalSizes();
-
-	void setAdditionalSizes(List<? extends FileDescriptor> items);
+    void setAdditionalSizes(List<? extends FileDescriptor> items);
 }

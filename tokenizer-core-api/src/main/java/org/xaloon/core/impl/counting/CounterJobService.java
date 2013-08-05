@@ -28,44 +28,47 @@ import org.xaloon.core.api.counting.CounterDao;
 @Named("counterJobService")
 public class CounterJobService implements ScheduledJobService<CounterJobParameters> {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(CounterJobService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CounterJobService.class);
 
-	@Inject
-	@Named("counterDao")
-	private CounterDao counterDao;
+    @Inject
+    @Named("counterDao")
+    private CounterDao counterDao;
 
-	@Override
-	public <V> V execute(CounterJobParameters jobParameters, boolean isScheduled) {
-		try {
-			Boolean result = executeJob(jobParameters);
-			if (LOGGER.isDebugEnabled()) {
-				if (result == null) {
-					LOGGER.debug(String.format("[%s] Could not increment/decrement. Giving up.", Thread.currentThread().getName()));
-				}
-			}
-		} catch (InterruptedException e) {
-			throw new RuntimeException(e);
-		}
-		return null;
-	}
+    @Override
+    public <V> V execute(CounterJobParameters jobParameters, boolean isScheduled) {
+        try {
+            Boolean result = executeJob(jobParameters);
+            if (LOGGER.isDebugEnabled()) {
+                if (result == null) {
+                    LOGGER.debug(String.format("[%s] Could not increment/decrement. Giving up.", Thread.currentThread()
+                            .getName()));
+                }
+            }
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        return null;
+    }
 
+    private Boolean executeJob(final CounterJobParameters jobParameters) throws InterruptedException {
+        return new RetryAction<Boolean, CounterJobParameters>(false) {
+            private static final long serialVersionUID = 1L;
 
-	private Boolean executeJob(final CounterJobParameters jobParameters) throws InterruptedException {
-		return new RetryAction<Boolean, CounterJobParameters>(false) {
-			private static final long serialVersionUID = 1L;
+            @Override
+            protected Boolean onPerform(CounterJobParameters parameters) {
+                boolean success = false;
+                if (jobParameters.isIncrement()) {
+                    success = counterDao.increment(jobParameters.getCounterGroup(), jobParameters.getCategoryId(),
+                            jobParameters.getEntityId());
+                }
+                else {
+                    success = counterDao.decrement(jobParameters.getCounterGroup(), jobParameters.getCategoryId(),
+                            jobParameters.getEntityId());
+                }
+                // In case of failure we return null. It means we retry action
+                return (success) ? success : null;
+            }
 
-			@Override
-			protected Boolean onPerform(CounterJobParameters parameters) {
-				boolean success = false;
-				if (jobParameters.isIncrement()) {
-					success = counterDao.increment(jobParameters.getCounterGroup(), jobParameters.getCategoryId(), jobParameters.getEntityId());
-				} else {
-					success = counterDao.decrement(jobParameters.getCounterGroup(), jobParameters.getCategoryId(), jobParameters.getEntityId());
-				}
-				// In case of failure we return null. It means we retry action
-				return (success) ? success : null;
-			}
-
-		}.setMillisecondsToSleep(10000).setRetryCount(10).setRandomTimeUsed(true).perform(jobParameters);
-	}
+        }.setMillisecondsToSleep(10000).setRetryCount(10).setRandomTimeUsed(true).perform(jobParameters);
+    }
 }

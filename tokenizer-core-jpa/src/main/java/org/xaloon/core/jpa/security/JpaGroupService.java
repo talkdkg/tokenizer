@@ -41,127 +41,128 @@ import org.xaloon.core.jpa.security.model.JpaUserDetails;
 @TransactionManagement(TransactionManagementType.CONTAINER)
 public class JpaGroupService implements GroupService {
 
-	/**
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	@Inject
-	private PersistenceServices persistenceServices;
+    @Inject
+    private PersistenceServices persistenceServices;
 
-	@Override
-	public List<SecurityGroup> getAuthorities(long first, long count) {
-		QueryBuilder queryBuilder = new QueryBuilder("select g from " + JpaGroup.class.getSimpleName() + " g");
-		queryBuilder.setCount(count);
-		queryBuilder.setFirstRow(first);
-		return persistenceServices.executeQuery(queryBuilder);
-	}
+    @Override
+    public List<SecurityGroup> getAuthorities(long first, long count) {
+        QueryBuilder queryBuilder = new QueryBuilder("select g from " + JpaGroup.class.getSimpleName() + " g");
+        queryBuilder.setCount(count);
+        queryBuilder.setFirstRow(first);
+        return persistenceServices.executeQuery(queryBuilder);
+    }
 
-	@Override
-	public Long getCount() {
-		QueryBuilder queryBuilder = new QueryBuilder("select count(g) from " + JpaGroup.class.getSimpleName() + " g");
-		return (Long)persistenceServices.executeQuerySingle(queryBuilder);
-	}
+    @Override
+    public Long getCount() {
+        QueryBuilder queryBuilder = new QueryBuilder("select count(g) from " + JpaGroup.class.getSimpleName() + " g");
+        return (Long) persistenceServices.executeQuerySingle(queryBuilder);
+    }
 
-	@Override
-	public SecurityGroup newAuthority() {
-		return new JpaGroup();
-	}
+    @Override
+    public SecurityGroup newAuthority() {
+        return new JpaGroup();
+    }
 
-	@Override
-	public void delete(SecurityGroup authority) {
-		SecurityGroup tmp = persistenceServices.find(authority.getClass(), authority.getId());
+    @Override
+    public void delete(SecurityGroup authority) {
+        SecurityGroup tmp = persistenceServices.find(authority.getClass(), authority.getId());
 
+        // !!! Eclipselink related issue. it does not return the list of users.
+        // Remove the role from users
+        List<UserDetails> users = getUsersByAuthority(authority);
+        for (UserDetails details : users) {
+            details.getGroups().remove(tmp);
+        }
 
-		// !!! Eclipselink related issue. it does not return the list of users.
-		// Remove the role from users
-		List<UserDetails> users = getUsersByAuthority(authority);
-		for (UserDetails details : users) {
-			details.getGroups().remove(tmp);
-		}
+        persistenceServices.remove(tmp);
+    }
 
-		persistenceServices.remove(tmp);
-	}
+    private List<UserDetails> getUsersByAuthority(SecurityGroup authority) {
+        QueryBuilder queryBuilder = new QueryBuilder("select u from " + JpaUserDetails.class.getSimpleName()
+                + " u join u.groups g");
+        queryBuilder.addParameter("g.id", "_ID", authority.getId());
+        return persistenceServices.executeQuery(queryBuilder);
+    }
 
-	private List<UserDetails> getUsersByAuthority(SecurityGroup authority) {
-		QueryBuilder queryBuilder = new QueryBuilder("select u from " + JpaUserDetails.class.getSimpleName() + " u join u.groups g");
-		queryBuilder.addParameter("g.id", "_ID", authority.getId());
-		return persistenceServices.executeQuery(queryBuilder);
-	}
+    @Override
+    public SecurityGroup save(SecurityGroup authority) {
+        if (authority == null) {
+            return null;
+        }
+        if (StringUtils.isEmpty(authority.getPath())) {
+            authority.setPath(UrlUtil.encode(authority.getName()));
+        }
+        return persistenceServices.createOrEdit(authority);
+    }
 
-	@Override
-	public SecurityGroup save(SecurityGroup authority) {
-		if (authority == null) {
-			return null;
-		}
-		if (StringUtils.isEmpty(authority.getPath())) {
-			authority.setPath(UrlUtil.encode(authority.getName()));
-		}
-		return persistenceServices.createOrEdit(authority);
-	}
+    @Override
+    public SecurityGroup findOrCreateAuthority(String authorityName) {
+        return null;
+    }
 
-	@Override
-	public SecurityGroup findOrCreateAuthority(String authorityName) {
-		return null;
-	}
+    @Override
+    public List<SecurityGroup> getAuthoritiesByUsername(String username) {
+        QueryBuilder queryBuilder = new QueryBuilder("select g from " + JpaGroup.class.getSimpleName()
+                + " g join g.users u");
+        queryBuilder.addParameter("u.username", "USERNAME", username);
+        return persistenceServices.executeQuery(queryBuilder);
+    }
 
-	@Override
-	public List<SecurityGroup> getAuthoritiesByUsername(String username) {
-		QueryBuilder queryBuilder = new QueryBuilder("select g from " + JpaGroup.class.getSimpleName() + " g join g.users u");
-		queryBuilder.addParameter("u.username", "USERNAME", username);
-		return persistenceServices.executeQuery(queryBuilder);
-	}
+    @Override
+    public UserDetails revoke(UserDetails userDetails, SecurityGroup authority) {
+        UserDetails tmp = persistenceServices.find(userDetails.getClass(), userDetails.getId());
+        tmp.getGroups().remove(authority);
+        return persistenceServices.edit(tmp);
+    }
 
-	@Override
-	public UserDetails revoke(UserDetails userDetails, SecurityGroup authority) {
-		UserDetails tmp = persistenceServices.find(userDetails.getClass(), userDetails.getId());
-		tmp.getGroups().remove(authority);
-		return persistenceServices.edit(tmp);
-	}
+    @Override
+    public SecurityGroup getAuthorityByPath(String path) {
+        QueryBuilder queryBuilder = new QueryBuilder("select g from " + JpaGroup.class.getSimpleName() + " g");
+        queryBuilder.addParameter("g.path", "PATH", path);
+        return persistenceServices.executeQuerySingle(queryBuilder);
+    }
 
-	@Override
-	public SecurityGroup getAuthorityByPath(String path) {
-		QueryBuilder queryBuilder = new QueryBuilder("select g from " + JpaGroup.class.getSimpleName() + " g");
-		queryBuilder.addParameter("g.path", "PATH", path);
-		return persistenceServices.executeQuerySingle(queryBuilder);
-	}
+    @Override
+    public UserDetails assignAuthoritiesByName(UserDetails userDetails, List<String> selections) {
+        UserDetails tmp = persistenceServices.find(userDetails.getClass(), userDetails.getId());
+        for (String groupName : selections) {
+            SecurityGroup group = findOrCreateAuthority(groupName);
+            tmp.getGroups().add(group);
+        }
+        return persistenceServices.edit(tmp);
+    }
 
-	@Override
-	public UserDetails assignAuthoritiesByName(UserDetails userDetails, List<String> selections) {
-		UserDetails tmp = persistenceServices.find(userDetails.getClass(), userDetails.getId());
-		for (String groupName : selections) {
-			SecurityGroup group = findOrCreateAuthority(groupName);
-			tmp.getGroups().add(group);
-		}
-		return persistenceServices.edit(tmp);
-	}
+    @Override
+    public UserDetails assignAuthorities(UserDetails userDetails, List<SecurityGroup> selections) {
+        UserDetails tmp = persistenceServices.find(userDetails.getClass(), userDetails.getId());
+        tmp.getGroups().addAll(selections);
+        return persistenceServices.edit(tmp);
+    }
 
-	@Override
-	public UserDetails assignAuthorities(UserDetails userDetails, List<SecurityGroup> selections) {
-		UserDetails tmp = persistenceServices.find(userDetails.getClass(), userDetails.getId());
-		tmp.getGroups().addAll(selections);
-		return persistenceServices.edit(tmp);
-	}
+    @Override
+    public SecurityGroup assignChildren(SecurityGroup parent, List<SecurityRole> selections) {
+        SecurityGroup group = persistenceServices.find(parent.getClass(), parent.getId());
+        group.getRoles().addAll(selections);
+        return persistenceServices.edit(group);
+    }
 
-	@Override
-	public SecurityGroup assignChildren(SecurityGroup parent, List<SecurityRole> selections) {
-		SecurityGroup group = persistenceServices.find(parent.getClass(), parent.getId());
-		group.getRoles().addAll(selections);
-		return persistenceServices.edit(group);
-	}
+    @Override
+    public SecurityGroup revokeChild(SecurityGroup parent, SecurityRole authority) {
+        SecurityGroup group = persistenceServices.find(parent.getClass(), parent.getId());
+        group.getRoles().remove(authority);
+        return persistenceServices.edit(group);
+    }
 
-	@Override
-	public SecurityGroup revokeChild(SecurityGroup parent, SecurityRole authority) {
-		SecurityGroup group = persistenceServices.find(parent.getClass(), parent.getId());
-		group.getRoles().remove(authority);
-		return persistenceServices.edit(group);
-	}
-
-	@Override
-	public SecurityGroup getAuthorityByName(String name) {
-		QueryBuilder queryBuilder = new QueryBuilder("select g from " + JpaGroup.class.getSimpleName() + " g");
-		queryBuilder.addParameter("g.name", "_NAME", name);
-		return persistenceServices.executeQuerySingle(queryBuilder);
-	}
+    @Override
+    public SecurityGroup getAuthorityByName(String name) {
+        QueryBuilder queryBuilder = new QueryBuilder("select g from " + JpaGroup.class.getSimpleName() + " g");
+        queryBuilder.addParameter("g.name", "_NAME", name);
+        return persistenceServices.executeQuerySingle(queryBuilder);
+    }
 
 }

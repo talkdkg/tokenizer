@@ -44,148 +44,150 @@ import org.xaloon.core.jpa.security.model.JpaUserDetails;
 @TransactionManagement(TransactionManagementType.CONTAINER)
 public class JpaRoleService implements RoleService {
 
-	/**
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	@Inject
-	private PersistenceServices persistenceServices;
+    @Inject
+    private PersistenceServices persistenceServices;
 
-	@Override
-	public List<SecurityRole> getAuthorities(long first, long count) {
-		QueryBuilder queryBuilder = new QueryBuilder("select g from " + JpaRole.class.getSimpleName() + " g");
-		queryBuilder.setCount(count);
-		queryBuilder.setFirstRow(first);
-		return persistenceServices.executeQuery(queryBuilder);
-	}
+    @Override
+    public List<SecurityRole> getAuthorities(long first, long count) {
+        QueryBuilder queryBuilder = new QueryBuilder("select g from " + JpaRole.class.getSimpleName() + " g");
+        queryBuilder.setCount(count);
+        queryBuilder.setFirstRow(first);
+        return persistenceServices.executeQuery(queryBuilder);
+    }
 
-	@Override
-	public Long getCount() {
-		QueryBuilder queryBuilder = new QueryBuilder("select count(g) from " + JpaRole.class.getSimpleName() + " g");
-		return (Long)persistenceServices.executeQuerySingle(queryBuilder);
-	}
+    @Override
+    public Long getCount() {
+        QueryBuilder queryBuilder = new QueryBuilder("select count(g) from " + JpaRole.class.getSimpleName() + " g");
+        return (Long) persistenceServices.executeQuerySingle(queryBuilder);
+    }
 
-	@Override
-	public SecurityRole newAuthority() {
-		return new JpaRole();
-	}
+    @Override
+    public SecurityRole newAuthority() {
+        return new JpaRole();
+    }
 
-	@Override
-	public void delete(SecurityRole authority) {
-		SecurityRole tmp = persistenceServices.find(authority.getClass(), authority.getId());
+    @Override
+    public void delete(SecurityRole authority) {
+        SecurityRole tmp = persistenceServices.find(authority.getClass(), authority.getId());
 
+        // !!! Eclipselink related issue. it does not return the list of users.
+        // Remove the role from users
+        List<UserDetails> users = getUsersByAuthority(authority);
+        for (UserDetails details : users) {
+            details.getRoles().remove(tmp);
+        }
+        // Remove the role from groups
+        List<SecurityGroup> groups = getGroupByAuthority(authority);
+        for (SecurityGroup group : groups) {
+            group.getRoles().remove(tmp);
+        }
+        persistenceServices.remove(tmp);
+    }
 
-		// !!! Eclipselink related issue. it does not return the list of users.
-		// Remove the role from users
-		List<UserDetails> users = getUsersByAuthority(authority);
-		for (UserDetails details : users) {
-			details.getRoles().remove(tmp);
-		}
-		// Remove the role from groups
-		List<SecurityGroup> groups = getGroupByAuthority(authority);
-		for (SecurityGroup group : groups) {
-			group.getRoles().remove(tmp);
-		}
-		persistenceServices.remove(tmp);
-	}
+    private List<SecurityGroup> getGroupByAuthority(SecurityRole authority) {
+        QueryBuilder queryBuilder = new QueryBuilder("select g from " + JpaGroup.class.getSimpleName()
+                + " g join g.roles r");
+        queryBuilder.addParameter("r.id", "_ID", authority.getId());
+        return persistenceServices.executeQuery(queryBuilder);
+    }
 
-	private List<SecurityGroup> getGroupByAuthority(SecurityRole authority) {
-		QueryBuilder queryBuilder = new QueryBuilder("select g from " + JpaGroup.class.getSimpleName() + " g join g.roles r");
-		queryBuilder.addParameter("r.id", "_ID", authority.getId());
-		return persistenceServices.executeQuery(queryBuilder);
-	}
+    private List<UserDetails> getUsersByAuthority(SecurityRole authority) {
+        QueryBuilder queryBuilder = new QueryBuilder("select u from " + JpaUserDetails.class.getSimpleName()
+                + " u join u.roles r");
+        queryBuilder.addParameter("r.id", "_ID", authority.getId());
+        return persistenceServices.executeQuery(queryBuilder);
+    }
 
-	private List<UserDetails> getUsersByAuthority(SecurityRole authority) {
-		QueryBuilder queryBuilder = new QueryBuilder("select u from " + JpaUserDetails.class.getSimpleName() + " u join u.roles r");
-		queryBuilder.addParameter("r.id", "_ID", authority.getId());
-		return persistenceServices.executeQuery(queryBuilder);
-	}
+    @Override
+    public SecurityRole findOrCreateAuthority(String authorityName) {
+        SecurityRole securityRole = getAuthorityByPath(UrlUtil.encode(authorityName));
+        if (securityRole == null) {
+            securityRole = createNewRole(authorityName);
+        }
+        return securityRole;
+    }
 
-	@Override
-	public SecurityRole findOrCreateAuthority(String authorityName) {
-		SecurityRole securityRole = getAuthorityByPath(UrlUtil.encode(authorityName));
-		if (securityRole == null) {
-			securityRole = createNewRole(authorityName);
-		}
-		return securityRole;
-	}
+    @Override
+    public List<SecurityRole> getAuthoritiesByUsername(String username) {
+        QueryBuilder queryBuilder = new QueryBuilder("select r from " + JpaRole.class.getSimpleName()
+                + " r join r.users u");
+        queryBuilder.addParameter("u.username", "USERNAME", username);
+        return persistenceServices.executeQuery(queryBuilder);
+    }
 
-	@Override
-	public List<SecurityRole> getAuthoritiesByUsername(String username) {
-		QueryBuilder queryBuilder = new QueryBuilder("select r from " + JpaRole.class.getSimpleName() + " r join r.users u");
-		queryBuilder.addParameter("u.username", "USERNAME", username);
-		return persistenceServices.executeQuery(queryBuilder);
-	}
+    @Override
+    public UserDetails revoke(UserDetails userDetails, SecurityRole authority) {
+        UserDetails tmp = persistenceServices.find(userDetails.getClass(), userDetails.getId());
+        tmp.getRoles().remove(authority);
+        return persistenceServices.edit(tmp);
+    }
 
-	@Override
-	public UserDetails revoke(UserDetails userDetails, SecurityRole authority) {
-		UserDetails tmp = persistenceServices.find(userDetails.getClass(), userDetails.getId());
-		tmp.getRoles().remove(authority);
-		return persistenceServices.edit(tmp);
-	}
+    @Override
+    public SecurityRole getAuthorityByPath(String path) {
+        QueryBuilder queryBuilder = new QueryBuilder("select r from " + JpaRole.class.getSimpleName() + " r");
+        queryBuilder.addParameter("r.path", "PATH", path);
+        return persistenceServices.executeQuerySingle(queryBuilder);
+    }
 
-	@Override
-	public SecurityRole getAuthorityByPath(String path) {
-		QueryBuilder queryBuilder = new QueryBuilder("select r from " + JpaRole.class.getSimpleName() + " r");
-		queryBuilder.addParameter("r.path", "PATH", path);
-		return persistenceServices.executeQuerySingle(queryBuilder);
-	}
+    @Override
+    public UserDetails assignAuthoritiesByName(UserDetails userDetails, List<String> selections) {
+        UserDetails tmp = persistenceServices.find(userDetails.getClass(), userDetails.getId());
+        for (String roleName : selections) {
+            SecurityRole role = findOrCreateAuthority(roleName);
+            tmp.getRoles().add(role);
+        }
+        return persistenceServices.edit(tmp);
+    }
 
-	@Override
-	public UserDetails assignAuthoritiesByName(UserDetails userDetails, List<String> selections) {
-		UserDetails tmp = persistenceServices.find(userDetails.getClass(), userDetails.getId());
-		for (String roleName : selections) {
-			SecurityRole role = findOrCreateAuthority(roleName);
-			tmp.getRoles().add(role);
-		}
-		return persistenceServices.edit(tmp);
-	}
+    @Override
+    public UserDetails assignAuthorities(UserDetails userDetails, List<SecurityRole> selections) {
+        UserDetails tmp = persistenceServices.find(userDetails.getClass(), userDetails.getId());
+        tmp.getRoles().addAll(selections);
+        return persistenceServices.edit(tmp);
+    }
 
-	@Override
-	public UserDetails assignAuthorities(UserDetails userDetails, List<SecurityRole> selections) {
-		UserDetails tmp = persistenceServices.find(userDetails.getClass(), userDetails.getId());
-		tmp.getRoles().addAll(selections);
-		return persistenceServices.edit(tmp);
-	}
+    @Override
+    public SecurityRole assignChildren(SecurityRole parent, List<Authority> selections) {
+        SecurityRole tmp = persistenceServices.find(parent.getClass(), parent.getId());
+        tmp.getAuthorities().addAll(selections);
+        return persistenceServices.edit(tmp);
+    }
 
-	@Override
-	public SecurityRole assignChildren(SecurityRole parent, List<Authority> selections) {
-		SecurityRole tmp = persistenceServices.find(parent.getClass(), parent.getId());
-		tmp.getAuthorities().addAll(selections);
-		return persistenceServices.edit(tmp);
-	}
+    @Override
+    public SecurityRole revokeChild(SecurityRole parent, Authority authority) {
+        SecurityRole tmp = persistenceServices.find(parent.getClass(), parent.getId());
+        tmp.getAuthorities().remove(authority);
+        return persistenceServices.edit(tmp);
+    }
 
-	@Override
-	public SecurityRole revokeChild(SecurityRole parent, Authority authority) {
-		SecurityRole tmp = persistenceServices.find(parent.getClass(), parent.getId());
-		tmp.getAuthorities().remove(authority);
-		return persistenceServices.edit(tmp);
-	}
+    @Override
+    public SecurityRole save(SecurityRole authority) {
+        if (authority == null) {
+            return null;
+        }
+        if (StringUtils.isEmpty(authority.getPath())) {
+            authority.setPath(UrlUtil.encode(authority.getName()));
+        }
+        return persistenceServices.createOrEdit(authority);
+    }
 
-	@Override
-	public SecurityRole save(SecurityRole authority) {
-		if (authority == null) {
-			return null;
-		}
-		if (StringUtils.isEmpty(authority.getPath())) {
-			authority.setPath(UrlUtil.encode(authority.getName()));
-		}
-		return persistenceServices.createOrEdit(authority);
-	}
+    private SecurityRole createNewRole(String name) {
+        SecurityRole role = newAuthority();
+        role.setCreateDate(new Date());
+        role.setUpdateDate(new Date());
+        role.setName(name);
+        return save(role);
+    }
 
-	private SecurityRole createNewRole(String name) {
-		SecurityRole role = newAuthority();
-		role.setCreateDate(new Date());
-		role.setUpdateDate(new Date());
-		role.setName(name);
-		return save(role);
-	}
-
-	@Override
-	public SecurityRole getAuthorityByName(String name) {
-		QueryBuilder queryBuilder = new QueryBuilder("select r from " + JpaRole.class.getSimpleName() + " r");
-		queryBuilder.addParameter("r.name", "_NAME", name);
-		return persistenceServices.executeQuerySingle(queryBuilder);
-	}
+    @Override
+    public SecurityRole getAuthorityByName(String name) {
+        QueryBuilder queryBuilder = new QueryBuilder("select r from " + JpaRole.class.getSimpleName() + " r");
+        queryBuilder.addParameter("r.name", "_NAME", name);
+        return persistenceServices.executeQuerySingle(queryBuilder);
+    }
 }

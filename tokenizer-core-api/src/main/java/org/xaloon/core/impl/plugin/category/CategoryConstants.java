@@ -19,8 +19,8 @@ import java.io.Serializable;
  * @author vytautas r.
  */
 public interface CategoryConstants extends Serializable {
-	/**
-	 * The page named parameter
-	 */
-	String PAGE_NAMED_PARAMETER_PARENT_CATEGORY = "parent_category";
+    /**
+     * The page named parameter
+     */
+    String PAGE_NAMED_PARAMETER_PARENT_CATEGORY = "parent_category";
 }

@@ -31,8 +31,7 @@ import org.tokenizer.util.json.JsonUtil;
 
 public class TaskInfoBeanConverter {
 
-    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory
-            .getLogger(TaskInfoBeanConverter.class);
+    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(TaskInfoBeanConverter.class);
 
     private TaskInfoBeanConverter() {
     }
@@ -40,8 +39,7 @@ public class TaskInfoBeanConverter {
     public static TaskInfoBean fromJsonBytes(final byte[] json) {
         ObjectNode node;
         try {
-            node = (ObjectNode) JsonFormat
-                    .deserialize(new ByteArrayInputStream(json));
+            node = (ObjectNode) JsonFormat.deserialize(new ByteArrayInputStream(json));
         } catch (IOException e) {
             throw new RuntimeException("Error parsing TaskDefinition JSON.", e);
         }
@@ -51,8 +49,7 @@ public class TaskInfoBeanConverter {
     public static TaskInfoBean fromJson(final ObjectNode node) {
         byte[] configuration;
         try {
-            String configurationAsString = JsonUtil.getString(node,
-                    "configuration");
+            String configurationAsString = JsonUtil.getString(node, "configuration");
             configuration = Base64.decode(configurationAsString);
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -78,8 +75,7 @@ public class TaskInfoBeanConverter {
             long value = JsonUtil.getLong(countersNode, key);
             task.addCounter(key, value);
         }
-        task.setMetricsUpdateTimestamp(JsonUtil.getLong(info,
-                "metricsUpdateTimestamp"));
+        task.setMetricsUpdateTimestamp(JsonUtil.getLong(info, "metricsUpdateTimestamp"));
         AbstractTaskConfiguration config = (AbstractTaskConfiguration) JavaSerializationUtils
                 .deserialize(configuration);
         task.setTaskConfiguration(config);
@@ -90,16 +86,14 @@ public class TaskInfoBeanConverter {
         try {
             return JsonFormat.serializeAsBytes(toJson(task));
         } catch (IOException e) {
-            throw new RuntimeException(
-                    "Error serializing TaskDefinition to JSON.", e);
+            throw new RuntimeException("Error serializing TaskDefinition to JSON.", e);
         }
     }
 
     public static ObjectNode toJson(final TaskInfoBean task) {
         ObjectNode node = JsonNodeFactory.instance.objectNode();
         String configurationAsString;
-        configurationAsString = Base64.encodeBytes(JavaSerializationUtils
-                .serialize(task.getTaskConfiguration()));
+        configurationAsString = Base64.encodeBytes(JavaSerializationUtils.serialize(task.getTaskConfiguration()));
         node.put("configuration", configurationAsString);
         ObjectNode info = node.putObject("info");
         info.put("submitTime", task.getSubmitTime());

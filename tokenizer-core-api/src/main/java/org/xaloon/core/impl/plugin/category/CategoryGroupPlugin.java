@@ -27,12 +27,12 @@ import org.xaloon.core.impl.plugin.tree.AbstractTreePlugin;
  */
 @Named
 public class CategoryGroupPlugin extends AbstractTreePlugin<AbstractPluginBean, Plugin> {
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	/**
-	 * Plugin type is set to hidden by default.
-	 */
-	public CategoryGroupPlugin() {
-		setType(PluginType.HIDDEN);
-	}
+    /**
+     * Plugin type is set to hidden by default.
+     */
+    public CategoryGroupPlugin() {
+        setType(PluginType.HIDDEN);
+    }
 }

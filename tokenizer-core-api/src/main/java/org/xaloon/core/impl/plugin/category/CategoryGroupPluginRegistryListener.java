@@ -30,51 +30,52 @@ import org.xaloon.core.impl.plugin.tree.GenericTreeNode;
 @Named
 public class CategoryGroupPluginRegistryListener extends AbstractTreePluginRegistryListener {
 
-	/**
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private CategoryGroupPlugin categoryGroupPlugin;
+    private CategoryGroupPlugin categoryGroupPlugin;
 
-	private void insertIntoTree(String category, GenericTreeNode<Plugin> child, Plugin plugin) {
-		if (!StringUtils.isEmpty(category)) {
-			GenericTreeNode<Plugin> parentNode = getCategoryGroupPlugin().getTreeNodesByContext().get(category);
-			if (parentNode == null) {
-				parentNode = new GenericTreeNode<Plugin>();
-				getCategoryGroupPlugin().getTreeNodesByContext().put(category, parentNode);
-			}
-			parentNode.addChild(child);
-			insertIntoTree(category.substring(0, category.lastIndexOf(DelimiterEnum.SLASH.value())), child, plugin);
-		} else {
-			getCategoryGroupPlugin().getTree().addChild(child);
-		}
-	}
+    private void insertIntoTree(String category, GenericTreeNode<Plugin> child, Plugin plugin) {
+        if (!StringUtils.isEmpty(category)) {
+            GenericTreeNode<Plugin> parentNode = getCategoryGroupPlugin().getTreeNodesByContext().get(category);
+            if (parentNode == null) {
+                parentNode = new GenericTreeNode<Plugin>();
+                getCategoryGroupPlugin().getTreeNodesByContext().put(category, parentNode);
+            }
+            parentNode.addChild(child);
+            insertIntoTree(category.substring(0, category.lastIndexOf(DelimiterEnum.SLASH.value())), child, plugin);
+        }
+        else {
+            getCategoryGroupPlugin().getTree().addChild(child);
+        }
+    }
 
-	private GenericTreeNode<Plugin> createMenuItem(Plugin plugin) {
-		GenericTreeNode<Plugin> resultNode = new GenericTreeNode<Plugin>();
-		resultNode.setData(plugin);
+    private GenericTreeNode<Plugin> createMenuItem(Plugin plugin) {
+        GenericTreeNode<Plugin> resultNode = new GenericTreeNode<Plugin>();
+        resultNode.setData(plugin);
 
-		return resultNode;
-	}
+        return resultNode;
+    }
 
-	public void onAfterPluginRegister(Plugin registeredPlugin) {
-		if (PluginType.HIDDEN.equals(registeredPlugin.getType())) {
-			return;
-		}
-		GenericTreeNode<Plugin> child = createMenuItem(registeredPlugin);
-		insertIntoTree(registeredPlugin.getCategory(), child, registeredPlugin);
-	}
+    public void onAfterPluginRegister(Plugin registeredPlugin) {
+        if (PluginType.HIDDEN.equals(registeredPlugin.getType())) {
+            return;
+        }
+        GenericTreeNode<Plugin> child = createMenuItem(registeredPlugin);
+        insertIntoTree(registeredPlugin.getCategory(), child, registeredPlugin);
+    }
 
-	/**
-	 * If somehow DI is not used properly then we try to inject using default xaloon solution
-	 * 
-	 * @return instance of {@link CategoryGroupPlugin}
-	 */
-	public CategoryGroupPlugin getCategoryGroupPlugin() {
-		if (categoryGroupPlugin == null) {
-			categoryGroupPlugin = getPluginRegistry().lookup(CategoryGroupPlugin.class);
-		}
-		return categoryGroupPlugin;
-	}
+    /**
+     * If somehow DI is not used properly then we try to inject using default xaloon solution
+     * 
+     * @return instance of {@link CategoryGroupPlugin}
+     */
+    public CategoryGroupPlugin getCategoryGroupPlugin() {
+        if (categoryGroupPlugin == null) {
+            categoryGroupPlugin = getPluginRegistry().lookup(CategoryGroupPlugin.class);
+        }
+        return categoryGroupPlugin;
+    }
 }

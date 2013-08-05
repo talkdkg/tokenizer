@@ -17,29 +17,31 @@ import org.xaloon.core.api.config.ListenerCollection;
 import org.xaloon.core.api.plugin.Plugin;
 
 /**
- * Collection, containing list of {@link ResourceRepositoryListener} listeners. These listeners will be executed every time Resource value is stored
+ * Collection, containing list of {@link ResourceRepositoryListener} listeners. These listeners will be executed every
+ * time Resource value is stored
  * into repository.
  * <p>
  * Implementation of {@link PluginResourceRepository} interface is responsible to call this collection
  * 
  * @author vytautas r.
  */
-public class ResourceRepositoryListenerCollection extends ListenerCollection<ResourceRepositoryListener> implements ResourceRepositoryListener {
-	private static final long serialVersionUID = 1L;
+public class ResourceRepositoryListenerCollection extends ListenerCollection<ResourceRepositoryListener> implements
+        ResourceRepositoryListener {
+    private static final long serialVersionUID = 1L;
 
-	public void onBeforeSaveProperty(final Plugin plugin, final String propertyKey, final Object value) {
-		notify(new Notifier<ResourceRepositoryListener>() {
-			public void notify(ResourceRepositoryListener listener) {
-				listener.onBeforeSaveProperty(plugin, propertyKey, value);
-			}
-		});
-	}
+    public void onBeforeSaveProperty(final Plugin plugin, final String propertyKey, final Object value) {
+        notify(new Notifier<ResourceRepositoryListener>() {
+            public void notify(ResourceRepositoryListener listener) {
+                listener.onBeforeSaveProperty(plugin, propertyKey, value);
+            }
+        });
+    }
 
-	public void onAfterSaveProperty(final Plugin plugin, final String propertyKey) {
-		notify(new Notifier<ResourceRepositoryListener>() {
-			public void notify(ResourceRepositoryListener listener) {
-				listener.onAfterSaveProperty(plugin, propertyKey);
-			}
-		});
-	}
+    public void onAfterSaveProperty(final Plugin plugin, final String propertyKey) {
+        notify(new Notifier<ResourceRepositoryListener>() {
+            public void notify(ResourceRepositoryListener listener) {
+                listener.onAfterSaveProperty(plugin, propertyKey);
+            }
+        });
+    }
 }

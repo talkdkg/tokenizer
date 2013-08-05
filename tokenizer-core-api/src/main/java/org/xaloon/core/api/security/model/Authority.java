@@ -13,8 +13,6 @@
  */
 package org.xaloon.core.api.security.model;
 
-
-
 /**
  * @author vytautas r.
  */

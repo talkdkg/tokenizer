@@ -20,17 +20,17 @@ import java.util.List;
  */
 public interface BeanLocatorAdapter {
 
-	/**
-	 * @param clazz
-	 * @param beanName
-	 * @return instance of loaded bean
-	 */
-	<T> T getBean(String beanName, Class<T> clazz);
+    /**
+     * @param clazz
+     * @param beanName
+     * @return instance of loaded bean
+     */
+    <T> T getBean(String beanName, Class<T> clazz);
 
-	/**
-	 * @param clazz
-	 * @return list of instances of the same type
-	 */
-	<T> List<T> getBeans(Class<T> clazz);
+    /**
+     * @param clazz
+     * @return list of instances of the same type
+     */
+    <T> List<T> getBeans(Class<T> clazz);
 
 }

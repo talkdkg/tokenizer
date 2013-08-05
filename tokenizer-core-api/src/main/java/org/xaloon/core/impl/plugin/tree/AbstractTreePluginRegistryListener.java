@@ -22,7 +22,8 @@ import org.xaloon.core.api.plugin.PluginRegistryListener;
 import org.xaloon.core.api.resource.StringResourceLoader;
 
 /**
- * Base class for tree observer, which is usually used to create menu trees depending on requirements. This class prepares general initialization of
+ * Base class for tree observer, which is usually used to create menu trees depending on requirements. This class
+ * prepares general initialization of
  * observer and then passes observable object to subclass.
  * 
  * @author vytautas r.
@@ -33,33 +34,34 @@ import org.xaloon.core.api.resource.StringResourceLoader;
  */
 
 public abstract class AbstractTreePluginRegistryListener implements PluginRegistryListener {
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	/**
-	 * Resource loader for current application. It is injected via spring IoC
-	 */
-	@Inject
-	private StringResourceLoader stringResourceLoader;
+    /**
+     * Resource loader for current application. It is injected via spring IoC
+     */
+    @Inject
+    private StringResourceLoader stringResourceLoader;
 
-	@Inject
-	@Named("pluginRegistry")
-	private PluginRegistry pluginRegistry;
+    @Inject
+    @Named("pluginRegistry")
+    private PluginRegistry pluginRegistry;
 
-	/**
-	 * Returns injected plugin registry instance
-	 * 
-	 * @return plugin registry
-	 */
-	public PluginRegistry getPluginRegistry() {
-		return pluginRegistry;
-	}
+    /**
+     * Returns injected plugin registry instance
+     * 
+     * @return plugin registry
+     */
+    public PluginRegistry getPluginRegistry() {
+        return pluginRegistry;
+    }
 
-	/**
-	 * Returns string resource loader which is used in current application
-	 * 
-	 * @return resource loader is injected via default DI. It should not be null in normal flow, otherwise try to load using {@link ServiceLocator}
-	 */
-	public StringResourceLoader getStringResourceLoader() {
-		return stringResourceLoader;
-	}
+    /**
+     * Returns string resource loader which is used in current application
+     * 
+     * @return resource loader is injected via default DI. It should not be null in normal flow, otherwise try to load
+     *         using {@link ServiceLocator}
+     */
+    public StringResourceLoader getStringResourceLoader() {
+        return stringResourceLoader;
+    }
 }

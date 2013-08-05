@@ -35,130 +35,129 @@ import org.xaloon.core.jpa.model.BookmarkableEntity;
 @Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorColumn(name = "DESCRIPTOR_TYPE", discriminatorType = DiscriminatorType.STRING)
 public class JpaFileDescriptor extends BookmarkableEntity implements FileDescriptor {
-	/**
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	/** File name */
-	@Column(name = "FILE_NAME", nullable = false)
-	private String name;
+    /** File name */
+    @Column(name = "FILE_NAME", nullable = false)
+    private String name;
 
-	/** Type of file */
-	@Column(name = "MIME_TYPE")
-	private String mimeType;
+    /** Type of file */
+    @Column(name = "MIME_TYPE")
+    private String mimeType;
 
-	/** File size */
-	@Column(name = "FILE_SIZE")
-	private Long size;
+    /** File size */
+    @Column(name = "FILE_SIZE")
+    private Long size;
 
-	/** File physical location identifier */
-	@Column(name = "FILE_IDENTIFIER")
-	private String identifier;
+    /** File physical location identifier */
+    @Column(name = "FILE_IDENTIFIER")
+    private String identifier;
 
-	/** Saved location where file is stored */
-	@Column(name = "FILE_LOCATION")
-	private String location;
+    /** Saved location where file is stored */
+    @Column(name = "FILE_LOCATION")
+    private String location;
 
+    /** File storage service provider bean name */
+    @Column(name = "STORAGE_SERVICE_PROVIDER")
+    private String fileStorageServiceProvider;
 
-	/** File storage service provider bean name */
-	@Column(name = "STORAGE_SERVICE_PROVIDER")
-	private String fileStorageServiceProvider;
+    /** The image input stream if available */
+    private transient InputStreamContainer imageInputStreamContainer;
 
-	/** The image input stream if available */
-	private transient InputStreamContainer imageInputStreamContainer;
+    /**
+     * Gets imageInputStreamContainer.
+     * 
+     * @return imageInputStreamContainer
+     */
+    public InputStreamContainer getImageInputStreamContainer() {
+        return imageInputStreamContainer;
+    }
 
-	/**
-	 * Gets imageInputStreamContainer.
-	 * 
-	 * @return imageInputStreamContainer
-	 */
-	public InputStreamContainer getImageInputStreamContainer() {
-		return imageInputStreamContainer;
-	}
+    /**
+     * Sets imageInputStreamContainer.
+     * 
+     * @param imageInputStreamContainer
+     *            imageInputStreamContainer
+     */
+    public void setImageInputStreamContainer(InputStreamContainer imageInputStreamContainer) {
+        this.imageInputStreamContainer = imageInputStreamContainer;
+    }
 
-	/**
-	 * Sets imageInputStreamContainer.
-	 * 
-	 * @param imageInputStreamContainer
-	 *            imageInputStreamContainer
-	 */
-	public void setImageInputStreamContainer(InputStreamContainer imageInputStreamContainer) {
-		this.imageInputStreamContainer = imageInputStreamContainer;
-	}
+    /**
+     * Gets location.
+     * 
+     * @return location
+     */
+    public String getLocation() {
+        return location;
+    }
 
-	/**
-	 * Gets location.
-	 * 
-	 * @return location
-	 */
-	public String getLocation() {
-		return location;
-	}
+    /**
+     * Sets location.
+     * 
+     * @param location
+     *            location
+     */
+    public void setLocation(String location) {
+        this.location = location;
+    }
 
-	/**
-	 * Sets location.
-	 * 
-	 * @param location
-	 *            location
-	 */
-	public void setLocation(String location) {
-		this.location = location;
-	}
+    /**
+     * Gets fileStorageServiceProvider.
+     * 
+     * @return fileStorageServiceProvider
+     */
+    public String getFileStorageServiceProvider() {
+        return fileStorageServiceProvider;
+    }
 
-	/**
-	 * Gets fileStorageServiceProvider.
-	 * 
-	 * @return fileStorageServiceProvider
-	 */
-	public String getFileStorageServiceProvider() {
-		return fileStorageServiceProvider;
-	}
+    /**
+     * Sets fileStorageServiceProvider.
+     * 
+     * @param fileStorageServiceProvider
+     *            fileStorageServiceProvider
+     */
+    public void setFileStorageServiceProvider(String fileStorageServiceProvider) {
+        this.fileStorageServiceProvider = fileStorageServiceProvider;
+    }
 
-	/**
-	 * Sets fileStorageServiceProvider.
-	 * 
-	 * @param fileStorageServiceProvider
-	 *            fileStorageServiceProvider
-	 */
-	public void setFileStorageServiceProvider(String fileStorageServiceProvider) {
-		this.fileStorageServiceProvider = fileStorageServiceProvider;
-	}
+    public String getIdentifier() {
+        return identifier;
+    }
 
-	public String getIdentifier() {
-		return identifier;
-	}
+    public void setIdentifier(String identifier) {
+        this.identifier = identifier;
+    }
 
-	public void setIdentifier(String identifier) {
-		this.identifier = identifier;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public String getMimeType() {
+        return mimeType;
+    }
 
-	public String getMimeType() {
-		return mimeType;
-	}
+    public void setMimeType(String mimeType) {
+        this.mimeType = mimeType;
+    }
 
-	public void setMimeType(String mimeType) {
-		this.mimeType = mimeType;
-	}
+    public Long getSize() {
+        return size;
+    }
 
-	public Long getSize() {
-		return size;
-	}
+    public void setSize(Long size) {
+        this.size = size;
+    }
 
-	public void setSize(Long size) {
-		this.size = size;
-	}
-
-	@Override
-	public boolean isExternal() {
-		return !StringUtils.isEmpty(getPath()) && getPath().startsWith(HtmlElementEnum.PROTOCOL_HTTP.value());
-	}
+    @Override
+    public boolean isExternal() {
+        return !StringUtils.isEmpty(getPath()) && getPath().startsWith(HtmlElementEnum.PROTOCOL_HTTP.value());
+    }
 }

@@ -22,16 +22,17 @@ import java.util.List;
  */
 public interface AnnotatedMatcher extends Serializable {
 
-	/**
-	 * Get all matching classes that are annotated with the given Annotation. Note that this method only returns those classes that actually contain
-	 * the annotation, and does not return classes whose superclass contains the annotation.
-	 * 
-	 * @param pattern
-	 *            the pattern to search for
-	 * @param annotation
-	 *            an annotation class
-	 * @return List of all classes that have the given annotation. List is empty if non matches found.
-	 */
-	List<Class<?>> getAnnotatedMatches(String pattern, Class<? extends Annotation> annotation);
+    /**
+     * Get all matching classes that are annotated with the given Annotation. Note that this method only returns those
+     * classes that actually contain
+     * the annotation, and does not return classes whose superclass contains the annotation.
+     * 
+     * @param pattern
+     *            the pattern to search for
+     * @param annotation
+     *            an annotation class
+     * @return List of all classes that have the given annotation. List is empty if non matches found.
+     */
+    List<Class<?>> getAnnotatedMatches(String pattern, Class<? extends Annotation> annotation);
 
 }

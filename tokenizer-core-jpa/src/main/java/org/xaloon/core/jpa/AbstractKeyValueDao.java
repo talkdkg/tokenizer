@@ -35,50 +35,50 @@ import org.xaloon.core.jpa.model.JpaKeyValue;
  */
 public abstract class AbstractKeyValueDao<R extends KeyValue<String, String>> implements KeyValueDao<String, String, R> {
 
-	/**
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	@Inject
-	@Named("persistenceServices")
-	private PersistenceServices persistenceServices;
+    @Inject
+    @Named("persistenceServices")
+    private PersistenceServices persistenceServices;
 
-	protected abstract Class<R> getImplementationClass();
+    protected abstract Class<R> getImplementationClass();
 
-	@Override
-	public R newKeyValue(String key, String parsedValue) throws CreateClassInstanceException {
-		R result = ClassUtil.newInstance(getImplementationClass());
-		result.setKey(key);
-		result.setValue(parsedValue);
-		result.setPath(UrlUtil.encode(parsedValue));
-		return result;
-	}
+    @Override
+    public R newKeyValue(String key, String parsedValue) throws CreateClassInstanceException {
+        R result = ClassUtil.newInstance(getImplementationClass());
+        result.setKey(key);
+        result.setValue(parsedValue);
+        result.setPath(UrlUtil.encode(parsedValue));
+        return result;
+    }
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public R findInStorage(String key, String parsedValue) {
-		QueryBuilder query = new QueryBuilder("select kv from " + getImplementationClass().getSimpleName() + " kv");
-		query.addParameter("kv.key", "KEY", key);
-		query.addParameter("kv.value", "VALUE", parsedValue, false, true);
-		return (R)persistenceServices.executeQuerySingle(query);
-	}
+    @SuppressWarnings("unchecked")
+    @Override
+    public R findInStorage(String key, String parsedValue) {
+        QueryBuilder query = new QueryBuilder("select kv from " + getImplementationClass().getSimpleName() + " kv");
+        query.addParameter("kv.key", "KEY", key);
+        query.addParameter("kv.value", "VALUE", parsedValue, false, true);
+        return (R) persistenceServices.executeQuerySingle(query);
+    }
 
-	@Override
-	public List<R> findRandomValues(String key, int randomLinkCountToSelect) {
-		List<R> allKeyValues = findInStorage(key);
-		if (!allKeyValues.isEmpty()) {
-			Collections.shuffle(allKeyValues);
-			if (randomLinkCountToSelect < allKeyValues.size()) {
-				return allKeyValues.subList(0, randomLinkCountToSelect);
-			}
-		}
-		return allKeyValues;
-	}
+    @Override
+    public List<R> findRandomValues(String key, int randomLinkCountToSelect) {
+        List<R> allKeyValues = findInStorage(key);
+        if (!allKeyValues.isEmpty()) {
+            Collections.shuffle(allKeyValues);
+            if (randomLinkCountToSelect < allKeyValues.size()) {
+                return allKeyValues.subList(0, randomLinkCountToSelect);
+            }
+        }
+        return allKeyValues;
+    }
 
-	private List<R> findInStorage(String key) {
-		QueryBuilder query = new QueryBuilder("select kv from " + JpaKeyValue.class.getSimpleName() + " kv");
-		query.addParameter("kv.key", "KEY", key);
-		return persistenceServices.executeQuery(query);
-	}
+    private List<R> findInStorage(String key) {
+        QueryBuilder query = new QueryBuilder("select kv from " + JpaKeyValue.class.getSimpleName() + " kv");
+        query.addParameter("kv.key", "KEY", key);
+        return persistenceServices.executeQuery(query);
+    }
 }

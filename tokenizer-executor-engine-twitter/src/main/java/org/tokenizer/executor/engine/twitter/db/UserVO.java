@@ -86,8 +86,7 @@ public class UserVO implements User {
             this.profileImageUrl = user.getProfileImageURL().toString();
         }
         if (user.getProfileImageUrlHttps() != null) {
-            this.profileImageUrlHttps = user.getProfileImageUrlHttps()
-                    .toString();
+            this.profileImageUrlHttps = user.getProfileImageUrlHttps().toString();
         }
         if (user.getURL() != null) {
             this.url = user.getURL().toString();
@@ -108,8 +107,7 @@ public class UserVO implements User {
         this.utcOffset = user.getUtcOffset();
         this.timeZone = user.getTimeZone();
         this.profileBackgroundImageUrl = user.getProfileBackgroundImageUrl();
-        this.profileBackgroundImageUrlHttps = user
-                .getProfileBackgroundImageUrlHttps();
+        this.profileBackgroundImageUrlHttps = user.getProfileBackgroundImageUrlHttps();
         this.profileBackgroundTiled = user.isProfileBackgroundTiled();
         this.lang = user.getLang();
         this.statusesCount = user.getStatusesCount();

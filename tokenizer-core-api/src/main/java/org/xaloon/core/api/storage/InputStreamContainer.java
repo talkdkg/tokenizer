@@ -21,30 +21,30 @@ import java.io.Serializable;
  * @author vytautas r.
  */
 public interface InputStreamContainer extends Serializable {
-	/**
-	 * @return input stream
-	 * @throws IOException
-	 */
-	InputStream getInputStream() throws IOException;
+    /**
+     * @return input stream
+     * @throws IOException
+     */
+    InputStream getInputStream() throws IOException;
 
-	/**
-	 * Close input stream after complete
-	 */
-	void close();
+    /**
+     * Close input stream after complete
+     */
+    void close();
 
-	/**
-	 * @return true if there is no input stream found
-	 */
-	boolean isEmpty();
+    /**
+     * @return true if there is no input stream found
+     */
+    boolean isEmpty();
 
-	InputStreamContainerOptions getOptions();
+    InputStreamContainerOptions getOptions();
 
-	void setOptions(InputStreamContainerOptions options);
+    void setOptions(InputStreamContainerOptions options);
 
-	/**
-	 * Returns input stream as byte array
-	 * 
-	 * @return input stream converted into byte array
-	 */
-	byte[] asByteArray();
+    /**
+     * Returns input stream as byte array
+     * 
+     * @return input stream converted into byte array
+     */
+    byte[] asByteArray();
 }

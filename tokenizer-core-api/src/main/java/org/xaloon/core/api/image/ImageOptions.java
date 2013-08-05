@@ -24,187 +24,184 @@ import org.xaloon.core.api.storage.InputStreamContainer;
 
 public class ImageOptions implements Serializable {
 
-	/**
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private ImageSize imageSize;
+    private ImageSize imageSize;
 
-	private List<ImageSize> additionalImageSizes = new ArrayList<ImageSize>();
+    private List<ImageSize> additionalImageSizes = new ArrayList<ImageSize>();
 
-	private boolean modifyPath;
+    private boolean modifyPath;
 
-	private boolean generateUuid;
+    private boolean generateUuid;
 
-	private String pathPrefix;
+    private String pathPrefix;
 
-	private InputStreamContainer imageInputStreamContainer;
+    private InputStreamContainer imageInputStreamContainer;
 
-	private Long albumId;
+    private Long albumId;
 
-	private Class<? extends Album> albumEntityClass;
+    private Class<? extends Album> albumEntityClass;
 
+    private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
-	private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+    /**
+     * Construct.
+     * 
+     * @param imageInputStreamContainer
+     * @param imageSize
+     */
+    public ImageOptions(InputStreamContainer imageInputStreamContainer, ImageSize imageSize) {
+        this.imageInputStreamContainer = imageInputStreamContainer;
+        this.imageSize = imageSize;
+    }
 
-	/**
-	 * Construct.
-	 * 
-	 * @param imageInputStreamContainer
-	 * @param imageSize
-	 */
-	public ImageOptions(InputStreamContainer imageInputStreamContainer, ImageSize imageSize) {
-		this.imageInputStreamContainer = imageInputStreamContainer;
-		this.imageSize = imageSize;
-	}
+    /**
+     * Gets albumId.
+     * 
+     * @return albumId
+     */
+    public Long getAlbumId() {
+        return albumId;
+    }
 
-	/**
-	 * Gets albumId.
-	 * 
-	 * @return albumId
-	 */
-	public Long getAlbumId() {
-		return albumId;
-	}
+    /**
+     * Sets albumId.
+     * 
+     * @param albumId
+     *            albumId
+     */
+    public void setAlbumId(Long albumId) {
+        this.albumId = albumId;
+    }
 
-	/**
-	 * Sets albumId.
-	 * 
-	 * @param albumId
-	 *            albumId
-	 */
-	public void setAlbumId(Long albumId) {
-		this.albumId = albumId;
-	}
+    /**
+     * Gets albumEntityClass.
+     * 
+     * @return albumEntityClass
+     */
+    public Class<? extends Album> getAlbumEntityClass() {
+        return albumEntityClass;
+    }
 
-	/**
-	 * Gets albumEntityClass.
-	 * 
-	 * @return albumEntityClass
-	 */
-	public Class<? extends Album> getAlbumEntityClass() {
-		return albumEntityClass;
-	}
+    /**
+     * Sets albumEntityClass.
+     * 
+     * @param albumEntityClass
+     *            albumEntityClass
+     */
+    public void setAlbumEntityClass(Class<? extends Album> albumEntityClass) {
+        this.albumEntityClass = albumEntityClass;
+    }
 
-	/**
-	 * Sets albumEntityClass.
-	 * 
-	 * @param albumEntityClass
-	 *            albumEntityClass
-	 */
-	public void setAlbumEntityClass(Class<? extends Album> albumEntityClass) {
-		this.albumEntityClass = albumEntityClass;
-	}
+    /**
+     * Gets imageInputStreamContainer.
+     * 
+     * @return imageInputStreamContainer
+     */
+    public InputStreamContainer getImageInputStreamContainer() {
+        return imageInputStreamContainer;
+    }
 
-	/**
-	 * Gets imageInputStreamContainer.
-	 * 
-	 * @return imageInputStreamContainer
-	 */
-	public InputStreamContainer getImageInputStreamContainer() {
-		return imageInputStreamContainer;
-	}
+    /**
+     * Sets imageInputStreamContainer.
+     * 
+     * @param imageInputStreamContainer
+     *            imageInputStreamContainer
+     */
+    public void setImageInputStreamContainer(InputStreamContainer imageInputStreamContainer) {
+        this.imageInputStreamContainer = imageInputStreamContainer;
+    }
 
-	/**
-	 * Sets imageInputStreamContainer.
-	 * 
-	 * @param imageInputStreamContainer
-	 *            imageInputStreamContainer
-	 */
-	public void setImageInputStreamContainer(InputStreamContainer imageInputStreamContainer) {
-		this.imageInputStreamContainer = imageInputStreamContainer;
-	}
+    /**
+     * Gets additionalImageSizes.
+     * 
+     * @return additionalImageSizes
+     */
+    public List<ImageSize> getAdditionalImageSizes() {
+        return additionalImageSizes;
+    }
 
+    /**
+     * Gets imageSize.
+     * 
+     * @return imageSize
+     */
+    public ImageSize getImageSize() {
+        return imageSize;
+    }
 
-	/**
-	 * Gets additionalImageSizes.
-	 * 
-	 * @return additionalImageSizes
-	 */
-	public List<ImageSize> getAdditionalImageSizes() {
-		return additionalImageSizes;
-	}
+    /**
+     * Sets imageSize.
+     * 
+     * @param imageSize
+     *            imageSize
+     */
+    public void setImageSize(ImageSize imageSize) {
+        this.imageSize = imageSize;
+    }
 
-	/**
-	 * Gets imageSize.
-	 * 
-	 * @return imageSize
-	 */
-	public ImageSize getImageSize() {
-		return imageSize;
-	}
+    /**
+     * Gets modifyPath.
+     * 
+     * @return modifyPath
+     */
+    public boolean isModifyPath() {
+        return modifyPath;
+    }
 
-	/**
-	 * Sets imageSize.
-	 * 
-	 * @param imageSize
-	 *            imageSize
-	 */
-	public void setImageSize(ImageSize imageSize) {
-		this.imageSize = imageSize;
-	}
+    /**
+     * Sets modifyPath.
+     * 
+     * @param modifyPath
+     *            modifyPath
+     */
+    public void setModifyPath(boolean modifyPath) {
+        this.modifyPath = modifyPath;
+    }
 
-	/**
-	 * Gets modifyPath.
-	 * 
-	 * @return modifyPath
-	 */
-	public boolean isModifyPath() {
-		return modifyPath;
-	}
+    /**
+     * Gets generateUuid.
+     * 
+     * @return generateUuid
+     */
+    public boolean isGenerateUuid() {
+        return generateUuid;
+    }
 
-	/**
-	 * Sets modifyPath.
-	 * 
-	 * @param modifyPath
-	 *            modifyPath
-	 */
-	public void setModifyPath(boolean modifyPath) {
-		this.modifyPath = modifyPath;
-	}
+    /**
+     * Sets generateUuid.
+     * 
+     * @param generateUuid
+     *            generateUuid
+     */
+    public void setGenerateUuid(boolean generateUuid) {
+        this.generateUuid = generateUuid;
+    }
 
-	/**
-	 * Gets generateUuid.
-	 * 
-	 * @return generateUuid
-	 */
-	public boolean isGenerateUuid() {
-		return generateUuid;
-	}
+    /**
+     * Gets pathPrefix.
+     * 
+     * @return pathPrefix
+     */
+    public String getPathPrefix() {
+        return pathPrefix;
+    }
 
-	/**
-	 * Sets generateUuid.
-	 * 
-	 * @param generateUuid
-	 *            generateUuid
-	 */
-	public void setGenerateUuid(boolean generateUuid) {
-		this.generateUuid = generateUuid;
-	}
+    /**
+     * Sets pathPrefix.
+     * 
+     * @param pathPrefix
+     *            pathPrefix
+     */
+    public void setPathPrefix(String pathPrefix) {
+        this.pathPrefix = pathPrefix;
+    }
 
-	/**
-	 * Gets pathPrefix.
-	 * 
-	 * @return pathPrefix
-	 */
-	public String getPathPrefix() {
-		return pathPrefix;
-	}
-
-	/**
-	 * Sets pathPrefix.
-	 * 
-	 * @param pathPrefix
-	 *            pathPrefix
-	 */
-	public void setPathPrefix(String pathPrefix) {
-		this.pathPrefix = pathPrefix;
-	}
-
-	public Map<String, Object> getAdditionalProperties() {
-		return additionalProperties;
-	}
-
+    public Map<String, Object> getAdditionalProperties() {
+        return additionalProperties;
+    }
 
 }

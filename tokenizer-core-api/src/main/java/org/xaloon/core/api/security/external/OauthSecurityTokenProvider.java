@@ -20,14 +20,14 @@ import java.io.Serializable;
  */
 public interface OauthSecurityTokenProvider extends Serializable {
 
-	/**
-	 * @return external security token object
-	 */
-	Serializable getSecurityToken();
+    /**
+     * @return external security token object
+     */
+    Serializable getSecurityToken();
 
-	/**
-	 * @param securityAccessToken
-	 */
-	void setSecurityToken(Serializable securityAccessToken);
+    /**
+     * @param securityAccessToken
+     */
+    void setSecurityToken(Serializable securityAccessToken);
 
 }

@@ -24,5 +24,5 @@ import javax.inject.Named;
  */
 @Named
 public class EmptyPlugin extends AbstractPlugin<AbstractPluginBean> {
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 }

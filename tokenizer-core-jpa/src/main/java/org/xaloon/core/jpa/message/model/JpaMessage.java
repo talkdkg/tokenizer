@@ -35,51 +35,51 @@ import org.xaloon.core.jpa.user.model.AbstractUser;
  */
 @MappedSuperclass
 public abstract class JpaMessage extends AbstractEntity implements Message {
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	@ManyToOne(fetch = FetchType.EAGER, optional = false)
-	@JoinColumn(name = "FROM_USER_ID", referencedColumnName = "ID")
-	private AbstractUser fromUser;
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @JoinColumn(name = "FROM_USER_ID", referencedColumnName = "ID")
+    private AbstractUser fromUser;
 
-	@Column(name = "MESSAGE", nullable = false)
-	private String message;
+    @Column(name = "MESSAGE", nullable = false)
+    private String message;
 
-	@ManyToMany
-	@JoinTable(name = "XAL_MESSAGE_ATTACHMENTS", joinColumns = @JoinColumn(name = "MESSAGE_ID", referencedColumnName = "ID"), inverseJoinColumns = @JoinColumn(name = "FILE_DESCRIPTOR_ID", referencedColumnName = "ID"))
-	private List<JpaFileDescriptor> attachments = new ArrayList<JpaFileDescriptor>();
+    @ManyToMany
+    @JoinTable(name = "XAL_MESSAGE_ATTACHMENTS", joinColumns = @JoinColumn(name = "MESSAGE_ID", referencedColumnName = "ID"), inverseJoinColumns = @JoinColumn(name = "FILE_DESCRIPTOR_ID", referencedColumnName = "ID"))
+    private List<JpaFileDescriptor> attachments = new ArrayList<JpaFileDescriptor>();
 
-	public AbstractUser getFromUser() {
-		return fromUser;
-	}
+    public AbstractUser getFromUser() {
+        return fromUser;
+    }
 
-	/**
-	 * @param fromUser
-	 */
-	public void setFromUser(AbstractUser fromUser) {
-		this.fromUser = fromUser;
-	}
+    /**
+     * @param fromUser
+     */
+    public void setFromUser(AbstractUser fromUser) {
+        this.fromUser = fromUser;
+    }
 
-	public String getMessage() {
-		return message;
-	}
+    public String getMessage() {
+        return message;
+    }
 
-	public void setMessage(String message) {
-		this.message = message;
-	}
+    public void setMessage(String message) {
+        this.message = message;
+    }
 
-	public List<JpaFileDescriptor> getAttachments() {
-		return attachments;
-	}
+    public List<JpaFileDescriptor> getAttachments() {
+        return attachments;
+    }
 
-	/**
-	 * @param attachments
-	 */
-	public void setAttachments(List<JpaFileDescriptor> attachments) {
-		this.attachments = attachments;
-	}
+    /**
+     * @param attachments
+     */
+    public void setAttachments(List<JpaFileDescriptor> attachments) {
+        this.attachments = attachments;
+    }
 
-	@Override
-	public void setFromUser(User fromUser) {
-		this.fromUser = (AbstractUser)fromUser;
-	}
+    @Override
+    public void setFromUser(User fromUser) {
+        this.fromUser = (AbstractUser) fromUser;
+    }
 }

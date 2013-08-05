@@ -44,12 +44,9 @@ public class UrlHeadRecord {
         reasonPhrase = fetchedResult.getReasonPhrase();
     }
 
-    public UrlHeadRecord(final String baseUrl, final String fetchedUrl,
-            final long fetchTime, final String contentType,
-            final Metadata headers, final String newBaseUrl,
-            final int numRedirects, final String hostAddress,
-            final int httpStatus, final String reasonPhrase
-    ) {
+    public UrlHeadRecord(final String baseUrl, final String fetchedUrl, final long fetchTime, final String contentType,
+            final Metadata headers, final String newBaseUrl, final int numRedirects, final String hostAddress,
+            final int httpStatus, final String reasonPhrase) {
         this.baseUrl = baseUrl;
         this.fetchedUrl = fetchedUrl;
         this.fetchTime = fetchTime;
@@ -104,13 +101,10 @@ public class UrlHeadRecord {
 
     @Override
     public String toString() {
-        return "UrlHeadRecord [baseUrl=" + baseUrl + ", fetchedUrl="
-                + fetchedUrl + ", fetchTime=" + fetchTime + ", contentType="
-                + contentType + ", headers=" + headers + ", newBaseUrl="
-                + newBaseUrl + ", numRedirects=" + numRedirects
-                + ", hostAddress=" + hostAddress + ", httpStatus=" + httpStatus
+        return "UrlHeadRecord [baseUrl=" + baseUrl + ", fetchedUrl=" + fetchedUrl + ", fetchTime=" + fetchTime
+                + ", contentType=" + contentType + ", headers=" + headers + ", newBaseUrl=" + newBaseUrl
+                + ", numRedirects=" + numRedirects + ", hostAddress=" + hostAddress + ", httpStatus=" + httpStatus
                 + ", reasonPhrase=" + reasonPhrase + "]";
     }
-    
-    
+
 }

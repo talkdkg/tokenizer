@@ -21,240 +21,239 @@ import org.xaloon.core.api.plugin.AbstractPluginBean;
  */
 public class EmailPluginBean extends AbstractPluginBean {
 
-	/**
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private boolean debug = false;
+    private boolean debug = false;
 
-	private boolean requiresAuthentication = false;
+    private boolean requiresAuthentication = false;
 
-	private boolean startTLS = false;
+    private boolean startTLS = false;
 
-	private String host;
+    private String host;
 
-	private String username;
+    private String username;
 
-	private String password;
+    private String password;
 
-	private int port = 25;
+    private int port = 25;
 
-	private String charset = "UTF-8";
+    private String charset = "UTF-8";
 
+    private String fromSubject;
 
-	private String fromSubject;
+    private String fromEmail;
 
-	private String fromEmail;
+    private String fromTitle;
 
-	private String fromTitle;
+    private String toSubject;
 
-	private String toSubject;
+    private String toEmail;
 
-	private String toEmail;
+    private String toTitle;
 
-	private String toTitle;
+    /**
+     * @return true if tls is used
+     */
+    public boolean isStartTLS() {
+        return startTLS;
+    }
 
-	/**
-	 * @return true if tls is used
-	 */
-	public boolean isStartTLS() {
-		return startTLS;
-	}
+    /**
+     * @param startTLS
+     */
+    public void setStartTLS(boolean startTLS) {
+        this.startTLS = startTLS;
+    }
 
-	/**
-	 * @param startTLS
-	 */
-	public void setStartTLS(boolean startTLS) {
-		this.startTLS = startTLS;
-	}
+    /**
+     * @return sending emails in debug mode
+     */
+    public boolean isDebug() {
+        return debug;
+    }
 
-	/**
-	 * @return sending emails in debug mode
-	 */
-	public boolean isDebug() {
-		return debug;
-	}
+    /**
+     * @param debug
+     */
+    public void setDebug(boolean debug) {
+        this.debug = debug;
+    }
 
-	/**
-	 * @param debug
-	 */
-	public void setDebug(boolean debug) {
-		this.debug = debug;
-	}
+    /**
+     * @return does mail host requires authentication
+     */
+    public boolean isRequiresAuthentication() {
+        return requiresAuthentication;
+    }
 
-	/**
-	 * @return does mail host requires authentication
-	 */
-	public boolean isRequiresAuthentication() {
-		return requiresAuthentication;
-	}
+    /**
+     * @param requiresAuthentication
+     */
+    public void setRequiresAuthentication(boolean requiresAuthentication) {
+        this.requiresAuthentication = requiresAuthentication;
+    }
 
-	/**
-	 * @param requiresAuthentication
-	 */
-	public void setRequiresAuthentication(boolean requiresAuthentication) {
-		this.requiresAuthentication = requiresAuthentication;
-	}
+    /**
+     * @return host for sending emails
+     */
+    public String getHost() {
+        return host;
+    }
 
-	/**
-	 * @return host for sending emails
-	 */
-	public String getHost() {
-		return host;
-	}
+    /**
+     * @param host
+     */
+    public void setHost(String host) {
+        this.host = host;
+    }
 
-	/**
-	 * @param host
-	 */
-	public void setHost(String host) {
-		this.host = host;
-	}
+    /**
+     * @return username when connecting to SMTP host
+     */
+    public String getUsername() {
+        return username;
+    }
 
-	/**
-	 * @return username when connecting to SMTP host
-	 */
-	public String getUsername() {
-		return username;
-	}
+    /**
+     * @param username
+     */
+    public void setUsername(String username) {
+        this.username = username;
+    }
 
-	/**
-	 * @param username
-	 */
-	public void setUsername(String username) {
-		this.username = username;
-	}
+    /**
+     * @return password when connecting to SMTP host
+     */
+    public String getPassword() {
+        return password;
+    }
 
-	/**
-	 * @return password when connecting to SMTP host
-	 */
-	public String getPassword() {
-		return password;
-	}
+    /**
+     * @param password
+     */
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
-	/**
-	 * @param password
-	 */
-	public void setPassword(String password) {
-		this.password = password;
-	}
+    /**
+     * @return port of SMTP host
+     */
+    public int getPort() {
+        return port;
+    }
 
-	/**
-	 * @return port of SMTP host
-	 */
-	public int getPort() {
-		return port;
-	}
+    /**
+     * @param port
+     */
+    public void setPort(int port) {
+        this.port = port;
+    }
 
-	/**
-	 * @param port
-	 */
-	public void setPort(int port) {
-		this.port = port;
-	}
+    /**
+     * @return charset of email
+     */
+    public String getCharset() {
+        return charset;
+    }
 
-	/**
-	 * @return charset of email
-	 */
-	public String getCharset() {
-		return charset;
-	}
+    /**
+     * @param charset
+     */
+    public void setCharset(String charset) {
+        this.charset = charset;
+    }
 
-	/**
-	 * @param charset
-	 */
-	public void setCharset(String charset) {
-		this.charset = charset;
-	}
+    /**
+     * @return default email when sending emails from system
+     */
+    public String getFromEmail() {
+        return fromEmail;
+    }
 
-	/**
-	 * @return default email when sending emails from system
-	 */
-	public String getFromEmail() {
-		return fromEmail;
-	}
+    /**
+     * @param fromEmail
+     */
+    public void setFromEmail(String fromEmail) {
+        this.fromEmail = fromEmail;
+    }
 
-	/**
-	 * @param fromEmail
-	 */
-	public void setFromEmail(String fromEmail) {
-		this.fromEmail = fromEmail;
-	}
+    /**
+     * @return default title when sending emails from system
+     */
+    public String getFromTitle() {
+        return fromTitle;
+    }
 
-	/**
-	 * @return default title when sending emails from system
-	 */
-	public String getFromTitle() {
-		return fromTitle;
-	}
+    /**
+     * @param fromTitle
+     */
+    public void setFromTitle(String fromTitle) {
+        this.fromTitle = fromTitle;
+    }
 
-	/**
-	 * @param fromTitle
-	 */
-	public void setFromTitle(String fromTitle) {
-		this.fromTitle = fromTitle;
-	}
+    /**
+     * @return default email when sending emails to system
+     */
+    public String getToEmail() {
+        return toEmail;
+    }
 
-	/**
-	 * @return default email when sending emails to system
-	 */
-	public String getToEmail() {
-		return toEmail;
-	}
+    /**
+     * @param toEmail
+     */
+    public void setToEmail(String toEmail) {
+        this.toEmail = toEmail;
+    }
 
-	/**
-	 * @param toEmail
-	 */
-	public void setToEmail(String toEmail) {
-		this.toEmail = toEmail;
-	}
+    /**
+     * @return default title when sending emails to system
+     */
+    public String getToTitle() {
+        return toTitle;
+    }
 
-	/**
-	 * @return default title when sending emails to system
-	 */
-	public String getToTitle() {
-		return toTitle;
-	}
+    /**
+     * @param toTitle
+     */
+    public void setToTitle(String toTitle) {
+        this.toTitle = toTitle;
+    }
 
-	/**
-	 * @param toTitle
-	 */
-	public void setToTitle(String toTitle) {
-		this.toTitle = toTitle;
-	}
+    /**
+     * @return default subject when sending emails from system
+     */
+    public String getFromSubject() {
+        return fromSubject;
+    }
 
-	/**
-	 * @return default subject when sending emails from system
-	 */
-	public String getFromSubject() {
-		return fromSubject;
-	}
+    /**
+     * @param fromSubject
+     */
+    public void setFromSubject(String fromSubject) {
+        this.fromSubject = fromSubject;
+    }
 
-	/**
-	 * @param fromSubject
-	 */
-	public void setFromSubject(String fromSubject) {
-		this.fromSubject = fromSubject;
-	}
+    /**
+     * @return default subject when sending emails to system
+     */
+    public String getToSubject() {
+        return toSubject;
+    }
 
-	/**
-	 * @return default subject when sending emails to system
-	 */
-	public String getToSubject() {
-		return toSubject;
-	}
+    /**
+     * @param toSubject
+     */
+    public void setToSubject(String toSubject) {
+        this.toSubject = toSubject;
+    }
 
-	/**
-	 * @param toSubject
-	 */
-	public void setToSubject(String toSubject) {
-		this.toSubject = toSubject;
-	}
-
-	/**
-	 * @return true if minimal requirements are not satisfied
-	 */
-	public boolean isEmpty() {
-		return StringUtils.isEmpty(getHost()) || StringUtils.isEmpty(getToEmail());
-	}
+    /**
+     * @return true if minimal requirements are not satisfied
+     */
+    public boolean isEmpty() {
+        return StringUtils.isEmpty(getHost()) || StringUtils.isEmpty(getToEmail());
+    }
 }

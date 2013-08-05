@@ -37,8 +37,7 @@ import crawlercommons.fetcher.FetchedResult;
 
 @SuppressWarnings("serial")
 public class SimpleParser extends BaseParser {
-    private static final Logger LOG = LoggerFactory
-            .getLogger(SimpleParser.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SimpleParser.class);
     private boolean _extractLanguage = true;
     protected BaseContentExtractor _contentExtractor;
     protected BaseLinkExtractor _linkExtractor;
@@ -49,8 +48,7 @@ public class SimpleParser extends BaseParser {
     }
 
     public SimpleParser(ParserPolicy parserPolicy) {
-        this(new SimpleContentExtractor(), new SimpleLinkExtractor(),
-                parserPolicy);
+        this(new SimpleContentExtractor(), new SimpleLinkExtractor(), parserPolicy);
     }
 
     /**
@@ -61,15 +59,14 @@ public class SimpleParser extends BaseParser {
      * @param parserPolicy
      *            to customize operation of the parser <BR>
      * <BR>
-     *            <B>Note:</B> There is no need to construct your own
-     *            {@link SimpleLinkExtractor} simply to control the set of link
-     *            tags and attributes it processes. Instead, use
-     *            {@link ParserPolicy#setLinkTags} and
+     *            <B>Note:</B> There is no need to construct your own {@link SimpleLinkExtractor} simply to control the
+     *            set of link
+     *            tags and attributes it processes. Instead, use {@link ParserPolicy#setLinkTags} and
      *            {@link ParserPolicy#setLinkAttributeTypes}, and then pass this
      *            policy to {@link SimpleParser#SimpleParser(ParserPolicy)}.
      */
-    public SimpleParser(BaseContentExtractor contentExtractor,
-            BaseLinkExtractor linkExtractor, ParserPolicy parserPolicy) {
+    public SimpleParser(BaseContentExtractor contentExtractor, BaseLinkExtractor linkExtractor,
+            ParserPolicy parserPolicy) {
         super(parserPolicy);
         _contentExtractor = contentExtractor;
         _linkExtractor = linkExtractor;
@@ -81,8 +78,7 @@ public class SimpleParser extends BaseParser {
         }
         _contentExtractor.reset();
         _linkExtractor.setLinkTags(getParserPolicy().getLinkTags());
-        _linkExtractor.setLinkAttributeTypes(getParserPolicy()
-                .getLinkAttributeTypes());
+        _linkExtractor.setLinkAttributeTypes(getParserPolicy().getLinkAttributeTypes());
         _linkExtractor.reset();
     }
 
@@ -100,8 +96,7 @@ public class SimpleParser extends BaseParser {
     }
 
     @Override
-    public ParsedDatum parse(FetchedResult fetchedResult)
-            throws InterruptedException {
+    public ParsedDatum parse(FetchedResult fetchedResult) throws InterruptedException {
         init();
         LOG.debug("Parsing: {}", fetchedResult);
         // Provide clues to the parser about the format of the content.
@@ -109,22 +104,19 @@ public class SimpleParser extends BaseParser {
         metadata.add(Metadata.RESOURCE_NAME_KEY, fetchedResult.getBaseUrl());
         metadata.add(Metadata.CONTENT_TYPE, fetchedResult.getContentType());
         metadata.add(Metadata.CONTENT_LANGUAGE, getLanguage(fetchedResult));
-        InputStream is = new ByteArrayInputStream(fetchedResult.getContent(),
-                0, fetchedResult.getContent().length);
+        InputStream is = new ByteArrayInputStream(fetchedResult.getContent(), 0, fetchedResult.getContent().length);
         Thread t = null;
         FutureTask<ParsedDatum> task = null;
         ParsedDatum result = null;
         try {
             URL baseUrl = getContentLocation(fetchedResult);
             metadata.add(Metadata.CONTENT_LOCATION, baseUrl.toExternalForm());
-            Callable<ParsedDatum> c = new ParserCallable(_parser,
-                    _contentExtractor, _linkExtractor, is, metadata,
+            Callable<ParsedDatum> c = new ParserCallable(_parser, _contentExtractor, _linkExtractor, is, metadata,
                     isExtractLanguage());
             task = new FutureTask<ParsedDatum>(c);
             t = new Thread(task);
             t.start();
-            result = task.get(getParserPolicy().getMaxParseDuration(),
-                    TimeUnit.MILLISECONDS);
+            result = task.get(getParserPolicy().getMaxParseDuration(), TimeUnit.MILLISECONDS);
             result.setHostAddress(fetchedResult.getHostAddress());
         } catch (MalformedURLException e) {
             LOG.error(e.getMessage());
@@ -138,11 +130,9 @@ public class SimpleParser extends BaseParser {
         return result;
     }
 
-    protected URL getContentLocation(FetchedResult fetchedResult)
-            throws MalformedURLException {
+    protected URL getContentLocation(FetchedResult fetchedResult) throws MalformedURLException {
         LOG.debug("New Base URL: {}", fetchedResult.getNewBaseUrl());
-        String clUrl = fetchedResult.getHeaders().get(
-                HttpHeaders.CONTENT_LOCATION);
+        String clUrl = fetchedResult.getHeaders().get(HttpHeaders.CONTENT_LOCATION);
         LOG.debug("HttpHeaders.CONTENT_LOCATION: {}", clUrl);
         URL baseUrl = new URL(fetchedResult.getFetchedUrl());
         if (clUrl != null) {

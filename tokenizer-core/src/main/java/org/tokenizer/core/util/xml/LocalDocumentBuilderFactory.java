@@ -28,8 +28,7 @@ public class LocalDocumentBuilderFactory {
     private static ThreadLocal<DocumentBuilderFactory> LOCAL = new ThreadLocal<DocumentBuilderFactory>() {
         @Override
         protected DocumentBuilderFactory initialValue() {
-            DocumentBuilderFactory factory = DocumentBuilderFactory
-                    .newInstance();
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             factory.setNamespaceAware(true);
             factory.setValidating(false);
             return factory;

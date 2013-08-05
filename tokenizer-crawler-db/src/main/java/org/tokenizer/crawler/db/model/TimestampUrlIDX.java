@@ -38,13 +38,14 @@ public class TimestampUrlIDX {
     }
 
     public String getHost() {
-        if (this.host == null) this.host = HttpUtils.getHost(url);
+        if (this.host == null)
+            this.host = HttpUtils.getHost(url);
         return this.host;
     }
 
-    //public void setHost(String host) {
-    //    this.host = host;
-    //}
+    // public void setHost(String host) {
+    // this.host = host;
+    // }
 
     public String getUrl() {
         return url;
@@ -67,6 +68,5 @@ public class TimestampUrlIDX {
     public String toString() {
         return "TimestampUrlIDX [host=" + getHost() + ", timestamp=" + timestamp + ", url=" + url + "]";
     }
-
 
 }

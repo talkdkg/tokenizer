@@ -23,13 +23,13 @@ import org.apache.commons.codec.digest.DigestUtils;
 @Named("sha256PasswordEncoder")
 public class Sha256PasswordEncoder extends PasswordEncoder {
 
-	@Override
-	public String encode(String username, String password) {
-		return DigestUtils.sha256Hex(username + password);
-	}
+    @Override
+    public String encode(String username, String password) {
+        return DigestUtils.sha256Hex(username + password);
+    }
 
-	@Override
-	public String encode(String username, String password, String salt) {
-		return DigestUtils.sha256Hex(encode(username, password) + salt);
-	}
+    @Override
+    public String encode(String username, String password, String salt) {
+        return DigestUtils.sha256Hex(encode(username, password) + salt);
+    }
 }

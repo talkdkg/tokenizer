@@ -22,6 +22,6 @@ import org.xaloon.core.api.image.model.Image;
  */
 public interface ImageDao extends Serializable {
 
-	Image getImageByPath(String path);
+    Image getImageByPath(String path);
 
 }

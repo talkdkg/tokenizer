@@ -22,42 +22,42 @@ import org.xaloon.core.api.keyvalue.KeyValue;
  */
 public interface FileDescriptorDao extends Serializable {
 
-	/**
-	 * @param fileDescriptor
-	 * @return reference to saved file descriptor
-	 */
-	FileDescriptor save(FileDescriptor fileDescriptor);
+    /**
+     * @param fileDescriptor
+     * @return reference to saved file descriptor
+     */
+    FileDescriptor save(FileDescriptor fileDescriptor);
 
-	/**
-	 * @param fileDescriptor
-	 * @param fileIdentifier
-	 * @return reference to saved file descriptor
-	 */
-	FileDescriptor save(FileDescriptor fileDescriptor, KeyValue<String, String> fileIdentifier);
+    /**
+     * @param fileDescriptor
+     * @param fileIdentifier
+     * @return reference to saved file descriptor
+     */
+    FileDescriptor save(FileDescriptor fileDescriptor, KeyValue<String, String> fileIdentifier);
 
-	/**
-	 * @param path
-	 * @return file descriptor if exists
-	 */
-	FileDescriptor getFileDescriptorByPath(String path);
+    /**
+     * @param path
+     * @return file descriptor if exists
+     */
+    FileDescriptor getFileDescriptorByPath(String path);
 
-	/**
-	 * @return concrete implementation of file descriptor
-	 */
-	FileDescriptor newFileDescriptor();
+    /**
+     * @return concrete implementation of file descriptor
+     */
+    FileDescriptor newFileDescriptor();
 
-	/**
-	 * @param fileDescriptor
-	 *            file to delete
-	 */
-	void delete(FileDescriptor fileDescriptor);
+    /**
+     * @param fileDescriptor
+     *            file to delete
+     */
+    void delete(FileDescriptor fileDescriptor);
 
-	/**
-	 * Loads file descriptor entity by it's unique identifier
-	 * 
-	 * @param id
-	 *            unique identifier to use for loading
-	 * @return instance of selected {@link FileDescriptor}
-	 */
-	FileDescriptor getFileDescriptorById(Long id);
+    /**
+     * Loads file descriptor entity by it's unique identifier
+     * 
+     * @param id
+     *            unique identifier to use for loading
+     * @return instance of selected {@link FileDescriptor}
+     */
+    FileDescriptor getFileDescriptorById(Long id);
 }

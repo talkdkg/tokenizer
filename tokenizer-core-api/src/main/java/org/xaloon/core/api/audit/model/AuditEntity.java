@@ -22,40 +22,40 @@ import org.xaloon.core.api.persistence.Persistable;
  * @author vytautas r.
  */
 public interface AuditEntity extends Persistable, Bookmarkable {
-	/**
-	 * Gets auditEntityItems.
-	 * 
-	 * @return auditEntityItems
-	 */
-	<T extends AuditEntityItem> List<T> getAuditEntityItems();
+    /**
+     * Gets auditEntityItems.
+     * 
+     * @return auditEntityItems
+     */
+    <T extends AuditEntityItem> List<T> getAuditEntityItems();
 
-	/**
-	 * Gets auditState.
-	 * 
-	 * @return auditState
-	 */
-	AuditState getAuditState();
+    /**
+     * Gets auditState.
+     * 
+     * @return auditState
+     */
+    AuditState getAuditState();
 
-	/**
-	 * Sets auditState.
-	 * 
-	 * @param auditState
-	 *            auditState
-	 */
-	void setAuditState(AuditState auditState);
+    /**
+     * Sets auditState.
+     * 
+     * @param auditState
+     *            auditState
+     */
+    void setAuditState(AuditState auditState);
 
-	/**
-	 * Gets auditableName.
-	 * 
-	 * @return auditableName
-	 */
-	String getAuditableName();
+    /**
+     * Gets auditableName.
+     * 
+     * @return auditableName
+     */
+    String getAuditableName();
 
-	/**
-	 * Sets auditableName.
-	 * 
-	 * @param auditableName
-	 *            auditableName
-	 */
-	void setAuditableName(String auditableName);
+    /**
+     * Sets auditableName.
+     * 
+     * @param auditableName
+     *            auditableName
+     */
+    void setAuditableName(String auditableName);
 }

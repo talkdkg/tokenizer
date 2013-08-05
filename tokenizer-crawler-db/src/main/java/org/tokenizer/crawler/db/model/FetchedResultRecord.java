@@ -47,8 +47,7 @@ public class FetchedResultRecord implements Serializable {
     public FetchedResultRecord() {
     }
 
-    public FetchedResultRecord(final String url, final Date timestamp,
-            final FetchedResult fetchedResult) {
+    public FetchedResultRecord(final String url, final Date timestamp, final FetchedResult fetchedResult) {
         this.url = url;
         this.timestamp = timestamp;
         this.fetchedResult = fetchedResult;
@@ -78,10 +77,9 @@ public class FetchedResultRecord implements Serializable {
 
     @Override
     public String toString() {
-        return "FetchedResultRecord [host=" + host + ", url=" + url
-                + ", timestamp=" + timestamp + "]";
-        //+ ", fetchedResult="
-        //        + fetchedResult + "]";
+        return "FetchedResultRecord [host=" + host + ", url=" + url + ", timestamp=" + timestamp + "]";
+        // + ", fetchedResult="
+        // + fetchedResult + "]";
     }
 
 }

@@ -53,8 +53,7 @@ public class HtmlParser {
             reader.setFeature(Parser.namespacePrefixesFeature, false);
             reader.setFeature(Parser.ignoreBogonsFeature, true);
             reader.setFeature(Parser.bogonsEmptyFeature, false);
-            Transformer transformer = TransformerFactory.newInstance()
-                    .newTransformer();
+            Transformer transformer = TransformerFactory.newInstance().newTransformer();
             DOMResult result = new DOMResult();
             transformer.transform(new SAXSource(reader, inputSource), result);
             Node htmlNode = result.getNode();
@@ -79,10 +78,8 @@ public class HtmlParser {
 
     public static String format(final Node node, final LSSerializerFilter filter) {
         try {
-            DOMImplementationRegistry registry = DOMImplementationRegistry
-                    .newInstance();
-            DOMImplementationLS impl = (DOMImplementationLS) registry
-                    .getDOMImplementation("LS");
+            DOMImplementationRegistry registry = DOMImplementationRegistry.newInstance();
+            DOMImplementationLS impl = (DOMImplementationLS) registry.getDOMImplementation("LS");
             LSSerializer writer = impl.createLSSerializer();
             writer.setFilter(filter);
             // writer.getDomConfig().setParameter("format-pretty-print",
@@ -134,7 +131,8 @@ class OutputFilter implements LSSerializerFilter {
             // return NodeFilter.FILTER_SKIP;
             // }
             return NodeFilter.FILTER_ACCEPT;
-        } else
+        }
+        else
             return NodeFilter.FILTER_SKIP;
     }
 

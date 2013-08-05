@@ -91,7 +91,8 @@ public class HostsScreen extends AbstractScreen {
                 if (listOfHosts == null) {
                     listOfHosts = buildListOfHosts();
                     mainLayout.addComponent(listOfHosts);
-                } else {
+                }
+                else {
                     Component temp = buildListOfHosts();
                     mainLayout.replaceComponent(listOfHosts, temp);
                     listOfHosts = temp;

@@ -17,22 +17,22 @@ import java.io.Serializable;
 
 public class UrlDatum implements Serializable {
 
-	private static final long serialVersionUID = 1L;
-	private String url;
+    private static final long serialVersionUID = 1L;
+    private String url;
 
-	public UrlDatum() {
-	}
+    public UrlDatum() {
+    }
 
-	public UrlDatum(String url) {
-		setUrl(url);
-	}
+    public UrlDatum(String url) {
+        setUrl(url);
+    }
 
-	public String getUrl() {
-		return this.url;
-	}
+    public String getUrl() {
+        return this.url;
+    }
 
-	public void setUrl(String url) {
-		this.url = url;
-	}
+    public void setUrl(String url) {
+        this.url = url;
+    }
 
 }

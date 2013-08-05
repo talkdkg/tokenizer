@@ -37,69 +37,72 @@ import org.xaloon.core.jpa.storage.model.JpaFileDescriptor;
 @TransactionManagement(TransactionManagementType.CONTAINER)
 public class JpaFiledescriptorDao implements FileDescriptorDao {
 
-	/**
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	@Inject
-	@Named("persistenceServices")
-	private PersistenceServices persistenceServices;
+    @Inject
+    @Named("persistenceServices")
+    private PersistenceServices persistenceServices;
 
-	@Override
-	public FileDescriptor save(FileDescriptor fileDescriptor) {
-		if (fileDescriptor == null) {
-			throw new IllegalArgumentException("fileDescriptor is null");
-		}
-		return persistenceServices.createOrEdit(fileDescriptor);
-	}
+    @Override
+    public FileDescriptor save(FileDescriptor fileDescriptor) {
+        if (fileDescriptor == null) {
+            throw new IllegalArgumentException("fileDescriptor is null");
+        }
+        return persistenceServices.createOrEdit(fileDescriptor);
+    }
 
-	@Override
-	public FileDescriptor save(FileDescriptor fileDescriptor, KeyValue<String, String> fileIdentifier) {
-		if (fileDescriptor == null) {
-			throw new IllegalArgumentException("fileDescriptor is null");
-		}
-		if (fileIdentifier == null || StringUtils.isEmpty(fileIdentifier.getKey()) || StringUtils.isEmpty(fileIdentifier.getValue())) {
-			throw new IllegalArgumentException("fileIdentifier is not properly populated");
-		}
-		fileDescriptor.setIdentifier(fileIdentifier.getValue());
-		String path = fileIdentifier.getKey();
-		if (!StringUtils.isEmpty(path) && path.startsWith(HtmlElementEnum.PROTOCOL_HTTP.value())) {
-			fileDescriptor.setPath(path);
-		}
-		return persistenceServices.createOrEdit(fileDescriptor);
-	}
+    @Override
+    public FileDescriptor save(FileDescriptor fileDescriptor, KeyValue<String, String> fileIdentifier) {
+        if (fileDescriptor == null) {
+            throw new IllegalArgumentException("fileDescriptor is null");
+        }
+        if (fileIdentifier == null || StringUtils.isEmpty(fileIdentifier.getKey())
+                || StringUtils.isEmpty(fileIdentifier.getValue())) {
+            throw new IllegalArgumentException("fileIdentifier is not properly populated");
+        }
+        fileDescriptor.setIdentifier(fileIdentifier.getValue());
+        String path = fileIdentifier.getKey();
+        if (!StringUtils.isEmpty(path) && path.startsWith(HtmlElementEnum.PROTOCOL_HTTP.value())) {
+            fileDescriptor.setPath(path);
+        }
+        return persistenceServices.createOrEdit(fileDescriptor);
+    }
 
-	@Override
-	public FileDescriptor getFileDescriptorByPath(String path) {
-		QueryBuilder queryBuilder = new QueryBuilder("select jfd from " + JpaFileDescriptor.class.getSimpleName() + " jfd ");
-		queryBuilder.addParameter("jfd.path", "ABSOLUTE_PATH", path);
+    @Override
+    public FileDescriptor getFileDescriptorByPath(String path) {
+        QueryBuilder queryBuilder = new QueryBuilder("select jfd from " + JpaFileDescriptor.class.getSimpleName()
+                + " jfd ");
+        queryBuilder.addParameter("jfd.path", "ABSOLUTE_PATH", path);
 
-		return persistenceServices.executeQuerySingle(queryBuilder);
-	}
+        return persistenceServices.executeQuerySingle(queryBuilder);
+    }
 
-	@Override
-	public FileDescriptor newFileDescriptor() {
-		return new JpaFileDescriptor();
-	}
+    @Override
+    public FileDescriptor newFileDescriptor() {
+        return new JpaFileDescriptor();
+    }
 
-	@Override
-	public void delete(FileDescriptor fileDescriptor) {
-		if (fileDescriptor == null) {
-			return;
-		}
-		persistenceServices.remove(JpaFileDescriptor.class, fileDescriptor.getId());
-	}
+    @Override
+    public void delete(FileDescriptor fileDescriptor) {
+        if (fileDescriptor == null) {
+            return;
+        }
+        persistenceServices.remove(JpaFileDescriptor.class, fileDescriptor.getId());
+    }
 
-	private FileDescriptor getFileDescriptorByIdentifier(String uniqueIdentifier) {
-		QueryBuilder queryBuilder = new QueryBuilder("select jfd from " + JpaFileDescriptor.class.getSimpleName() + " jfd ");
-		queryBuilder.addParameter("jfd.identifier", "IDENTIFIER", uniqueIdentifier);
+    private FileDescriptor getFileDescriptorByIdentifier(String uniqueIdentifier) {
+        QueryBuilder queryBuilder = new QueryBuilder("select jfd from " + JpaFileDescriptor.class.getSimpleName()
+                + " jfd ");
+        queryBuilder.addParameter("jfd.identifier", "IDENTIFIER", uniqueIdentifier);
 
-		return persistenceServices.executeQuerySingle(queryBuilder);
-	}
+        return persistenceServices.executeQuerySingle(queryBuilder);
+    }
 
-	@Override
-	public FileDescriptor getFileDescriptorById(Long id) {
-		return persistenceServices.find(JpaFileDescriptor.class, id);
-	}
+    @Override
+    public FileDescriptor getFileDescriptorById(Long id) {
+        return persistenceServices.find(JpaFileDescriptor.class, id);
+    }
 }

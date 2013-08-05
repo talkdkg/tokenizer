@@ -16,8 +16,8 @@ package org.tokenizer.executor.model.api;
 @SuppressWarnings("serial")
 public class TaskExistsException extends Exception {
 
-	public TaskExistsException(String name) {
-		super("TaskDefinition already exists: " + name);
-	}
+    public TaskExistsException(String name) {
+        super("TaskDefinition already exists: " + name);
+    }
 
 }

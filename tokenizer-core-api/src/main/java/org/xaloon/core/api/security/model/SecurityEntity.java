@@ -20,7 +20,7 @@ import org.xaloon.core.api.persistence.Persistable;
  * @author vytautas r.
  */
 public interface SecurityEntity extends Persistable, Bookmarkable {
-	String getName();
+    String getName();
 
-	void setName(String name);
+    void setName(String name);
 }

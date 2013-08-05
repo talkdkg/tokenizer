@@ -44,10 +44,10 @@ public interface CrawlerRepository {
     List<UrlRecord> listUrlRecords(final String[] keys) throws ConnectionException;
 
     List<UrlRecord> listUrlRecordsByFetchAttemptCounter(final String host, final int httpResponseCode,
-        final int maxResults) throws ConnectionException;
+            final int maxResults) throws ConnectionException;
 
     List<UrlRecord> listUrlRecords(final String host, final int httpResponseCode, byte[] startRowkey, int count)
-        throws ConnectionException;
+            throws ConnectionException;
 
     UrlRecord loadUrlRecord(final String url) throws ConnectionException;
 
@@ -62,7 +62,7 @@ public interface CrawlerRepository {
     WebpageRecord getWebpageRecord(byte[] digest) throws ConnectionException;
 
     List<WebpageRecord> listWebpageRecords(final String host, final int splitAttemptCounter, final int maxResults)
-        throws ConnectionException;
+            throws ConnectionException;
 
     int countWebpageRecords(final String host, final int splitAttemptCounter) throws ConnectionException;
 
@@ -71,7 +71,7 @@ public interface CrawlerRepository {
     void updateParseAttemptCounter(final XmlRecord xmlRecord) throws ConnectionException;
 
     List<XmlRecord> listXmlRecords(final String host, final int parseAttemptCounter, final int maxResults)
-        throws ConnectionException;
+            throws ConnectionException;
 
     List<XmlRecord> listXmlRecords(final byte[][] keys) throws ConnectionException;
 

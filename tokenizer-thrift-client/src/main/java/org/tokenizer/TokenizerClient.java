@@ -42,14 +42,11 @@ public class TokenizerClient {
             ThriftTokenizerService.Client client = new ThriftTokenizerService.Client(protocol);
             transport.open();
             result = client.get_message_records(query, start, rows);
-        }
-        catch (TTransportException e) {
+        } catch (TTransportException e) {
             LOG.error("", e);
-        }
-        catch (TException e) {
+        } catch (TException e) {
             LOG.error("", e);
-        }
-        finally {
+        } finally {
             if (transport != null) {
                 transport.close();
             }
@@ -60,7 +57,7 @@ public class TokenizerClient {
     }
 
     public static ThriftQueryResponse getMessageRecords(final String query, final int start, final int rows,
-        final long startTime, final long endTime) {
+            final long startTime, final long endTime) {
         TSocket transport = null;
         ThriftQueryResponse result = null;
         try {
@@ -69,14 +66,11 @@ public class TokenizerClient {
             ThriftTokenizerService.Client client = new ThriftTokenizerService.Client(protocol);
             transport.open();
             result = client.get_message_records_by_date_range(query, start, rows, startTime, endTime);
-        }
-        catch (TTransportException e) {
+        } catch (TTransportException e) {
             LOG.error("", e);
-        }
-        catch (TException e) {
+        } catch (TException e) {
             LOG.error("", e);
-        }
-        finally {
+        } finally {
             if (transport != null) {
                 transport.close();
             }
@@ -87,7 +81,7 @@ public class TokenizerClient {
     }
 
     public static ThriftQueryResponse getMessageRecords(final String query, final int start, final int rows,
-        final long startTime, final long endTime, final String source) {
+            final long startTime, final long endTime, final String source) {
         TSocket transport = null;
         ThriftQueryResponse result = null;
         try {
@@ -95,16 +89,13 @@ public class TokenizerClient {
             TProtocol protocol = new TBinaryProtocol(transport);
             ThriftTokenizerService.Client client = new ThriftTokenizerService.Client(protocol);
             transport.open();
-            result =
-                client.get_message_records_by_date_range_and_source(query, start, rows, startTime, endTime, source);
-        }
-        catch (TTransportException e) {
+            result = client
+                    .get_message_records_by_date_range_and_source(query, start, rows, startTime, endTime, source);
+        } catch (TTransportException e) {
             LOG.error("", e);
-        }
-        catch (TException e) {
+        } catch (TException e) {
             LOG.error("", e);
-        }
-        finally {
+        } finally {
             if (transport != null) {
                 transport.close();
             }
@@ -115,7 +106,7 @@ public class TokenizerClient {
     }
 
     public static ThriftQueryResponse getMessageRecords(final String query, final int start, final int rows,
-        final String source) {
+            final String source) {
         TSocket transport = null;
         ThriftQueryResponse result = null;
         try {
@@ -124,14 +115,11 @@ public class TokenizerClient {
             ThriftTokenizerService.Client client = new ThriftTokenizerService.Client(protocol);
             transport.open();
             result = client.get_message_records_by_source(query, start, rows, source);
-        }
-        catch (TTransportException e) {
+        } catch (TTransportException e) {
             LOG.error("", e);
-        }
-        catch (TException e) {
+        } catch (TException e) {
             LOG.error("", e);
-        }
-        finally {
+        } finally {
             if (transport != null) {
                 transport.close();
             }
@@ -158,8 +146,7 @@ public class TokenizerClient {
         // get 10 records from record number 0 to 9
         // filered by date range "last month"
         if (r != null) {
-            r =
-                getMessageRecords("travel", 0, 10, System.currentTimeMillis() - oneMonthMillis,
+            r = getMessageRecords("travel", 0, 10, System.currentTimeMillis() - oneMonthMillis,
                     System.currentTimeMillis());
             // System.out.println("Error: " + r.error);
             System.out.println("Elapsed Time: " + r.elapsedTime);
@@ -172,8 +159,7 @@ public class TokenizerClient {
         // get 10 records from record number 0 to 9
         // filered by date range "last month"
         // filtered by "source" (host)
-        r =
-            getMessageRecords("iphone", 0, 1000, System.currentTimeMillis() - oneMonthMillis,
+        r = getMessageRecords("iphone", 0, 1000, System.currentTimeMillis() - oneMonthMillis,
                 System.currentTimeMillis(), "stream.twitter.com");
 
         if (r != null) {

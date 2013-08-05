@@ -36,32 +36,32 @@ import org.xaloon.core.api.storage.InputStreamContainer;
 @TransactionManagement(TransactionManagementType.CONTAINER)
 public class JpaImageRepository extends AbstractImageRepository {
 
-	/**
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	@Inject
-	@Named(FileStorageService.FILE_STORAGE_SERVICE_JPA)
-	private FileStorageService fileStorageService;
+    @Inject
+    @Named(FileStorageService.FILE_STORAGE_SERVICE_JPA)
+    private FileStorageService fileStorageService;
 
-	@Inject
-	private FileDescriptorDao fileDescriptorDao;
+    @Inject
+    private FileDescriptorDao fileDescriptorDao;
 
-	@Override
-	public ImageRepository getAlternativeImageRepository() {
-		// No alternative image repository
-		return null;
-	}
+    @Override
+    public ImageRepository getAlternativeImageRepository() {
+        // No alternative image repository
+        return null;
+    }
 
-	@Override
-	protected FileStorageService getFileStorageService() {
-		return fileStorageService;
-	}
+    @Override
+    protected FileStorageService getFileStorageService() {
+        return fileStorageService;
+    }
 
-	@Override
-	protected KeyValue<String, String> storeFile(Image image, ImageOptions options) throws IOException {
-		InputStreamContainer resizedInputStreamContainer = resize(options);
-		return getFileStorageService().storeFile(image, resizedInputStreamContainer);
-	}
+    @Override
+    protected KeyValue<String, String> storeFile(Image image, ImageOptions options) throws IOException {
+        InputStreamContainer resizedInputStreamContainer = resize(options);
+        return getFileStorageService().storeFile(image, resizedInputStreamContainer);
+    }
 }

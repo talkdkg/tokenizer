@@ -24,97 +24,97 @@ import org.xaloon.core.api.persistence.Persistable;
  * @author vytautas r.
  */
 public class DefaultPersistentObject implements Persistable, Bookmarkable {
-	/**
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private Long id;
+    private Long id;
 
-	private Date createDate;
+    private Date createDate;
 
-	private Date updateDate;
+    private Date updateDate;
 
-	private String path;
+    private String path;
 
-	/**
-	 * Gets id.
-	 * 
-	 * @return id
-	 */
-	public Long getId() {
-		return id;
-	}
+    /**
+     * Gets id.
+     * 
+     * @return id
+     */
+    public Long getId() {
+        return id;
+    }
 
-	/**
-	 * Sets id.
-	 * 
-	 * @param id
-	 *            id
-	 */
-	public void setId(Long id) {
-		this.id = id;
-	}
+    /**
+     * Sets id.
+     * 
+     * @param id
+     *            id
+     */
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-	/**
-	 * Gets createDate.
-	 * 
-	 * @return createDate
-	 */
-	public Date getCreateDate() {
-		return createDate;
-	}
+    /**
+     * Gets createDate.
+     * 
+     * @return createDate
+     */
+    public Date getCreateDate() {
+        return createDate;
+    }
 
-	/**
-	 * Sets createDate.
-	 * 
-	 * @param createDate
-	 *            createDate
-	 */
-	public void setCreateDate(Date createDate) {
-		this.createDate = createDate;
-	}
+    /**
+     * Sets createDate.
+     * 
+     * @param createDate
+     *            createDate
+     */
+    public void setCreateDate(Date createDate) {
+        this.createDate = createDate;
+    }
 
-	/**
-	 * Gets updateDate.
-	 * 
-	 * @return updateDate
-	 */
-	public Date getUpdateDate() {
-		return updateDate;
-	}
+    /**
+     * Gets updateDate.
+     * 
+     * @return updateDate
+     */
+    public Date getUpdateDate() {
+        return updateDate;
+    }
 
-	/**
-	 * Sets updateDate.
-	 * 
-	 * @param updateDate
-	 *            updateDate
-	 */
-	public void setUpdateDate(Date updateDate) {
-		this.updateDate = updateDate;
-	}
+    /**
+     * Sets updateDate.
+     * 
+     * @param updateDate
+     *            updateDate
+     */
+    public void setUpdateDate(Date updateDate) {
+        this.updateDate = updateDate;
+    }
 
-	/**
-	 * Gets path.
-	 * 
-	 * @return path
-	 */
-	public String getPath() {
-		return path;
-	}
+    /**
+     * Gets path.
+     * 
+     * @return path
+     */
+    public String getPath() {
+        return path;
+    }
 
-	/**
-	 * Sets path.
-	 * 
-	 * @param path
-	 *            path
-	 */
-	public void setPath(String path) {
-		this.path = path;
-	}
+    /**
+     * Sets path.
+     * 
+     * @param path
+     *            path
+     */
+    public void setPath(String path) {
+        this.path = path;
+    }
 
-	@Override
-	public boolean isNew() {
-		return true;
-	}
+    @Override
+    public boolean isNew() {
+        return true;
+    }
 }

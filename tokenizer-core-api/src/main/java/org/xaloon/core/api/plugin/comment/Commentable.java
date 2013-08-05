@@ -21,10 +21,11 @@ import org.xaloon.core.api.counting.Countable;
  * @author vytautas r.
  */
 public interface Commentable extends Countable {
-	/**
-	 * Returns the author username of commentable object. This might be required to check if current user is the same as author of commentable object.
-	 * 
-	 * @return username who created commentable object.
-	 */
-	String getOwnerUsername();
+    /**
+     * Returns the author username of commentable object. This might be required to check if current user is the same as
+     * author of commentable object.
+     * 
+     * @return username who created commentable object.
+     */
+    String getOwnerUsername();
 }

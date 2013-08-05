@@ -19,23 +19,23 @@ import org.xaloon.core.api.user.model.User;
  * @author vytautas r.
  */
 public interface MailMessage extends TextMessage {
-	/**
-	 * @return true if message was read
-	 */
-	boolean isRead();
+    /**
+     * @return true if message was read
+     */
+    boolean isRead();
 
-	/**
-	 * @param messageRead
-	 */
-	void setRead(boolean messageRead);
+    /**
+     * @param messageRead
+     */
+    void setRead(boolean messageRead);
 
-	/**
-	 * @return recipient of message
-	 */
-	User getToUser();
+    /**
+     * @return recipient of message
+     */
+    User getToUser();
 
-	/**
-	 * @param toUser
-	 */
-	void setToUser(User toUser);
+    /**
+     * @param toUser
+     */
+    void setToUser(User toUser);
 }

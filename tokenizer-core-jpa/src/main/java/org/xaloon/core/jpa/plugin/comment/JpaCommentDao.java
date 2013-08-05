@@ -38,113 +38,114 @@ import org.xaloon.core.jpa.user.model.JpaAnonymousUser;
 @TransactionAttribute(TransactionAttributeType.REQUIRED)
 @TransactionManagement(TransactionManagementType.CONTAINER)
 public class JpaCommentDao implements CommentDao {
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	@Inject
-	@Named("persistenceServices")
-	private PersistenceServices persistenceServices;
+    @Inject
+    @Named("persistenceServices")
+    private PersistenceServices persistenceServices;
 
-	@Override
-	public void save(Comment comment) {
-		boolean merge = comment.getFromUser() != null && comment.getFromUser().getId() != null;
-		if (merge) {
-			persistenceServices.edit(comment);
-		} else {
-			if (comment.getFromUser() instanceof JpaAnonymousUser) {
-				persistenceServices.create(comment.getFromUser());
-			}
-			persistenceServices.create(comment);
-		}
-	}
+    @Override
+    public void save(Comment comment) {
+        boolean merge = comment.getFromUser() != null && comment.getFromUser().getId() != null;
+        if (merge) {
+            persistenceServices.edit(comment);
+        }
+        else {
+            if (comment.getFromUser() instanceof JpaAnonymousUser) {
+                persistenceServices.create(comment.getFromUser());
+            }
+            persistenceServices.create(comment);
+        }
+    }
 
-	@Override
-	public List<Comment> getComments(Commentable commentable, long first, long count) {
-		QueryBuilder queryBuilder = new QueryBuilder("select c from " + JpaComment.class.getSimpleName() + " c");
-		queryBuilder.addParameter("c.categoryId", "COMPONENT_ID", commentable.getTrackingCategoryId());
-		queryBuilder.addParameter("c.entityId", "ID", commentable.getId());
-		queryBuilder.addParameter("c.enabled", "_ENABLED", true);
-		queryBuilder.addParameter("c.inappropriate", "_inappropriate", false);
-		queryBuilder.setFirstRow(first);
-		queryBuilder.setCount(count);
-		queryBuilder.addOrderBy("c.createDate desc");
-		return persistenceServices.executeQuery(queryBuilder);
-	}
+    @Override
+    public List<Comment> getComments(Commentable commentable, long first, long count) {
+        QueryBuilder queryBuilder = new QueryBuilder("select c from " + JpaComment.class.getSimpleName() + " c");
+        queryBuilder.addParameter("c.categoryId", "COMPONENT_ID", commentable.getTrackingCategoryId());
+        queryBuilder.addParameter("c.entityId", "ID", commentable.getId());
+        queryBuilder.addParameter("c.enabled", "_ENABLED", true);
+        queryBuilder.addParameter("c.inappropriate", "_inappropriate", false);
+        queryBuilder.setFirstRow(first);
+        queryBuilder.setCount(count);
+        queryBuilder.addOrderBy("c.createDate desc");
+        return persistenceServices.executeQuery(queryBuilder);
+    }
 
-	@Override
-	public void deleteAll() {
-		QueryBuilder queryBuilder = new QueryBuilder("delete from c " + JpaComment.class.getSimpleName() + " c");
-		persistenceServices.executeUpdate(queryBuilder);
-	}
+    @Override
+    public void deleteAll() {
+        QueryBuilder queryBuilder = new QueryBuilder("delete from c " + JpaComment.class.getSimpleName() + " c");
+        persistenceServices.executeUpdate(queryBuilder);
+    }
 
-	@Override
-	public Long count(Commentable commentable) {
-		QueryBuilder queryBuilder = new QueryBuilder("select count(c) from " + JpaComment.class.getSimpleName() + " c");
-		queryBuilder.addParameter("c.categoryId", "COMPONENT_ID", commentable.getTrackingCategoryId());
-		queryBuilder.addParameter("c.entityId", "ID", commentable.getId());
-		queryBuilder.addParameter("c.enabled", "_ENABLED", true);
-		queryBuilder.addParameter("c.inappropriate", "_inappropriate", false);
-		return persistenceServices.executeQuerySingle(queryBuilder);
-	}
+    @Override
+    public Long count(Commentable commentable) {
+        QueryBuilder queryBuilder = new QueryBuilder("select count(c) from " + JpaComment.class.getSimpleName() + " c");
+        queryBuilder.addParameter("c.categoryId", "COMPONENT_ID", commentable.getTrackingCategoryId());
+        queryBuilder.addParameter("c.entityId", "ID", commentable.getId());
+        queryBuilder.addParameter("c.enabled", "_ENABLED", true);
+        queryBuilder.addParameter("c.inappropriate", "_inappropriate", false);
+        return persistenceServices.executeQuerySingle(queryBuilder);
+    }
 
-	@Override
-	public Comment load(Long id) {
-		return persistenceServices.find(JpaComment.class, id);
-	}
+    @Override
+    public Comment load(Long id) {
+        return persistenceServices.find(JpaComment.class, id);
+    }
 
-	@Override
-	public List<Comment> getWaitingCommentsForApproval() {
-		QueryBuilder queryBuilder = new QueryBuilder("select c from " + JpaComment.class.getSimpleName() + " c");
-		queryBuilder.addParameter("c.enabled", "_ENABLED", false);
-		return persistenceServices.executeQuery(queryBuilder);
-	}
+    @Override
+    public List<Comment> getWaitingCommentsForApproval() {
+        QueryBuilder queryBuilder = new QueryBuilder("select c from " + JpaComment.class.getSimpleName() + " c");
+        queryBuilder.addParameter("c.enabled", "_ENABLED", false);
+        return persistenceServices.executeQuery(queryBuilder);
+    }
 
-	@Override
-	public List<Comment> getInappropriateCommentsForApproval() {
-		QueryBuilder queryBuilder = new QueryBuilder("select c from " + JpaComment.class.getSimpleName() + " c");
-		queryBuilder.addParameter("c.inappropriate", "_inappropriate", true);
-		return persistenceServices.executeQuery(queryBuilder);
-	}
+    @Override
+    public List<Comment> getInappropriateCommentsForApproval() {
+        QueryBuilder queryBuilder = new QueryBuilder("select c from " + JpaComment.class.getSimpleName() + " c");
+        queryBuilder.addParameter("c.inappropriate", "_inappropriate", true);
+        return persistenceServices.executeQuery(queryBuilder);
+    }
 
-	@Override
-	public void delete(Comment comment) {
-		persistenceServices.remove(JpaComment.class, comment.getId());
-	}
+    @Override
+    public void delete(Comment comment) {
+        persistenceServices.remove(JpaComment.class, comment.getId());
+    }
 
-	@Override
-	public void enable(Comment comment) {
-		comment.setEnabled(true);
-		persistenceServices.edit(comment);
-	}
+    @Override
+    public void enable(Comment comment) {
+        comment.setEnabled(true);
+        persistenceServices.edit(comment);
+    }
 
-	@Override
-	public void deleteWaitingCommentsForApproval() {
-		QueryBuilder queryBuilder = new QueryBuilder("delete from " + JpaComment.class.getSimpleName() + " c");
-		queryBuilder.addParameter("c.enabled", "_ENABLED", false);
-		persistenceServices.executeUpdate(queryBuilder);
-	}
+    @Override
+    public void deleteWaitingCommentsForApproval() {
+        QueryBuilder queryBuilder = new QueryBuilder("delete from " + JpaComment.class.getSimpleName() + " c");
+        queryBuilder.addParameter("c.enabled", "_ENABLED", false);
+        persistenceServices.executeUpdate(queryBuilder);
+    }
 
-	@Override
-	public Comment newComment() {
-		return new JpaComment();
-	}
+    @Override
+    public Comment newComment() {
+        return new JpaComment();
+    }
 
-	@Override
-	public void markAsInappropriate(Comment comment, boolean flag) {
-		comment.setInappropriate(flag);
-		persistenceServices.edit(comment);
-	}
+    @Override
+    public void markAsInappropriate(Comment comment, boolean flag) {
+        comment.setInappropriate(flag);
+        persistenceServices.edit(comment);
+    }
 
-	@Override
-	public void deleteInappropriateCommentsForApproval() {
-		QueryBuilder queryBuilder = new QueryBuilder("delete from " + JpaComment.class.getSimpleName() + " c");
-		queryBuilder.addParameter("c.inappropriate", "_inappropriate", true);
-		persistenceServices.executeUpdate(queryBuilder);
-	}
+    @Override
+    public void deleteInappropriateCommentsForApproval() {
+        QueryBuilder queryBuilder = new QueryBuilder("delete from " + JpaComment.class.getSimpleName() + " c");
+        queryBuilder.addParameter("c.inappropriate", "_inappropriate", true);
+        persistenceServices.executeUpdate(queryBuilder);
+    }
 
-	@Override
-	public void deleteCommentsByUsername(User userToBeDeleted) {
-		QueryBuilder update = new QueryBuilder("delete from " + JpaComment.class.getSimpleName() + " c");
-		update.addParameter("c.fromUser", "_USER", userToBeDeleted);
-		persistenceServices.executeUpdate(update);
-	}
+    @Override
+    public void deleteCommentsByUsername(User userToBeDeleted) {
+        QueryBuilder update = new QueryBuilder("delete from " + JpaComment.class.getSimpleName() + " c");
+        update.addParameter("c.fromUser", "_USER", userToBeDeleted);
+        persistenceServices.executeUpdate(update);
+    }
 }

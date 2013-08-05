@@ -12,6 +12,7 @@
  * forbidden unless prior written permission is obtained from Tokenizer Inc.
  */
 package org.tokenizer.executor.master;
+
 import org.tokenizer.executor.model.api.WritableExecutorModel;
 import org.tokenizer.executor.model.impl.ExecutorModelImpl;
 import org.tokenizer.util.zookeeper.ZooKeeperImpl;

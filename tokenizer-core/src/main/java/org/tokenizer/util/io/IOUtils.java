@@ -24,21 +24,18 @@ public class IOUtils {
             try {
                 cl.close();
             } catch (Throwable t) {
-                LogFactory.getLog(IOUtils.class).error(
-                        "Problem closing a source or destination.", t);
+                LogFactory.getLog(IOUtils.class).error("Problem closing a source or destination.", t);
             }
         }
     }
 
-    public static void closeQuietly(final Closeable cl,
-            final String identification) {
+    public static void closeQuietly(final Closeable cl, final String identification) {
         if (cl != null) {
             try {
                 cl.close();
             } catch (Throwable t) {
-                LogFactory.getLog(IOUtils.class).error(
-                        "Problem closing a source or destination on "
-                                + identification, t);
+                LogFactory.getLog(IOUtils.class).error("Problem closing a source or destination on " + identification,
+                        t);
             }
         }
     }

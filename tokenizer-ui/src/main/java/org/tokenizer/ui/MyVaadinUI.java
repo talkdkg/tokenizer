@@ -208,7 +208,8 @@ public class MyVaadinUI extends UI {
                         // TODO Auto-generated catch block
                         // e.printStackTrace();
                     }
-                } else {
+                }
+                else {
                     tree.expandItemsRecursively(value2);
                 }
             }

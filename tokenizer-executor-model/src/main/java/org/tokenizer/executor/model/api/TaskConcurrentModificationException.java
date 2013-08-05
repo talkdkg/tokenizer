@@ -15,7 +15,7 @@ package org.tokenizer.executor.model.api;
 
 @SuppressWarnings("serial")
 public class TaskConcurrentModificationException extends Exception {
-	public TaskConcurrentModificationException(String taskDefinitionName) {
-		super("The TaskDefinition is modified since it was read. TaskDefinition: " + taskDefinitionName);
-	}
+    public TaskConcurrentModificationException(String taskDefinitionName) {
+        super("The TaskDefinition is modified since it was read. TaskDefinition: " + taskDefinitionName);
+    }
 }

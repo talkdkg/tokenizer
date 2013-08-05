@@ -31,8 +31,7 @@ public class Closer {
                 closeable.close();
             } catch (Throwable t) {
                 Log log = LogFactory.getLog(Closer.class);
-                log.error("Error closing object of type "
-                        + closeable.getClass().getName(), t);
+                log.error("Error closing object of type " + closeable.getClass().getName(), t);
             }
         }
     }
@@ -47,24 +46,25 @@ public class Closer {
                         if (method.getName().equals("close")) {
                             closeMethod = method;
                             break;
-                        } else if (method.getName().equals("shutdown")) {
+                        }
+                        else if (method.getName().equals("shutdown")) {
                             closeMethod = method;
-                        } else if (method.getName().equals("stop")) {
+                        }
+                        else if (method.getName().equals("stop")) {
                             closeMethod = method;
                         }
                     }
                 }
                 if (closeMethod != null) {
                     closeMethod.invoke(object);
-                } else {
+                }
+                else {
                     Log log = LogFactory.getLog(Closer.class);
-                    log.error("Do not know how to close object of type "
-                            + object.getClass().getName());
+                    log.error("Do not know how to close object of type " + object.getClass().getName());
                 }
             } catch (Throwable t) {
                 Log log = LogFactory.getLog(Closer.class);
-                log.error("Error closing object of type "
-                        + object.getClass().getName(), t);
+                log.error("Error closing object of type " + object.getClass().getName(), t);
             }
         }
     }

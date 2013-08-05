@@ -21,49 +21,49 @@ import java.io.InputStream;
  */
 public class ByteArrayAsInputStreamContainer extends AbstractInputStreamContainer {
 
-	/**
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private byte[] input;
+    private byte[] input;
 
-	/**
-	 * Construct.
-	 * 
-	 * @param input
-	 */
-	public ByteArrayAsInputStreamContainer(byte[] input) {
-		this(input, new InputStreamContainerOptions());
-	}
+    /**
+     * Construct.
+     * 
+     * @param input
+     */
+    public ByteArrayAsInputStreamContainer(byte[] input) {
+        this(input, new InputStreamContainerOptions());
+    }
 
-	/**
-	 * Construct.
-	 * 
-	 * @param input
-	 * @param options
-	 */
-	public ByteArrayAsInputStreamContainer(byte[] input, InputStreamContainerOptions options) {
-		super(options);
-		this.input = input;
-	}
+    /**
+     * Construct.
+     * 
+     * @param input
+     * @param options
+     */
+    public ByteArrayAsInputStreamContainer(byte[] input, InputStreamContainerOptions options) {
+        super(options);
+        this.input = input;
+    }
 
-	@Override
-	public InputStream getInputStream() throws IOException {
-		return null;
-	}
+    @Override
+    public InputStream getInputStream() throws IOException {
+        return null;
+    }
 
-	@Override
-	public void close() {
-	}
+    @Override
+    public void close() {
+    }
 
-	@Override
-	public boolean isEmpty() {
-		return false;
-	}
+    @Override
+    public boolean isEmpty() {
+        return false;
+    }
 
-	@Override
-	public byte[] asByteArray() {
-		return input;
-	}
+    @Override
+    public byte[] asByteArray() {
+        return input;
+    }
 }

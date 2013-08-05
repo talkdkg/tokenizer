@@ -20,55 +20,54 @@ import org.xaloon.core.api.message.model.Message;
  * @author vytautas r.
  */
 public interface Comment extends Message, Bookmarkable {
-	/**
-	 * This is entity id which comment was written on
-	 * 
-	 * @return entity id
-	 */
-	Long getEntityId();
+    /**
+     * This is entity id which comment was written on
+     * 
+     * @return entity id
+     */
+    Long getEntityId();
 
-	/**
-	 * @param entityId
-	 */
-	void setEntityId(Long entityId);
+    /**
+     * @param entityId
+     */
+    void setEntityId(Long entityId);
 
-	/**
-	 * Several systems may have the same object id's. This is to identify unique system
-	 * 
-	 * @return component enumeration
-	 */
-	Long getCategoryId();
+    /**
+     * Several systems may have the same object id's. This is to identify unique system
+     * 
+     * @return component enumeration
+     */
+    Long getCategoryId();
 
-	/**
-	 * @param categoryId
-	 */
-	void setCategoryId(Long categoryId);
+    /**
+     * @param categoryId
+     */
+    void setCategoryId(Long categoryId);
 
+    /**
+     * Check if comment is enabled or disabled due to spam
+     * 
+     * @return true if comment is enabled and visible to end users
+     */
+    boolean isEnabled();
 
-	/**
-	 * Check if comment is enabled or disabled due to spam
-	 * 
-	 * @return true if comment is enabled and visible to end users
-	 */
-	boolean isEnabled();
+    /**
+     * @param enabled
+     */
+    void setEnabled(boolean enabled);
 
-	/**
-	 * @param enabled
-	 */
-	void setEnabled(boolean enabled);
+    /**
+     * Gets inappropriate.
+     * 
+     * @return inappropriate
+     */
+    boolean isInappropriate();
 
-	/**
-	 * Gets inappropriate.
-	 * 
-	 * @return inappropriate
-	 */
-	boolean isInappropriate();
-
-	/**
-	 * Sets inappropriate.
-	 * 
-	 * @param inappropriate
-	 *            inappropriate
-	 */
-	void setInappropriate(boolean inappropriate);
+    /**
+     * Sets inappropriate.
+     * 
+     * @param inappropriate
+     *            inappropriate
+     */
+    void setInappropriate(boolean inappropriate);
 }

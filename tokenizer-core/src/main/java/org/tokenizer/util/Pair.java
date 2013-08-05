@@ -47,8 +47,7 @@ public class Pair<T1, T2> {
     public boolean equals(final Object obj) {
         if (obj instanceof Pair) {
             Pair other = (Pair) obj;
-            return ObjectUtils.safeEquals(v1, other.v1)
-                    && ObjectUtils.safeEquals(v2, other.v2);
+            return ObjectUtils.safeEquals(v1, other.v1) && ObjectUtils.safeEquals(v2, other.v2);
         }
         return false;
     }

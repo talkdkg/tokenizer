@@ -40,76 +40,76 @@ import org.xaloon.core.jpa.model.BookmarkableEntity;
 @Table(name = "XAL_AUDIT_ENTITY")
 public class JpaAuditEntity extends BookmarkableEntity implements AuditEntity {
 
-	/**
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	@OneToMany(mappedBy = "auditEntity", fetch = FetchType.EAGER, cascade = { CascadeType.ALL }, orphanRemoval = true)
-	@OrderBy(value = "id")
-	private List<JpaAuditEntityItem> auditEntityItems = new ArrayList<JpaAuditEntityItem>();
+    @OneToMany(mappedBy = "auditEntity", fetch = FetchType.EAGER, cascade = { CascadeType.ALL }, orphanRemoval = true)
+    @OrderBy(value = "id")
+    private List<JpaAuditEntityItem> auditEntityItems = new ArrayList<JpaAuditEntityItem>();
 
-	@Column(name = "AUDIT_STATE", nullable = false)
-	@Enumerated(EnumType.STRING)
-	private AuditState auditState;
+    @Column(name = "AUDIT_STATE", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private AuditState auditState;
 
-	@Column(name = "AUDITABLE_NAME", nullable = false)
-	private String auditableName;
+    @Column(name = "AUDITABLE_NAME", nullable = false)
+    private String auditableName;
 
-	/**
-	 * Gets auditEntityItems.
-	 * 
-	 * @return auditEntityItems
-	 */
-	public List<? extends AuditEntityItem> getAuditEntityItems() {
-		return auditEntityItems;
-	}
+    /**
+     * Gets auditEntityItems.
+     * 
+     * @return auditEntityItems
+     */
+    public List<? extends AuditEntityItem> getAuditEntityItems() {
+        return auditEntityItems;
+    }
 
-	/**
-	 * Sets auditEntityItems.
-	 * 
-	 * @param auditEntityItems
-	 *            auditEntityItems
-	 */
-	public void setAuditEntityItems(List<JpaAuditEntityItem> auditEntityItems) {
-		this.auditEntityItems = auditEntityItems;
-	}
+    /**
+     * Sets auditEntityItems.
+     * 
+     * @param auditEntityItems
+     *            auditEntityItems
+     */
+    public void setAuditEntityItems(List<JpaAuditEntityItem> auditEntityItems) {
+        this.auditEntityItems = auditEntityItems;
+    }
 
-	/**
-	 * Gets auditState.
-	 * 
-	 * @return auditState
-	 */
-	public AuditState getAuditState() {
-		return auditState;
-	}
+    /**
+     * Gets auditState.
+     * 
+     * @return auditState
+     */
+    public AuditState getAuditState() {
+        return auditState;
+    }
 
-	/**
-	 * Sets auditState.
-	 * 
-	 * @param auditState
-	 *            auditState
-	 */
-	public void setAuditState(AuditState auditState) {
-		this.auditState = auditState;
-	}
+    /**
+     * Sets auditState.
+     * 
+     * @param auditState
+     *            auditState
+     */
+    public void setAuditState(AuditState auditState) {
+        this.auditState = auditState;
+    }
 
-	/**
-	 * Gets auditableName.
-	 * 
-	 * @return auditableName
-	 */
-	public String getAuditableName() {
-		return auditableName;
-	}
+    /**
+     * Gets auditableName.
+     * 
+     * @return auditableName
+     */
+    public String getAuditableName() {
+        return auditableName;
+    }
 
-	/**
-	 * Sets auditableName.
-	 * 
-	 * @param auditableName
-	 *            auditableName
-	 */
-	public void setAuditableName(String auditableName) {
-		this.auditableName = auditableName;
-	}
+    /**
+     * Sets auditableName.
+     * 
+     * @param auditableName
+     *            auditableName
+     */
+    public void setAuditableName(String auditableName) {
+        this.auditableName = auditableName;
+    }
 }

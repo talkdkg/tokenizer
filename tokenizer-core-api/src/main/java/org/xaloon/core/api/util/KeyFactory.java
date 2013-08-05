@@ -22,13 +22,13 @@ import org.apache.commons.lang.RandomStringUtils;
  * @author vytautas r.
  */
 public class KeyFactory implements Serializable {
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	/**
-	 * @return random generated string
-	 */
-	public static String generateKey() {
-		String random = RandomStringUtils.random(128);
-		return DigestUtils.md5Hex(random);
-	}
+    /**
+     * @return random generated string
+     */
+    public static String generateKey() {
+        String random = RandomStringUtils.random(128);
+        return DigestUtils.md5Hex(random);
+    }
 }

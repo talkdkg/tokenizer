@@ -13,14 +13,12 @@
  */
 package org.tokenizer.executor.model.configuration;
 
-public class SimpleMultithreadedFetcherTaskConfiguration extends
-        AbstractTaskConfiguration {
+public class SimpleMultithreadedFetcherTaskConfiguration extends AbstractTaskConfiguration {
 
     private static final long serialVersionUID = 1L;
 
     @Override
     public String getImplementationName() {
-        return SimpleMultithreadedFetcherTaskConfiguration.class
-                .getSimpleName();
+        return SimpleMultithreadedFetcherTaskConfiguration.class.getSimpleName();
     }
 }

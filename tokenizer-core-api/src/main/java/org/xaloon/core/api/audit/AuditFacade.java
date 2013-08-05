@@ -26,15 +26,15 @@ import org.xaloon.core.api.audit.model.AuditState;
  * 
  */
 public interface AuditFacade extends Serializable {
-	/**
-	 * Read if audit object has required annotation and then generate audit record for that object.
-	 * 
-	 * @param state
-	 *            {@link AuditState} what kind of state auditable object is in
-	 * @param auditObject
-	 *            auditable object to parse
-	 */
-	void audit(AuditState state, Object auditObject);
+    /**
+     * Read if audit object has required annotation and then generate audit record for that object.
+     * 
+     * @param state
+     *            {@link AuditState} what kind of state auditable object is in
+     * @param auditObject
+     *            auditable object to parse
+     */
+    void audit(AuditState state, Object auditObject);
 
-	List<AuditEntity> search(List<String> objectNames, int first, int count);
+    List<AuditEntity> search(List<String> objectNames, int first, int count);
 }

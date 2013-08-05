@@ -18,18 +18,15 @@ package org.tokenizer.util.zookeeper;
  * step down as leader.
  * 
  * <p>
- * The callback methods are not called from within a ZooKeeper Watcher callback,
- * so you do not have to worry that they might take some time or that they
- * should not perform ZooKeeper operations by themselves.
+ * The callback methods are not called from within a ZooKeeper Watcher callback, so you do not have to worry that they
+ * might take some time or that they should not perform ZooKeeper operations by themselves.
  * 
  * <p>
- * The {@link #activateAsLeader()} and {@link #deactivateAsLeader()} will never
- * be called concurrently.
+ * The {@link #activateAsLeader()} and {@link #deactivateAsLeader()} will never be called concurrently.
  * 
  * <p>
- * This callback is not called for every state change. If the state would switch
- * multiple times between leader and not-leader during the processing of this
- * callback, there will be only one call to this callback to bring it to the
+ * This callback is not called for every state change. If the state would switch multiple times between leader and
+ * not-leader during the processing of this callback, there will be only one call to this callback to bring it to the
  * current state.
  */
 public interface LeaderElectionCallback {

@@ -28,28 +28,28 @@ import org.xaloon.core.api.exception.CreateClassInstanceException;
  */
 @Named
 public interface KeyValueDao<K, V, R extends KeyValue<K, V>> extends Serializable {
-	/**
-	 * @param key
-	 * @param parsedValue
-	 * @return created instance of KeyValue
-	 * @throws CreateClassInstanceException
-	 */
-	R newKeyValue(K key, V parsedValue) throws CreateClassInstanceException;
+    /**
+     * @param key
+     * @param parsedValue
+     * @return created instance of KeyValue
+     * @throws CreateClassInstanceException
+     */
+    R newKeyValue(K key, V parsedValue) throws CreateClassInstanceException;
 
-	/**
-	 * @param key
-	 * @param parsedValue
-	 * @return instance of KeyValue if found in storage. null is returned otherwise
-	 */
-	R findInStorage(K key, V parsedValue);
+    /**
+     * @param key
+     * @param parsedValue
+     * @return instance of KeyValue if found in storage. null is returned otherwise
+     */
+    R findInStorage(K key, V parsedValue);
 
-	/**
-	 * 
-	 * @param key
-	 * 
-	 * @param randomLinkCountToSelect
-	 *            how many values to select - maximum available
-	 * @return list of KeyValue
-	 */
-	List<R> findRandomValues(String key, int randomLinkCountToSelect);
+    /**
+     * 
+     * @param key
+     * 
+     * @param randomLinkCountToSelect
+     *            how many values to select - maximum available
+     * @return list of KeyValue
+     */
+    List<R> findRandomValues(String key, int randomLinkCountToSelect);
 }

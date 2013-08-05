@@ -26,15 +26,15 @@ import org.xaloon.core.api.annotation.AnnotatedMatcher;
 @Named("springAnnotatedMatcher")
 public class SpringAnnotatedMatcher implements AnnotatedMatcher {
 
-	/**
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	@Override
-	public List<Class<?>> getAnnotatedMatches(String pattern, Class<? extends Annotation> annotation) {
-		MatchingResources resources = new MatchingResources(pattern);
-		return resources.getAnnotatedMatches(annotation);
-	}
+    @Override
+    public List<Class<?>> getAnnotatedMatches(String pattern, Class<? extends Annotation> annotation) {
+        MatchingResources resources = new MatchingResources(pattern);
+        return resources.getAnnotatedMatches(annotation);
+    }
 
 }

@@ -27,26 +27,26 @@ import org.xaloon.core.api.bookmark.Bookmarkable;
  */
 @MappedSuperclass
 public abstract class BookmarkableEntity extends AbstractEntity implements Bookmarkable {
-	/**
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	@Column(name = "PATH", nullable = false)
-	@Auditable
-	private String path;
+    @Column(name = "PATH", nullable = false)
+    @Auditable
+    private String path;
 
-	/**
-	 * @param path
-	 */
-	public void setPath(String path) {
-		this.path = path;
-	}
+    /**
+     * @param path
+     */
+    public void setPath(String path) {
+        this.path = path;
+    }
 
-	/**
-	 * @return bookmarkable path of the entity
-	 */
-	public String getPath() {
-		return path;
-	}
+    /**
+     * @return bookmarkable path of the entity
+     */
+    public String getPath() {
+        return path;
+    }
 }

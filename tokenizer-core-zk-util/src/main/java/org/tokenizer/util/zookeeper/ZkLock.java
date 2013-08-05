@@ -29,8 +29,7 @@ import org.apache.zookeeper.data.Stat;
  * Implements a ZooKeeper-based lock following ZooKeeper's lock recipe.
  * 
  * <p>
- * The recipe is also in the paper on ZooKeeper, in more compact (and clearer)
- * form:
+ * The recipe is also in the paper on ZooKeeper, in more compact (and clearer) form:
  * 
  * <pre>
  * Lock
@@ -46,20 +45,16 @@ import org.apache.zookeeper.data.Stat;
  * </pre>
  * 
  * <p>
- * <b>Important usage note:</b> do not take ZKLock's in ZooKeeper's
- * Watcher.process() callback, unless the ZooKeeper handle used to take the lock
- * is different from the one of that called the Watcher. This is because ZkLock
- * might need to wait for an event too (if the lock is currently held by someone
- * else), and since all ZK events to all watchers are dispatched by one thread,
- * it would hang forever. This limitation is not very important, since long
- * lasting actions (which waiting for a lock could be) should never be done in
- * Watcher callbacks.
+ * <b>Important usage note:</b> do not take ZKLock's in ZooKeeper's Watcher.process() callback, unless the ZooKeeper
+ * handle used to take the lock is different from the one of that called the Watcher. This is because ZkLock might need
+ * to wait for an event too (if the lock is currently held by someone else), and since all ZK events to all watchers are
+ * dispatched by one thread, it would hang forever. This limitation is not very important, since long lasting actions
+ * (which waiting for a lock could be) should never be done in Watcher callbacks.
  * 
  */
 public class ZkLock {
 
-    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory
-            .getLogger(ZkLock.class);
+    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ZkLock.class);
 
     private ZkLock() {
     }
@@ -71,14 +66,11 @@ public class ZkLock {
      *            path in ZooKeeper below which the ephemeral lock nodes will be
      *            created. This path should exist prior to calling this method.
      * 
-     * @return a string identifying this lock, needs to be supplied to
-     *         {@link ZkLock#unlock}.
+     * @return a string identifying this lock, needs to be supplied to {@link ZkLock#unlock}.
      */
-    public static String lock(final ZooKeeperItf zk, final String lockPath)
-            throws ZkLockException {
+    public static String lock(final ZooKeeperItf zk, final String lockPath) throws ZkLockException {
         if (zk.isCurrentThreadEventThread())
-            throw new RuntimeException(
-                    "ZkLock should not be used from within the ZooKeeper event thread.");
+            throw new RuntimeException("ZkLock should not be used from within the ZooKeeper event thread.");
         try {
             final long threadId = Thread.currentThread().getId();
             // Quote from ZK lock recipe:
@@ -87,10 +79,8 @@ public class ZkLock {
             zk.retryOperation(new ZooKeeperOperation<String>() {
 
                 @Override
-                public String execute() throws KeeperException,
-                        InterruptedException {
-                    return zk.create(lockPath + "/lock-" + threadId + "-",
-                            null, ZooDefs.Ids.OPEN_ACL_UNSAFE,
+                public String execute() throws KeeperException, InterruptedException {
+                    return zk.create(lockPath + "/lock-" + threadId + "-", null, ZooDefs.Ids.OPEN_ACL_UNSAFE,
                             CreateMode.EPHEMERAL_SEQUENTIAL);
                 }
             });
@@ -99,16 +89,13 @@ public class ZkLock {
                 // 2. Call getChildren( ) on the lock node without setting the
                 // watch flag (this is important to avoid
                 // the herd effect).
-                List<ZkLockNode> children = parseChildren(zk
-                        .retryOperation(new ZooKeeperOperation<List<String>>() {
+                List<ZkLockNode> children = parseChildren(zk.retryOperation(new ZooKeeperOperation<List<String>>() {
 
-                            @Override
-                            public List<String> execute()
-                                    throws KeeperException,
-                                    InterruptedException {
-                                return zk.getChildren(lockPath, null);
-                            }
-                        }));
+                    @Override
+                    public List<String> execute() throws KeeperException, InterruptedException {
+                        return zk.getChildren(lockPath, null);
+                    }
+                }));
                 ZkLockNode myLockNode = null;
                 String myLockName = null;
                 String myLockPath = null;
@@ -116,21 +103,15 @@ public class ZkLock {
                     // if the child has the same thread id and session id as us,
                     // then it is our lock
                     if (child.getThreadId() == threadId) {
-                        final String childPath = lockPath + "/"
-                                + child.getName();
-                        Stat stat = zk
-                                .retryOperation(new ZooKeeperOperation<Stat>() {
+                        final String childPath = lockPath + "/" + child.getName();
+                        Stat stat = zk.retryOperation(new ZooKeeperOperation<Stat>() {
 
-                                    @Override
-                                    public Stat execute()
-                                            throws KeeperException,
-                                            InterruptedException {
-                                        return zk.exists(childPath, false);
-                                    }
-                                });
-                        if (stat != null
-                                && stat.getEphemeralOwner() == zk
-                                        .getSessionId()) {
+                            @Override
+                            public Stat execute() throws KeeperException, InterruptedException {
+                                return zk.exists(childPath, false);
+                            }
+                        });
+                        if (stat != null && stat.getEphemeralOwner() == zk.getSessionId()) {
                             if (myLockName != null) {
                                 // We have found another lock node which belongs
                                 // to us.
@@ -142,9 +123,7 @@ public class ZkLock {
                                 zk.retryOperation(new ZooKeeperOperation<Object>() {
 
                                     @Override
-                                    public Object execute()
-                                            throws KeeperException,
-                                            InterruptedException {
+                                    public Object execute() throws KeeperException, InterruptedException {
                                         try {
                                             zk.delete(childPath, -1);
                                         } catch (KeeperException.NoNodeException e) {
@@ -153,7 +132,8 @@ public class ZkLock {
                                         return null;
                                     }
                                 });
-                            } else {
+                            }
+                            else {
                                 myLockNode = child;
                                 myLockName = child.getName();
                                 myLockPath = childPath;
@@ -162,13 +142,10 @@ public class ZkLock {
                     }
                 }
                 if (myLockName == null)
-                    throw new ZkLockException(
-                            "Unexpected problem: did not find our lock node.");
+                    throw new ZkLockException("Unexpected problem: did not find our lock node.");
                 // Idea to use SortedSets seen in a ZK recipe
-                SortedSet<ZkLockNode> sortedChildren = new TreeSet<ZkLockNode>(
-                        children);
-                SortedSet<ZkLockNode> lowerThanMe = sortedChildren
-                        .headSet(myLockNode);
+                SortedSet<ZkLockNode> sortedChildren = new TreeSet<ZkLockNode>(children);
+                SortedSet<ZkLockNode> lowerThanMe = sortedChildren.headSet(myLockNode);
                 // Quote from ZK lock recipe:
                 // 3. If the pathname created in step 1 has the lowest sequence
                 // number suffix, the client has the lock
@@ -180,15 +157,13 @@ public class ZkLock {
                 // 4. The client calls exists( ) with the watch flag set on the
                 // path in the lock directory with the
                 // next lowest sequence number.
-                final String pathToWatch = lockPath + "/"
-                        + lowerThanMe.last().name;
+                final String pathToWatch = lockPath + "/" + lowerThanMe.last().name;
                 final Object condition = new Object();
                 final MyWatcher watcher = new MyWatcher(pathToWatch, condition);
                 Stat stat = zk.retryOperation(new ZooKeeperOperation<Stat>() {
 
                     @Override
-                    public Stat execute() throws KeeperException,
-                            InterruptedException {
+                    public Stat execute() throws KeeperException, InterruptedException {
                         return zk.exists(pathToWatch, watcher);
                     }
                 });
@@ -203,9 +178,9 @@ public class ZkLock {
                     // left, does not seem so tidy, hopefully
                     // this situation does not occur often.
                     // Let's log it to keep an eye on it
-                    LOG.warn("Next lower lock node does not exist: "
-                            + pathToWatch);
-                } else {
+                    LOG.warn("Next lower lock node does not exist: " + pathToWatch);
+                }
+                else {
                     // Quote from ZK lock recipe:
                     // 5b. Otherwise, wait for a notification for the pathname
                     // from the previous step before going
@@ -218,8 +193,7 @@ public class ZkLock {
                 }
             }
         } catch (Throwable t) {
-            throw new ZkLockException(
-                    "Error obtaining lock, path: " + lockPath, t);
+            throw new ZkLockException("Error obtaining lock, path: " + lockPath, t);
         }
     }
 
@@ -227,8 +201,7 @@ public class ZkLock {
      * Releases a lock. Calls {@link #unlock(ZooKeeperItf, String, boolean)
      * unlock(zk, lockId, false)}.
      */
-    public static void unlock(final ZooKeeperItf zk, final String lockId)
-            throws ZkLockException {
+    public static void unlock(final ZooKeeperItf zk, final String lockId) throws ZkLockException {
         unlock(zk, lockId, false);
     }
 
@@ -240,53 +213,44 @@ public class ZkLock {
      * @param ignoreMissing
      *            if true, do not throw an exception if the lock does not exist
      */
-    public static void unlock(final ZooKeeperItf zk, final String lockId,
-            final boolean ignoreMissing) throws ZkLockException {
+    public static void unlock(final ZooKeeperItf zk, final String lockId, final boolean ignoreMissing)
+            throws ZkLockException {
         if (zk.isCurrentThreadEventThread())
-            throw new RuntimeException(
-                    "ZkLock should not be used from within the ZooKeeper event thread.");
+            throw new RuntimeException("ZkLock should not be used from within the ZooKeeper event thread.");
         try {
             zk.retryOperation(new ZooKeeperOperation<Object>() {
 
                 @Override
-                public Object execute() throws KeeperException,
-                        InterruptedException {
+                public Object execute() throws KeeperException, InterruptedException {
                     zk.delete(lockId, -1);
                     return null;
                 }
             });
         } catch (KeeperException.NoNodeException e) {
             if (!ignoreMissing)
-                throw new ZkLockException(
-                        "Error releasing lock: the lock does not exist. Path: "
-                                + lockId, e);
+                throw new ZkLockException("Error releasing lock: the lock does not exist. Path: " + lockId, e);
         } catch (Throwable t) {
-            throw new ZkLockException("Error releasing lock, path: " + lockId,
-                    t);
+            throw new ZkLockException("Error releasing lock, path: " + lockId, t);
         }
     }
 
     /**
      * Verifies that the specified lockId is the owner of the lock.
      */
-    public static boolean ownsLock(final ZooKeeperItf zk, final String lockId)
-            throws ZkLockException {
+    public static boolean ownsLock(final ZooKeeperItf zk, final String lockId) throws ZkLockException {
         if (zk.isCurrentThreadEventThread())
-            throw new RuntimeException(
-                    "ZkLock should not be used from within the ZooKeeper event thread.");
+            throw new RuntimeException("ZkLock should not be used from within the ZooKeeper event thread.");
         try {
             int lastSlashPos = lockId.lastIndexOf('/');
             final String lockPath = lockId.substring(0, lastSlashPos);
             String lockName = lockId.substring(lastSlashPos + 1);
-            List<String> children = zk
-                    .retryOperation(new ZooKeeperOperation<List<String>>() {
+            List<String> children = zk.retryOperation(new ZooKeeperOperation<List<String>>() {
 
-                        @Override
-                        public List<String> execute() throws KeeperException,
-                                InterruptedException {
-                            return zk.getChildren(lockPath, null);
-                        }
-                    });
+                @Override
+                public List<String> execute() throws KeeperException, InterruptedException {
+                    return zk.getChildren(lockPath, null);
+                }
+            });
             if (children.isEmpty())
                 return false;
             SortedSet<String> sortedChildren = new TreeSet<String>(children);
@@ -336,8 +300,7 @@ public class ZkLock {
             this.name = name;
             int dash1Pos = name.indexOf('-');
             int dash2Pos = name.indexOf('-', dash1Pos + 1);
-            this.threadId = Long.parseLong(name.substring(dash1Pos + 1,
-                    dash2Pos));
+            this.threadId = Long.parseLong(name.substring(dash1Pos + 1, dash2Pos));
             this.seqNr = Integer.parseInt(name.substring(dash2Pos + 1));
         }
 

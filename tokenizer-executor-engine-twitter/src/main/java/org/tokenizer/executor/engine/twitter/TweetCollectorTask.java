@@ -71,7 +71,7 @@ public class TweetCollectorTask extends AbstractTask<TweetCollectorTaskConfigura
     TwitterStream stream;
 
     public TweetCollectorTask(final UUID uuid, final String friendlyName, final ZooKeeperItf zk,
-        final TweetCollectorTaskConfiguration taskConfiguration, final CrawlerRepository crawlerRepository,
+            final TweetCollectorTaskConfiguration taskConfiguration, final CrawlerRepository crawlerRepository,
             final WritableExecutorModel model, final HostLocker hostLocker) {
 
         super(uuid, friendlyName, zk, taskConfiguration, crawlerRepository, model, hostLocker);
@@ -212,14 +212,14 @@ public class TweetCollectorTask extends AbstractTask<TweetCollectorTaskConfigura
         return stream;
     }
 
-
     @Override
     protected void process() throws InterruptedException, ConnectionException {
         if (stream == null) {
             try {
                 if (this.taskConfiguration.isSampleStream()) {
                     stream = sampleStream(queue);
-                } else {
+                }
+                else {
                     stream = streamingTwitter(input, queue);
                 }
             } catch (TwitterException e) {

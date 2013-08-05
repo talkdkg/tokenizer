@@ -73,14 +73,11 @@ public class WeblogsCrawlerTaskConfiguration extends AbstractTaskConfiguration {
     public int hashCode() {
         final int prime = 31;
         int result = super.hashCode();
-        result = prime * result
-                + ((agentName == null) ? 0 : agentName.hashCode());
+        result = prime * result + ((agentName == null) ? 0 : agentName.hashCode());
         result = prime * result + delay;
-        result = prime * result
-                + ((emailAddress == null) ? 0 : emailAddress.hashCode());
+        result = prime * result + ((emailAddress == null) ? 0 : emailAddress.hashCode());
         result = prime * result + ((url == null) ? 0 : url.hashCode());
-        result = prime * result
-                + ((webAddress == null) ? 0 : webAddress.hashCode());
+        result = prime * result + ((webAddress == null) ? 0 : webAddress.hashCode());
         return result;
     }
 
@@ -96,33 +93,36 @@ public class WeblogsCrawlerTaskConfiguration extends AbstractTaskConfiguration {
         if (agentName == null) {
             if (other.agentName != null)
                 return false;
-        } else if (!agentName.equals(other.agentName))
+        }
+        else if (!agentName.equals(other.agentName))
             return false;
         if (delay != other.delay)
             return false;
         if (emailAddress == null) {
             if (other.emailAddress != null)
                 return false;
-        } else if (!emailAddress.equals(other.emailAddress))
+        }
+        else if (!emailAddress.equals(other.emailAddress))
             return false;
         if (url == null) {
             if (other.url != null)
                 return false;
-        } else if (!url.equals(other.url))
+        }
+        else if (!url.equals(other.url))
             return false;
         if (webAddress == null) {
             if (other.webAddress != null)
                 return false;
-        } else if (!webAddress.equals(other.webAddress))
+        }
+        else if (!webAddress.equals(other.webAddress))
             return false;
         return true;
     }
 
     @Override
     public String toString() {
-        return "WeblogsSubscriberTaskConfiguration [url=" + url + ", delay="
-                + delay + ", agentName=" + agentName + ", emailAddress="
-                + emailAddress + ", webAddress=" + webAddress + "]";
+        return "WeblogsSubscriberTaskConfiguration [url=" + url + ", delay=" + delay + ", agentName=" + agentName
+                + ", emailAddress=" + emailAddress + ", webAddress=" + webAddress + "]";
     }
 
 }

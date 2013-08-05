@@ -21,127 +21,127 @@ import org.apache.commons.lang.StringUtils;
  * @author vytautas r.
  */
 public class ImageSize implements Serializable {
-	/**
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private int width;
+    private int width;
 
-	private int height;
+    private int height;
 
-	private String title;
+    private String title;
 
-	private String location;
+    private String location;
 
-	/**
-	 * Construct.
-	 * 
-	 * @param width
-	 * @param height
-	 */
-	public ImageSize(int width, int height) {
-		this.width = width;
-		this.height = height;
-	}
+    /**
+     * Construct.
+     * 
+     * @param width
+     * @param height
+     */
+    public ImageSize(int width, int height) {
+        this.width = width;
+        this.height = height;
+    }
 
-	/**
-	 * Construct.
-	 * 
-	 * @param width
-	 */
-	public ImageSize(int width) {
-		this.width = width;
-	}
+    /**
+     * Construct.
+     * 
+     * @param width
+     */
+    public ImageSize(int width) {
+        this.width = width;
+    }
 
-	/**
-	 * Gets title.
-	 * 
-	 * @return title
-	 */
-	public String getTitle() {
-		return title;
-	}
+    /**
+     * Gets title.
+     * 
+     * @return title
+     */
+    public String getTitle() {
+        return title;
+    }
 
-	/**
-	 * Gets width.
-	 * 
-	 * @return width
-	 */
-	public int getWidth() {
-		return width;
-	}
+    /**
+     * Gets width.
+     * 
+     * @return width
+     */
+    public int getWidth() {
+        return width;
+    }
 
-	/**
-	 * Sets width.
-	 * 
-	 * @param width
-	 *            width
-	 * @return the instance
-	 */
-	public ImageSize setWidth(int width) {
-		this.width = width;
-		return this;
-	}
+    /**
+     * Sets width.
+     * 
+     * @param width
+     *            width
+     * @return the instance
+     */
+    public ImageSize setWidth(int width) {
+        this.width = width;
+        return this;
+    }
 
-	/**
-	 * Gets height.
-	 * 
-	 * @return height
-	 */
-	public int getHeight() {
-		return height;
-	}
+    /**
+     * Gets height.
+     * 
+     * @return height
+     */
+    public int getHeight() {
+        return height;
+    }
 
-	/**
-	 * Sets height.
-	 * 
-	 * @param height
-	 *            height
-	 * @return the instance
-	 */
-	public ImageSize setHeight(int height) {
-		this.height = height;
-		return this;
-	}
+    /**
+     * Sets height.
+     * 
+     * @param height
+     *            height
+     * @return the instance
+     */
+    public ImageSize setHeight(int height) {
+        this.height = height;
+        return this;
+    }
 
-	public ImageSize location(String location) {
-		this.location = location;
-		return this;
-	}
+    public ImageSize location(String location) {
+        this.location = location;
+        return this;
+    }
 
-	/**
-	 * Gets location.
-	 * 
-	 * @return location
-	 */
-	public String getLocation() {
-		return location;
-	}
+    /**
+     * Gets location.
+     * 
+     * @return location
+     */
+    public String getLocation() {
+        return location;
+    }
 
-	/**
-	 * Constructs visual description of image size
-	 * 
-	 * @return
-	 */
-	public String getFullTitle() {
-		StringBuilder fullTitle = new StringBuilder();
-		fullTitle.append('(').append(width).append(" px)");
-		if (!StringUtils.isEmpty(title)) {
-			fullTitle.append(' ').append(title);
-		}
-		return fullTitle.toString();
-	}
+    /**
+     * Constructs visual description of image size
+     * 
+     * @return
+     */
+    public String getFullTitle() {
+        StringBuilder fullTitle = new StringBuilder();
+        fullTitle.append('(').append(width).append(" px)");
+        if (!StringUtils.isEmpty(title)) {
+            fullTitle.append(' ').append(title);
+        }
+        return fullTitle.toString();
+    }
 
-	/**
-	 * Sets title.
-	 * 
-	 * @param title
-	 *            title
-	 * @return
-	 */
-	public ImageSize title(String title) {
-		this.title = title;
-		return this;
-	}
+    /**
+     * Sets title.
+     * 
+     * @param title
+     *            title
+     * @return
+     */
+    public ImageSize title(String title) {
+        this.title = title;
+        return this;
+    }
 }

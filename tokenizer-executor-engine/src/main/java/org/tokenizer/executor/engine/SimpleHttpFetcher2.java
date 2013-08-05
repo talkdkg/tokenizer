@@ -92,8 +92,6 @@ import crawlercommons.fetcher.AbortedFetchException;
 import crawlercommons.fetcher.AbortedFetchReason;
 import crawlercommons.fetcher.BadProtocolFetchException;
 import crawlercommons.fetcher.BaseFetchException;
-import crawlercommons.fetcher.EncodingUtils;
-import crawlercommons.fetcher.EncodingUtils.ExpandedResult;
 import crawlercommons.fetcher.FetchedResult;
 import crawlercommons.fetcher.HttpFetchException;
 import crawlercommons.fetcher.IOFetchException;
@@ -160,9 +158,10 @@ public class SimpleHttpFetcher2 extends BaseHttpFetcher {
 
     private static final String SSL_CONTEXT_NAMES[] = { "TLS", "Default", "SSL", };
 
-    private static final String TEXT_MIME_TYPES[] = { "text/html", "application/x-asp", "application/xhtml+xml", "application/vnd.wap.xhtml+xml", 
-        "application/rss+xml", "application/rdf+xml", "application/atom+xml", "application/xml", "text/xml" };
-    
+    private static final String TEXT_MIME_TYPES[] = { "text/html", "application/x-asp", "application/xhtml+xml",
+            "application/vnd.wap.xhtml+xml", "application/rss+xml", "application/rdf+xml", "application/atom+xml",
+            "application/xml", "text/xml" };
+
     private HttpVersion _httpVersion;
     private int _socketTimeout;
     private int _connectionTimeout;
@@ -206,7 +205,8 @@ public class SimpleHttpFetcher2 extends BaseHttpFetcher {
         private final RedirectExceptionReason _reason;
         private final int httpStatusCode;
 
-        public MyRedirectException(final String message, final URI uri, final RedirectExceptionReason reason, final int httpStatusCode) {
+        public MyRedirectException(final String message, final URI uri, final RedirectExceptionReason reason,
+                final int httpStatusCode) {
             super(message);
             _uri = uri;
             _reason = reason;
@@ -242,7 +242,8 @@ public class SimpleHttpFetcher2 extends BaseHttpFetcher {
         }
 
         @Override
-        public URI getLocationURI(final HttpRequest request, final HttpResponse response, final HttpContext context) throws ProtocolException {
+        public URI getLocationURI(final HttpRequest request, final HttpResponse response, final HttpContext context)
+                throws ProtocolException {
             URI result = super.getLocationURI(request, response, context);
 
             // HACK - some sites return a redirect with an explicit port number
@@ -262,7 +263,8 @@ public class SimpleHttpFetcher2 extends BaseHttpFetcher {
             // We can save bandwidth:
             if (result.getScheme().equalsIgnoreCase("http") && (result.getPort() == 80)) {
                 try {
-                    result = new URI(result.getScheme(), result.getUserInfo(), result.getHost(), -1, result.getPath(), result.getQuery(), result.getFragment());
+                    result = new URI(result.getScheme(), result.getUserInfo(), result.getHost(), -1, result.getPath(),
+                            result.getQuery(), result.getFragment());
                 } catch (URISyntaxException e) {
                     LOGGER.warn("Unexpected exception removing port from URI", e);
                 }
@@ -286,36 +288,37 @@ public class SimpleHttpFetcher2 extends BaseHttpFetcher {
 
             if (_redirectMode == RedirectMode.FOLLOW_NONE) {
                 switch (statusCode) {
-                    case HttpStatus.SC_MOVED_TEMPORARILY:
+                case HttpStatus.SC_MOVED_TEMPORARILY:
                     reason = RedirectExceptionReason.TEMP_REDIRECT_DISALLOWED;
-                        break;
-                    case HttpStatus.SC_MOVED_PERMANENTLY:
+                    break;
+                case HttpStatus.SC_MOVED_PERMANENTLY:
                     reason = RedirectExceptionReason.PERM_REDIRECT_DISALLOWED;
-                        break;
-                    case HttpStatus.SC_TEMPORARY_REDIRECT:
+                    break;
+                case HttpStatus.SC_TEMPORARY_REDIRECT:
                     reason = RedirectExceptionReason.TEMP_REDIRECT_DISALLOWED;
-                        break;
-                    case HttpStatus.SC_SEE_OTHER:
+                    break;
+                case HttpStatus.SC_SEE_OTHER:
                     reason = RedirectExceptionReason.SEE_OTHER_DISALLOWED;
-                        break;
-                    default:
+                    break;
+                default:
                 }
             }
 
             if (_redirectMode == RedirectMode.FOLLOW_TEMP) {
                 switch (statusCode) {
-                    case HttpStatus.SC_MOVED_PERMANENTLY:
+                case HttpStatus.SC_MOVED_PERMANENTLY:
                     reason = RedirectExceptionReason.PERM_REDIRECT_DISALLOWED;
-                        break;
-                    case HttpStatus.SC_SEE_OTHER:
+                    break;
+                case HttpStatus.SC_SEE_OTHER:
                     reason = RedirectExceptionReason.SEE_OTHER_DISALLOWED;
-                        break;
-                    default:
+                    break;
+                default:
                 }
             }
 
             if (reason != null)
-                throw new MyRedirectException("RedirectMode disallowed redirect: " + _redirectMode, result, reason, statusCode);
+                throw new MyRedirectException("RedirectMode disallowed redirect: " + _redirectMode, result, reason,
+                        statusCode);
 
             return result;
         }
@@ -330,7 +333,8 @@ public class SimpleHttpFetcher2 extends BaseHttpFetcher {
         @Override
         public void process(final HttpRequest request, final HttpContext context) throws HttpException, IOException {
 
-            HttpInetConnection connection = (HttpInetConnection) (context.getAttribute(ExecutionContext.HTTP_CONNECTION));
+            HttpInetConnection connection = (HttpInetConnection) (context
+                    .getAttribute(ExecutionContext.HTTP_CONNECTION));
 
             context.setAttribute(HOST_ADDRESS, connection.getRemoteAddress().getHostAddress());
         }
@@ -354,16 +358,14 @@ public class SimpleHttpFetcher2 extends BaseHttpFetcher {
         }
 
         /**
-         * @see javax.net.ssl.X509TrustManager#checkClientTrusted(X509Certificate[],
-         *      String)
+         * @see javax.net.ssl.X509TrustManager#checkClientTrusted(X509Certificate[], String)
          */
         public boolean isClientTrusted(final X509Certificate[] certificates) {
             return true;
         }
 
         /**
-         * @see javax.net.ssl.X509TrustManager#checkServerTrusted(X509Certificate[],
-         *      String)
+         * @see javax.net.ssl.X509TrustManager#checkServerTrusted(X509Certificate[], String)
          */
         public boolean isServerTrusted(final X509Certificate[] certificates) {
             return true;
@@ -463,7 +465,8 @@ public class SimpleHttpFetcher2 extends BaseHttpFetcher {
     public void setHttpVersion(final HttpVersion httpVersion) {
         if (_httpClient == null) {
             _httpVersion = httpVersion;
-        } else
+        }
+        else
             throw new IllegalStateException("Can't change HTTP version after HttpClient has been initialized");
     }
 
@@ -474,7 +477,8 @@ public class SimpleHttpFetcher2 extends BaseHttpFetcher {
     public void setSocketTimeout(final int socketTimeoutInMs) {
         if (_httpClient == null) {
             _socketTimeout = socketTimeoutInMs;
-        } else
+        }
+        else
             throw new IllegalStateException("Can't change socket timeout after HttpClient has been initialized");
     }
 
@@ -485,7 +489,8 @@ public class SimpleHttpFetcher2 extends BaseHttpFetcher {
     public void setConnectionTimeout(final int connectionTimeoutInMs) {
         if (_httpClient == null) {
             _connectionTimeout = connectionTimeoutInMs;
-        } else
+        }
+        else
             throw new IllegalStateException("Can't change connection timeout after HttpClient has been initialized");
     }
 
@@ -511,7 +516,8 @@ public class SimpleHttpFetcher2 extends BaseHttpFetcher {
         return request(new HttpGet(), url, payload);
     }
 
-    private FetchedResult request(final HttpRequestBase request, final String url, final Payload payload) throws BaseFetchException {
+    private FetchedResult request(final HttpRequestBase request, final String url, final Payload payload)
+            throws BaseFetchException {
         init();
 
         try {
@@ -540,7 +546,8 @@ public class SimpleHttpFetcher2 extends BaseHttpFetcher {
         return fetch(new HttpGet(), url, new Payload());
     }
 
-    public FetchedResult fetch(final HttpRequestBase request, final String url, final Payload payload) throws BaseFetchException {
+    public FetchedResult fetch(final HttpRequestBase request, final String url, final Payload payload)
+            throws BaseFetchException {
         init();
 
         try {
@@ -553,7 +560,8 @@ public class SimpleHttpFetcher2 extends BaseHttpFetcher {
         }
     }
 
-    private FetchedResult doRequest(final HttpRequestBase request, final String url, final Payload payload) throws BaseFetchException {
+    private FetchedResult doRequest(final HttpRequestBase request, final String url, final Payload payload)
+            throws BaseFetchException {
         LOGGER.trace("Fetching " + url);
 
         HttpResponse response;
@@ -647,7 +655,8 @@ public class SimpleHttpFetcher2 extends BaseHttpFetcher {
             Set<String> mimeTypes = getValidMimeTypes();
             if ((mimeTypes != null) && (mimeTypes.size() > 0)) {
                 if (!mimeTypes.contains(mimeType))
-                    throw new AbortedFetchException(url, "Invalid mime-type: " + mimeType, AbortedFetchReason.INVALID_MIMETYPE);
+                    throw new AbortedFetchException(url, "Invalid mime-type: " + mimeType,
+                            AbortedFetchReason.INVALID_MIMETYPE);
             }
 
             needAbort = false;
@@ -670,10 +679,13 @@ public class SimpleHttpFetcher2 extends BaseHttpFetcher {
                 }
 
                 throw new RedirectFetchException(url, redirectUrl, mre.getReason(), mre.httpStatusCode);
-            } else if (e.getCause() instanceof RedirectException) {
+            }
+            else if (e.getCause() instanceof RedirectException) {
                 e.printStackTrace();
-                throw new RedirectFetchException(url, extractRedirectedUrl(url, localContext), RedirectExceptionReason.TOO_MANY_REDIRECTS, 399);
-            } else
+                throw new RedirectFetchException(url, extractRedirectedUrl(url, localContext),
+                        RedirectExceptionReason.TOO_MANY_REDIRECTS, 399);
+            }
+            else
                 throw new IOFetchException(url, e);
         } catch (IOException e) {
             // Oleg guarantees that no abort is needed in the case of an
@@ -704,7 +716,8 @@ public class SimpleHttpFetcher2 extends BaseHttpFetcher {
                 int contentLength = Integer.parseInt(contentLengthStr);
                 if (contentLength > targetLength) {
                     truncated = true;
-                } else {
+                }
+                else {
                     targetLength = contentLength;
                 }
             } catch (NumberFormatException e) {
@@ -737,7 +750,8 @@ public class SimpleHttpFetcher2 extends BaseHttpFetcher {
                 // metrics support for how to do this. Once we fix this, fix
                 // the test to read a smaller (< 20K)
                 // chuck of data.
-                while ((totalRead < targetLength) && ((bytesRead = in.read(buffer, 0, Math.min(buffer.length, targetLength - totalRead))) != -1)) {
+                while ((totalRead < targetLength)
+                        && ((bytesRead = in.read(buffer, 0, Math.min(buffer.length, targetLength - totalRead))) != -1)) {
                     readRequests += 1;
                     totalRead += bytesRead;
                     out.write(buffer, 0, bytesRead);
@@ -751,7 +765,8 @@ public class SimpleHttpFetcher2 extends BaseHttpFetcher {
                     // hiccup starting out.
                     // Also don't bail if we've read everything we need.
                     if ((readRequests > 1) && (totalRead < targetLength) && (readRate < minResponseRate))
-                        throw new AbortedFetchException(url, "Slow response rate of " + readRate + " bytes/sec", AbortedFetchReason.SLOW_RESPONSE_RATE);
+                        throw new AbortedFetchException(url, "Slow response rate of " + readRate + " bytes/sec",
+                                AbortedFetchReason.SLOW_RESPONSE_RATE);
 
                     // Check to see if we got interrupted.
                     if (Thread.interrupted())
@@ -779,30 +794,30 @@ public class SimpleHttpFetcher2 extends BaseHttpFetcher {
             if (LOGGER.isTraceEnabled()) {
                 fetchTrace.append("; Content-Encoding: " + contentEncoding);
             }
-/*
-            
-            try {
-                if ("gzip".equals(contentEncoding) || "x-gzip".equals(contentEncoding)) {
-                    if (truncated)
-                        throw new AbortedFetchException(url, "Truncated compressed data", AbortedFetchReason.CONTENT_SIZE);
-                    else {
-                        ExpandedResult expandedResult = EncodingUtils.processGzipEncoded(content, maxContentSize);
-                        truncated = expandedResult.isTruncated();
-                        if ((truncated) && (!isTextMimeType(mimeType)))
-                            throw new AbortedFetchException(url, "Truncated decompressed image", AbortedFetchReason.CONTENT_SIZE);
-                        else {
-                            content = expandedResult.getExpanded();
-                            if (LOGGER.isTraceEnabled()) {
-                                fetchTrace.append("; unzipped to " + content.length + " bytes");
-                            }
-                        }
-                     }
-                }
-            } catch (IOException e) {
-                throw new IOFetchException(url, e);
-            }
-*/
-        
+            /*
+             * 
+             * try {
+             * if ("gzip".equals(contentEncoding) || "x-gzip".equals(contentEncoding)) {
+             * if (truncated)
+             * throw new AbortedFetchException(url, "Truncated compressed data", AbortedFetchReason.CONTENT_SIZE);
+             * else {
+             * ExpandedResult expandedResult = EncodingUtils.processGzipEncoded(content, maxContentSize);
+             * truncated = expandedResult.isTruncated();
+             * if ((truncated) && (!isTextMimeType(mimeType)))
+             * throw new AbortedFetchException(url, "Truncated decompressed image", AbortedFetchReason.CONTENT_SIZE);
+             * else {
+             * content = expandedResult.getExpanded();
+             * if (LOGGER.isTraceEnabled()) {
+             * fetchTrace.append("; unzipped to " + content.length + " bytes");
+             * }
+             * }
+             * }
+             * }
+             * } catch (IOException e) {
+             * throw new IOFetchException(url, e);
+             * }
+             */
+
         }
 
         // Finally dump out the trace msg we've been building.
@@ -811,8 +826,8 @@ public class SimpleHttpFetcher2 extends BaseHttpFetcher {
         }
 
         // TODO KKr - Save truncated flag in FetchedResult/FetchedDatum.
-        return new FetchedResult(url, redirectedUrl, System.currentTimeMillis(), headerMap, content, contentType, (int) readRate, payload, newBaseUrl, numRedirects, hostAddress, httpStatus,
-                        reasonPhrase);
+        return new FetchedResult(url, redirectedUrl, System.currentTimeMillis(), headerMap, content, contentType,
+                (int) readRate, payload, newBaseUrl, numRedirects, hostAddress, httpStatus, reasonPhrase);
     }
 
     private boolean isTextMimeType(final String mimeType) {
@@ -973,11 +988,13 @@ public class SimpleHttpFetcher2 extends BaseHttpFetcher {
 
                 if (sf != null) {
                     schemeRegistry.register(new Scheme("https", 443, sf));
-                } else {
+                }
+                else {
                     LOGGER.warn("No valid SSLContext found for https");
                 }
 
-                PoolingClientConnectionManager poolingClientConnectionManager = new PoolingClientConnectionManager(schemeRegistry);
+                PoolingClientConnectionManager poolingClientConnectionManager = new PoolingClientConnectionManager(
+                        schemeRegistry);
                 poolingClientConnectionManager.setMaxTotal(_maxThreads);
                 poolingClientConnectionManager.setDefaultMaxPerRoute(getMaxConnectionsPerHost());
 
@@ -994,7 +1011,8 @@ public class SimpleHttpFetcher2 extends BaseHttpFetcher {
                 ClientParamBean clientParams = new ClientParamBean(params);
                 if (getMaxRedirects() == 0) {
                     clientParams.setHandleRedirects(false);
-                } else {
+                }
+                else {
                     clientParams.setHandleRedirects(true);
                     clientParams.setMaxRedirects(getMaxRedirects());
                 }

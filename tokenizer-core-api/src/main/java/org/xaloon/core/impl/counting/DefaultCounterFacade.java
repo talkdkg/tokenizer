@@ -28,56 +28,56 @@ import org.xaloon.core.api.inject.ServiceLocator;
 @Named("counterFacade")
 public class DefaultCounterFacade implements CounterFacade {
 
-	/**
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	@Inject
-	@Named("counterDao")
-	private CounterDao counterDao;
+    @Inject
+    @Named("counterDao")
+    private CounterDao counterDao;
 
-	@Inject
-	@Named("counterJobService")
-	private ScheduledJobService<CounterJobParameters> scheduledJobService;
+    @Inject
+    @Named("counterJobService")
+    private ScheduledJobService<CounterJobParameters> scheduledJobService;
 
-	/**
-	 * Manually injected service. This allows to check if exists {@link SchedulerServices} implementation.
-	 */
-	private SchedulerServices schedulerServices;
+    /**
+     * Manually injected service. This allows to check if exists {@link SchedulerServices} implementation.
+     */
+    private SchedulerServices schedulerServices;
 
-	private SchedulerServices getSchedulerServices() {
-		if (schedulerServices == null) {
-			schedulerServices = ServiceLocator.get().getInstance(SchedulerServices.class);
-		}
-		return schedulerServices;
-	}
+    private SchedulerServices getSchedulerServices() {
+        if (schedulerServices == null) {
+            schedulerServices = ServiceLocator.get().getInstance(SchedulerServices.class);
+        }
+        return schedulerServices;
+    }
 
-	@Override
-	public boolean increment(String counterGroup, Long categoryId, Long entityId) {
-		// Schedule and start asynchronous job to increment value
-		CounterJobParameters params = new CounterJobParameters();
-		params.setCounterGroup(counterGroup);
-		params.setCategoryId(categoryId);
-		params.setEntityId(entityId);
+    @Override
+    public boolean increment(String counterGroup, Long categoryId, Long entityId) {
+        // Schedule and start asynchronous job to increment value
+        CounterJobParameters params = new CounterJobParameters();
+        params.setCounterGroup(counterGroup);
+        params.setCategoryId(categoryId);
+        params.setEntityId(entityId);
 
-		getSchedulerServices().runAsynchronous(scheduledJobService, params);
-		return true;
-	}
+        getSchedulerServices().runAsynchronous(scheduledJobService, params);
+        return true;
+    }
 
-	@Override
-	public Long count(String counterGroup, Long categoryId, Long entityId) {
-		return counterDao.count(counterGroup, categoryId, entityId);
-	}
+    @Override
+    public Long count(String counterGroup, Long categoryId, Long entityId) {
+        return counterDao.count(counterGroup, categoryId, entityId);
+    }
 
-	@Override
-	public boolean decrement(String counterGroup, Long categoryId, Long entityId) {
-		CounterJobParameters params = new CounterJobParameters();
-		params.setCounterGroup(counterGroup);
-		params.setCategoryId(categoryId);
-		params.setEntityId(entityId);
-		params.setIncrement(false);
-		getSchedulerServices().runAsynchronous(scheduledJobService, params);
-		return true;
-	}
+    @Override
+    public boolean decrement(String counterGroup, Long categoryId, Long entityId) {
+        CounterJobParameters params = new CounterJobParameters();
+        params.setCounterGroup(counterGroup);
+        params.setCategoryId(categoryId);
+        params.setEntityId(entityId);
+        params.setIncrement(false);
+        getSchedulerServices().runAsynchronous(scheduledJobService, params);
+        return true;
+    }
 }

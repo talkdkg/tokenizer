@@ -30,10 +30,8 @@ public class LeaderElectionMain implements Runnable {
     @Override
     public void run() {
         try {
-            ZooKeeperItf zk = ZkUtil.connect("localhost:2181,localhost:21812",
-                    5000);
-            new LeaderElection(zk, "electiontest",
-                    "/lily/electiontest/leaders", new Callback());
+            ZooKeeperItf zk = ZkUtil.connect("localhost:2181,localhost:21812", 5000);
+            new LeaderElection(zk, "electiontest", "/lily/electiontest/leaders", new Callback());
         } catch (Exception e) {
             e.printStackTrace();
         }

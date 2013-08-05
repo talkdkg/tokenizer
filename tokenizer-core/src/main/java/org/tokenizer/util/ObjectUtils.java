@@ -18,17 +18,14 @@ import java.util.Arrays;
 public class ObjectUtils {
 
     public static boolean safeEquals(final Object obj1, final Object obj2) {
-        return obj1 == null && obj2 == null || !(obj1 == null || obj2 == null)
-                && obj1.equals(obj2);
+        return obj1 == null && obj2 == null || !(obj1 == null || obj2 == null) && obj1.equals(obj2);
     }
 
     public static boolean safeEquals(final Object[] obj1, final Object[] obj2) {
-        return obj1 == null && obj2 == null || !(obj1 == null || obj2 == null)
-                && Arrays.equals(obj1, obj2);
+        return obj1 == null && obj2 == null || !(obj1 == null || obj2 == null) && Arrays.equals(obj1, obj2);
     }
 
     public static boolean safeEquals(final byte[] obj1, final byte[] obj2) {
-        return obj1 == null && obj2 == null || !(obj1 == null || obj2 == null)
-                && Arrays.equals(obj1, obj2);
+        return obj1 == null && obj2 == null || !(obj1 == null || obj2 == null) && Arrays.equals(obj1, obj2);
     }
 }

@@ -19,98 +19,97 @@ import org.xaloon.core.api.asynchronous.JobParameters;
  * @author vytautas r.
  */
 public class CounterJobParameters implements JobParameters {
-	/**
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private String counterGroup;
+    private String counterGroup;
 
-	private Long entityId;
+    private Long entityId;
 
-	private Long categoryId;
+    private Long categoryId;
 
-	private boolean increment = true;
+    private boolean increment = true;
 
+    /**
+     * Gets increment.
+     * 
+     * @return increment
+     */
+    public boolean isIncrement() {
+        return increment;
+    }
 
-	/**
-	 * Gets increment.
-	 * 
-	 * @return increment
-	 */
-	public boolean isIncrement() {
-		return increment;
-	}
+    /**
+     * Sets increment.
+     * 
+     * @param increment
+     *            increment
+     */
+    public void setIncrement(boolean increment) {
+        this.increment = increment;
+    }
 
-	/**
-	 * Sets increment.
-	 * 
-	 * @param increment
-	 *            increment
-	 */
-	public void setIncrement(boolean increment) {
-		this.increment = increment;
-	}
+    /**
+     * Gets counterGroup.
+     * 
+     * @return counterGroup
+     */
+    public String getCounterGroup() {
+        return counterGroup;
+    }
 
-	/**
-	 * Gets counterGroup.
-	 * 
-	 * @return counterGroup
-	 */
-	public String getCounterGroup() {
-		return counterGroup;
-	}
+    /**
+     * Sets counterGroup.
+     * 
+     * @param counterGroup
+     *            counterGroup
+     */
+    public void setCounterGroup(String counterGroup) {
+        this.counterGroup = counterGroup;
+    }
 
-	/**
-	 * Sets counterGroup.
-	 * 
-	 * @param counterGroup
-	 *            counterGroup
-	 */
-	public void setCounterGroup(String counterGroup) {
-		this.counterGroup = counterGroup;
-	}
+    /**
+     * Gets entityId.
+     * 
+     * @return entityId
+     */
+    public Long getEntityId() {
+        return entityId;
+    }
 
-	/**
-	 * Gets entityId.
-	 * 
-	 * @return entityId
-	 */
-	public Long getEntityId() {
-		return entityId;
-	}
+    /**
+     * Sets entityId.
+     * 
+     * @param entityId
+     *            entityId
+     */
+    public void setEntityId(Long entityId) {
+        this.entityId = entityId;
+    }
 
-	/**
-	 * Sets entityId.
-	 * 
-	 * @param entityId
-	 *            entityId
-	 */
-	public void setEntityId(Long entityId) {
-		this.entityId = entityId;
-	}
+    /**
+     * Gets categoryId.
+     * 
+     * @return categoryId
+     */
+    public Long getCategoryId() {
+        return categoryId;
+    }
 
-	/**
-	 * Gets categoryId.
-	 * 
-	 * @return categoryId
-	 */
-	public Long getCategoryId() {
-		return categoryId;
-	}
+    /**
+     * Sets categoryId.
+     * 
+     * @param categoryId
+     *            categoryId
+     */
+    public void setCategoryId(Long categoryId) {
+        this.categoryId = categoryId;
+    }
 
-	/**
-	 * Sets categoryId.
-	 * 
-	 * @param categoryId
-	 *            categoryId
-	 */
-	public void setCategoryId(Long categoryId) {
-		this.categoryId = categoryId;
-	}
-
-	@Override
-	public String toString() {
-		return String.format("Counter group [%s], Category [%s], Entity Id [%s]", counterGroup, categoryId, entityId);
-	}
+    @Override
+    public String toString() {
+        return String.format("Counter group [%s], Category [%s], Entity Id [%s]", counterGroup, categoryId, entityId);
+    }
 }

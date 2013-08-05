@@ -51,8 +51,8 @@ public class HtmlSplitterTaskConfiguration extends AbstractTaskConfiguration {
 
     @Override
     public String toString() {
-        return "HtmlSplitterTaskConfiguration [xpath=" + xpath + ", host="
-                + host + ", splitAttemptCounter=" + splitAttemptCounter + "]";
+        return "HtmlSplitterTaskConfiguration [xpath=" + xpath + ", host=" + host + ", splitAttemptCounter="
+                + splitAttemptCounter + "]";
     }
 
     @Override
@@ -77,14 +77,16 @@ public class HtmlSplitterTaskConfiguration extends AbstractTaskConfiguration {
         if (host == null) {
             if (other.host != null)
                 return false;
-        } else if (!host.equals(other.host))
+        }
+        else if (!host.equals(other.host))
             return false;
         if (splitAttemptCounter != other.splitAttemptCounter)
             return false;
         if (xpath == null) {
             if (other.xpath != null)
                 return false;
-        } else if (!xpath.equals(other.xpath))
+        }
+        else if (!xpath.equals(other.xpath))
             return false;
         return true;
     }

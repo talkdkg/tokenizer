@@ -14,19 +14,20 @@
 package org.xaloon.core.api.plugin;
 
 /**
- * Default plugin types used to determine which logic should be used depending on plugin type. Custom plugin types might be also used.
+ * Default plugin types used to determine which logic should be used depending on plugin type. Custom plugin types might
+ * be also used.
  * 
  * @author vytautas r.
  */
 public interface PluginType {
 
-	/**
-	 * Visible type means when generating dynamic menu this plugin might be involved while generating menu item
-	 */
-	String VISIBLE = "VISIBLE";
+    /**
+     * Visible type means when generating dynamic menu this plugin might be involved while generating menu item
+     */
+    String VISIBLE = "VISIBLE";
 
-	/**
-	 * Hidden type should be used for system plugins, which are not visible to user and might be not configurable
-	 */
-	String HIDDEN = "HIDDEN";
+    /**
+     * Hidden type should be used for system plugins, which are not visible to user and might be not configurable
+     */
+    String HIDDEN = "HIDDEN";
 }

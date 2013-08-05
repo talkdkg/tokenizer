@@ -128,7 +128,8 @@ public class UrlSearchComponent extends CustomComponent {
                 Component newSearchResultsComponent = buildSearchResults();
                 if (searchResultsComponent == null) {
                     mainLayout.addComponent(newSearchResultsComponent);
-                } else {
+                }
+                else {
                     mainLayout.replaceComponent(searchResultsComponent, newSearchResultsComponent);
                 }
                 searchResultsComponent = newSearchResultsComponent;
@@ -200,7 +201,8 @@ public class UrlSearchComponent extends CustomComponent {
                 Component newCrawledContentTabSheet = buildCrawledContentTabSheet();
                 if (crawledContentTabSheet == null) {
                     mainLayout.addComponent(newCrawledContentTabSheet);
-                } else {
+                }
+                else {
                     mainLayout.replaceComponent(crawledContentTabSheet, newCrawledContentTabSheet);
                 }
                 crawledContentTabSheet = newCrawledContentTabSheet;

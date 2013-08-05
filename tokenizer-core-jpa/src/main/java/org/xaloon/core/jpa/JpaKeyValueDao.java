@@ -29,13 +29,13 @@ import org.xaloon.core.jpa.model.JpaKeyValue;
 @TransactionManagement(TransactionManagementType.CONTAINER)
 public class JpaKeyValueDao extends AbstractKeyValueDao<JpaKeyValue> {
 
-	/**
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	@Override
-	protected Class<JpaKeyValue> getImplementationClass() {
-		return JpaKeyValue.class;
-	}
+    @Override
+    protected Class<JpaKeyValue> getImplementationClass() {
+        return JpaKeyValue.class;
+    }
 }

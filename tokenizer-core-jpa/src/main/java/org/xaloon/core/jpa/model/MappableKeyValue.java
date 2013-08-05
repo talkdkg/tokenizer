@@ -26,67 +26,67 @@ import org.xaloon.core.api.keyvalue.KeyValue;
 @MappedSuperclass
 public class MappableKeyValue extends BookmarkableEntity implements KeyValue<String, String> {
 
-	/**
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	@Column(name = "KEY_", nullable = false)
-	private String key;
+    @Column(name = "KEY_", nullable = false)
+    private String key;
 
-	@Column(name = "VALUE_", nullable = false)
-	private String value;
+    @Column(name = "VALUE_", nullable = false)
+    private String value;
 
-	public String getKey() {
-		return key;
-	}
+    public String getKey() {
+        return key;
+    }
 
-	/**
-	 * @param key
-	 */
-	public void setKey(String key) {
-		this.key = key;
-	}
+    /**
+     * @param key
+     */
+    public void setKey(String key) {
+        this.key = key;
+    }
 
-	public String getValue() {
-		return value;
-	}
+    public String getValue() {
+        return value;
+    }
 
-	/**
-	 * @param value
-	 */
-	public void setValue(String value) {
-		this.value = value;
-	}
+    /**
+     * @param value
+     */
+    public void setValue(String value) {
+        this.value = value;
+    }
 
-	@Override
-	public boolean isEmpty() {
-		return (getKey() == null) && (getValue() == null);
-	}
+    @Override
+    public boolean isEmpty() {
+        return (getKey() == null) && (getValue() == null);
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (obj == null || !(obj instanceof MappableKeyValue)) {
-			return false;
-		}
-		MappableKeyValue jpaKeyValue = (MappableKeyValue)obj;
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null || !(obj instanceof MappableKeyValue)) {
+            return false;
+        }
+        MappableKeyValue jpaKeyValue = (MappableKeyValue) obj;
 
-		EqualsBuilder equalsBuilder = new EqualsBuilder();
-		equalsBuilder.append(getKey(), jpaKeyValue.getKey());
-		equalsBuilder.append(getValue(), jpaKeyValue.getValue());
-		return equalsBuilder.isEquals();
-	}
+        EqualsBuilder equalsBuilder = new EqualsBuilder();
+        equalsBuilder.append(getKey(), jpaKeyValue.getKey());
+        equalsBuilder.append(getValue(), jpaKeyValue.getValue());
+        return equalsBuilder.isEquals();
+    }
 
-	@Override
-	public int hashCode() {
-		HashCodeBuilder hashCodeBuilder = new HashCodeBuilder();
-		hashCodeBuilder.append(getKey());
-		hashCodeBuilder.append(getValue());
-		return hashCodeBuilder.hashCode();
-	}
+    @Override
+    public int hashCode() {
+        HashCodeBuilder hashCodeBuilder = new HashCodeBuilder();
+        hashCodeBuilder.append(getKey());
+        hashCodeBuilder.append(getValue());
+        return hashCodeBuilder.hashCode();
+    }
 
-	@Override
-	public String toString() {
-		return "Key: " + getKey() + ", Value: " + getValue();
-	}
+    @Override
+    public String toString() {
+        return "Key: " + getKey() + ", Value: " + getValue();
+    }
 }

@@ -19,8 +19,8 @@ package org.xaloon.core.jpa.classifier.model;
  * @author vytautas r.
  */
 public interface ClassifierType {
-	/**
-	 * Currency classifier type
-	 */
-	String CURRENCY = "CURRENCY";
+    /**
+     * Currency classifier type
+     */
+    String CURRENCY = "CURRENCY";
 }

@@ -14,39 +14,35 @@
 package org.tokenizer.thrift;
 
 
-import java.util.Map;
-import java.util.HashMap;
-import org.apache.thrift.TEnum;
-
 public enum ThriftGenderType implements org.apache.thrift.TEnum {
-  MALE(0),
-  FEMALE(1);
+    MALE(0), FEMALE(1);
 
-  private final int value;
+    private final int value;
 
-  private ThriftGenderType(int value) {
-    this.value = value;
-  }
-
-  /**
-   * Get the integer value of this enum value, as defined in the Thrift IDL.
-   */
-  public int getValue() {
-    return value;
-  }
-
-  /**
-   * Find a the enum type by its integer value, as defined in the Thrift IDL.
-   * @return null if the value is not found.
-   */
-  public static ThriftGenderType findByValue(int value) { 
-    switch (value) {
-      case 0:
-        return MALE;
-      case 1:
-        return FEMALE;
-      default:
-        return null;
+    private ThriftGenderType(int value) {
+        this.value = value;
     }
-  }
+
+    /**
+     * Get the integer value of this enum value, as defined in the Thrift IDL.
+     */
+    public int getValue() {
+        return value;
+    }
+
+    /**
+     * Find a the enum type by its integer value, as defined in the Thrift IDL.
+     * 
+     * @return null if the value is not found.
+     */
+    public static ThriftGenderType findByValue(int value) {
+        switch (value) {
+        case 0:
+            return MALE;
+        case 1:
+            return FEMALE;
+        default:
+            return null;
+        }
+    }
 }

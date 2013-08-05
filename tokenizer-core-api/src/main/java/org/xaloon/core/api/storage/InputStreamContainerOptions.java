@@ -20,43 +20,42 @@ import java.io.Serializable;
  */
 public class InputStreamContainerOptions implements Serializable {
 
-	/**
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private int width = 200;
+    private int width = 200;
 
-	private int height = 100;
+    private int height = 100;
 
-	private boolean resize;
+    private boolean resize;
 
-	public int getWidth() {
-		return width;
-	}
+    public int getWidth() {
+        return width;
+    }
 
-	public InputStreamContainerOptions setWidth(int width) {
-		this.width = width;
-		return this;
-	}
+    public InputStreamContainerOptions setWidth(int width) {
+        this.width = width;
+        return this;
+    }
 
-	public int getHeight() {
-		return height;
-	}
+    public int getHeight() {
+        return height;
+    }
 
-	public InputStreamContainerOptions setHeight(int height) {
-		this.height = height;
-		return this;
-	}
+    public InputStreamContainerOptions setHeight(int height) {
+        this.height = height;
+        return this;
+    }
 
-	public boolean isResize() {
-		return resize;
-	}
+    public boolean isResize() {
+        return resize;
+    }
 
-	public InputStreamContainerOptions setResize(boolean resize) {
-		this.resize = resize;
-		return this;
-	}
-
+    public InputStreamContainerOptions setResize(boolean resize) {
+        this.resize = resize;
+        return this;
+    }
 
 }

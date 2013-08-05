@@ -27,31 +27,31 @@ import org.xaloon.core.jpa.model.MappableKeyValue;
 @Table(name = "XAL_SECURITY_USER_ALIAS")
 public class JpaUserAlias extends MappableKeyValue {
 
-	/**
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	@ManyToOne
-	@JoinColumn(name = "USER_DETAILS_ID")
-	private JpaUserDetails userDetails;
+    @ManyToOne
+    @JoinColumn(name = "USER_DETAILS_ID")
+    private JpaUserDetails userDetails;
 
-	/**
-	 * Gets userDetails.
-	 * 
-	 * @return userDetails
-	 */
-	public JpaUserDetails getUserDetails() {
-		return userDetails;
-	}
+    /**
+     * Gets userDetails.
+     * 
+     * @return userDetails
+     */
+    public JpaUserDetails getUserDetails() {
+        return userDetails;
+    }
 
-	/**
-	 * Sets userDetails.
-	 * 
-	 * @param userDetails
-	 *            userDetails
-	 */
-	public void setUserDetails(JpaUserDetails userDetails) {
-		this.userDetails = userDetails;
-	}
+    /**
+     * Sets userDetails.
+     * 
+     * @param userDetails
+     *            userDetails
+     */
+    public void setUserDetails(JpaUserDetails userDetails) {
+        this.userDetails = userDetails;
+    }
 }

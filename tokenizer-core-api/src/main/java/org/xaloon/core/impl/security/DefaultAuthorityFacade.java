@@ -37,36 +37,36 @@ import org.xaloon.core.api.security.model.SecurityRole;
  */
 @Named("authorityFacade")
 public class DefaultAuthorityFacade implements AuthorityFacade {
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(DefaultAuthorityFacade.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DefaultAuthorityFacade.class);
 
-	@Inject
-	private RoleService roleService;
+    @Inject
+    private RoleService roleService;
 
-	@Inject
-	private AuthorityService authorityService;
+    @Inject
+    private AuthorityService authorityService;
 
-	@Override
-	public void registerRoles(Plugin plugin) {
-		for (SecurityRole role : plugin.getSupportedRoles()) {
-			SecurityRole securityRole = roleService.findOrCreateAuthority(role.getName());
-			registerAuthoritiesForRole(securityRole, role.getAuthorities());
-		}
-	}
+    @Override
+    public void registerRoles(Plugin plugin) {
+        for (SecurityRole role : plugin.getSupportedRoles()) {
+            SecurityRole securityRole = roleService.findOrCreateAuthority(role.getName());
+            registerAuthoritiesForRole(securityRole, role.getAuthorities());
+        }
+    }
 
-	private void registerAuthoritiesForRole(SecurityRole securityRole, List<Authority> authorities) {
-		List<Authority> authoritiesToAssign = new ArrayList<Authority>();
-		for (Authority authority : authorities) {
-			Authority persistedAuthority = authorityService.findOrCreateAuthority(authority.getName());
-			if (!securityRole.getAuthorities().contains(persistedAuthority)) {
-				authoritiesToAssign.add(persistedAuthority);
-			}
-		}
-		if (!authoritiesToAssign.isEmpty()) {
-			LOGGER.debug(String.format("Registering new security role '%s' and it's authorities: %s", securityRole.getName(),
-				authoritiesToAssign.toString()));
-			roleService.assignChildren(securityRole, authoritiesToAssign);
-		}
-	}
+    private void registerAuthoritiesForRole(SecurityRole securityRole, List<Authority> authorities) {
+        List<Authority> authoritiesToAssign = new ArrayList<Authority>();
+        for (Authority authority : authorities) {
+            Authority persistedAuthority = authorityService.findOrCreateAuthority(authority.getName());
+            if (!securityRole.getAuthorities().contains(persistedAuthority)) {
+                authoritiesToAssign.add(persistedAuthority);
+            }
+        }
+        if (!authoritiesToAssign.isEmpty()) {
+            LOGGER.debug(String.format("Registering new security role '%s' and it's authorities: %s",
+                    securityRole.getName(), authoritiesToAssign.toString()));
+            roleService.assignChildren(securityRole, authoritiesToAssign);
+        }
+    }
 }

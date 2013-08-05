@@ -19,38 +19,38 @@ import java.io.Serializable;
  * @author vytautas r.
  */
 public interface EmailService extends Serializable {
-	/**
-	 * Error key when email plugin is not properly configured
-	 */
-	String EMAIL_PROPERTIES_NOT_CONFIGURED = "EMAIL_PROPERTIES_NOT_CONFIGURED";
+    /**
+     * Error key when email plugin is not properly configured
+     */
+    String EMAIL_PROPERTIES_NOT_CONFIGURED = "EMAIL_PROPERTIES_NOT_CONFIGURED";
 
-	/**
-	 * @param emailContent
-	 * @param fromEmail
-	 * @param fromName
-	 * @return true if email sent successfully
-	 */
-	boolean sendMailToSystem(String emailContent, String fromEmail, String fromName);
+    /**
+     * @param emailContent
+     * @param fromEmail
+     * @param fromName
+     * @return true if email sent successfully
+     */
+    boolean sendMailToSystem(String emailContent, String fromEmail, String fromName);
 
-	/**
-	 * @param emailContent
-	 * @param subject
-	 * @param toEmail
-	 * @param toName
-	 * @return true if email sent successfully
-	 */
-	boolean sendMailFromSystem(String emailContent, String subject, String toEmail, String toName);
+    /**
+     * @param emailContent
+     * @param subject
+     * @param toEmail
+     * @param toName
+     * @return true if email sent successfully
+     */
+    boolean sendMailFromSystem(String emailContent, String subject, String toEmail, String toName);
 
-	/**
-	 * 
-	 * @return true if email plugin is enabled
-	 */
-	boolean isEnabled();
+    /**
+     * 
+     * @return true if email plugin is enabled
+     */
+    boolean isEnabled();
 
-	/**
-	 * Returns email of the system administrator
-	 * 
-	 * @return system administrator's email
-	 */
-	String getSystemEmail();
+    /**
+     * Returns email of the system administrator
+     * 
+     * @return system administrator's email
+     */
+    String getSystemEmail();
 }

@@ -21,8 +21,10 @@ import org.xaloon.core.impl.plugin.tree.AbstractTreePlugin;
 import org.xaloon.core.impl.plugin.tree.MenuItem;
 
 /**
- * Category plugin which contains category tree in memory. Category tree is constructed while {@link CategoryMenuPluginRegistryListener} is invoked.
- * It should be created on application startup and do not change in runtime. This plugin will be used in administration plugin to show plugin
+ * Category plugin which contains category tree in memory. Category tree is constructed while
+ * {@link CategoryMenuPluginRegistryListener} is invoked.
+ * It should be created on application startup and do not change in runtime. This plugin will be used in administration
+ * plugin to show plugin
  * hierarchy by category
  * 
  * @author vytautas r.
@@ -31,12 +33,12 @@ import org.xaloon.core.impl.plugin.tree.MenuItem;
  */
 @Named
 public class CategoryMenuPlugin extends AbstractTreePlugin<AbstractPluginBean, MenuItem> {
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	/**
-	 * Plugin type is set to hidden by default.
-	 */
-	public CategoryMenuPlugin() {
-		setType(PluginType.HIDDEN);
-	}
+    /**
+     * Plugin type is set to hidden by default.
+     */
+    public CategoryMenuPlugin() {
+        setType(PluginType.HIDDEN);
+    }
 }

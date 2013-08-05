@@ -17,17 +17,17 @@ package org.xaloon.core.api.plugin;
  * @author vytautas r.
  */
 public class PluginNotFoundException extends RuntimeException {
-	/**
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	/**
-	 * Construct.
-	 * 
-	 * @param value
-	 */
-	public PluginNotFoundException(String value) {
-		super(value);
-	}
+    /**
+     * Construct.
+     * 
+     * @param value
+     */
+    public PluginNotFoundException(String value) {
+        super(value);
+    }
 }

@@ -52,14 +52,14 @@ public class WeblogsSubscriberTask extends AbstractTask<WeblogsSubscriberTaskCon
     private final SimpleHttpFetcher simpleHttpClient;
 
     public WeblogsSubscriberTask(UUID uuid, String friendlyName, ZooKeeperItf zk,
-        final WeblogsSubscriberTaskConfiguration taskConfiguration, CrawlerRepository crawlerRepository,
-        WritableExecutorModel model, HostLocker hostLocker) {
+            final WeblogsSubscriberTaskConfiguration taskConfiguration, CrawlerRepository crawlerRepository,
+            WritableExecutorModel model, HostLocker hostLocker) {
 
         super(uuid, friendlyName, zk, taskConfiguration, crawlerRepository, model, hostLocker);
 
-        UserAgent userAgent =
-            new UserAgent(this.taskConfiguration.getAgentName(), this.taskConfiguration.getEmailAddress(),
-                this.taskConfiguration.getWebAddress(), UserAgent.DEFAULT_BROWSER_VERSION, "2.1");
+        UserAgent userAgent = new UserAgent(this.taskConfiguration.getAgentName(),
+                this.taskConfiguration.getEmailAddress(), this.taskConfiguration.getWebAddress(),
+                UserAgent.DEFAULT_BROWSER_VERSION, "2.1");
 
         LOG.warn("userAgent: {}", userAgent.getUserAgentString());
         // to be safe if it is singleton: 1024
@@ -96,11 +96,9 @@ public class WeblogsSubscriberTask extends AbstractTask<WeblogsSubscriberTaskCon
             // LOG.debug("new record inserted: {}", urlRecord);
             // }
 
-        }
-        catch (RedirectFetchException e) {
+        } catch (RedirectFetchException e) {
             LOG.error("", e);
-        }
-        catch (BaseFetchException e) {
+        } catch (BaseFetchException e) {
             LOG.error("", e);
         }
 
@@ -179,7 +177,7 @@ public class WeblogsSubscriberTask extends AbstractTask<WeblogsSubscriberTaskCon
                                 }
                                 else if (attribute.getName().toString().equals(WHEN)) {
                                     weblog.setUpdateTimestamp(batchUpdateTimestamp,
-                                        Integer.parseInt(attribute.getValue()));
+                                            Integer.parseInt(attribute.getValue()));
                                 }
                             }
                         }
@@ -194,8 +192,7 @@ public class WeblogsSubscriberTask extends AbstractTask<WeblogsSubscriberTaskCon
                     }
 
                 }
-            }
-            catch (XMLStreamException e) {
+            } catch (XMLStreamException e) {
                 e.printStackTrace();
             }
             return weblogBatchRecord;

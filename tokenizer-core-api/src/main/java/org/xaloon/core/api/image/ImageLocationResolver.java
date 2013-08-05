@@ -20,15 +20,15 @@ import java.io.Serializable;
  * @param <T>
  */
 public interface ImageLocationResolver<T> extends Serializable {
-	/**
-	 * @param item
-	 * @return
-	 */
-	String resolveImageLocation(T item);
+    /**
+     * @param item
+     * @return
+     */
+    String resolveImageLocation(T item);
 
-	/**
-	 * @param item
-	 * @return
-	 */
-	String resolveThumbnailLocation(T item);
+    /**
+     * @param item
+     * @return
+     */
+    String resolveThumbnailLocation(T item);
 }

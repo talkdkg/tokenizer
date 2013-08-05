@@ -20,28 +20,28 @@ import org.xaloon.core.api.user.model.User;
  * @author vytautas r.
  */
 public class DefaultMailMessage extends DefaultTextMessage implements MailMessage {
-	/**
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private boolean read;
+    private boolean read;
 
-	private User toUser;
+    private User toUser;
 
-	public boolean isRead() {
-		return read;
-	}
+    public boolean isRead() {
+        return read;
+    }
 
-	public void setRead(boolean read) {
-		this.read = read;
-	}
+    public void setRead(boolean read) {
+        this.read = read;
+    }
 
-	public User getToUser() {
-		return toUser;
-	}
+    public User getToUser() {
+        return toUser;
+    }
 
-	public void setToUser(User toUser) {
-		this.toUser = toUser;
-	}
+    public void setToUser(User toUser) {
+        this.toUser = toUser;
+    }
 }

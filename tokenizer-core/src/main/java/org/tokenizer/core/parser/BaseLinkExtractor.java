@@ -24,8 +24,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 @SuppressWarnings("serial")
-public abstract class BaseLinkExtractor extends DefaultHandler implements
-        Serializable {
+public abstract class BaseLinkExtractor extends DefaultHandler implements Serializable {
 
     public static final Set<String> DEFAULT_LINK_TAGS = new HashSet<String>() {
         {
@@ -76,13 +75,11 @@ public abstract class BaseLinkExtractor extends DefaultHandler implements
 
     /**
      * @param linkTags
-     *            to collect {@link Outlink}s from (defaults to
-     *            {@link BaseLinkExtractor#DEFAULT_LINK_TAGS}) <BR>
+     *            to collect {@link Outlink}s from (defaults to {@link BaseLinkExtractor#DEFAULT_LINK_TAGS}) <BR>
      * <BR>
-     *            <B>Note:</B> There is no need to construct your own
-     *            {@link SimpleLinkExtractor} simply to control the set of link
-     *            tags it processes. Instead, provide this set of link tags to
-     *            {@link ParserPolicy}.
+     *            <B>Note:</B> There is no need to construct your own {@link SimpleLinkExtractor} simply to control the
+     *            set of link
+     *            tags it processes. Instead, provide this set of link tags to {@link ParserPolicy}.
      */
     public void setLinkTags(Set<String> linkTags) {
         _linkTags = linkTags;
@@ -94,11 +91,10 @@ public abstract class BaseLinkExtractor extends DefaultHandler implements
 
     /**
      * @param linkAttributeTypes
-     *            to collect {@link Outlink}s from (defaults to
-     *            {@link BaseLinkExtractor#DEFAULT_ATTRIBUTE_TYPES}) <BR>
+     *            to collect {@link Outlink}s from (defaults to {@link BaseLinkExtractor#DEFAULT_ATTRIBUTE_TYPES}) <BR>
      * <BR>
-     *            <B>Note:</B> There is no need to construct your own
-     *            {@link SimpleLinkExtractor} simply to control the set of link
+     *            <B>Note:</B> There is no need to construct your own {@link SimpleLinkExtractor} simply to control the
+     *            set of link
      *            attributes it processes. Instead, provide this set of
      *            attributes to {@link ParserPolicy}.
      */
@@ -120,8 +116,7 @@ public abstract class BaseLinkExtractor extends DefaultHandler implements
     public abstract Outlink[] getLinks();
 
     @Override
-    public void startElement(String uri, String localName, String qName,
-            Attributes attributes) throws SAXException {
+    public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
         super.startElement(uri, localName, qName, attributes);
 
         String tag = localName.toLowerCase();
@@ -140,8 +135,7 @@ public abstract class BaseLinkExtractor extends DefaultHandler implements
     }
 
     @Override
-    public void characters(char[] ch, int start, int length)
-            throws SAXException {
+    public void characters(char[] ch, int start, int length) throws SAXException {
         super.characters(ch, start, length);
 
         if (_inAnchorTag != null) {
@@ -150,13 +144,11 @@ public abstract class BaseLinkExtractor extends DefaultHandler implements
     }
 
     @Override
-    public void endElement(String uri, String localName, String name)
-            throws SAXException {
+    public void endElement(String uri, String localName, String name) throws SAXException {
         super.endElement(uri, localName, name);
 
         if (localName.equalsIgnoreCase(_inAnchorTag)) {
-            addLink(new Outlink(_curUrl, _curAnchor.toString(),
-                    _curRelAttributes));
+            addLink(new Outlink(_curUrl, _curAnchor.toString(), _curRelAttributes));
             _inAnchorTag = null;
         }
     }

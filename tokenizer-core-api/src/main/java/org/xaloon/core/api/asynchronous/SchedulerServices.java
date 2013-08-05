@@ -17,19 +17,20 @@ import java.io.Serializable;
 import java.util.concurrent.Future;
 
 /**
- * Defines interface which will execute {@link ScheduledJobService} job with specified parameters asynchronously or schedule a job
+ * Defines interface which will execute {@link ScheduledJobService} job with specified parameters asynchronously or
+ * schedule a job
  * 
  * @author vytautas r.
  */
 public interface SchedulerServices extends Serializable {
 
-	/**
-	 * @param <V>
-	 * @param <T>
-	 * @param scheduledJobService
-	 * @param jobParameters
-	 * @return asynchronous result if required
-	 */
-	<V, T extends JobParameters> Future<V> runAsynchronous(ScheduledJobService<T> scheduledJobService, T jobParameters);
+    /**
+     * @param <V>
+     * @param <T>
+     * @param scheduledJobService
+     * @param jobParameters
+     * @return asynchronous result if required
+     */
+    <V, T extends JobParameters> Future<V> runAsynchronous(ScheduledJobService<T> scheduledJobService, T jobParameters);
 
 }

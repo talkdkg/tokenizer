@@ -27,8 +27,7 @@ public class LocalXPathExpression {
         protected HXPathExpression initialValue() {
             HXPathExpression expr;
             try {
-                expr = new HXPathExpression(LocalXPathFactory.newXPath()
-                        .compile(expression));
+                expr = new HXPathExpression(LocalXPathFactory.newXPath().compile(expression));
             } catch (XPathExpressionException e) {
                 throw new RuntimeException(e);
             }

@@ -87,7 +87,8 @@ public class MessageFormat {
                     c = pattern.charAt(i);
                     strippedPattern.append(c);
                 }
-            } else {
+            }
+            else {
                 strippedPattern.append(c);
             }
             // find an opening brace
@@ -104,7 +105,8 @@ public class MessageFormat {
                         parameters.add(Integer.valueOf(placeholder.toString()));
                         strippedPattern.append(c);
                         done = true;
-                    } else {
+                    }
+                    else {
                         placeholder.append(c);
                     }
                 }

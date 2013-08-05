@@ -31,111 +31,111 @@ import org.xaloon.core.api.storage.FileDescriptor;
 @Table(name = "XAL_USER_ANONYMOUS")
 @DiscriminatorValue("1")
 public class JpaAnonymousUser extends AbstractUser {
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	@Column(name = "DISPLAY_NAME")
-	private String displayName;
+    @Column(name = "DISPLAY_NAME")
+    private String displayName;
 
-	@Column(name = "EMAIL")
-	private String email;
+    @Column(name = "EMAIL")
+    private String email;
 
-	@Override
-	public String getDisplayName() {
-		return displayName;
-	}
+    @Override
+    public String getDisplayName() {
+        return displayName;
+    }
 
-	/**
-	 * @param displayName
-	 */
-	public void setDisplayName(String displayName) {
-		this.displayName = displayName;
-	}
+    /**
+     * @param displayName
+     */
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
+    }
 
-	public String getEmail() {
-		return email;
-	}
+    public String getEmail() {
+        return email;
+    }
 
-	public void setEmail(String email) {
-		this.email = email;
-	}
+    public void setEmail(String email) {
+        this.email = email;
+    }
 
-	@Override
-	public String getUsername() {
-		throw new NotImplementedException("This method is not supported!");
-	}
+    @Override
+    public String getUsername() {
+        throw new NotImplementedException("This method is not supported!");
+    }
 
-	@Override
-	public void setUsername(String username) {
-		throw new NotImplementedException("This method is not supported!");
-	}
+    @Override
+    public void setUsername(String username) {
+        throw new NotImplementedException("This method is not supported!");
+    }
 
-	@Override
-	public String getFirstName() {
-		throw new NotImplementedException("This method is not supported!");
-	}
+    @Override
+    public String getFirstName() {
+        throw new NotImplementedException("This method is not supported!");
+    }
 
-	@Override
-	public void setFirstName(String firstName) {
-		throw new NotImplementedException("This method is not supported!");
-	}
+    @Override
+    public void setFirstName(String firstName) {
+        throw new NotImplementedException("This method is not supported!");
+    }
 
-	@Override
-	public String getLastName() {
-		throw new NotImplementedException("This method is not supported!");
-	}
+    @Override
+    public String getLastName() {
+        throw new NotImplementedException("This method is not supported!");
+    }
 
-	@Override
-	public void setLastName(String lastName) {
-		throw new NotImplementedException("This method is not supported!");
-	}
+    @Override
+    public void setLastName(String lastName) {
+        throw new NotImplementedException("This method is not supported!");
+    }
 
-	@Override
-	public String getTimezone() {
-		throw new NotImplementedException("This method is not supported!");
-	}
+    @Override
+    public String getTimezone() {
+        throw new NotImplementedException("This method is not supported!");
+    }
 
-	@Override
-	public void setTimezone(String timezone) {
-		throw new NotImplementedException("This method is not supported!");
-	}
+    @Override
+    public void setTimezone(String timezone) {
+        throw new NotImplementedException("This method is not supported!");
+    }
 
-	@Override
-	public String getSignature() {
-		throw new NotImplementedException("This method is not supported!");
-	}
+    @Override
+    public String getSignature() {
+        throw new NotImplementedException("This method is not supported!");
+    }
 
-	@Override
-	public void setSignature(String signature) {
-		throw new NotImplementedException("This method is not supported!");
-	}
+    @Override
+    public void setSignature(String signature) {
+        throw new NotImplementedException("This method is not supported!");
+    }
 
-	@Override
-	public boolean isExternal() {
-		throw new NotImplementedException("This method is not supported!");
-	}
+    @Override
+    public boolean isExternal() {
+        throw new NotImplementedException("This method is not supported!");
+    }
 
-	@Override
-	public void setExternal(boolean external) {
-		throw new NotImplementedException("This method is not supported!");
-	}
+    @Override
+    public void setExternal(boolean external) {
+        throw new NotImplementedException("This method is not supported!");
+    }
 
-	@Override
-	public FileDescriptor getPhotoThumbnail() {
-		return null;
-	}
+    @Override
+    public FileDescriptor getPhotoThumbnail() {
+        return null;
+    }
 
-	@Override
-	public void setPhotoThumbnail(FileDescriptor photoThumbnail) {
-		throw new NotImplementedException("This method is not supported!");
-	}
+    @Override
+    public void setPhotoThumbnail(FileDescriptor photoThumbnail) {
+        throw new NotImplementedException("This method is not supported!");
+    }
 
-	@Override
-	public List<? extends KeyValue<String, String>> getProperties() {
-		throw new NotImplementedException("This method is not supported!");
-	}
+    @Override
+    public List<? extends KeyValue<String, String>> getProperties() {
+        throw new NotImplementedException("This method is not supported!");
+    }
 
-	@Override
-	public void setProperties(List<? extends KeyValue<String, String>> properties) {
-		throw new NotImplementedException("This method is not supported!");
-	}
+    @Override
+    public void setProperties(List<? extends KeyValue<String, String>> properties) {
+        throw new NotImplementedException("This method is not supported!");
+    }
 }

@@ -23,10 +23,10 @@ import org.xaloon.core.api.plugin.Plugin;
  * @author vytautas r.
  */
 public interface AuthorityFacade extends Serializable {
-	/**
-	 * Register existing roles for provided plugin
-	 * 
-	 * @param plugin
-	 */
-	void registerRoles(Plugin plugin);
+    /**
+     * Register existing roles for provided plugin
+     * 
+     * @param plugin
+     */
+    void registerRoles(Plugin plugin);
 }

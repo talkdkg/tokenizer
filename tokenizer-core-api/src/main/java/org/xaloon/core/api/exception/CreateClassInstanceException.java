@@ -22,15 +22,15 @@ package org.xaloon.core.api.exception;
  */
 
 public class CreateClassInstanceException extends Exception {
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	/**
-	 * Default construct.
-	 * 
-	 * @param name
-	 *            message for exception
-	 */
-	public CreateClassInstanceException(String name) {
-		super(name);
-	}
+    /**
+     * Default construct.
+     * 
+     * @param name
+     *            message for exception
+     */
+    public CreateClassInstanceException(String name) {
+        super(name);
+    }
 }

@@ -21,57 +21,57 @@ import java.io.InputStream;
  */
 public class DefaultInputStreamContainer extends AbstractInputStreamContainer {
 
-	/**
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private InputStream is;
+    private InputStream is;
 
-	/**
-	 * Construct.
-	 */
-	public DefaultInputStreamContainer() {
-		this(null);
-	}
+    /**
+     * Construct.
+     */
+    public DefaultInputStreamContainer() {
+        this(null);
+    }
 
-	/**
-	 * Construct.
-	 * 
-	 * @param is
-	 */
-	public DefaultInputStreamContainer(InputStream is) {
-		this(is, new InputStreamContainerOptions());
-	}
+    /**
+     * Construct.
+     * 
+     * @param is
+     */
+    public DefaultInputStreamContainer(InputStream is) {
+        this(is, new InputStreamContainerOptions());
+    }
 
-	/**
-	 * Construct.
-	 * 
-	 * @param is
-	 * @param options
-	 */
-	public DefaultInputStreamContainer(InputStream is, InputStreamContainerOptions options) {
-		super(options);
-		this.is = is;
-	}
+    /**
+     * Construct.
+     * 
+     * @param is
+     * @param options
+     */
+    public DefaultInputStreamContainer(InputStream is, InputStreamContainerOptions options) {
+        super(options);
+        this.is = is;
+    }
 
-	@Override
-	public InputStream getInputStream() throws IOException {
-		return is;
-	}
+    @Override
+    public InputStream getInputStream() throws IOException {
+        return is;
+    }
 
-	@Override
-	public void close() {
-		if (is != null) {
-			try {
-				is.close();
-			} catch (IOException e) {
-			}
-		}
-	}
+    @Override
+    public void close() {
+        if (is != null) {
+            try {
+                is.close();
+            } catch (IOException e) {
+            }
+        }
+    }
 
-	@Override
-	public boolean isEmpty() {
-		return is == null;
-	}
+    @Override
+    public boolean isEmpty() {
+        return is == null;
+    }
 }

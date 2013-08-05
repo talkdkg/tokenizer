@@ -34,16 +34,16 @@ import org.xaloon.core.jpa.model.AbstractEntity;
 @Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorColumn(name = "USER_TYPE", discriminatorType = DiscriminatorType.STRING)
 public abstract class AbstractUser extends AbstractEntity implements User {
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	@Column(name = "WEBSITE")
-	private String website;
+    @Column(name = "WEBSITE")
+    private String website;
 
-	public String getWebsite() {
-		return website;
-	}
+    public String getWebsite() {
+        return website;
+    }
 
-	public void setWebsite(String website) {
-		this.website = website;
-	}
+    public void setWebsite(String website) {
+        this.website = website;
+    }
 }

@@ -25,8 +25,7 @@ public interface ExecutorModel {
      * guarantees that the listener will receive events for all updates that
      * happened after the returned snapshot of the tasks.
      * <p>
-     * Note that the listener does not work like the watcher in ZooKeeper:
-     * listeners are not one-time only.
+     * Note that the listener does not work like the watcher in ZooKeeper: listeners are not one-time only.
      */
     Collection<TaskInfoBean> getTasks(ExecutorModelListener listener);
 

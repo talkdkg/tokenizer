@@ -85,8 +85,8 @@ public class ExecutorWorkerImpl implements ExecutorWorker {
 
     @Inject
     public ExecutorWorkerImpl(final WritableExecutorModel executorModel, final ZooKeeperItf zk,
-        final CrawlerRepository repository) throws IOException, TaskNotFoundException, InterruptedException,
-        KeeperException {
+            final CrawlerRepository repository) throws IOException, TaskNotFoundException, InterruptedException,
+            KeeperException {
         this.executorModel = executorModel;
         this.zk = zk;
         this.repository = repository;
@@ -102,8 +102,7 @@ public class ExecutorWorkerImpl implements ExecutorWorker {
         for (TaskInfoBean taskDefinition : taskDefinitions) {
             try {
                 eventQueue.put(new ExecutorModelEvent(ExecutorModelEventType.TASK_ADDED, taskDefinition.getUuid()));
-            }
-            catch (InterruptedException e) {
+            } catch (InterruptedException e) {
                 eventWorkerThread.interrupt();
                 Thread.currentThread().interrupt();
             }
@@ -115,8 +114,7 @@ public class ExecutorWorkerImpl implements ExecutorWorker {
         eventWorkerThread.interrupt();
         try {
             eventWorkerThread.join();
-        }
-        catch (InterruptedException e) {
+        } catch (InterruptedException e) {
         }
         for (AbstractTask task : tasks.values()) {
             // although each task should be "daemon"... to be safe:
@@ -134,8 +132,7 @@ public class ExecutorWorkerImpl implements ExecutorWorker {
             LOG.debug("Event: {}", event.getType());
             try {
                 eventQueue.put(event);
-            }
-            catch (InterruptedException e) {
+            } catch (InterruptedException e) {
                 eventWorkerThread.interrupt();
                 Thread.currentThread().interrupt();
             }
@@ -169,8 +166,8 @@ public class ExecutorWorkerImpl implements ExecutorWorker {
                         TaskInfoBean taskInfo = executorModel.getTask(event.getUuid());
                         TaskGeneralState taskGeneralState = taskInfo.getTaskConfiguration().getGeneralState();
                         AbstractTask task = tasks.get(event.getUuid());
-                        boolean configurationChanged =
-                            !task.getTaskConfiguration().equals(taskInfo.getTaskConfiguration());
+                        boolean configurationChanged = !task.getTaskConfiguration().equals(
+                                taskInfo.getTaskConfiguration());
                         LOG.debug("configurationChanged: {}", configurationChanged);
                         if (!configurationChanged) {
                             if (taskGeneralState.equals(TaskGeneralState.START_REQUESTED)) {
@@ -193,20 +190,16 @@ public class ExecutorWorkerImpl implements ExecutorWorker {
                         tasks.get(event.getUuid()).stop();
                         tasks.remove(event.getUuid());
                     }
-                }
-                catch (InterruptedException e) {
+                } catch (InterruptedException e) {
                     LOG.warn("exiting...");
                     return;
-                }
-                catch (LeaderElectionSetupException e) {
+                } catch (LeaderElectionSetupException e) {
                     LOG.error("LeaderElectionSetupException... continue", e);
                     continue;
-                }
-                catch (KeeperException e) {
+                } catch (KeeperException e) {
                     LOG.error("KeeperException... continue", e);
                     continue;
-                }
-                catch (TaskNotFoundException e) {
+                } catch (TaskNotFoundException e) {
                     LOG.error("TaskNotFoundException... continue", e);
                     continue;
                 }
@@ -219,70 +212,57 @@ public class ExecutorWorkerImpl implements ExecutorWorker {
         AbstractTaskConfiguration taskConfiguration = taskInfo.getTaskConfiguration();
         LOG.debug(taskConfiguration.toString());
         if (taskConfiguration instanceof SitemapsFetcherTaskConfiguration) {
-            task =
-                new SitemapsFetcherTask(taskInfo.getUuid(), taskInfo.getTaskConfiguration().getName(), zk,
+            task = new SitemapsFetcherTask(taskInfo.getUuid(), taskInfo.getTaskConfiguration().getName(), zk,
                     (SitemapsFetcherTaskConfiguration) taskConfiguration, repository, executorModel, hostLocker);
         }
         else if (taskConfiguration instanceof HtmlSplitterTaskConfiguration) {
-            task =
-                new HtmlSplitterTask(taskInfo.getUuid(), taskInfo.getTaskConfiguration().getName(), zk,
+            task = new HtmlSplitterTask(taskInfo.getUuid(), taskInfo.getTaskConfiguration().getName(), zk,
                     (HtmlSplitterTaskConfiguration) taskConfiguration, repository, executorModel, hostLocker);
         }
         else if (taskConfiguration instanceof MessageParserTaskConfiguration) {
-            task =
-                new MessageParserTask(taskInfo.getUuid(), taskInfo.getTaskConfiguration().getName(), zk,
+            task = new MessageParserTask(taskInfo.getUuid(), taskInfo.getTaskConfiguration().getName(), zk,
                     (MessageParserTaskConfiguration) taskConfiguration, repository, executorModel, hostLocker);
         }
         else if (taskConfiguration instanceof TweetCollectorTaskConfiguration) {
-            task =
-                new TweetCollectorTask(taskInfo.getUuid(), taskInfo.getTaskConfiguration().getName(), zk,
+            task = new TweetCollectorTask(taskInfo.getUuid(), taskInfo.getTaskConfiguration().getName(), zk,
                     (TweetCollectorTaskConfiguration) taskConfiguration, repository, executorModel, hostLocker);
         }
         else if (taskConfiguration instanceof ClassicRobotTaskConfiguration) {
-            task =
-                new ClassicRobotTask(taskInfo.getUuid(), taskInfo.getTaskConfiguration().getName(), zk,
+            task = new ClassicRobotTask(taskInfo.getUuid(), taskInfo.getTaskConfiguration().getName(), zk,
                     (ClassicRobotTaskConfiguration) taskConfiguration, repository, executorModel, hostLocker);
         }
         else if (taskConfiguration instanceof RssFetcherTaskConfiguration) {
-            task =
-                new RssFetcherTask(taskInfo.getUuid(), taskInfo.getTaskConfiguration().getName(), zk,
+            task = new RssFetcherTask(taskInfo.getUuid(), taskInfo.getTaskConfiguration().getName(), zk,
                     (RssFetcherTaskConfiguration) taskConfiguration, repository, executorModel, hostLocker);
         }
         else if (taskConfiguration instanceof SimpleMultithreadedFetcherTaskConfiguration) {
-            task =
-                new SimpleMultithreadedFetcher(taskInfo.getUuid(), taskInfo.getTaskConfiguration().getName(), zk,
+            task = new SimpleMultithreadedFetcher(taskInfo.getUuid(), taskInfo.getTaskConfiguration().getName(), zk,
                     (SimpleMultithreadedFetcherTaskConfiguration) taskConfiguration, repository, executorModel,
                     hostLocker);
         }
         else if (taskConfiguration instanceof WeblogsSubscriberTaskConfiguration) {
-            task =
-                new WeblogsSubscriberTask(taskInfo.getUuid(), taskInfo.getTaskConfiguration().getName(), zk,
+            task = new WeblogsSubscriberTask(taskInfo.getUuid(), taskInfo.getTaskConfiguration().getName(), zk,
                     (WeblogsSubscriberTaskConfiguration) taskConfiguration, repository, executorModel, hostLocker);
         }
         else if (taskConfiguration instanceof WeblogsCrawlerTaskConfiguration) {
-            task =
-                new WeblogsCrawlerTask(taskInfo.getUuid(), taskInfo.getTaskConfiguration().getName(), zk,
+            task = new WeblogsCrawlerTask(taskInfo.getUuid(), taskInfo.getTaskConfiguration().getName(), zk,
                     (WeblogsCrawlerTaskConfiguration) taskConfiguration, repository, executorModel, hostLocker);
         }
         else if (taskConfiguration instanceof SitemapsFetcherTaskConfiguration) {
-            task =
-                new SitemapsFetcherTask(taskInfo.getUuid(), taskInfo.getTaskConfiguration().getName(), zk,
+            task = new SitemapsFetcherTask(taskInfo.getUuid(), taskInfo.getTaskConfiguration().getName(), zk,
                     (SitemapsFetcherTaskConfiguration) taskConfiguration, repository, executorModel, hostLocker);
         }
         else if (taskConfiguration instanceof SitemapsPageFetcherTaskConfiguration) {
-            task =
-                new SitemapsPageFetcherTask(taskInfo.getUuid(), taskInfo.getTaskConfiguration().getName(), zk,
+            task = new SitemapsPageFetcherTask(taskInfo.getUuid(), taskInfo.getTaskConfiguration().getName(), zk,
                     (SitemapsPageFetcherTaskConfiguration) taskConfiguration, repository, executorModel, hostLocker);
         }
         else if (taskConfiguration instanceof SitemapsLinkedPageFetcherTaskConfiguration) {
-            task =
-                new SitemapsLinkedPageFetcherTask(taskInfo.getUuid(), taskInfo.getTaskConfiguration().getName(), zk,
+            task = new SitemapsLinkedPageFetcherTask(taskInfo.getUuid(), taskInfo.getTaskConfiguration().getName(), zk,
                     (SitemapsLinkedPageFetcherTaskConfiguration) taskConfiguration, repository, executorModel,
                     hostLocker);
         }
         else if (taskConfiguration instanceof WeblogsParserTaskConfiguration) {
-            task =
-                new WeblogsParserTask(taskInfo.getUuid(), taskInfo.getTaskConfiguration().getName(), zk,
+            task = new WeblogsParserTask(taskInfo.getUuid(), taskInfo.getTaskConfiguration().getName(), zk,
                     (WeblogsParserTaskConfiguration) taskConfiguration, repository, executorModel, hostLocker);
         }
         return task;

@@ -25,58 +25,57 @@ import org.xaloon.core.api.security.model.UserDetails;
  */
 public class DefaultSecurityRole extends DefaultSecurityEntity implements SecurityRole {
 
-
-	/**
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
-	private List<Authority> authorities = new ArrayList<Authority>();
-	private List<UserDetails> users = new ArrayList<UserDetails>();
+    private static final long serialVersionUID = 1L;
+    private List<Authority> authorities = new ArrayList<Authority>();
+    private List<UserDetails> users = new ArrayList<UserDetails>();
 
-	/**
-	 * Construct.
-	 * 
-	 * @param name
-	 */
-	public DefaultSecurityRole(String name) {
-		super(name);
-	}
+    /**
+     * Construct.
+     * 
+     * @param name
+     */
+    public DefaultSecurityRole(String name) {
+        super(name);
+    }
 
-	/**
-	 * Gets users.
-	 * 
-	 * @return users
-	 */
-	public List<UserDetails> getUsers() {
-		return users;
-	}
+    /**
+     * Gets users.
+     * 
+     * @return users
+     */
+    public List<UserDetails> getUsers() {
+        return users;
+    }
 
-	/**
-	 * Sets users.
-	 * 
-	 * @param users
-	 *            users
-	 */
-	public void setUsers(List<UserDetails> users) {
-		this.users = users;
-	}
+    /**
+     * Sets users.
+     * 
+     * @param users
+     *            users
+     */
+    public void setUsers(List<UserDetails> users) {
+        this.users = users;
+    }
 
-	/**
-	 * Gets authorities.
-	 * 
-	 * @return authorities
-	 */
-	public List<Authority> getAuthorities() {
-		return authorities;
-	}
+    /**
+     * Gets authorities.
+     * 
+     * @return authorities
+     */
+    public List<Authority> getAuthorities() {
+        return authorities;
+    }
 
-	/**
-	 * Sets authorities.
-	 * 
-	 * @param authorities
-	 *            authorities
-	 */
-	public void setAuthorities(List<Authority> authorities) {
-		this.authorities = authorities;
-	}
+    /**
+     * Sets authorities.
+     * 
+     * @param authorities
+     *            authorities
+     */
+    public void setAuthorities(List<Authority> authorities) {
+        this.authorities = authorities;
+    }
 }

@@ -55,28 +55,24 @@ public class XmlProducer {
     private static ThreadLocal LOCAL = new ThreadLocal() {
         @Override
         protected Object initialValue() {
-            SAXTransformerFactory transformerFactory = (SAXTransformerFactory) SAXTransformerFactory
-                    .newInstance();
+            SAXTransformerFactory transformerFactory = (SAXTransformerFactory) SAXTransformerFactory.newInstance();
             return transformerFactory;
         }
     };
     private static char[] LINE_SEP = new char[] { '\n' };
     private static int LINE_SEP_LENGTH = LINE_SEP.length;
 
-    public XmlProducer(OutputStream outputStream) throws SAXException,
-            TransformerConfigurationException {
+    public XmlProducer(OutputStream outputStream) throws SAXException, TransformerConfigurationException {
         TransformerHandler serializer = getTransformerHandler();
         serializer.getTransformer().setOutputProperty(OutputKeys.METHOD, "xml");
-        serializer.getTransformer().setOutputProperty(OutputKeys.ENCODING,
-                "UTF-8");
+        serializer.getTransformer().setOutputProperty(OutputKeys.ENCODING, "UTF-8");
         serializer.setResult(new StreamResult(outputStream));
         this.result = serializer;
         result.startDocument();
         newLine();
     }
 
-    private static TransformerHandler getTransformerHandler()
-            throws TransformerConfigurationException {
+    private static TransformerHandler getTransformerHandler() throws TransformerConfigurationException {
         return ((SAXTransformerFactory) LOCAL.get()).newTransformerHandler();
     }
 
@@ -97,13 +93,11 @@ public class XmlProducer {
         startElement(uri, name, null);
     }
 
-    public void startElement(String name, Map<String, String> attrs)
-            throws SAXException {
+    public void startElement(String name, Map<String, String> attrs) throws SAXException {
         startElement(null, name, attrs);
     }
 
-    public void startElement(String uri, String name, Map<String, String> attrs)
-            throws SAXException {
+    public void startElement(String uri, String name, Map<String, String> attrs) throws SAXException {
         outputSpaces(indentLevel * INDENT);
         outputStartElement(uri, name, attrs);
         newLine();
@@ -126,12 +120,12 @@ public class XmlProducer {
         newLine();
     }
 
-    private void outputStartElement(String uri, String name,
-            Map<String, String> attrs) throws SAXException {
+    private void outputStartElement(String uri, String name, Map<String, String> attrs) throws SAXException {
         Attributes attributes;
         if (attrs == null) {
             attributes = EMPTY_ATTRS;
-        } else {
+        }
+        else {
             attributes = new MapAttributes(attrs);
         }
         if (uri == null) {
@@ -153,13 +147,11 @@ public class XmlProducer {
         return "";
     }
 
-    public void emptyElement(String name, Map<String, String> attrs)
-            throws SAXException {
+    public void emptyElement(String name, Map<String, String> attrs) throws SAXException {
         emptyElement(null, name, attrs);
     }
 
-    public void emptyElement(String uri, String name, Map<String, String> attrs)
-            throws SAXException {
+    public void emptyElement(String uri, String name, Map<String, String> attrs) throws SAXException {
         outputSpaces(indentLevel * INDENT);
         outputStartElement(uri, name, attrs);
         closeElement(uri, name);
@@ -170,18 +162,15 @@ public class XmlProducer {
         simpleElement(null, name, value, null);
     }
 
-    public void simpleElement(String uri, String name, String value)
-            throws SAXException {
+    public void simpleElement(String uri, String name, String value) throws SAXException {
         simpleElement(uri, name, value, null);
     }
 
-    public void simpleElement(String name, String value,
-            Map<String, String> attrs) throws SAXException {
+    public void simpleElement(String name, String value, Map<String, String> attrs) throws SAXException {
         simpleElement(null, name, value, attrs);
     }
 
-    public void simpleElement(String uri, String name, String value,
-            Map<String, String> attrs) throws SAXException {
+    public void simpleElement(String uri, String name, String value, Map<String, String> attrs) throws SAXException {
         outputSpaces(indentLevel * INDENT);
         outputStartElement(uri, name, attrs);
         result.characters(value.toCharArray(), 0, value.length());
@@ -202,24 +191,18 @@ public class XmlProducer {
         result.characters(LINE_SEP, 0, LINE_SEP_LENGTH);
     }
 
-    public void embedXml(InputStream is) throws SAXException,
-            ParserConfigurationException, IOException {
-        StripDocumentHandler handler = new StripDocumentHandler(result,
-                (LexicalHandler) result);
+    public void embedXml(InputStream is) throws SAXException, ParserConfigurationException, IOException {
+        StripDocumentHandler handler = new StripDocumentHandler(result, (LexicalHandler) result);
         XMLReader reader = LocalSAXParserFactory.newXmlReader();
         reader.setContentHandler(handler);
-        reader.setProperty("http://xml.org/sax/properties/lexical-handler",
-                handler);
+        reader.setProperty("http://xml.org/sax/properties/lexical-handler", handler);
         reader.parse(new InputSource(is));
         newLine();
     }
 
-    public void embedXml(Element element) throws TransformerException,
-            SAXException {
-        Transformer transformer = LocalTransformerFactory.get()
-                .newTransformer();
-        transformer.transform(new DOMSource(element), new SAXResult(
-                new StripDocumentHandler(result)));
+    public void embedXml(Element element) throws TransformerException, SAXException {
+        Transformer transformer = LocalTransformerFactory.get().newTransformer();
+        transformer.transform(new DOMSource(element), new SAXResult(new StripDocumentHandler(result)));
         newLine();
     }
 

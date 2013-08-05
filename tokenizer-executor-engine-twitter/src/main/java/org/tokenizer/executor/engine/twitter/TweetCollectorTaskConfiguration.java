@@ -38,8 +38,7 @@ public class TweetCollectorTaskConfiguration extends AbstractTaskConfiguration {
     public int hashCode() {
         final int prime = 31;
         int result = super.hashCode();
-        result = prime * result
-                + ((keywords == null) ? 0 : keywords.hashCode());
+        result = prime * result + ((keywords == null) ? 0 : keywords.hashCode());
         return result;
     }
 
@@ -55,7 +54,8 @@ public class TweetCollectorTaskConfiguration extends AbstractTaskConfiguration {
         if (keywords == null) {
             if (other.keywords != null)
                 return false;
-        } else if (!keywords.equals(other.keywords))
+        }
+        else if (!keywords.equals(other.keywords))
             return false;
         return true;
     }

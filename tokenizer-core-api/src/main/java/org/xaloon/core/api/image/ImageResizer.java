@@ -22,23 +22,23 @@ import java.net.URL;
  * @author vytautas r.
  */
 public interface ImageResizer extends Serializable {
-	/**
-	 * @param is
-	 * @param newWidth
-	 * @param newHeight
-	 * @param isFixed
-	 * @return resized image as input stream
-	 * @throws IOException
-	 */
-	InputStream resize(InputStream is, int newWidth, int newHeight, boolean isFixed) throws IOException;
+    /**
+     * @param is
+     * @param newWidth
+     * @param newHeight
+     * @param isFixed
+     * @return resized image as input stream
+     * @throws IOException
+     */
+    InputStream resize(InputStream is, int newWidth, int newHeight, boolean isFixed) throws IOException;
 
-	/**
-	 * @param url
-	 * @param newWidth
-	 * @param newHeight
-	 * @param isFixed
-	 * @return resized image as input stream
-	 * @throws IOException
-	 */
-	InputStream resize(URL url, int newWidth, int newHeight, boolean isFixed) throws IOException;
+    /**
+     * @param url
+     * @param newWidth
+     * @param newHeight
+     * @param isFixed
+     * @return resized image as input stream
+     * @throws IOException
+     */
+    InputStream resize(URL url, int newWidth, int newHeight, boolean isFixed) throws IOException;
 }

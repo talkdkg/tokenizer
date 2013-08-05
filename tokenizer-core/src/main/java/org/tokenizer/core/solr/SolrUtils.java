@@ -30,8 +30,8 @@ import org.tokenizer.core.TokenizerConfig;
 public class SolrUtils {
 
     private static final Logger LOG = LoggerFactory.getLogger(SolrUtils.class);
-    private static final String SOLR_URL_BASE = TokenizerConfig.getProperties()
-            .getProperty("solr.url.base", "http://localhost:8080/solr");
+    private static final String SOLR_URL_BASE = TokenizerConfig.getProperties().getProperty("solr.url.base",
+            "http://localhost:8080/solr");
 
     private static SolrServer solrServer = null;
     private static SolrServer solrServerMessages = null;
@@ -40,8 +40,7 @@ public class SolrUtils {
         if (solrServer == null) {
             synchronized (SolrUtils.class) {
                 if (solrServer == null) {
-                    HttpSolrServer httpSolrServer = new HttpSolrServer(
-                            SOLR_URL_BASE + "/url_records");
+                    HttpSolrServer httpSolrServer = new HttpSolrServer(SOLR_URL_BASE + "/url_records");
                     httpSolrServer.setSoTimeout(30000); // socket read timeout
                     httpSolrServer.setConnectionTimeout(30000);
                     httpSolrServer.setDefaultMaxConnectionsPerHost(100);
@@ -60,8 +59,7 @@ public class SolrUtils {
         if (solrServerMessages == null) {
             synchronized (SolrUtils.class) {
                 if (solrServerMessages == null) {
-                    HttpSolrServer httpSolrServer = new HttpSolrServer(
-                            SOLR_URL_BASE + "/messages");
+                    HttpSolrServer httpSolrServer = new HttpSolrServer(SOLR_URL_BASE + "/messages");
                     httpSolrServer.setSoTimeout(60000); // socket read timeout
                     httpSolrServer.setConnectionTimeout(60000);
                     httpSolrServer.setDefaultMaxConnectionsPerHost(100);

@@ -30,70 +30,71 @@ import org.xaloon.core.jpa.model.AbstractEntity;
 @Table(name = "XAL_PLUGIN_ENTITY", uniqueConstraints = { @UniqueConstraint(columnNames = { "PLUGIN_KEY" }) })
 public class PluginEntity extends AbstractEntity {
 
-	/**
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	@Column(name = "PLUGIN_ENABLED", nullable = false)
-	private boolean enabled;
+    @Column(name = "PLUGIN_ENABLED", nullable = false)
+    private boolean enabled;
 
-	@Column(name = "PLUGIN_DATA", nullable = false)
-	@Lob
-	private String pluginData;
+    @Column(name = "PLUGIN_DATA", nullable = false)
+    @Lob
+    private String pluginData;
 
-	@Column(name = "PLUGIN_KEY", nullable = false)
-	private String pluginKey;
+    @Column(name = "PLUGIN_KEY", nullable = false)
+    private String pluginKey;
 
-	/**
-	 * Gets enabled.
-	 * 
-	 * @return enabled
-	 */
-	public boolean isEnabled() {
-		return enabled;
-	}
+    /**
+     * Gets enabled.
+     * 
+     * @return enabled
+     */
+    public boolean isEnabled() {
+        return enabled;
+    }
 
-	/**
-	 * Sets enabled.
-	 * 
-	 * @param enabled
-	 *            enabled
-	 */
-	public void setEnabled(boolean enabled) {
-		this.enabled = enabled;
-	}
+    /**
+     * Sets enabled.
+     * 
+     * @param enabled
+     *            enabled
+     */
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
 
-	/**
-	 * @return xml representation of plugin bean data
-	 */
-	public String getPluginData() {
-		return pluginData;
-	}
+    /**
+     * @return xml representation of plugin bean data
+     */
+    public String getPluginData() {
+        return pluginData;
+    }
 
-	/**
-	 * @param pluginData
-	 */
-	public void setPluginData(String pluginData) {
-		this.pluginData = pluginData;
-	}
+    /**
+     * @param pluginData
+     */
+    public void setPluginData(String pluginData) {
+        this.pluginData = pluginData;
+    }
 
-	/**
-	 * @return plugin id
-	 */
-	public String getPluginKey() {
-		return pluginKey;
-	}
+    /**
+     * @return plugin id
+     */
+    public String getPluginKey() {
+        return pluginKey;
+    }
 
-	/**
-	 * @param pluginKey
-	 */
-	public void setPluginKey(String pluginKey) {
-		this.pluginKey = pluginKey;
-	}
+    /**
+     * @param pluginKey
+     */
+    public void setPluginKey(String pluginKey) {
+        this.pluginKey = pluginKey;
+    }
 
-	@Override
-	public String toString() {
-		return String.format("[%s] pluginKey=%s, enabled=%b", this.getClass().getSimpleName(), getPluginKey(), isEnabled());
-	}
+    @Override
+    public String toString() {
+        return String.format("[%s] pluginKey=%s, enabled=%b", this.getClass().getSimpleName(), getPluginKey(),
+                isEnabled());
+    }
 }

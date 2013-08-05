@@ -21,5 +21,5 @@ package org.tokenizer.executor.model.api;
  * implementation (should be short-running + not wait for ZK events itself).
  */
 public interface ExecutorModelListener {
-	void process(ExecutorModelEvent event);
+    void process(ExecutorModelEvent event);
 }

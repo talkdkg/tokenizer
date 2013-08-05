@@ -18,18 +18,19 @@ import org.xaloon.core.api.config.ListenerCollection;
 /**
  * @author vytautas r.
  */
-public class PluginRegistryListenerCollection extends ListenerCollection<PluginRegistryListener> implements PluginRegistryListener {
+public class PluginRegistryListenerCollection extends ListenerCollection<PluginRegistryListener> implements
+        PluginRegistryListener {
 
-	/**
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	public void onAfterPluginRegister(final Plugin registeredPlugin) {
-		notify(new Notifier<PluginRegistryListener>() {
-			public void notify(PluginRegistryListener listener) {
-				listener.onAfterPluginRegister(registeredPlugin);
-			}
-		});
-	}
+    public void onAfterPluginRegister(final Plugin registeredPlugin) {
+        notify(new Notifier<PluginRegistryListener>() {
+            public void notify(PluginRegistryListener listener) {
+                listener.onAfterPluginRegister(registeredPlugin);
+            }
+        });
+    }
 }

@@ -23,116 +23,116 @@ import org.xaloon.core.api.storage.FileDescriptor;
  * @author vytautas r.
  */
 public interface User extends Persistable {
-	/**
-	 * Who wrote the comment, empty if anonymous
-	 * 
-	 * @return username
-	 */
-	String getUsername();
+    /**
+     * Who wrote the comment, empty if anonymous
+     * 
+     * @return username
+     */
+    String getUsername();
 
-	/**
-	 * @param username
-	 */
-	void setUsername(String username);
+    /**
+     * @param username
+     */
+    void setUsername(String username);
 
-	/**
-	 * @return first name
-	 */
-	String getFirstName();
+    /**
+     * @return first name
+     */
+    String getFirstName();
 
-	/**
-	 * @param firstName
-	 */
-	void setFirstName(String firstName);
+    /**
+     * @param firstName
+     */
+    void setFirstName(String firstName);
 
-	/**
-	 * @return last name
-	 */
-	String getLastName();
+    /**
+     * @return last name
+     */
+    String getLastName();
 
-	/**
-	 * @param lastName
-	 */
-	void setLastName(String lastName);
+    /**
+     * @param lastName
+     */
+    void setLastName(String lastName);
 
-	/**
-	 * @return email
-	 */
-	String getEmail();
+    /**
+     * @return email
+     */
+    String getEmail();
 
-	/**
-	 * @param email
-	 */
-	void setEmail(String email);
+    /**
+     * @param email
+     */
+    void setEmail(String email);
 
-	/**
-	 * @return timezone of this user
-	 */
-	String getTimezone();
+    /**
+     * @return timezone of this user
+     */
+    String getTimezone();
 
-	/**
-	 * @param timezone
-	 */
-	void setTimezone(String timezone);
+    /**
+     * @param timezone
+     */
+    void setTimezone(String timezone);
 
-	/**
-	 * @return signature
-	 */
-	String getSignature();
+    /**
+     * @return signature
+     */
+    String getSignature();
 
-	/**
-	 * @param signature
-	 */
-	void setSignature(String signature);
+    /**
+     * @param signature
+     */
+    void setSignature(String signature);
 
-	/**
-	 * @return true if user is from external system
-	 */
-	boolean isExternal();
+    /**
+     * @return true if user is from external system
+     */
+    boolean isExternal();
 
-	/**
-	 * @param external
-	 */
-	void setExternal(boolean external);
+    /**
+     * @param external
+     */
+    void setExternal(boolean external);
 
-	/**
-	 * @return website of user
-	 */
-	String getWebsite();
+    /**
+     * @return website of user
+     */
+    String getWebsite();
 
-	/**
-	 * @param website
-	 */
-	void setWebsite(String website);
+    /**
+     * @param website
+     */
+    void setWebsite(String website);
 
-	/**
-	 * @return photo image
-	 */
-	FileDescriptor getPhotoThumbnail();
+    /**
+     * @return photo image
+     */
+    FileDescriptor getPhotoThumbnail();
 
-	/**
-	 * @param photoThumbnail
-	 */
-	void setPhotoThumbnail(FileDescriptor photoThumbnail);
+    /**
+     * @param photoThumbnail
+     */
+    void setPhotoThumbnail(FileDescriptor photoThumbnail);
 
-	/**
-	 * @return display name of user like first name + last name
-	 */
-	String getDisplayName();
+    /**
+     * @return display name of user like first name + last name
+     */
+    String getDisplayName();
 
-	/**
-	 * Gets custom list of user properties
-	 * 
-	 * @return properties key=value pair of String properties
-	 */
-	List<? extends KeyValue<String, String>> getProperties();
+    /**
+     * Gets custom list of user properties
+     * 
+     * @return properties key=value pair of String properties
+     */
+    List<? extends KeyValue<String, String>> getProperties();
 
-	/**
-	 * Sets cutom list of user properties.
-	 * 
-	 * @param properties
-	 *            list of properties as key=value pairs
-	 */
-	void setProperties(List<? extends KeyValue<String, String>> properties);
+    /**
+     * Sets cutom list of user properties.
+     * 
+     * @param properties
+     *            list of properties as key=value pairs
+     */
+    void setProperties(List<? extends KeyValue<String, String>> properties);
 
 }

@@ -17,56 +17,56 @@ package org.xaloon.core.api.util;
  * @author vytautas r.
  */
 public enum HtmlElementEnum {
-	/**
+    /**
 	 * 
 	 */
-	PROTOCOL_HTTP("http"),
+    PROTOCOL_HTTP("http"),
 
-	/**
+    /**
 	 * 
 	 */
-	ALT("alt"),
+    ALT("alt"),
 
-	/**
+    /**
 	 * 
 	 */
-	TITLE("title"),
+    TITLE("title"),
 
-	/**
+    /**
 	 * 
 	 */
-	SRC("src"),
+    SRC("src"),
 
-	/**
+    /**
 	 * 
 	 */
-	WIDTH("width"),
+    WIDTH("width"),
 
-	/**
+    /**
 	 * 
 	 */
-	HEIGHT("height"),
+    HEIGHT("height"),
 
-	/**
+    /**
 	 * 
 	 */
-	BR("<br/>");
+    BR("<br/>");
 
-	private final String value;
+    private final String value;
 
-	private HtmlElementEnum(String value) {
-		this.value = value;
-	}
+    private HtmlElementEnum(String value) {
+        this.value = value;
+    }
 
-	/**
-	 * @return string representation of html element value
-	 */
-	public String value() {
-		return value;
-	}
+    /**
+     * @return string representation of html element value
+     */
+    public String value() {
+        return value;
+    }
 
-	@Override
-	public String toString() {
-		return value;
-	}
+    @Override
+    public String toString() {
+        return value;
+    }
 }

@@ -32,36 +32,36 @@ import org.xaloon.core.jpa.user.model.JpaUser;
 @Table(name = "XAL_MAIL_MESSAGE")
 @DiscriminatorValue("MAIL_MESSAGE")
 public class JpaMailMessage extends JpaTextMessage implements MailMessage {
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	@Column(name = "IS_READ", nullable = false)
-	private boolean read;
+    @Column(name = "IS_READ", nullable = false)
+    private boolean read;
 
-	@ManyToOne(fetch = FetchType.EAGER, optional = false)
-	@JoinColumn(name = "TO_USER_ID", referencedColumnName = "ID")
-	private JpaUser toUser;
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @JoinColumn(name = "TO_USER_ID", referencedColumnName = "ID")
+    private JpaUser toUser;
 
-	public boolean isRead() {
-		return read;
-	}
+    public boolean isRead() {
+        return read;
+    }
 
-	public void setRead(boolean read) {
-		this.read = read;
-	}
+    public void setRead(boolean read) {
+        this.read = read;
+    }
 
-	public User getToUser() {
-		return toUser;
-	}
+    public User getToUser() {
+        return toUser;
+    }
 
-	/**
-	 * @param toUser
-	 */
-	public void setToUser(JpaUser toUser) {
-		this.toUser = toUser;
-	}
+    /**
+     * @param toUser
+     */
+    public void setToUser(JpaUser toUser) {
+        this.toUser = toUser;
+    }
 
-	@Override
-	public void setToUser(User toUser) {
-		this.toUser = (JpaUser)toUser;
-	}
+    @Override
+    public void setToUser(User toUser) {
+        this.toUser = (JpaUser) toUser;
+    }
 }

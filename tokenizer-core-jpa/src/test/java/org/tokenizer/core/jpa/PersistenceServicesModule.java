@@ -24,6 +24,6 @@ public class PersistenceServicesModule extends AbstractModule {
     @Override
     protected void configure() {
         bind(PersistenceServices.class).annotatedWith(Names.named("persistenceServices")).to(
-            DefaultPersistenceServices.class);
+                DefaultPersistenceServices.class);
     }
 }

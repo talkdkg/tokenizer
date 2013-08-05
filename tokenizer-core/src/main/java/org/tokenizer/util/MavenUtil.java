@@ -38,8 +38,7 @@ public class MavenUtil {
         File mavenSettingsFile = new File(homeDir + "/.m2/settings.xml");
         if (mavenSettingsFile.exists()) {
             try {
-                DocumentBuilderFactory dbf = DocumentBuilderFactory
-                        .newInstance();
+                DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
                 dbf.setNamespaceAware(true);
                 DocumentBuilder db = dbf.newDocumentBuilder();
                 Document document = db.parse(mavenSettingsFile);
@@ -47,19 +46,16 @@ public class MavenUtil {
                 SimpleNamespaceContext nc = new SimpleNamespaceContext();
                 nc.addPrefix("m", "http://maven.apache.org/POM/4.0.0");
                 xpath.setNamespaceContext(nc);
-                String localRepository = xpath.evaluate(
-                        "string(/m:settings/m:localRepository)", document);
+                String localRepository = xpath.evaluate("string(/m:settings/m:localRepository)", document);
                 if (localRepository != null && localRepository.length() > 0)
                     return new File(localRepository);
                 // Usage of the POM namespace in settings.xml is optional, so
                 // also try without namespace
-                localRepository = xpath.evaluate(
-                        "string(/settings/localRepository)", document);
+                localRepository = xpath.evaluate("string(/settings/localRepository)", document);
                 if (localRepository != null && localRepository.length() > 0)
                     return new File(localRepository);
             } catch (Exception e) {
-                throw new IOException("Error reading Maven settings file at "
-                        + mavenSettingsFile.getAbsolutePath(), e);
+                throw new IOException("Error reading Maven settings file at " + mavenSettingsFile.getAbsolutePath(), e);
             }
         }
         return new File(homeDir + "/.m2/repository");

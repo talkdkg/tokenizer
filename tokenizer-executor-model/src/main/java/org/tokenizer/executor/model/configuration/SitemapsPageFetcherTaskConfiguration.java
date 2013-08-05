@@ -24,11 +24,8 @@ public class SitemapsPageFetcherTaskConfiguration extends AbstractFetcherTaskCon
 
     @Override
     public String toString() {
-        return "SitemapsFetcherTaskConfiguration [host=" + host
-                + ", agentName=" + agentName + ", emailAddress=" + emailAddress
-                + ", webAddress=" + webAddress + "]";
+        return "SitemapsFetcherTaskConfiguration [host=" + host + ", agentName=" + agentName + ", emailAddress="
+                + emailAddress + ", webAddress=" + webAddress + "]";
     }
-    
-    
-    
+
 }

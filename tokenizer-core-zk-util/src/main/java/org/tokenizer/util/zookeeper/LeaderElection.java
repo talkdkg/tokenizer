@@ -30,23 +30,20 @@ import org.apache.zookeeper.data.Stat;
  * leaders (could be improved for herd effect, see ZK recipe).
  * 
  * <p>
- * It currently only reports if this client is the leader or not, it does not
- * report who the leader is, but that could be added.
+ * It currently only reports if this client is the leader or not, it does not report who the leader is, but that could
+ * be added.
  * 
  * <p>
- * It is intended for 'active leaders', which should give up their leader role
- * as soon as we are disconnected from the ZK cluster, rather than only when we
- * get a session expiry event (see
- * http://markmail.org/message/o6whuii7wlf2a64c).
+ * It is intended for 'active leaders', which should give up their leader role as soon as we are disconnected from the
+ * ZK cluster, rather than only when we get a session expiry event (see http://markmail.org/message/o6whuii7wlf2a64c).
  * 
  * <p>
- * The leader state is reported via the {@link LeaderElectionCallback}, which is
- * called from within a different Thread than the ZooKeeper event thread.
+ * The leader state is reported via the {@link LeaderElectionCallback}, which is called from within a different Thread
+ * than the ZooKeeper event thread.
  */
 public class LeaderElection {
 
-    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory
-            .getLogger(LeaderElection.class);
+    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(LeaderElection.class);
     private final ZooKeeperItf zk;
     private final String position;
     private final String electionPath;
@@ -71,9 +68,8 @@ public class LeaderElection {
      *            created. The path will be created if it does not exist. The
      *            path should not end on a slash.
      */
-    public LeaderElection(final ZooKeeperItf zk, final String position,
-            final String electionPath, final LeaderElectionCallback callback)
-            throws LeaderElectionSetupException, InterruptedException,
+    public LeaderElection(final ZooKeeperItf zk, final String position, final String electionPath,
+            final LeaderElectionCallback callback) throws LeaderElectionSetupException, InterruptedException,
             KeeperException {
         this.zk = zk;
         this.position = position;
@@ -101,8 +97,7 @@ public class LeaderElection {
         }
     }
 
-    private void proposeAsLeader() throws LeaderElectionSetupException,
-            InterruptedException, KeeperException {
+    private void proposeAsLeader() throws LeaderElectionSetupException, InterruptedException, KeeperException {
         ZkUtil.createPath(zk, electionPath);
         try {
             // In case of connection loss, a node might have been created for us
@@ -114,17 +109,14 @@ public class LeaderElection {
             zk.retryOperation(new ZooKeeperOperation<String>() {
 
                 @Override
-                public String execute() throws KeeperException,
-                        InterruptedException {
-                    return zk.create(electionPath + "/n_", null,
-                            ZooDefs.Ids.OPEN_ACL_UNSAFE,
+                public String execute() throws KeeperException, InterruptedException {
+                    return zk.create(electionPath + "/n_", null, ZooDefs.Ids.OPEN_ACL_UNSAFE,
                             CreateMode.EPHEMERAL_SEQUENTIAL);
                 }
             });
         } catch (KeeperException e) {
-            throw new LeaderElectionSetupException(
-                    "Error creating leader election zookeeper node below "
-                            + electionPath, e);
+            throw new LeaderElectionSetupException("Error creating leader election zookeeper node below "
+                    + electionPath, e);
         }
         watchLeaders();
     }
@@ -139,8 +131,7 @@ public class LeaderElection {
             // so we can sort them as strings
             Collections.sort(children);
             if (LOG.isDebugEnabled()) {
-                LOG.debug("Leaders changed for the position of " + position
-                        + ", they are now:");
+                LOG.debug("Leaders changed for the position of " + position + ", they are now:");
                 for (String child : children) {
                     LOG.debug(child);
                 }
@@ -183,8 +174,7 @@ public class LeaderElection {
         public void process(final WatchedEvent event) {
             if (stopped)
                 return;
-            if (event.getType() == EventType.NodeChildrenChanged
-                    && event.getPath().equals(electionPath)) {
+            if (event.getType() == EventType.NodeChildrenChanged && event.getPath().equals(electionPath)) {
                 watchLeaders();
             }
         }
@@ -197,13 +187,12 @@ public class LeaderElection {
             if (stopped)
                 return;
             if (event.getType() == EventType.None
-                    && (event.getState().equals(Event.KeeperState.Disconnected) || event
-                            .getState().equals(Event.KeeperState.Expired))) {
+                    && (event.getState().equals(Event.KeeperState.Disconnected) || event.getState().equals(
+                            Event.KeeperState.Expired))) {
                 if (elected) {
                     elected = false;
                     LOG.info("No longer leader for the position of " + position);
-                    leaderProvisioner
-                            .setRequiredState(LeaderState.I_AM_NOT_LEADER);
+                    leaderProvisioner.setRequiredState(LeaderState.I_AM_NOT_LEADER);
                 }
                 // Note that if we get a disconnected event here, our watcher is
                 // not unregistered, thus we will
@@ -212,8 +201,8 @@ public class LeaderElection {
                 // Since we are not owner of the ZooKeeper handle, we assume
                 // Expired states are handled
                 // elsewhere in the application.
-            } else if (event.getType() == EventType.None
-                    && event.getState() == KeeperState.SyncConnected) {
+            }
+            else if (event.getType() == EventType.None && event.getState() == KeeperState.SyncConnected) {
                 // Upon reconnect, since our session was not expired, our
                 // ephemeral node will still
                 // exist (it might even be the leader), therefore have a look at
@@ -270,7 +259,8 @@ public class LeaderElection {
                         if (requiredState == LeaderState.I_AM_LEADER) {
                             callback.activateAsLeader();
                             currentState = LeaderState.I_AM_LEADER;
-                        } else if (requiredState == LeaderState.I_AM_NOT_LEADER) {
+                        }
+                        else if (requiredState == LeaderState.I_AM_NOT_LEADER) {
                             callback.deactivateAsLeader();
                             currentState = LeaderState.I_AM_NOT_LEADER;
                         }

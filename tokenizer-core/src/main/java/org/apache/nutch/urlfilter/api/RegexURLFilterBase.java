@@ -31,8 +31,7 @@ import org.slf4j.LoggerFactory;
  * expressions.
  * 
  * <p>
- * The regular expressions rules are expressed in a file. The file of rules is determined for each implementation using
- * the {@link #getRulesReader(Configuration conf)} method.
+ * The regular expressions rules are expressed in a file.
  * </p>
  * 
  * <p>
@@ -133,18 +132,18 @@ public abstract class RegexURLFilterBase implements URLFilter {
             char first = line.charAt(0);
             boolean sign = false;
             switch (first) {
-                case '+' :
-                    sign = true;
-                    break;
-                case '-' :
-                    sign = false;
-                    break;
-                case ' ' :
-                case '\n' :
-                case '#' : // skip blank & comment lines
-                    continue;
-                default :
-                    throw new IOException("Invalid first character: " + line);
+            case '+':
+                sign = true;
+                break;
+            case '-':
+                sign = false;
+                break;
+            case ' ':
+            case '\n':
+            case '#': // skip blank & comment lines
+                continue;
+            default:
+                throw new IOException("Invalid first character: " + line);
             }
             String regex = line.substring(1);
             if (LOG.isTraceEnabled()) {

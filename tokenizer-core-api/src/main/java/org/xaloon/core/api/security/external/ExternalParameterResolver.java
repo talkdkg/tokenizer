@@ -28,36 +28,38 @@ import org.xaloon.core.api.user.model.User;
 @Named("externalParameterResolver")
 public class ExternalParameterResolver implements Serializable {
 
-	/**
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	@Inject
-	private FileRepositoryFacade fileRepository;
+    @Inject
+    private FileRepositoryFacade fileRepository;
 
-
-	/**
-	 * @param initialToken
-	 * @param user
-	 * 
-	 */
-	public void resolve(AuthenticationToken initialToken, User user) {
-		if (initialToken != null) {
-			for (AuthenticationAttribute attribute : initialToken.getAttributes()) {
-				if (AuthenticationConsumer.PARAM_FIRST_NAME.equals(attribute.getName())) {
-					user.setFirstName(attribute.getValue());
-				} else if (AuthenticationConsumer.PARAM_LAST_NAME.equals(attribute.getName())) {
-					user.setLastName(attribute.getValue());
-				} else if (AuthenticationConsumer.PARAM_EMAIL.equals(attribute.getName())) {
-					user.setEmail(attribute.getValue());
-				} else if (AuthenticationConsumer.PARAM_PICTURE_SMALL.equals(attribute.getName())) {
-					FileDescriptor photoThumbnail = fileRepository.newFileDescriptor();
-					photoThumbnail.setName(attribute.getValue());
-					photoThumbnail.setPath(attribute.getValue());
-					user.setPhotoThumbnail(photoThumbnail);
-				}
-			}
-		}
-	}
+    /**
+     * @param initialToken
+     * @param user
+     * 
+     */
+    public void resolve(AuthenticationToken initialToken, User user) {
+        if (initialToken != null) {
+            for (AuthenticationAttribute attribute : initialToken.getAttributes()) {
+                if (AuthenticationConsumer.PARAM_FIRST_NAME.equals(attribute.getName())) {
+                    user.setFirstName(attribute.getValue());
+                }
+                else if (AuthenticationConsumer.PARAM_LAST_NAME.equals(attribute.getName())) {
+                    user.setLastName(attribute.getValue());
+                }
+                else if (AuthenticationConsumer.PARAM_EMAIL.equals(attribute.getName())) {
+                    user.setEmail(attribute.getValue());
+                }
+                else if (AuthenticationConsumer.PARAM_PICTURE_SMALL.equals(attribute.getName())) {
+                    FileDescriptor photoThumbnail = fileRepository.newFileDescriptor();
+                    photoThumbnail.setName(attribute.getValue());
+                    photoThumbnail.setPath(attribute.getValue());
+                    user.setPhotoThumbnail(photoThumbnail);
+                }
+            }
+        }
+    }
 }

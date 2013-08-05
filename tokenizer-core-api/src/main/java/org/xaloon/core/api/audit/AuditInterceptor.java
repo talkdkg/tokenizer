@@ -35,31 +35,33 @@ import org.xaloon.core.api.interceptor.Signature;
 @TransactionManagement(TransactionManagementType.CONTAINER)
 public class AuditInterceptor extends AbstractInterceptor<Audited> {
 
-	/**
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(AuditInterceptor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AuditInterceptor.class);
 
-	@Inject
-	private AuditFacade auditFacade;
+    @Inject
+    private AuditFacade auditFacade;
 
-	@Override
-	protected void beforeProceed(final Signature signature, final Audited annotation) {
-		Object[] params = signature.getParameters();
+    @Override
+    protected void beforeProceed(final Signature signature, final Audited annotation) {
+        Object[] params = signature.getParameters();
 
-		if (LOGGER.isDebugEnabled()) {
-			LOGGER.debug(String.format("Audit interceptor got class[%s], method [%s] with state [%s], parameter count [%d], first parameter [%s]",
-				signature.getDeclaringTypeName(), signature.getMethodName(), annotation.state(), params.length, (params.length > 0) ? params[0] : ""));
-		}
-		if (params != null && params.length > 0) {
-			auditFacade.audit(annotation.state(), params[0]);
-		}
-	}
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug(String
+                    .format("Audit interceptor got class[%s], method [%s] with state [%s], parameter count [%d], first parameter [%s]",
+                            signature.getDeclaringTypeName(), signature.getMethodName(), annotation.state(),
+                            params.length, (params.length > 0) ? params[0] : ""));
+        }
+        if (params != null && params.length > 0) {
+            auditFacade.audit(annotation.state(), params[0]);
+        }
+    }
 
-	@Override
-	protected Class<Audited> getAnnotationClass() {
-		return Audited.class;
-	}
+    @Override
+    protected Class<Audited> getAnnotationClass() {
+        return Audited.class;
+    }
 }

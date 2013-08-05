@@ -19,11 +19,9 @@ import java.io.InputStreamReader;
 
 public class ConsoleUtil {
 
-    public static boolean promptYesNo(final String message,
-            final boolean defaultInput) {
+    public static boolean promptYesNo(final String message, final boolean defaultInput) {
         String input = "";
-        while (!input.equals("yes") && !input.equals("no")
-                && !input.equals("y") && !input.equals("n")) {
+        while (!input.equals("yes") && !input.equals("no") && !input.equals("y") && !input.equals("n")) {
             input = prompt(message, defaultInput ? "yes" : "no");
             input = input.toLowerCase();
         }

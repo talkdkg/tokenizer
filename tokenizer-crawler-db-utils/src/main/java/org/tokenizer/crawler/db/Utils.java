@@ -30,13 +30,10 @@ public class Utils {
 
     protected static Logger LOG = LoggerFactory.getLogger(Utils.class);
 
-    static CrawlerRepositoryCassandraImpl oldRepository = new CrawlerRepositoryCassandraImpl(
-            9160);
-    static CrawlerRepositoryCassandraImpl newRepository = new CrawlerRepositoryCassandraImpl(
-            19160);
+    static CrawlerRepositoryCassandraImpl oldRepository = new CrawlerRepositoryCassandraImpl(9160);
+    static CrawlerRepositoryCassandraImpl newRepository = new CrawlerRepositoryCassandraImpl(19160);
 
-    public static void main(String[] args) throws ConnectionException,
-            InterruptedException {
+    public static void main(String[] args) throws ConnectionException, InterruptedException {
 
         oldRepository.setup();
         newRepository.setup();

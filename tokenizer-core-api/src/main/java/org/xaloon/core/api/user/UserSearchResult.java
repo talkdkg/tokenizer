@@ -20,176 +20,176 @@ import java.io.Serializable;
  */
 public class UserSearchResult implements Serializable {
 
-	/**
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private String username;
+    private String username;
 
-	private String firstName;
+    private String firstName;
 
-	private String lastName;
+    private String lastName;
 
-	private String fullName;
+    private String fullName;
 
-	private boolean accountNonExpired;
+    private boolean accountNonExpired;
 
-	private boolean accountNonLocked;
+    private boolean accountNonLocked;
 
-	private boolean credentialsNonExpired;
+    private boolean credentialsNonExpired;
 
-	private boolean enabled;
+    private boolean enabled;
 
-	/**
-	 * Gets fullName.
-	 * 
-	 * @return fullName
-	 */
-	public String getFullName() {
-		return fullName;
-	}
+    /**
+     * Gets fullName.
+     * 
+     * @return fullName
+     */
+    public String getFullName() {
+        return fullName;
+    }
 
-	/**
-	 * Sets fullName.
-	 * 
-	 * @param fullName
-	 *            fullName
-	 */
-	public void setFullName(String fullName) {
-		this.fullName = fullName;
-	}
+    /**
+     * Sets fullName.
+     * 
+     * @param fullName
+     *            fullName
+     */
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
 
-	/**
-	 * Gets username.
-	 * 
-	 * @return username
-	 */
-	public String getUsername() {
-		return username;
-	}
+    /**
+     * Gets username.
+     * 
+     * @return username
+     */
+    public String getUsername() {
+        return username;
+    }
 
-	/**
-	 * Sets username.
-	 * 
-	 * @param username
-	 *            username
-	 */
-	public void setUsername(String username) {
-		this.username = username;
-	}
+    /**
+     * Sets username.
+     * 
+     * @param username
+     *            username
+     */
+    public void setUsername(String username) {
+        this.username = username;
+    }
 
-	/**
-	 * Gets firstName.
-	 * 
-	 * @return firstName
-	 */
-	public String getFirstName() {
-		return firstName;
-	}
+    /**
+     * Gets firstName.
+     * 
+     * @return firstName
+     */
+    public String getFirstName() {
+        return firstName;
+    }
 
-	/**
-	 * Sets firstName.
-	 * 
-	 * @param firstName
-	 *            firstName
-	 */
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
-	}
+    /**
+     * Sets firstName.
+     * 
+     * @param firstName
+     *            firstName
+     */
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
 
-	/**
-	 * Gets lastName.
-	 * 
-	 * @return lastName
-	 */
-	public String getLastName() {
-		return lastName;
-	}
+    /**
+     * Gets lastName.
+     * 
+     * @return lastName
+     */
+    public String getLastName() {
+        return lastName;
+    }
 
-	/**
-	 * Sets lastName.
-	 * 
-	 * @param lastName
-	 *            lastName
-	 */
-	public void setLastName(String lastName) {
-		this.lastName = lastName;
-	}
+    /**
+     * Sets lastName.
+     * 
+     * @param lastName
+     *            lastName
+     */
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
 
-	/**
-	 * Gets accountNonExpired.
-	 * 
-	 * @return accountNonExpired
-	 */
-	public boolean isAccountNonExpired() {
-		return accountNonExpired;
-	}
+    /**
+     * Gets accountNonExpired.
+     * 
+     * @return accountNonExpired
+     */
+    public boolean isAccountNonExpired() {
+        return accountNonExpired;
+    }
 
-	/**
-	 * Sets accountNonExpired.
-	 * 
-	 * @param accountNonExpired
-	 *            accountNonExpired
-	 */
-	public void setAccountNonExpired(boolean accountNonExpired) {
-		this.accountNonExpired = accountNonExpired;
-	}
+    /**
+     * Sets accountNonExpired.
+     * 
+     * @param accountNonExpired
+     *            accountNonExpired
+     */
+    public void setAccountNonExpired(boolean accountNonExpired) {
+        this.accountNonExpired = accountNonExpired;
+    }
 
-	/**
-	 * Gets accountNonLocked.
-	 * 
-	 * @return accountNonLocked
-	 */
-	public boolean isAccountNonLocked() {
-		return accountNonLocked;
-	}
+    /**
+     * Gets accountNonLocked.
+     * 
+     * @return accountNonLocked
+     */
+    public boolean isAccountNonLocked() {
+        return accountNonLocked;
+    }
 
-	/**
-	 * Sets accountNonLocked.
-	 * 
-	 * @param accountNonLocked
-	 *            accountNonLocked
-	 */
-	public void setAccountNonLocked(boolean accountNonLocked) {
-		this.accountNonLocked = accountNonLocked;
-	}
+    /**
+     * Sets accountNonLocked.
+     * 
+     * @param accountNonLocked
+     *            accountNonLocked
+     */
+    public void setAccountNonLocked(boolean accountNonLocked) {
+        this.accountNonLocked = accountNonLocked;
+    }
 
-	/**
-	 * Gets credentialsNonExpired.
-	 * 
-	 * @return credentialsNonExpired
-	 */
-	public boolean isCredentialsNonExpired() {
-		return credentialsNonExpired;
-	}
+    /**
+     * Gets credentialsNonExpired.
+     * 
+     * @return credentialsNonExpired
+     */
+    public boolean isCredentialsNonExpired() {
+        return credentialsNonExpired;
+    }
 
-	/**
-	 * Sets credentialsNonExpired.
-	 * 
-	 * @param credentialsNonExpired
-	 *            credentialsNonExpired
-	 */
-	public void setCredentialsNonExpired(boolean credentialsNonExpired) {
-		this.credentialsNonExpired = credentialsNonExpired;
-	}
+    /**
+     * Sets credentialsNonExpired.
+     * 
+     * @param credentialsNonExpired
+     *            credentialsNonExpired
+     */
+    public void setCredentialsNonExpired(boolean credentialsNonExpired) {
+        this.credentialsNonExpired = credentialsNonExpired;
+    }
 
-	/**
-	 * Gets enabled.
-	 * 
-	 * @return enabled
-	 */
-	public boolean isEnabled() {
-		return enabled;
-	}
+    /**
+     * Gets enabled.
+     * 
+     * @return enabled
+     */
+    public boolean isEnabled() {
+        return enabled;
+    }
 
-	/**
-	 * Sets enabled.
-	 * 
-	 * @param enabled
-	 *            enabled
-	 */
-	public void setEnabled(boolean enabled) {
-		this.enabled = enabled;
-	}
+    /**
+     * Sets enabled.
+     * 
+     * @param enabled
+     *            enabled
+     */
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
 }

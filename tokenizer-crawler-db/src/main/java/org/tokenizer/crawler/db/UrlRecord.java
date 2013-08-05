@@ -127,7 +127,8 @@ public class UrlRecord implements Serializable {
     }
 
     public void setNewBaseUrl(String newBaseUrl) {
-        if (newBaseUrl != null) this.newBaseUrl = newBaseUrl;
+        if (newBaseUrl != null)
+            this.newBaseUrl = newBaseUrl;
     }
 
     public int getNumRedirects() {

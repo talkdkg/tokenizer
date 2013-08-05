@@ -50,26 +50,20 @@ public abstract class BaseAdminCli extends BaseZkCliTool {
 
     @SuppressWarnings("static-access")
     public BaseAdminCli() {
-        forceOption = OptionBuilder
-                .withDescription("Skips optional validations.")
-                .withLongOpt("force").create("f");
-        nameOption = OptionBuilder.withArgName("name").hasArg()
-                .withDescription("Task name.").withLongOpt("name").create("n");
-        configurationOption = OptionBuilder.withArgName("taskconfig.xml")
-                .hasArg().withDescription("Task configuration.")
-                .withLongOpt("task-config").create("c");
+        forceOption = OptionBuilder.withDescription("Skips optional validations.").withLongOpt("force").create("f");
+        nameOption = OptionBuilder.withArgName("name").hasArg().withDescription("Task name.").withLongOpt("name")
+                .create("n");
+        configurationOption = OptionBuilder.withArgName("taskconfig.xml").hasArg()
+                .withDescription("Task configuration.").withLongOpt("task-config").create("c");
         generalStateOption = OptionBuilder
                 .withArgName("state")
                 .hasArg()
                 .withDescription(
-                        "General state, one of: "
-                                + TaskGeneralState.START_REQUESTED + ", "
-                                + TaskGeneralState.STOP_REQUESTED + ", "
-                                + TaskGeneralState.DELETE_REQUESTED)
+                        "General state, one of: " + TaskGeneralState.START_REQUESTED + ", "
+                                + TaskGeneralState.STOP_REQUESTED + ", " + TaskGeneralState.DELETE_REQUESTED)
                 .withLongOpt("state").create("i");
-        outputFileOption = OptionBuilder.withArgName("filename").hasArg()
-                .withDescription("Output file name").withLongOpt("output-file")
-                .create("o");
+        outputFileOption = OptionBuilder.withArgName("filename").hasArg().withDescription("Output file name")
+                .withLongOpt("output-file").create("o");
     }
 
     @Override
@@ -93,11 +87,9 @@ public abstract class BaseAdminCli extends BaseZkCliTool {
             uuid = UUID.fromString(cmd.getOptionValue(nameOption.getOpt()));
         }
         if (cmd.hasOption(configurationOption.getOpt())) {
-            File configurationFile = new File(
-                    cmd.getOptionValue(configurationOption.getOpt()));
+            File configurationFile = new File(cmd.getOptionValue(configurationOption.getOpt()));
             if (!configurationFile.exists()) {
-                System.out
-                        .println("Specified task configuration file not found:");
+                System.out.println("Specified task configuration file not found:");
                 System.out.println(configurationFile.getAbsolutePath());
                 return 1;
             }
@@ -125,8 +117,7 @@ public abstract class BaseAdminCli extends BaseZkCliTool {
         if (cmd.hasOption(generalStateOption.getOpt())) {
             String stateName = cmd.getOptionValue(generalStateOption.getOpt());
             try {
-                generalState = TaskGeneralState
-                        .valueOf(stateName.toUpperCase());
+                generalState = TaskGeneralState.valueOf(stateName.toUpperCase());
             } catch (IllegalArgumentException e) {
                 System.out.println("Invalid general state: " + stateName);
                 return 1;
@@ -139,8 +130,7 @@ public abstract class BaseAdminCli extends BaseZkCliTool {
                 System.out.println("The specified output file already exists:");
                 System.out.println(file.getAbsolutePath());
                 System.out.println();
-                System.out.println("Use --" + forceOption.getLongOpt()
-                        + " to overwrite it.");
+                System.out.println("Use --" + forceOption.getLongOpt() + " to overwrite it.");
             }
         }
         return 0;

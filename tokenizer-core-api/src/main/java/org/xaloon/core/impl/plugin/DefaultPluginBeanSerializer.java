@@ -18,34 +18,33 @@ import org.xaloon.core.api.plugin.PluginBeanSerializer;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 
-
 /**
  * @author vytautas r.
  */
 public class DefaultPluginBeanSerializer implements PluginBeanSerializer {
 
-	/**
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	/** Static converter to XML and back */
-	private static final XStream XSTREAM = new XStream(new DomDriver());
+    /** Static converter to XML and back */
+    private static final XStream XSTREAM = new XStream(new DomDriver());
 
-	@Override
-	public <T> String serialize(T pluginBean) {
-		return XSTREAM.toXML(pluginBean);
-	}
+    @Override
+    public <T> String serialize(T pluginBean) {
+        return XSTREAM.toXML(pluginBean);
+    }
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public <T> T deserialize(String pluginBeanData) {
-		try {
-			return (T)XSTREAM.fromXML(pluginBeanData);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> T deserialize(String pluginBeanData) {
+        try {
+            return (T) XSTREAM.fromXML(pluginBeanData);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
 }

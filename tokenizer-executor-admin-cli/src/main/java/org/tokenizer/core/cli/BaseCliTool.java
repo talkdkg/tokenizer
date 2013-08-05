@@ -86,11 +86,9 @@ public abstract class BaseCliTool {
         versionOption = new Option("v", "version", false, "Shows the version");
         options.add(versionOption);
         logConfOption = OptionBuilder.withArgName("config").hasArg()
-                .withDescription("log4j config file (.properties or .xml)")
-                .create("log");
+                .withDescription("log4j config file (.properties or .xml)").create("log");
         options.add(logConfOption);
-        dumpLogConfOption = OptionBuilder.withDescription(
-                "Dump default log4j configuration").create("dumplog");
+        dumpLogConfOption = OptionBuilder.withDescription("Dump default log4j configuration").create("dumplog");
         options.add(dumpLogConfOption);
         return options;
     }
@@ -122,17 +120,14 @@ public abstract class BaseCliTool {
             return 1;
         }
         if (cmd.hasOption(dumpLogConfOption.getOpt())) {
-            IOUtils.copy(
-                    BaseCliTool.class.getResourceAsStream("log4j.properties"),
-                    System.out);
+            IOUtils.copy(BaseCliTool.class.getResourceAsStream("log4j.properties"), System.out);
             return 1;
         }
         File logConfFile = null;
         if (cmd.hasOption(logConfOption.getOpt())) {
             logConfFile = new File(cmd.getOptionValue(logConfOption.getOpt()));
             if (!logConfFile.exists()) {
-                System.err
-                        .println("Specified log4j configuration file does not exist:");
+                System.err.println("Specified log4j configuration file does not exist:");
                 System.err.println(logConfFile);
             }
         }
@@ -160,18 +155,17 @@ public abstract class BaseCliTool {
                 logConfFile = defaultConf;
                 // printing to err so that this isn't included when stdout is
                 // redirected to a file
-                System.err
-                        .println("Using log4j.properties from working directory: "
-                                + logConfFile.getAbsolutePath());
+                System.err.println("Using log4j.properties from working directory: " + logConfFile.getAbsolutePath());
             }
         }
         if (logConfFile == null) {
             // Use the built-in config
-            PropertyConfigurator.configure(BaseCliTool.class
-                    .getResource("log4j.properties"));
-        } else if (logConfFile.getName().endsWith(".xml")) {
+            PropertyConfigurator.configure(BaseCliTool.class.getResource("log4j.properties"));
+        }
+        else if (logConfFile.getName().endsWith(".xml")) {
             DOMConfigurator.configure(logConfFile.getAbsolutePath());
-        } else {
+        }
+        else {
             PropertyConfigurator.configure(logConfFile.getAbsolutePath());
         }
     }
@@ -218,10 +212,8 @@ public abstract class BaseCliTool {
 
     protected void printHelpHeader() throws IOException {
         String className = getClass().getName();
-        String helpHeaderPath = className.replaceAll(Pattern.quote("."), "/")
-                + "_help_header.txt";
-        InputStream is = getClass().getClassLoader().getResourceAsStream(
-                helpHeaderPath);
+        String helpHeaderPath = className.replaceAll(Pattern.quote("."), "/") + "_help_header.txt";
+        InputStream is = getClass().getClassLoader().getResourceAsStream(helpHeaderPath);
         if (is != null) {
             IOUtils.copy(is, System.out);
             System.out.println();
@@ -231,10 +223,8 @@ public abstract class BaseCliTool {
 
     protected void printHelpFooter() throws IOException {
         String className = getClass().getName();
-        String helpHeaderPath = className.replaceAll(Pattern.quote("."), "/")
-                + "_help_footer.txt";
-        InputStream is = getClass().getClassLoader().getResourceAsStream(
-                helpHeaderPath);
+        String helpHeaderPath = className.replaceAll(Pattern.quote("."), "/") + "_help_footer.txt";
+        InputStream is = getClass().getClassLoader().getResourceAsStream(helpHeaderPath);
         if (is != null) {
             System.out.println();
             IOUtils.copy(is, System.out);

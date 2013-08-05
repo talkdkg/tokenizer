@@ -16,25 +16,25 @@ package org.xaloon.core.api.image.model;
 import org.xaloon.core.api.persistence.Persistable;
 
 public interface ImageComposition extends Persistable {
-	/**
-	 * @return the object
-	 */
-	public Album getObject();
+    /**
+     * @return the object
+     */
+    public Album getObject();
 
-	/**
-	 * @param object
-	 *            the object to set
-	 */
-	void setObject(Album object);
+    /**
+     * @param object
+     *            the object to set
+     */
+    void setObject(Album object);
 
-	/**
-	 * @return the image
-	 */
-	Image getImage();
+    /**
+     * @return the image
+     */
+    Image getImage();
 
-	/**
-	 * @param image
-	 *            the image to set
-	 */
-	void setImage(Image image);
+    /**
+     * @param image
+     *            the image to set
+     */
+    void setImage(Image image);
 }

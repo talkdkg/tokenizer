@@ -20,40 +20,40 @@ import java.util.Date;
  * @author vytautas r.
  */
 public interface Persistable extends Serializable {
-	/**
-	 * @return unique object identifier
-	 */
-	Long getId();
+    /**
+     * @return unique object identifier
+     */
+    Long getId();
 
-	/**
-	 * Unique identifier to set
-	 * 
-	 * @param id
-	 */
-	void setId(Long id);
+    /**
+     * Unique identifier to set
+     * 
+     * @param id
+     */
+    void setId(Long id);
 
-	/**
-	 * @return true if entity is not stored into database yet
-	 */
-	boolean isNew();
+    /**
+     * @return true if entity is not stored into database yet
+     */
+    boolean isNew();
 
-	/**
-	 * @return date when instance was created
-	 */
-	Date getCreateDate();
+    /**
+     * @return date when instance was created
+     */
+    Date getCreateDate();
 
-	/**
-	 * @param createDate
-	 */
-	void setCreateDate(Date createDate);
+    /**
+     * @param createDate
+     */
+    void setCreateDate(Date createDate);
 
-	/**
-	 * @param updateDate
-	 */
-	void setUpdateDate(Date updateDate);
+    /**
+     * @param updateDate
+     */
+    void setUpdateDate(Date updateDate);
 
-	/**
-	 * @return date when instance was updated
-	 */
-	Date getUpdateDate();
+    /**
+     * @return date when instance was updated
+     */
+    Date getUpdateDate();
 }

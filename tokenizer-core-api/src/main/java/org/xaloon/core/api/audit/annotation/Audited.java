@@ -34,6 +34,6 @@ import org.xaloon.core.api.audit.model.AuditState;
 @Target({ METHOD, TYPE })
 @Retention(RUNTIME)
 public @interface Audited {
-	@Nonbinding
-	AuditState state() default AuditState.CREATE;
+    @Nonbinding
+    AuditState state() default AuditState.CREATE;
 }

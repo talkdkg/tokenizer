@@ -38,14 +38,13 @@ import org.tokenizer.thrift.ThriftTokenizerService;
 
 public class TokenizerServiceImpl implements ThriftTokenizerService.Iface {
 
-    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory
-            .getLogger(TokenizerServiceImpl.class);
+    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(TokenizerServiceImpl.class);
 
     private static SolrServer solrServer = SolrUtils.getSolrServerForMessages();
 
     @Override
-    public ThriftQueryResponse get_message_records(final String query,
-            final int start, final int rows) throws TException {
+    public ThriftQueryResponse get_message_records(final String query, final int start, final int rows)
+            throws TException {
 
         SolrQuery solrQuery = new SolrQuery();
         solrQuery.setQuery(query);
@@ -184,11 +183,9 @@ public class TokenizerServiceImpl implements ThriftTokenizerService.Iface {
 
         @Override
         public String toString() {
-            return "MessageBean [id=" + id + ", host=" + host + ", content="
-                    + content + ", age=" + age + ", author=" + author
-                    + ", date=" + date + ", sex=" + sex + ", title=" + title
-                    + ", topic=" + topic + ", userRating=" + userRating
-                    + ", highlightSnippet=" + highlightSnippet + "]";
+            return "MessageBean [id=" + id + ", host=" + host + ", content=" + content + ", age=" + age + ", author="
+                    + author + ", date=" + date + ", sex=" + sex + ", title=" + title + ", topic=" + topic
+                    + ", userRating=" + userRating + ", highlightSnippet=" + highlightSnippet + "]";
         }
 
     }
@@ -213,8 +210,7 @@ public class TokenizerServiceImpl implements ThriftTokenizerService.Iface {
             .forPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
 
     @Override
-    public ThriftQueryResponse get_message_records_by_date_range(
-            final String query, final int start, final int rows,
+    public ThriftQueryResponse get_message_records_by_date_range(final String query, final int start, final int rows,
             final long startTime, final long endTime) throws TException {
         SolrQuery solrQuery = new SolrQuery();
         solrQuery.setQuery(query);
@@ -226,18 +222,15 @@ public class TokenizerServiceImpl implements ThriftTokenizerService.Iface {
         DateTime startDateTime = new DateTime(startTime);
         DateTime endDateTime = new DateTime(endTime);
 
-        solrQuery.addFilterQuery("date_tdt:["
-                + startDateTime.toString(TWITTER_DATE_FORMATTER) + " TO "
+        solrQuery.addFilterQuery("date_tdt:[" + startDateTime.toString(TWITTER_DATE_FORMATTER) + " TO "
                 + endDateTime.toString(TWITTER_DATE_FORMATTER) + "]");
 
         return query(solrQuery);
     }
 
     @Override
-    public ThriftQueryResponse get_message_records_by_date_range_and_source(
-            final String query, final int start, final int rows,
-            final long startTime, final long endTime, final String source)
-            throws TException {
+    public ThriftQueryResponse get_message_records_by_date_range_and_source(final String query, final int start,
+            final int rows, final long startTime, final long endTime, final String source) throws TException {
         SolrQuery solrQuery = new SolrQuery();
         solrQuery.setQuery(query);
         solrQuery.setStart(start);
@@ -248,8 +241,7 @@ public class TokenizerServiceImpl implements ThriftTokenizerService.Iface {
         DateTime startDateTime = new DateTime(startTime);
         DateTime endDateTime = new DateTime(endTime);
 
-        solrQuery.addFilterQuery("date_tdt:["
-                + startDateTime.toString(TWITTER_DATE_FORMATTER) + " TO "
+        solrQuery.addFilterQuery("date_tdt:[" + startDateTime.toString(TWITTER_DATE_FORMATTER) + " TO "
                 + endDateTime.toString(TWITTER_DATE_FORMATTER) + "]");
 
         solrQuery.addFilterQuery("host_s:" + source);
@@ -258,8 +250,7 @@ public class TokenizerServiceImpl implements ThriftTokenizerService.Iface {
     }
 
     @Override
-    public ThriftQueryResponse get_message_records_by_source(
-            final String query, final int start, final int rows,
+    public ThriftQueryResponse get_message_records_by_source(final String query, final int start, final int rows,
             final String source) throws TException {
         SolrQuery solrQuery = new SolrQuery();
         solrQuery.setQuery(query);
@@ -273,8 +264,7 @@ public class TokenizerServiceImpl implements ThriftTokenizerService.Iface {
         return query(solrQuery);
     }
 
-    private ThriftQueryResponse query(final SolrQuery solrQuery)
-            throws TException {
+    private ThriftQueryResponse query(final SolrQuery solrQuery) throws TException {
 
         List<MessageBean> beans;
         QueryResponse queryResponse = null;
@@ -291,11 +281,9 @@ public class TokenizerServiceImpl implements ThriftTokenizerService.Iface {
 
         LOG.debug(queryResponse.toString());
 
-        thriftQueryResponse
-                .setElapsedTime((int) queryResponse.getElapsedTime());
+        thriftQueryResponse.setElapsedTime((int) queryResponse.getElapsedTime());
         thriftQueryResponse.setQTime(queryResponse.getQTime());
-        thriftQueryResponse.setNumFound(queryResponse.getResults()
-                .getNumFound());
+        thriftQueryResponse.setNumFound(queryResponse.getResults().getNumFound());
 
         beans = queryResponse.getBeans(MessageBean.class);
 
@@ -312,9 +300,8 @@ public class TokenizerServiceImpl implements ThriftTokenizerService.Iface {
             thriftMessageRecord.setAuthor(bean.getAuthor());
             thriftMessageRecord.setContent(bean.getContent());
             if (bean.getSex() != null) {
-                thriftMessageRecord
-                        .setGender(bean.getSex().equals("male") ? ThriftGenderType.MALE
-                                : ThriftGenderType.FEMALE);
+                thriftMessageRecord.setGender(bean.getSex().equals("male") ? ThriftGenderType.MALE
+                        : ThriftGenderType.FEMALE);
             }
 
             thriftMessageRecord.setSource(bean.getHost());

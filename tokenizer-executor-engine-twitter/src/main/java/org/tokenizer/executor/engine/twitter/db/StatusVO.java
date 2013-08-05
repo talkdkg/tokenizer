@@ -235,19 +235,14 @@ public class StatusVO implements Status {
 
     @Override
     public String toString() {
-        return "StatusVO [id=" + id + ", createdAt=" + createdAt + ", text="
-                + text + ", source=" + source + ", isTruncated=" + isTruncated
-                + ", inReplyToStatusId=" + inReplyToStatusId
-                + ", inReplyToUserId=" + inReplyToUserId + ", isFavorited="
-                + isFavorited + ", inReplyToScreenName=" + inReplyToScreenName
-                + ", geoLocation=" + geoLocation + ", place=" + place
-                + ", retweetCount=" + retweetCount + ", wasRetweetedByMe="
-                + wasRetweetedByMe + ", contributorsIDs="
-                + Arrays.toString(contributorsIDs) + ", retweetedStatus="
-                + retweetedStatus + ", userMentionEntities="
-                + Arrays.toString(userMentionEntities) + ", urlEntities="
-                + Arrays.toString(urlEntities) + ", hashtagEntities="
-                + Arrays.toString(hashtagEntities) + ", mediaEntities="
+        return "StatusVO [id=" + id + ", createdAt=" + createdAt + ", text=" + text + ", source=" + source
+                + ", isTruncated=" + isTruncated + ", inReplyToStatusId=" + inReplyToStatusId + ", inReplyToUserId="
+                + inReplyToUserId + ", isFavorited=" + isFavorited + ", inReplyToScreenName=" + inReplyToScreenName
+                + ", geoLocation=" + geoLocation + ", place=" + place + ", retweetCount=" + retweetCount
+                + ", wasRetweetedByMe=" + wasRetweetedByMe + ", contributorsIDs=" + Arrays.toString(contributorsIDs)
+                + ", retweetedStatus=" + retweetedStatus + ", userMentionEntities="
+                + Arrays.toString(userMentionEntities) + ", urlEntities=" + Arrays.toString(urlEntities)
+                + ", hashtagEntities=" + Arrays.toString(hashtagEntities) + ", mediaEntities="
                 + Arrays.toString(mediaEntities) + ", user=" + user + "]";
     }
 

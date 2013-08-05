@@ -15,19 +15,19 @@ package org.tokenizer.executor.model.api;
 
 @SuppressWarnings("serial")
 public class TaskModelException extends Exception {
-	public TaskModelException() {
-		super();
-	}
+    public TaskModelException() {
+        super();
+    }
 
-	public TaskModelException(String message) {
-		super(message);
-	}
+    public TaskModelException(String message) {
+        super(message);
+    }
 
-	public TaskModelException(String message, Throwable cause) {
-		super(message, cause);
-	}
+    public TaskModelException(String message, Throwable cause) {
+        super(message, cause);
+    }
 
-	public TaskModelException(Throwable cause) {
-		super(cause);
-	}
+    public TaskModelException(Throwable cause) {
+        super(cause);
+    }
 }

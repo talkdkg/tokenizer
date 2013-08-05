@@ -43,15 +43,11 @@ public class ListTasksCli extends BaseAdminCli {
         System.out.println();
         for (TaskInfoBean task : tasks) {
             System.out.println(task.getUuid().toString());
-            System.out.println("  + General state: "
-                    + task.getTaskConfiguration().getGeneralState());
-            System.out.println("  + Submitted: "
-                    + new Date(task.getSubmitTime()));
+            System.out.println("  + General state: " + task.getTaskConfiguration().getGeneralState());
+            System.out.println("  + Submitted: " + new Date(task.getSubmitTime()));
             System.out.println("  + Stats: ");
-            for (Map.Entry<String, Long> counter : task.getCounters()
-                    .entrySet()) {
-                System.out.println("    + " + counter.getKey() + ": "
-                        + counter.getValue());
+            for (Map.Entry<String, Long> counter : task.getCounters().entrySet()) {
+                System.out.println("    + " + counter.getKey() + ": " + counter.getValue());
             }
         }
         return 0;

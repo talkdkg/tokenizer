@@ -24,55 +24,52 @@ import javax.persistence.Table;
 @Table(name = "XAL_COUNTER")
 public class JpaCounterEntity implements Serializable {
 
-	/**
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	@EmbeddedId
-	private JpaCounterId counterId;
+    @EmbeddedId
+    private JpaCounterId counterId;
 
-	@Column(name = "VALUE_COUNT", nullable = false)
-	private Long count;
+    @Column(name = "VALUE_COUNT", nullable = false)
+    private Long count;
 
-	/**
-	 * Gets count.
-	 * 
-	 * @return count
-	 */
-	public Long getCount() {
-		return count;
-	}
+    /**
+     * Gets count.
+     * 
+     * @return count
+     */
+    public Long getCount() {
+        return count;
+    }
 
+    /**
+     * Sets count.
+     * 
+     * @param count
+     *            count
+     */
+    public void setCount(Long count) {
+        this.count = count;
+    }
 
-	/**
-	 * Sets count.
-	 * 
-	 * @param count
-	 *            count
-	 */
-	public void setCount(Long count) {
-		this.count = count;
-	}
+    /**
+     * Gets counterId.
+     * 
+     * @return counterId
+     */
+    public JpaCounterId getCounterId() {
+        return counterId;
+    }
 
-
-	/**
-	 * Gets counterId.
-	 * 
-	 * @return counterId
-	 */
-	public JpaCounterId getCounterId() {
-		return counterId;
-	}
-
-
-	/**
-	 * Sets counterId.
-	 * 
-	 * @param counterId
-	 *            counterId
-	 */
-	public void setCounterId(JpaCounterId counterId) {
-		this.counterId = counterId;
-	}
+    /**
+     * Sets counterId.
+     * 
+     * @param counterId
+     *            counterId
+     */
+    public void setCounterId(JpaCounterId counterId) {
+        this.counterId = counterId;
+    }
 }

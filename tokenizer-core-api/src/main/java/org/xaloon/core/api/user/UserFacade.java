@@ -25,27 +25,27 @@ import org.xaloon.core.api.user.model.User;
  * @author vytautas r.
  */
 public interface UserFacade extends UserDao, LoginService {
-	/**
+    /**
 	 * 
 	 */
-	String EMAIL_VALIDATION_ERROR = "EMAIL_VALIDATION_ERROR";
+    String EMAIL_VALIDATION_ERROR = "EMAIL_VALIDATION_ERROR";
 
-	/**
-	 * @param user
-	 * @param password
-	 * @param active
-	 * @param alias
-	 * @return activation key
-	 */
-	<T extends User> String registerUser(T user, String password, boolean active, KeyValue<String, String> alias);
+    /**
+     * @param user
+     * @param password
+     * @param active
+     * @param alias
+     * @return activation key
+     */
+    <T extends User> String registerUser(T user, String password, boolean active, KeyValue<String, String> alias);
 
-	/**
-	 * Generates and sends new password to requested email if found
-	 * 
-	 * @param email
-	 * @return null if operation completed successfully, otherwise error code, which might be localized
-	 */
-	String sendNewPassword(String email);
+    /**
+     * Generates and sends new password to requested email if found
+     * 
+     * @param email
+     * @return null if operation completed successfully, otherwise error code, which might be localized
+     */
+    String sendNewPassword(String email);
 
-	List<UserSearchResult> findCombinedUsers(Map<String, String> filter, long first, long count);
+    List<UserSearchResult> findCombinedUsers(Map<String, String> filter, long first, long count);
 }

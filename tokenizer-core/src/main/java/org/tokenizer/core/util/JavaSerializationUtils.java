@@ -22,8 +22,7 @@ import java.io.Serializable;
 
 public class JavaSerializationUtils {
 
-    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory
-            .getLogger(JavaSerializationUtils.class);
+    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(JavaSerializationUtils.class);
 
     private JavaSerializationUtils() {
     }

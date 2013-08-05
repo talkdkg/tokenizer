@@ -52,7 +52,7 @@ public class SitemapsFetcherTask extends AbstractTask<SitemapsFetcherTaskConfigu
     private BaseRobotRules robotRules = null;
 
     public SitemapsFetcherTask(final UUID uuid, final String friendlyName, final ZooKeeperItf zk,
-        final SitemapsFetcherTaskConfiguration taskConfiguration, final CrawlerRepository repository,
+            final SitemapsFetcherTaskConfiguration taskConfiguration, final CrawlerRepository repository,
             final WritableExecutorModel fetcherModel, final HostLocker hostLocker) {
 
         super(uuid, friendlyName, zk, taskConfiguration, repository, fetcherModel, hostLocker);
@@ -163,6 +163,5 @@ public class SitemapsFetcherTask extends AbstractTask<SitemapsFetcherTaskConfigu
             }
         }
     }
-
 
 }

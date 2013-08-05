@@ -20,12 +20,15 @@ import org.xaloon.core.api.security.model.Authority;
 import org.xaloon.core.api.security.model.SecurityRole;
 
 /**
- * Core plugin interface. It defines required methods provided by plugin implementation. Plugin contains property <b>pluginBean</b> which represents
- * configuration parameters of current plugin. This property usually will be modified via administration panel. It also may be configured once on
+ * Core plugin interface. It defines required methods provided by plugin implementation. Plugin contains property
+ * <b>pluginBean</b> which represents
+ * configuration parameters of current plugin. This property usually will be modified via administration panel. It also
+ * may be configured once on
  * application startup
  * <p>
- * Property <b>administrationFormClass</b> returns administration view for selected plugin. This property later is used for plugin administration
- * page, which takes administration panel to display configuration parameters for administrator.
+ * Property <b>administrationFormClass</b> returns administration view for selected plugin. This property later is used
+ * for plugin administration page, which takes administration panel to display configuration parameters for
+ * administrator.
  * 
  * @author vytautas r.
  * @version 1.1, 09/28/10
@@ -34,138 +37,140 @@ import org.xaloon.core.api.security.model.SecurityRole;
 
 public interface Plugin extends Serializable, Comparable<Plugin> {
 
-	/**
-	 * Returns administration form view class for this plugin
-	 * 
-	 * @return class of administration view panel
-	 */
-	Class<?> getAdministratorFormClass();
+    /**
+     * Returns administration form view class for this plugin
+     * 
+     * @return class of administration view panel
+     */
+    Class<?> getAdministratorFormClass();
 
-	/**
-	 * Registers unique id for this plugin
-	 * 
-	 * @param id
-	 *            string format parameter to register
-	 */
-	void setId(String id);
+    /**
+     * Registers unique id for this plugin
+     * 
+     * @param id
+     *            string format parameter to register
+     */
+    void setId(String id);
 
-	/**
-	 * Returns unique id for this plugin
-	 * 
-	 * @return string format of plugin identification
-	 */
-	String getId();
+    /**
+     * Returns unique id for this plugin
+     * 
+     * @return string format of plugin identification
+     */
+    String getId();
 
-	/**
-	 * Registers name of this plugin
-	 * 
-	 * @param name
-	 *            string formatted message to register
-	 */
-	void setName(String name);
+    /**
+     * Registers name of this plugin
+     * 
+     * @param name
+     *            string formatted message to register
+     */
+    void setName(String name);
 
-	/**
-	 * Returns name of this plugin
-	 * 
-	 * @return string formatted message as plugin name
-	 */
-	String getName();
+    /**
+     * Returns name of this plugin
+     * 
+     * @return string formatted message as plugin name
+     */
+    String getName();
 
-	/**
-	 * Registers short description of this plugin
-	 * 
-	 * @param description
-	 *            short plain string or html formatted string
-	 */
-	void setDescription(String description);
+    /**
+     * Registers short description of this plugin
+     * 
+     * @param description
+     *            short plain string or html formatted string
+     */
+    void setDescription(String description);
 
-	/**
-	 * Returns short description of this plugin
-	 * 
-	 * @return string representation of description
-	 */
-	String getDescription();
+    /**
+     * Returns short description of this plugin
+     * 
+     * @return string representation of description
+     */
+    String getDescription();
 
-	/**
-	 * Registers order of this plugin if required. Might be used to sort plugins
-	 * 
-	 * @param order
-	 *            integer number greater than zero if plugin is sorted.
-	 */
-	void setOrder(int order);
+    /**
+     * Registers order of this plugin if required. Might be used to sort plugins
+     * 
+     * @param order
+     *            integer number greater than zero if plugin is sorted.
+     */
+    void setOrder(int order);
 
-	/**
-	 * Returns order of this plugin
-	 * 
-	 * @return integer number greater than zero if plugin is sorted. Otherwise it will not be sorted
-	 */
-	int getOrder();
+    /**
+     * Returns order of this plugin
+     * 
+     * @return integer number greater than zero if plugin is sorted. Otherwise it will not be sorted
+     */
+    int getOrder();
 
-	/**
-	 * Returns category of this plugin. Usually is should be used only to generate menu of categories for administration purposes
-	 * 
-	 * @return string format of plugin category
-	 */
-	String getCategory();
+    /**
+     * Returns category of this plugin. Usually is should be used only to generate menu of categories for administration
+     * purposes
+     * 
+     * @return string format of plugin category
+     */
+    String getCategory();
 
-	/**
-	 * Registers category of this plugin. Category format is "/parentCategoryName/childCategoryName", for example "/administration/statistics"
-	 * 
-	 * @param categoryToSet
-	 *            string format of plugin category
-	 */
-	void setCategory(String categoryToSet);
+    /**
+     * Registers category of this plugin. Category format is "/parentCategoryName/childCategoryName", for example
+     * "/administration/statistics"
+     * 
+     * @param categoryToSet
+     *            string format of plugin category
+     */
+    void setCategory(String categoryToSet);
 
-	/**
-	 * Returns current plugin version
-	 * 
-	 * @return string representation of plugin version
-	 */
-	String getVersion();
+    /**
+     * Returns current plugin version
+     * 
+     * @return string representation of plugin version
+     */
+    String getVersion();
 
-	/**
-	 * Plugin type is used to determine how plugin is registered or processed. Most generic plugin types are {@link PluginType#VISIBLE} and
-	 * {@link PluginType#HIDDEN}. Plugins might be interpreted in different ways depending of their type, for example {@link PluginType#HIDDEN}
-	 * plugins should not be used while generating menu
-	 * 
-	 * @see PluginType
-	 * 
-	 * @param pluginType
-	 *            string representation of plugin type
-	 */
-	void setType(String pluginType);
+    /**
+     * Plugin type is used to determine how plugin is registered or processed. Most generic plugin types are
+     * {@link PluginType#VISIBLE} and {@link PluginType#HIDDEN}. Plugins might be interpreted in different ways
+     * depending of their type, for example {@link PluginType#HIDDEN} plugins should not be used while generating menu
+     * 
+     * @see PluginType
+     * 
+     * @param pluginType
+     *            string representation of plugin type
+     */
+    void setType(String pluginType);
 
-	/**
-	 * Returns current plugin type
-	 * 
-	 * @return string representation of plugin type
-	 */
-	String getType();
+    /**
+     * Returns current plugin type
+     * 
+     * @return string representation of plugin type
+     */
+    String getType();
 
-	/**
-	 * Returns the list of roles supported by this plugin
-	 * 
-	 * @return list of {@link SecurityRole} as a representation of roles
-	 */
-	List<SecurityRole> getSupportedRoles();
+    /**
+     * Returns the list of roles supported by this plugin
+     * 
+     * @return list of {@link SecurityRole} as a representation of roles
+     */
+    List<SecurityRole> getSupportedRoles();
 
-	/**
-	 * Returns the list of permissions/authorities supported by this plugin
-	 * 
-	 * @return list of {@link Authority} as a representation of permissions
-	 */
-	List<Authority> getSupportedAuthorities();
+    /**
+     * Returns the list of permissions/authorities supported by this plugin
+     * 
+     * @return list of {@link Authority} as a representation of permissions
+     */
+    List<Authority> getSupportedAuthorities();
 
-	/**
-	 * Plugin configuration, which cannot be changed on runtime, for example, custom blog page link pages
-	 * 
-	 * @return plugin implementation of {@link PluginConfigEntry}
-	 */
-	<T extends PluginConfigEntry> T getTechnicalConfiguration();
+    /**
+     * Plugin configuration, which cannot be changed on runtime, for example, custom blog page link pages
+     * 
+     * @return plugin implementation of {@link PluginConfigEntry}
+     */
+    <T extends PluginConfigEntry> T getTechnicalConfiguration();
 
-	/**
-	 * @param technicalConfiguration
-	 *            sets custom plugin configuration to be used for the application
-	 */
-	<T extends PluginConfigEntry> void setTechnicalConfiguration(T technicalConfiguration);
+    /**
+     * @param technicalConfiguration
+     *            sets custom plugin configuration to be used for the application
+     */
+    <T extends PluginConfigEntry> void setTechnicalConfiguration(T technicalConfiguration);
 }

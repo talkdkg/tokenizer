@@ -13,12 +13,16 @@
  */
 package org.tokenizer.crawler.db;
 
-import org.junit.*;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * The class <code>RepositoryExceptionTest</code> contains tests for the class <code>{@link RepositoryException}</code>.
- *
+ * 
  * @generatedBy CodePro at 4/1/13 2:52 PM
  * @author Fuad
  * @version $Revision: 1.0 $
@@ -26,14 +30,13 @@ import static org.junit.Assert.*;
 public class RepositoryExceptionTest {
     /**
      * Run the RepositoryException() constructor test.
-     *
+     * 
      * @throws Exception
-     *
+     * 
      * @generatedBy CodePro at 4/1/13 2:52 PM
      */
     @Test
-    public void testRepositoryException_1()
-        throws Exception {
+    public void testRepositoryException_1() throws Exception {
 
         RepositoryException result = new RepositoryException();
 
@@ -47,14 +50,13 @@ public class RepositoryExceptionTest {
 
     /**
      * Run the RepositoryException(String) constructor test.
-     *
+     * 
      * @throws Exception
-     *
+     * 
      * @generatedBy CodePro at 4/1/13 2:52 PM
      */
     @Test
-    public void testRepositoryException_2()
-        throws Exception {
+    public void testRepositoryException_2() throws Exception {
         String message = "";
 
         RepositoryException result = new RepositoryException(message);
@@ -69,14 +71,13 @@ public class RepositoryExceptionTest {
 
     /**
      * Run the RepositoryException(Throwable) constructor test.
-     *
+     * 
      * @throws Exception
-     *
+     * 
      * @generatedBy CodePro at 4/1/13 2:52 PM
      */
     @Test
-    public void testRepositoryException_3()
-        throws Exception {
+    public void testRepositoryException_3() throws Exception {
         Throwable cause = new Throwable();
 
         RepositoryException result = new RepositoryException(cause);
@@ -90,14 +91,13 @@ public class RepositoryExceptionTest {
 
     /**
      * Run the RepositoryException(String,Throwable) constructor test.
-     *
+     * 
      * @throws Exception
-     *
+     * 
      * @generatedBy CodePro at 4/1/13 2:52 PM
      */
     @Test
-    public void testRepositoryException_4()
-        throws Exception {
+    public void testRepositoryException_4() throws Exception {
         String message = "";
         Throwable cause = new Throwable();
 
@@ -112,37 +112,36 @@ public class RepositoryExceptionTest {
 
     /**
      * Perform pre-test initialization.
-     *
+     * 
      * @throws Exception
-     *         if the initialization fails for some reason
-     *
+     *             if the initialization fails for some reason
+     * 
      * @generatedBy CodePro at 4/1/13 2:52 PM
      */
     @Before
-    public void setUp()
-        throws Exception {
+    public void setUp() throws Exception {
         // add additional set up code here
     }
 
     /**
      * Perform post-test clean-up.
-     *
+     * 
      * @throws Exception
-     *         if the clean-up fails for some reason
-     *
+     *             if the clean-up fails for some reason
+     * 
      * @generatedBy CodePro at 4/1/13 2:52 PM
      */
     @After
-    public void tearDown()
-        throws Exception {
+    public void tearDown() throws Exception {
         // Add additional tear down code here
     }
 
     /**
      * Launch the test.
-     *
-     * @param args the command line arguments
-     *
+     * 
+     * @param args
+     *            the command line arguments
+     * 
      * @generatedBy CodePro at 4/1/13 2:52 PM
      */
     public static void main(String[] args) {

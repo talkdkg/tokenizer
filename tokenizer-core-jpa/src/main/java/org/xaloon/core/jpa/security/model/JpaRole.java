@@ -39,96 +39,96 @@ import org.xaloon.core.jpa.model.BookmarkableEntity;
 @Table(name = "XAL_SECURITY_ROLE", uniqueConstraints = @UniqueConstraint(columnNames = { "ROLE_NAME" }))
 public class JpaRole extends BookmarkableEntity implements SecurityRole {
 
-	/**
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	@Column(name = "ROLE_NAME", nullable = false)
-	private String name;
+    @Column(name = "ROLE_NAME", nullable = false)
+    private String name;
 
-	@ManyToMany(fetch = FetchType.LAZY)
-	@JoinTable(name = "XAL_SECURITY_USER_ROLES", joinColumns = @JoinColumn(name = "ROLE_ID", referencedColumnName = "ID"), inverseJoinColumns = @JoinColumn(name = "USER_DETAILS_ID", referencedColumnName = "ID"))
-	private List<JpaUserDetails> users = new ArrayList<JpaUserDetails>();
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "XAL_SECURITY_USER_ROLES", joinColumns = @JoinColumn(name = "ROLE_ID", referencedColumnName = "ID"), inverseJoinColumns = @JoinColumn(name = "USER_DETAILS_ID", referencedColumnName = "ID"))
+    private List<JpaUserDetails> users = new ArrayList<JpaUserDetails>();
 
-	@ManyToMany(fetch = FetchType.EAGER)
-	@JoinTable(name = "XAL_SECURITY_ROLE_AUTHORITIES", joinColumns = @JoinColumn(name = "ROLE_ID", referencedColumnName = "ID"), inverseJoinColumns = @JoinColumn(name = "AUTHORITY_ID", referencedColumnName = "ID"))
-	private List<JpaAuthority> authorities = new ArrayList<JpaAuthority>();
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "XAL_SECURITY_ROLE_AUTHORITIES", joinColumns = @JoinColumn(name = "ROLE_ID", referencedColumnName = "ID"), inverseJoinColumns = @JoinColumn(name = "AUTHORITY_ID", referencedColumnName = "ID"))
+    private List<JpaAuthority> authorities = new ArrayList<JpaAuthority>();
 
-	/**
-	 * @return role name
-	 */
-	public String getName() {
-		return name;
-	}
+    /**
+     * @return role name
+     */
+    public String getName() {
+        return name;
+    }
 
-	/**
-	 * @param name
-	 */
-	public void setName(String name) {
-		this.name = name;
-	}
+    /**
+     * @param name
+     */
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	/**
-	 * Gets users.
-	 * 
-	 * @return users
-	 */
-	public List<JpaUserDetails> getUsers() {
-		return users;
-	}
+    /**
+     * Gets users.
+     * 
+     * @return users
+     */
+    public List<JpaUserDetails> getUsers() {
+        return users;
+    }
 
-	/**
-	 * Sets users.
-	 * 
-	 * @param users
-	 *            users
-	 */
-	public void setUsers(List<JpaUserDetails> users) {
-		this.users = users;
-	}
+    /**
+     * Sets users.
+     * 
+     * @param users
+     *            users
+     */
+    public void setUsers(List<JpaUserDetails> users) {
+        this.users = users;
+    }
 
-	/**
-	 * Gets authorities.
-	 * 
-	 * @return authorities
-	 */
-	public List<JpaAuthority> getAuthorities() {
-		return authorities;
-	}
+    /**
+     * Gets authorities.
+     * 
+     * @return authorities
+     */
+    public List<JpaAuthority> getAuthorities() {
+        return authorities;
+    }
 
-	/**
-	 * Sets authorities.
-	 * 
-	 * @param authorities
-	 *            authorities
-	 */
-	public void setAuthorities(List<JpaAuthority> authorities) {
-		this.authorities = authorities;
-	}
+    /**
+     * Sets authorities.
+     * 
+     * @param authorities
+     *            authorities
+     */
+    public void setAuthorities(List<JpaAuthority> authorities) {
+        this.authorities = authorities;
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (obj == null || !(obj instanceof JpaRole)) {
-			return false;
-		}
-		JpaRole entity = (JpaRole)obj;
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null || !(obj instanceof JpaRole)) {
+            return false;
+        }
+        JpaRole entity = (JpaRole) obj;
 
-		EqualsBuilder equalsBuilder = new EqualsBuilder();
-		equalsBuilder.append(getId(), entity.getId());
-		return equalsBuilder.isEquals();
-	}
+        EqualsBuilder equalsBuilder = new EqualsBuilder();
+        equalsBuilder.append(getId(), entity.getId());
+        return equalsBuilder.isEquals();
+    }
 
-	@Override
-	public int hashCode() {
-		HashCodeBuilder hashCodeBuilder = new HashCodeBuilder();
-		hashCodeBuilder.append(getId());
-		return hashCodeBuilder.hashCode();
-	}
+    @Override
+    public int hashCode() {
+        HashCodeBuilder hashCodeBuilder = new HashCodeBuilder();
+        hashCodeBuilder.append(getId());
+        return hashCodeBuilder.hashCode();
+    }
 
-	@Override
-	@PrePersist
-	protected void beforeCreate() {
-		setPath(UrlUtil.encode(getName()));
-	}
+    @Override
+    @PrePersist
+    protected void beforeCreate() {
+        setPath(UrlUtil.encode(getName()));
+    }
 }

@@ -33,7 +33,8 @@ public enum DemoLabelKeys implements I18NKeys<DemoLabels> {
         String mapValue = getBundle(locale).getValue(this);
         if (mapValue == null) {
             return this.name().replace("_", " ");
-        } else {
+        }
+        else {
             return mapValue;
         }
 

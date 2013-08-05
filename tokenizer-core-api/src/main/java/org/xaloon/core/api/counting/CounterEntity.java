@@ -17,24 +17,24 @@ import org.xaloon.core.api.persistence.Persistable;
 
 public interface CounterEntity extends Persistable {
 
-	String getCounterGroup();
+    String getCounterGroup();
 
-	void setCounterGroup(String counterGroup);
+    void setCounterGroup(String counterGroup);
 
-	/**
-	 * Trackable object may have the same id if there are many implementations. Category + id should ensure uniqueness
-	 * 
-	 * @return unique identifier for the same group of trackable objects
-	 */
-	Long getCategoryId();
+    /**
+     * Trackable object may have the same id if there are many implementations. Category + id should ensure uniqueness
+     * 
+     * @return unique identifier for the same group of trackable objects
+     */
+    Long getCategoryId();
 
-	void setCategoryId(Long categoryId);
+    void setCategoryId(Long categoryId);
 
-	Long getEntityId();
+    Long getEntityId();
 
-	void setEntityId(Long entityId);
+    void setEntityId(Long entityId);
 
-	Long getCount();
+    Long getCount();
 
-	void setCount(Long count);
+    void setCount(Long count);
 }

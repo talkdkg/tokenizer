@@ -23,39 +23,39 @@ import org.xaloon.core.impl.persistence.DefaultPersistentObject;
  * @author vytautas r.
  */
 public class DefaultSecurityEntity extends DefaultPersistentObject implements Authority {
-	/**
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private String name;
+    private String name;
 
-	/**
-	 * Construct.
-	 * 
-	 * @param name
-	 */
-	public DefaultSecurityEntity(String name) {
-		this.name = name;
-		setPath(UrlUtil.encode(name));
-	}
+    /**
+     * Construct.
+     * 
+     * @param name
+     */
+    public DefaultSecurityEntity(String name) {
+        this.name = name;
+        setPath(UrlUtil.encode(name));
+    }
 
-	/**
-	 * Gets name.
-	 * 
-	 * @return name
-	 */
-	public String getName() {
-		return name;
-	}
+    /**
+     * Gets name.
+     * 
+     * @return name
+     */
+    public String getName() {
+        return name;
+    }
 
-	/**
-	 * Sets name.
-	 * 
-	 * @param name
-	 *            name
-	 */
-	public void setName(String name) {
-		this.name = name;
-	}
+    /**
+     * Sets name.
+     * 
+     * @param name
+     *            name
+     */
+    public void setName(String name) {
+        this.name = name;
+    }
 }

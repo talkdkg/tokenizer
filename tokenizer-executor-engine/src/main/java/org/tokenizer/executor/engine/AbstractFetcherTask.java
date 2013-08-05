@@ -62,12 +62,13 @@ public abstract class AbstractFetcherTask<T extends AbstractFetcherTaskConfigura
     private static final int MAX_ENTRIES = 10000;
     private Map<String, String> urlCache = new LinkedHashMap<String, String>(MAX_ENTRIES + 1, .75F, true) {
         private static final long serialVersionUID = 1L;
+
         @Override
-        public boolean removeEldestEntry(@SuppressWarnings("rawtypes") final Map.Entry eldest) {
+        public boolean removeEldestEntry(@SuppressWarnings("rawtypes")
+        final Map.Entry eldest) {
             return size() > MAX_ENTRIES;
         }
     };
-
 
     private static final long DEFAULT_REFRESH_DELAY = 10 * 1000;
 
@@ -95,9 +96,9 @@ public abstract class AbstractFetcherTask<T extends AbstractFetcherTaskConfigura
 
         super(uuid, friendlyName, zk, taskConfiguration, crawlerRepository, fetcherModel, hostLocker);
 
-        UserAgent userAgent =
-            new UserAgent(this.taskConfiguration.getAgentName(), this.taskConfiguration.getEmailAddress(),
-                this.taskConfiguration.getWebAddress(), UserAgent.DEFAULT_BROWSER_VERSION, "2.1");
+        UserAgent userAgent = new UserAgent(this.taskConfiguration.getAgentName(),
+                this.taskConfiguration.getEmailAddress(), this.taskConfiguration.getWebAddress(),
+                UserAgent.DEFAULT_BROWSER_VERSION, "2.1");
 
         // getTaskConfiguration().getAgentName();
 
@@ -168,8 +169,7 @@ public abstract class AbstractFetcherTask<T extends AbstractFetcherTaskConfigura
             FetchedResult fetchedResult = null;
             try {
                 fetchedResult = httpClient.get(url, null);
-            }
-            catch (RedirectFetchException e) {
+            } catch (RedirectFetchException e) {
 
                 metricsCache.increment(MetricsCache.REDIRECT_COUNT);
 
@@ -203,8 +203,7 @@ public abstract class AbstractFetcherTask<T extends AbstractFetcherTaskConfigura
                     crawlerRepository.insert(redirectedUrlRecord);
                 }
 
-            }
-            catch (HttpFetchException e) {
+            } catch (HttpFetchException e) {
 
                 crawlerRepository.delete(timestampUrlIDX);
                 timestampUrlIDX.setTimestamp(fetchAttemptTimestamp);
@@ -214,8 +213,7 @@ public abstract class AbstractFetcherTask<T extends AbstractFetcherTaskConfigura
                 urlRecord.setFetchTime(fetchAttemptTimestamp);
                 crawlerRepository.update(urlRecord);
 
-            }
-            catch (BaseFetchException e) {
+            } catch (BaseFetchException e) {
                 if (e.getMessage().contains("Aborted due to INTERRUPTED")) {
                     throw new InterruptedException("Aborted...");
                 }
@@ -259,8 +257,7 @@ public abstract class AbstractFetcherTask<T extends AbstractFetcherTaskConfigura
             urlRecord.setReasonPhrase(fetchedResult.getReasonPhrase());
 
             String charset = CharsetUtils.clean(HttpUtils.getCharsetFromContentType(fetchedResult.getContentType()));
-            WebpageRecord webpageRecord =
-                new WebpageRecord(urlRecord.getBaseUrl(), urlRecord.getFetchTime(), charset,
+            WebpageRecord webpageRecord = new WebpageRecord(urlRecord.getBaseUrl(), urlRecord.getFetchTime(), charset,
                     fetchedResult.getContent(), null);
             crawlerRepository.insertIfNotExists(webpageRecord);
 
@@ -297,11 +294,9 @@ public abstract class AbstractFetcherTask<T extends AbstractFetcherTaskConfigura
     protected synchronized boolean refreshRobotRules() {
         BaseRobotsParser parser = new SimpleRobotRulesParser();
         try {
-            robotRules =
-                RobotUtils.getRobotRules(robotFetcher, parser, new URL("http://" + taskConfiguration.getHost()
+            robotRules = RobotUtils.getRobotRules(robotFetcher, parser, new URL("http://" + taskConfiguration.getHost()
                     + "/robots.txt"));
-        }
-        catch (MalformedURLException e) {
+        } catch (MalformedURLException e) {
             LOG.error("", e);
             return false;
         }
@@ -338,7 +333,7 @@ public abstract class AbstractFetcherTask<T extends AbstractFetcherTaskConfigura
     protected abstract boolean accept(final String url);
 
     protected void processFetchedResult(final FetchedResult fetchedResult) throws InterruptedException,
-        ConnectionException {
+            ConnectionException {
 
         ParserPolicy parserPolicy = new ParserPolicy(MAX_PARSE_DURATION);
         SimpleParser parser = new SimpleParser(parserPolicy);

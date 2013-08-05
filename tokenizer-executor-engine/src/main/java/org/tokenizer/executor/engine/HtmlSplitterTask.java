@@ -44,16 +44,15 @@ public class HtmlSplitterTask extends AbstractTask<HtmlSplitterTaskConfiguration
     private HXPathExpression splitterXPathExpression = null;
 
     public HtmlSplitterTask(final UUID uuid, final String friendlyName, final ZooKeeperItf zk,
-        final HtmlSplitterTaskConfiguration taskConfiguration, final CrawlerRepository crawlerRepository,
-        final WritableExecutorModel model, final HostLocker hostLocker) {
+            final HtmlSplitterTaskConfiguration taskConfiguration, final CrawlerRepository crawlerRepository,
+            final WritableExecutorModel model, final HostLocker hostLocker) {
 
         super(uuid, friendlyName, zk, taskConfiguration, crawlerRepository, model, hostLocker);
 
         try {
-            splitterXPathExpression =
-                new HXPathExpression(LocalXPathFactory.newXPath().compile(this.taskConfiguration.getXpath()));
-        }
-        catch (XPathExpressionException e) {
+            splitterXPathExpression = new HXPathExpression(LocalXPathFactory.newXPath().compile(
+                    this.taskConfiguration.getXpath()));
+        } catch (XPathExpressionException e) {
             LOG.error("", e);
         }
 
@@ -64,8 +63,7 @@ public class HtmlSplitterTask extends AbstractTask<HtmlSplitterTaskConfiguration
         if (splitterXPathExpression == null) {
             return;
         }
-        List<WebpageRecord> webpageRecords =
-            crawlerRepository.listWebpageRecords(taskConfiguration.getHost(),
+        List<WebpageRecord> webpageRecords = crawlerRepository.listWebpageRecords(taskConfiguration.getHost(),
                 taskConfiguration.getSplitAttemptCounter(), 100);
         for (WebpageRecord webpageRecord : webpageRecords) {
             // yes, we encountered that when created dummy task with host=null:
@@ -100,8 +98,7 @@ public class HtmlSplitterTask extends AbstractTask<HtmlSplitterTaskConfiguration
     public List<XmlRecord> parse(final String host, final byte[] content, final String charset) {
         try {
             LOG.trace("Processing HTML: {}", new String(content, charset));
-        }
-        catch (UnsupportedEncodingException e) {
+        } catch (UnsupportedEncodingException e) {
             LOG.error("", e);
         }
         List<XmlRecord> results = new ArrayList<XmlRecord>();
@@ -115,8 +112,7 @@ public class HtmlSplitterTask extends AbstractTask<HtmlSplitterTaskConfiguration
         List<Node> nodes;
         try {
             nodes = splitterXPathExpression.evalAsNativeNodeList(document);
-        }
-        catch (XPathExpressionException e) {
+        } catch (XPathExpressionException e) {
             LOG.error(StringUtils.EMPTY, e);
             return null;
         }
@@ -128,8 +124,7 @@ public class HtmlSplitterTask extends AbstractTask<HtmlSplitterTaskConfiguration
                 record = new XmlRecord(host, xml.getBytes("UTF-8"));
                 results.add(record);
                 LOG.debug("XML record created: {}", record);
-            }
-            catch (UnsupportedEncodingException e) {
+            } catch (UnsupportedEncodingException e) {
                 LOG.error("", e);
             }
         }

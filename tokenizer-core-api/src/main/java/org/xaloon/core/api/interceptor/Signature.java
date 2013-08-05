@@ -20,103 +20,103 @@ import java.io.Serializable;
  */
 public class Signature implements Serializable {
 
-	/**
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private String methodName;
+    private String methodName;
 
-	@SuppressWarnings("rawtypes")
-	private Class declaringType;
+    @SuppressWarnings("rawtypes")
+    private Class declaringType;
 
-	private String declaringTypeName;
+    private String declaringTypeName;
 
-	private Object[] parameters;
+    private Object[] parameters;
 
-	/**
-	 * Gets parameters.
-	 * 
-	 * @return parameters
-	 */
-	public Object[] getParameters() {
-		return parameters;
-	}
+    /**
+     * Gets parameters.
+     * 
+     * @return parameters
+     */
+    public Object[] getParameters() {
+        return parameters;
+    }
 
-	/**
-	 * Sets parameters.
-	 * 
-	 * @param parameters
-	 *            parameters
-	 * @return
-	 */
-	public Signature setParameters(Object[] parameters) {
-		this.parameters = parameters;
-		return this;
-	}
+    /**
+     * Sets parameters.
+     * 
+     * @param parameters
+     *            parameters
+     * @return
+     */
+    public Signature setParameters(Object[] parameters) {
+        this.parameters = parameters;
+        return this;
+    }
 
-	/**
-	 * Gets declaringType.
-	 * 
-	 * @return declaringType
-	 */
-	@SuppressWarnings("rawtypes")
-	public Class getDeclaringType() {
-		return declaringType;
-	}
+    /**
+     * Gets declaringType.
+     * 
+     * @return declaringType
+     */
+    @SuppressWarnings("rawtypes")
+    public Class getDeclaringType() {
+        return declaringType;
+    }
 
-	/**
-	 * Sets declaringType.
-	 * 
-	 * @param declaringType
-	 *            declaringType
-	 * @return
-	 */
-	@SuppressWarnings("rawtypes")
-	public Signature setDeclaringType(Class declaringType) {
-		this.declaringType = declaringType;
-		return this;
-	}
+    /**
+     * Sets declaringType.
+     * 
+     * @param declaringType
+     *            declaringType
+     * @return
+     */
+    @SuppressWarnings("rawtypes")
+    public Signature setDeclaringType(Class declaringType) {
+        this.declaringType = declaringType;
+        return this;
+    }
 
-	/**
-	 * Gets declaringTypeName.
-	 * 
-	 * @return declaringTypeName
-	 */
-	public String getDeclaringTypeName() {
-		return declaringTypeName;
-	}
+    /**
+     * Gets declaringTypeName.
+     * 
+     * @return declaringTypeName
+     */
+    public String getDeclaringTypeName() {
+        return declaringTypeName;
+    }
 
-	/**
-	 * Sets declaringTypeName.
-	 * 
-	 * @param declaringTypeName
-	 *            declaringTypeName
-	 * @return
-	 */
-	public Signature setDeclaringTypeName(String declaringTypeName) {
-		this.declaringTypeName = declaringTypeName;
-		return this;
-	}
+    /**
+     * Sets declaringTypeName.
+     * 
+     * @param declaringTypeName
+     *            declaringTypeName
+     * @return
+     */
+    public Signature setDeclaringTypeName(String declaringTypeName) {
+        this.declaringTypeName = declaringTypeName;
+        return this;
+    }
 
-	/**
-	 * Gets methodName.
-	 * 
-	 * @return methodName
-	 */
-	public String getMethodName() {
-		return methodName;
-	}
+    /**
+     * Gets methodName.
+     * 
+     * @return methodName
+     */
+    public String getMethodName() {
+        return methodName;
+    }
 
-	/**
-	 * Sets methodName.
-	 * 
-	 * @param methodName
-	 *            methodName
-	 * @return
-	 */
-	public Signature setMethodName(String methodName) {
-		this.methodName = methodName;
-		return this;
-	}
+    /**
+     * Sets methodName.
+     * 
+     * @param methodName
+     *            methodName
+     * @return
+     */
+    public Signature setMethodName(String methodName) {
+        this.methodName = methodName;
+        return this;
+    }
 }

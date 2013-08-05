@@ -37,18 +37,13 @@ public class SitemapsLinkedPageFetcherTask extends AbstractTask<SitemapsLinkedPa
     private final BaseHttpFetcher fetcher;
     private BaseRobotRules robotRules = null;
 
-    public SitemapsLinkedPageFetcherTask(final UUID uuid, final String friendlyName,
-            final ZooKeeperItf zk,
-        final SitemapsLinkedPageFetcherTaskConfiguration taskConfiguration,
-            final CrawlerRepository repository,
-            final WritableExecutorModel fetcherModel,
-            final HostLocker hostLocker) {
+    public SitemapsLinkedPageFetcherTask(final UUID uuid, final String friendlyName, final ZooKeeperItf zk,
+            final SitemapsLinkedPageFetcherTaskConfiguration taskConfiguration, final CrawlerRepository repository,
+            final WritableExecutorModel fetcherModel, final HostLocker hostLocker) {
         super(uuid, friendlyName, zk, taskConfiguration, repository, fetcherModel, hostLocker);
 
-        UserAgent userAgent = new UserAgent(
-                this.taskConfiguration.getAgentName(),
-                this.taskConfiguration.getEmailAddress(),
-                this.taskConfiguration.getWebAddress(),
+        UserAgent userAgent = new UserAgent(this.taskConfiguration.getAgentName(),
+                this.taskConfiguration.getEmailAddress(), this.taskConfiguration.getWebAddress(),
                 UserAgent.DEFAULT_BROWSER_VERSION, "2.1");
 
         LOG.warn("userAgent: {}", userAgent.getUserAgentString());
@@ -57,11 +52,11 @@ public class SitemapsLinkedPageFetcherTask extends AbstractTask<SitemapsLinkedPa
         LOG.debug("Instance created");
     }
 
-    int i=0; 
-    
+    int i = 0;
+
     @Override
     protected void process() throws InterruptedException, ConnectionException {
-            LOG.info("[{}] Processing...", i++);
+        LOG.info("[{}] Processing...", i++);
     }
 
 }

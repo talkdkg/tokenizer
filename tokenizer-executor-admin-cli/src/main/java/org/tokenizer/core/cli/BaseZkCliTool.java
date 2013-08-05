@@ -32,11 +32,8 @@ public abstract class BaseZkCliTool extends BaseCliTool {
     @Override
     public List<Option> getOptions() {
         List<Option> options = super.getOptions();
-        zkOption = OptionBuilder
-                .withArgName("connection-string")
-                .hasArg()
-                .withDescription(
-                        "ZooKeeper connection string: hostname1:port,hostname2:port,...")
+        zkOption = OptionBuilder.withArgName("connection-string").hasArg()
+                .withDescription("ZooKeeper connection string: hostname1:port,hostname2:port,...")
                 .withLongOpt("zookeeper").create("z");
         options.add(zkOption);
         return options;
@@ -51,12 +48,11 @@ public abstract class BaseZkCliTool extends BaseCliTool {
             // to stderr: makes that sample config dumps of e.g. tester tool do
             // not start with this line, and
             // can thus be redirected to a file without further editing.
-            System.err
-                    .println("ZooKeeper connection string not specified, using default: "
-                            + DEFAULT_ZK_CONNECT);
+            System.err.println("ZooKeeper connection string not specified, using default: " + DEFAULT_ZK_CONNECT);
             System.err.println();
             zkConnectionString = DEFAULT_ZK_CONNECT;
-        } else {
+        }
+        else {
             zkConnectionString = cmd.getOptionValue(zkOption.getOpt());
         }
         return 0;

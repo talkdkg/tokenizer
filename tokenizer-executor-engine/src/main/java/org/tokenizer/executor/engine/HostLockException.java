@@ -15,11 +15,11 @@ package org.tokenizer.executor.engine;
 
 @SuppressWarnings("serial")
 public class HostLockException extends Exception {
-  public HostLockException(String message) {
-    super(message);
-  }
-  
-  public HostLockException(String message, Throwable cause) {
-    super(message, cause);
-  }
+    public HostLockException(String message) {
+        super(message);
+    }
+
+    public HostLockException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }

@@ -19,17 +19,17 @@ import java.io.Serializable;
  * @author vytautas r.
  */
 public interface PluginBeanSerializer extends Serializable {
-	/**
-	 * @param <T>
-	 * @param pluginBean
-	 * @return string format of plugin bean data, usually XML formatted
-	 */
-	<T> String serialize(T pluginBean);
+    /**
+     * @param <T>
+     * @param pluginBean
+     * @return string format of plugin bean data, usually XML formatted
+     */
+    <T> String serialize(T pluginBean);
 
-	/**
-	 * @param <T>
-	 * @param pluginBeanData
-	 * @return instance of plugin bean, converted from parameter
-	 */
-	<T> T deserialize(String pluginBeanData);
+    /**
+     * @param <T>
+     * @param pluginBeanData
+     * @return instance of plugin bean, converted from parameter
+     */
+    <T> T deserialize(String pluginBeanData);
 }

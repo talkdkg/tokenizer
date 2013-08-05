@@ -24,39 +24,39 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class AbstractInputStreamContainer implements InputStreamContainer {
 
-	/**
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(AbstractInputStreamContainer.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractInputStreamContainer.class);
 
-	private InputStreamContainerOptions options;
+    private InputStreamContainerOptions options;
 
-	/**
-	 * Construct.
-	 * 
-	 * @param options
-	 */
-	public AbstractInputStreamContainer(InputStreamContainerOptions options) {
-		this.options = options;
-	}
+    /**
+     * Construct.
+     * 
+     * @param options
+     */
+    public AbstractInputStreamContainer(InputStreamContainerOptions options) {
+        this.options = options;
+    }
 
-	public InputStreamContainerOptions getOptions() {
-		return options;
-	}
+    public InputStreamContainerOptions getOptions() {
+        return options;
+    }
 
-	public void setOptions(InputStreamContainerOptions options) {
-		this.options = options;
-	}
+    public void setOptions(InputStreamContainerOptions options) {
+        this.options = options;
+    }
 
-	@Override
-	public byte[] asByteArray() {
-		try {
-			return IOUtils.toByteArray(getInputStream());
-		} catch (IOException e) {
-			LOGGER.error("Could not convert input stream into byte array", e);
-		}
-		return null;
-	}
+    @Override
+    public byte[] asByteArray() {
+        try {
+            return IOUtils.toByteArray(getInputStream());
+        } catch (IOException e) {
+            LOGGER.error("Could not convert input stream into byte array", e);
+        }
+        return null;
+    }
 }

@@ -48,8 +48,8 @@ public class RssFetcherTask extends AbstractTask<RssFetcherTaskConfiguration> {
     static FeedFetcher feedFetcher = new HttpURLFeedFetcher(feedInfoCache);
 
     public RssFetcherTask(final UUID uuid, final String friendlyName, final ZooKeeperItf zk,
-        final RssFetcherTaskConfiguration taskConfiguration, final CrawlerRepository repository,
-        final WritableExecutorModel fetcherModel, final HostLocker hostLocker) {
+            final RssFetcherTaskConfiguration taskConfiguration, final CrawlerRepository repository,
+            final WritableExecutorModel fetcherModel, final HostLocker hostLocker) {
 
         super(uuid, friendlyName, zk, taskConfiguration, repository, fetcherModel, hostLocker);
 
@@ -74,8 +74,7 @@ public class RssFetcherTask extends AbstractTask<RssFetcherTaskConfiguration> {
                 LOG.debug("EVENT: Feed Retrieved. URL = {}", event.getUrlString());
                 try {
                     process(event.getFeed());
-                }
-                catch (Throwable e) {
+                } catch (Throwable e) {
                     LOG.error("", e);
                 }
             }
@@ -95,18 +94,14 @@ public class RssFetcherTask extends AbstractTask<RssFetcherTaskConfiguration> {
                 SyndFeed feed = feedFetcher.retrieveFeed(feedUrl);
                 LOG.info(feedUrl + " retrieved");
                 LOG.info(feedUrl + " has a title: " + feed.getTitle() + " and contains " + feed.getEntries().size()
-                    + " entries.");
-            }
-            catch (MalformedURLException e) {
+                        + " entries.");
+            } catch (MalformedURLException e) {
                 LOG.error("", e);
-            }
-            catch (IOException e) {
+            } catch (IOException e) {
                 LOG.error("", e);
-            }
-            catch (FeedException e) {
+            } catch (FeedException e) {
                 LOG.error("", e);
-            }
-            catch (FetcherException e) {
+            } catch (FetcherException e) {
                 LOG.error("", e);
             }
         }
@@ -145,6 +140,5 @@ public class RssFetcherTask extends AbstractTask<RssFetcherTaskConfiguration> {
             // metricsCache);
         }
     }
-
 
 }

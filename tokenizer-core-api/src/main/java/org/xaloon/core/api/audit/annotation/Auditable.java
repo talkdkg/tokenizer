@@ -30,16 +30,16 @@ import java.lang.annotation.Target;
 @Target({ ElementType.TYPE, ElementType.FIELD })
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Auditable {
-	/**
-	 * Used by list auditing. Identifies which list entry should be audited
-	 * 
-	 * @return integer index, indicating which list entry will be audited
-	 */
-	int index() default -1;
+    /**
+     * Used by list auditing. Identifies which list entry should be audited
+     * 
+     * @return integer index, indicating which list entry will be audited
+     */
+    int index() default -1;
 
-	/**
-	 * 
-	 * @return
-	 */
-	boolean key() default false;
+    /**
+     * 
+     * @return
+     */
+    boolean key() default false;
 }

@@ -45,7 +45,6 @@ public class Test {
         // At this point JPA is started and ready.
     }
 
-
     public static void main(final String[] args) {
 
         LOGGER.warn("starting...");
@@ -60,7 +59,7 @@ public class Test {
         u.setLastName("Efendi");
         u.setEmail("fuad555@efendi.ca");
         u.setUsername("username 555");
-		
+
         t.userDao.save(u);
 
         // register for close
@@ -70,7 +69,6 @@ public class Test {
                 t.service.stop();
             }
         });
-
 
         LOGGER.warn("finishing...");
 

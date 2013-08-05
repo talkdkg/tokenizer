@@ -27,253 +27,251 @@ import org.xaloon.core.api.util.HtmlElementEnum;
  */
 public class UploadedFileDescriptor implements FileDescriptor {
 
-	/**
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	/** File name */
-	private String name;
+    /** File name */
+    private String name;
 
-	private String path;
+    private String path;
 
-	private Date createDate;
+    private Date createDate;
 
-	private Date updateDate;
+    private Date updateDate;
 
+    /** Type of file */
+    private String mimeType;
 
-	/** Type of file */
-	private String mimeType;
+    /** File size */
+    private Long size;
 
-	/** File size */
-	private Long size;
+    /** File physical location identifier */
+    private String identifier;
 
-	/** File physical location identifier */
-	private String identifier;
+    /** Saved location where file is stored */
+    private String location;
 
-	/** Saved location where file is stored */
-	private String location;
+    /** File storage service provider bean name */
+    private String fileStorageServiceProvider;
 
+    /** The image input stream if available */
+    private InputStreamContainer imageInputStreamContainer;
 
-	/** File storage service provider bean name */
-	private String fileStorageServiceProvider;
+    /**
+     * Gets path.
+     * 
+     * @return path
+     */
+    public String getPath() {
+        return path;
+    }
 
-	/** The image input stream if available */
-	private InputStreamContainer imageInputStreamContainer;
+    /**
+     * Sets path.
+     * 
+     * @param path
+     *            path
+     */
+    public void setPath(String path) {
+        this.path = path;
+    }
 
-	/**
-	 * Gets path.
-	 * 
-	 * @return path
-	 */
-	public String getPath() {
-		return path;
-	}
+    /**
+     * Gets createDate.
+     * 
+     * @return createDate
+     */
+    public Date getCreateDate() {
+        return createDate;
+    }
 
-	/**
-	 * Sets path.
-	 * 
-	 * @param path
-	 *            path
-	 */
-	public void setPath(String path) {
-		this.path = path;
-	}
+    /**
+     * Sets createDate.
+     * 
+     * @param createDate
+     *            createDate
+     */
+    public void setCreateDate(Date createDate) {
+        this.createDate = createDate;
+    }
 
-	/**
-	 * Gets createDate.
-	 * 
-	 * @return createDate
-	 */
-	public Date getCreateDate() {
-		return createDate;
-	}
+    /**
+     * Gets updateDate.
+     * 
+     * @return updateDate
+     */
+    public Date getUpdateDate() {
+        return updateDate;
+    }
 
-	/**
-	 * Sets createDate.
-	 * 
-	 * @param createDate
-	 *            createDate
-	 */
-	public void setCreateDate(Date createDate) {
-		this.createDate = createDate;
-	}
+    /**
+     * Sets updateDate.
+     * 
+     * @param updateDate
+     *            updateDate
+     */
+    public void setUpdateDate(Date updateDate) {
+        this.updateDate = updateDate;
+    }
 
-	/**
-	 * Gets updateDate.
-	 * 
-	 * @return updateDate
-	 */
-	public Date getUpdateDate() {
-		return updateDate;
-	}
+    /**
+     * Gets name.
+     * 
+     * @return name
+     */
+    public String getName() {
+        return name;
+    }
 
-	/**
-	 * Sets updateDate.
-	 * 
-	 * @param updateDate
-	 *            updateDate
-	 */
-	public void setUpdateDate(Date updateDate) {
-		this.updateDate = updateDate;
-	}
+    /**
+     * Sets name.
+     * 
+     * @param name
+     *            name
+     */
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	/**
-	 * Gets name.
-	 * 
-	 * @return name
-	 */
-	public String getName() {
-		return name;
-	}
+    /**
+     * Gets mimeType.
+     * 
+     * @return mimeType
+     */
+    public String getMimeType() {
+        return mimeType;
+    }
 
-	/**
-	 * Sets name.
-	 * 
-	 * @param name
-	 *            name
-	 */
-	public void setName(String name) {
-		this.name = name;
-	}
+    /**
+     * Sets mimeType.
+     * 
+     * @param mimeType
+     *            mimeType
+     */
+    public void setMimeType(String mimeType) {
+        this.mimeType = mimeType;
+    }
 
-	/**
-	 * Gets mimeType.
-	 * 
-	 * @return mimeType
-	 */
-	public String getMimeType() {
-		return mimeType;
-	}
+    /**
+     * Gets size.
+     * 
+     * @return size
+     */
+    public Long getSize() {
+        return size;
+    }
 
-	/**
-	 * Sets mimeType.
-	 * 
-	 * @param mimeType
-	 *            mimeType
-	 */
-	public void setMimeType(String mimeType) {
-		this.mimeType = mimeType;
-	}
+    /**
+     * Sets size.
+     * 
+     * @param size
+     *            size
+     */
+    public void setSize(Long size) {
+        this.size = size;
+    }
 
-	/**
-	 * Gets size.
-	 * 
-	 * @return size
-	 */
-	public Long getSize() {
-		return size;
-	}
+    /**
+     * Gets identifier.
+     * 
+     * @return identifier
+     */
+    public String getIdentifier() {
+        return identifier;
+    }
 
-	/**
-	 * Sets size.
-	 * 
-	 * @param size
-	 *            size
-	 */
-	public void setSize(Long size) {
-		this.size = size;
-	}
+    /**
+     * Sets identifier.
+     * 
+     * @param identifier
+     *            identifier
+     */
+    public void setIdentifier(String identifier) {
+        this.identifier = identifier;
+    }
 
-	/**
-	 * Gets identifier.
-	 * 
-	 * @return identifier
-	 */
-	public String getIdentifier() {
-		return identifier;
-	}
+    /**
+     * Gets location.
+     * 
+     * @return location
+     */
+    public String getLocation() {
+        return location;
+    }
 
-	/**
-	 * Sets identifier.
-	 * 
-	 * @param identifier
-	 *            identifier
-	 */
-	public void setIdentifier(String identifier) {
-		this.identifier = identifier;
-	}
+    /**
+     * Sets location.
+     * 
+     * @param location
+     *            location
+     */
+    public void setLocation(String location) {
+        this.location = location;
+    }
 
-	/**
-	 * Gets location.
-	 * 
-	 * @return location
-	 */
-	public String getLocation() {
-		return location;
-	}
+    /**
+     * Gets fileStorageServiceProvider.
+     * 
+     * @return fileStorageServiceProvider
+     */
+    public String getFileStorageServiceProvider() {
+        return fileStorageServiceProvider;
+    }
 
-	/**
-	 * Sets location.
-	 * 
-	 * @param location
-	 *            location
-	 */
-	public void setLocation(String location) {
-		this.location = location;
-	}
+    /**
+     * Sets fileStorageServiceProvider.
+     * 
+     * @param fileStorageServiceProvider
+     *            fileStorageServiceProvider
+     */
+    public void setFileStorageServiceProvider(String fileStorageServiceProvider) {
+        this.fileStorageServiceProvider = fileStorageServiceProvider;
+    }
 
-	/**
-	 * Gets fileStorageServiceProvider.
-	 * 
-	 * @return fileStorageServiceProvider
-	 */
-	public String getFileStorageServiceProvider() {
-		return fileStorageServiceProvider;
-	}
+    /**
+     * Gets imageInputStreamContainer.
+     * 
+     * @return imageInputStreamContainer
+     */
+    public InputStreamContainer getImageInputStreamContainer() {
+        return imageInputStreamContainer;
+    }
 
-	/**
-	 * Sets fileStorageServiceProvider.
-	 * 
-	 * @param fileStorageServiceProvider
-	 *            fileStorageServiceProvider
-	 */
-	public void setFileStorageServiceProvider(String fileStorageServiceProvider) {
-		this.fileStorageServiceProvider = fileStorageServiceProvider;
-	}
+    /**
+     * Sets imageInputStreamContainer.
+     * 
+     * @param imageInputStreamContainer
+     *            imageInputStreamContainer
+     */
+    public void setImageInputStreamContainer(InputStreamContainer imageInputStreamContainer) {
+        this.imageInputStreamContainer = imageInputStreamContainer;
+    }
 
-	/**
-	 * Gets imageInputStreamContainer.
-	 * 
-	 * @return imageInputStreamContainer
-	 */
-	public InputStreamContainer getImageInputStreamContainer() {
-		return imageInputStreamContainer;
-	}
+    public URL getExternalImage() throws MalformedURLException {
+        if (isExternal()) {
+            return new URL(getPath());
+        }
+        return null;
+    }
 
-	/**
-	 * Sets imageInputStreamContainer.
-	 * 
-	 * @param imageInputStreamContainer
-	 *            imageInputStreamContainer
-	 */
-	public void setImageInputStreamContainer(InputStreamContainer imageInputStreamContainer) {
-		this.imageInputStreamContainer = imageInputStreamContainer;
-	}
+    @Override
+    public Long getId() {
+        return null;
+    }
 
-	public URL getExternalImage() throws MalformedURLException {
-		if (isExternal()) {
-			return new URL(getPath());
-		}
-		return null;
-	}
+    @Override
+    public void setId(Long id) {
+    }
 
-	@Override
-	public Long getId() {
-		return null;
-	}
+    @Override
+    public boolean isNew() {
+        return true;
+    }
 
-	@Override
-	public void setId(Long id) {
-	}
-
-	@Override
-	public boolean isNew() {
-		return true;
-	}
-
-	@Override
-	public boolean isExternal() {
-		return !StringUtils.isEmpty(getPath()) && getPath().startsWith(HtmlElementEnum.PROTOCOL_HTTP.value());
-	}
+    @Override
+    public boolean isExternal() {
+        return !StringUtils.isEmpty(getPath()) && getPath().startsWith(HtmlElementEnum.PROTOCOL_HTTP.value());
+    }
 }

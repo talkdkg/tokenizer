@@ -45,26 +45,21 @@ public class SimpleMultithreadedFetcher extends AbstractTask<SimpleMultithreaded
 
     /** for robots.txt and sitemaps */
     private final BaseHttpFetcher baseFetcher;
-    private final Set<String> hosts = Collections
-            .synchronizedSet(new HashSet<String>());
+    private final Set<String> hosts = Collections.synchronizedSet(new HashSet<String>());
     private boolean stop = false;
     private static final int MAX_THREADS = 64;
     List<Thread> threads = new ArrayList<Thread>();
     private final static long HOSTS_REFRESH_DELAY = 60 * 60 * 1000L;
     private SimpleMultithreadedFetcherTaskConfiguration taskConfiguration;
 
-    public SimpleMultithreadedFetcher(final UUID uuid,
-            final String friendlyName, final ZooKeeperItf zk,
-        final SimpleMultithreadedFetcherTaskConfiguration taskConfiguration,
-            final CrawlerRepository repository,
-            final WritableExecutorModel fetcherModel,
-            final HostLocker hostLocker) {
+    public SimpleMultithreadedFetcher(final UUID uuid, final String friendlyName, final ZooKeeperItf zk,
+            final SimpleMultithreadedFetcherTaskConfiguration taskConfiguration, final CrawlerRepository repository,
+            final WritableExecutorModel fetcherModel, final HostLocker hostLocker) {
 
         super(uuid, friendlyName, zk, taskConfiguration, repository, fetcherModel, hostLocker);
 
         this.simpleHttpClient = new SimpleHttpFetcher(FetcherUtils.USER_AGENT);
-        this.baseFetcher = RobotUtils.createFetcher(FetcherUtils.USER_AGENT,
-                1024);
+        this.baseFetcher = RobotUtils.createFetcher(FetcherUtils.USER_AGENT, 1024);
         this.baseFetcher.setDefaultMaxContentSize(4 * 1024 * 1024);
 
     }
@@ -72,9 +67,7 @@ public class SimpleMultithreadedFetcher extends AbstractTask<SimpleMultithreaded
     @Override
     public void start() {
         stop();
-        LOG.warn(
-                "starting threads... hardcoded to MIN(<total number of sites>, {})...",
-                MAX_THREADS);
+        LOG.warn("starting threads... hardcoded to MIN(<total number of sites>, {})...", MAX_THREADS);
         stop = false;
         // TODO: the problem is that IF hosts is empty we will need to restart
         // task
@@ -83,8 +76,7 @@ public class SimpleMultithreadedFetcher extends AbstractTask<SimpleMultithreaded
             if (i > hosts.size()) {
                 break;
             }
-            Thread thread = new Thread(new MyFetcherThread(),
-                    "MyFetcherThread[" + i + "]");
+            Thread thread = new Thread(new MyFetcherThread(), "MyFetcherThread[" + i + "]");
             threads.add(thread);
             LOG.warn("starting thread {}", thread.getName());
             thread.start();
@@ -161,8 +153,8 @@ public class SimpleMultithreadedFetcher extends AbstractTask<SimpleMultithreaded
                     BaseRobotsParser parser = new SimpleRobotRulesParser();
                     BaseRobotRules rules = null;
                     try {
-                        rules = RobotUtils.getRobotRules(baseFetcher, parser,
-                                new URL("http://" + host + "/robots.txt"));
+                        rules = RobotUtils
+                                .getRobotRules(baseFetcher, parser, new URL("http://" + host + "/robots.txt"));
                     } catch (MalformedURLException e) {
                         LOG.error("", e);
                         continue;

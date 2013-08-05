@@ -30,8 +30,8 @@ public class ClassicRobotTask extends AbstractFetcherTask<ClassicRobotTaskConfig
     private URLFilter urlFilter;
 
     public ClassicRobotTask(UUID uuid, String friendlyName, ZooKeeperItf zk,
-        ClassicRobotTaskConfiguration taskConfiguration, CrawlerRepository crawlerRepository,
-        WritableExecutorModel fetcherModel, HostLocker hostLocker) {
+            ClassicRobotTaskConfiguration taskConfiguration, CrawlerRepository crawlerRepository,
+            WritableExecutorModel fetcherModel, HostLocker hostLocker) {
         super(uuid, friendlyName, zk, taskConfiguration, crawlerRepository, fetcherModel, hostLocker);
 
         if (getTaskConfiguration().getUrlFilterConfig() == null) {
@@ -40,18 +40,15 @@ public class ClassicRobotTask extends AbstractFetcherTask<ClassicRobotTaskConfig
         Reader reader = new StringReader(this.taskConfiguration.getUrlFilterConfig());
         try {
             this.urlFilter = new AutomatonURLFilter(reader);
-        }
-        catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             LOG.error("", e);
             throw (e);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             LOG.error("", e);
             throw new RuntimeException(e);
         }
 
     }
-
 
     @Override
     protected boolean accept(String url) {

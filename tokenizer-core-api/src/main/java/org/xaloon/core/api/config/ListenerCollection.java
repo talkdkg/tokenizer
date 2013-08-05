@@ -28,42 +28,42 @@ import java.util.concurrent.CopyOnWriteArrayList;
  *            type of listeners
  */
 public abstract class ListenerCollection<T> implements Serializable {
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	/** list of listeners */
-	private final List<T> listeners = new CopyOnWriteArrayList<T>();
+    /** list of listeners */
+    private final List<T> listeners = new CopyOnWriteArrayList<T>();
 
-	protected static interface Notifier<T> {
-		void notify(T listener);
-	}
+    protected static interface Notifier<T> {
+        void notify(T listener);
+    }
 
-	/**
-	 * Notifies each listener in this
-	 * 
-	 * @param notifier
-	 *            notifier used to notify each listener
-	 */
-	protected void notify(Notifier<T> notifier) {
-		for (T listener : listeners) {
-			notifier.notify(listener);
-		}
-	}
+    /**
+     * Notifies each listener in this
+     * 
+     * @param notifier
+     *            notifier used to notify each listener
+     */
+    protected void notify(Notifier<T> notifier) {
+        for (T listener : listeners) {
+            notifier.notify(listener);
+        }
+    }
 
-	/**
-	 * Adds a listener to this set of listeners.
-	 * 
-	 * @param listener
-	 *            The listener to add
-	 * @return {@code true} if the listener was added
-	 */
-	public boolean add(final T listener) {
-		if (listener == null) {
-			return false;
-		}
-		if (listeners.contains(listener)) {
-			return false;
-		}
-		listeners.add(listener);
-		return true;
-	}
+    /**
+     * Adds a listener to this set of listeners.
+     * 
+     * @param listener
+     *            The listener to add
+     * @return {@code true} if the listener was added
+     */
+    public boolean add(final T listener) {
+        if (listener == null) {
+            return false;
+        }
+        if (listeners.contains(listener)) {
+            return false;
+        }
+        listeners.add(listener);
+        return true;
+    }
 }

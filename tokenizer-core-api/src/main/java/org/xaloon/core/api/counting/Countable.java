@@ -15,22 +15,21 @@ package org.xaloon.core.api.counting;
 
 import java.io.Serializable;
 
-
 /**
  * @author vytautas r.
  */
 public interface Countable extends Serializable {
-	/**
-	 * Trackable object may have the same id if there are many implementations. Category + id should ensure uniqueness
-	 * 
-	 * @return unique identifier for the same group of trackable objects
-	 */
-	Long getTrackingCategoryId();
+    /**
+     * Trackable object may have the same id if there are many implementations. Category + id should ensure uniqueness
+     * 
+     * @return unique identifier for the same group of trackable objects
+     */
+    Long getTrackingCategoryId();
 
-	/**
-	 * Refers to the concrete row to update
-	 * 
-	 * @return unique identifier
-	 */
-	Long getId();
+    /**
+     * Refers to the concrete row to update
+     * 
+     * @return unique identifier
+     */
+    Long getId();
 }

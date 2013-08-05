@@ -16,8 +16,8 @@ package org.xaloon.core.api.counting;
 /**
  * Counter facade wraps {@link CounterDao} methods.
  * <p>
- * Default implementation will create asynchronous jobs for increment/decrement methods and just reuse {@link CounterDao#count(String, Countable)}
- * method
+ * Default implementation will create asynchronous jobs for increment/decrement methods and just reuse
+ * {@link CounterDao#count(String, Countable)} method
  * 
  * @author vytautas r.
  */

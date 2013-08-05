@@ -45,7 +45,8 @@ public class MoneyConverter implements Converter<String, Money> {
                 String cleanedValue = value.replace(uk.getSymbol(), "");
                 Money money = ukFormat.parseMoney(uk.getCurrencyCode() + cleanedValue);
                 return money;
-            } else {
+            }
+            else {
                 throw mfe;
             }
         }

@@ -15,7 +15,7 @@ package org.tokenizer.executor.model.api;
 
 @SuppressWarnings("serial")
 public class TaskUpdateException extends Exception {
-	public TaskUpdateException(String message) {
-		super(message);
-	}
+    public TaskUpdateException(String message) {
+        super(message);
+    }
 }

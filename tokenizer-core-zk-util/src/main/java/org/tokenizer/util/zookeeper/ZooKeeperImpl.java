@@ -48,7 +48,7 @@ public class ZooKeeperImpl implements ZooKeeperItf {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ZooKeeperImpl.class);
     protected ZooKeeper delegate;
     protected Set<Watcher> additionalDefaultWatchers = Collections
-        .newSetFromMap(new IdentityHashMap<Watcher, Boolean>());
+            .newSetFromMap(new IdentityHashMap<Watcher, Boolean>());
     protected boolean connected = false;
     protected volatile boolean stop = false;
     protected final Object connectedMonitor = new Object();
@@ -62,8 +62,9 @@ public class ZooKeeperImpl implements ZooKeeperItf {
     }
 
     @Inject
-    public ZooKeeperImpl(@ConnectString final String connectString, @SessionTimeout final int sessionTimeout)
-        throws IOException {
+    public ZooKeeperImpl(@ConnectString
+    final String connectString, @SessionTimeout
+    final int sessionTimeout) throws IOException {
         LOG.info("constructor called...");
         this.delegate = new ZooKeeper(connectString, sessionTimeout, new MyWatcher());
     }
@@ -115,7 +116,7 @@ public class ZooKeeperImpl implements ZooKeeperItf {
             }
         }
         else if (event.getState() == Watcher.Event.KeeperState.Disconnected
-            || event.getState() == Watcher.Event.KeeperState.Expired) {
+                || event.getState() == Watcher.Event.KeeperState.Expired) {
             synchronized (connectedMonitor) {
                 if (connected) {
                     connected = false;
@@ -134,8 +135,7 @@ public class ZooKeeperImpl implements ZooKeeperItf {
             tryCount++;
             try {
                 return operation.execute();
-            }
-            catch (KeeperException.ConnectionLossException e) {
+            } catch (KeeperException.ConnectionLossException e) {
                 // ok
             }
             if (tryCount > 3) {
@@ -174,8 +174,7 @@ public class ZooKeeperImpl implements ZooKeeperItf {
     public void close() {
         try {
             delegate.close();
-        }
-        catch (InterruptedException e) {
+        } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new RuntimeException(e);
         }
@@ -183,13 +182,13 @@ public class ZooKeeperImpl implements ZooKeeperItf {
 
     @Override
     public String create(final String path, final byte[] data, final List<ACL> acl, final CreateMode createMode)
-        throws KeeperException, InterruptedException {
+            throws KeeperException, InterruptedException {
         return delegate.create(path, data, acl, createMode);
     }
 
     @Override
     public void create(final String path, final byte[] data, final List<ACL> acl, final CreateMode createMode,
-        final AsyncCallback.StringCallback cb, final Object ctx) {
+            final AsyncCallback.StringCallback cb, final Object ctx) {
         delegate.create(path, data, acl, createMode, cb, ctx);
     }
 
@@ -225,19 +224,18 @@ public class ZooKeeperImpl implements ZooKeeperItf {
 
     @Override
     public byte[] getData(final String path, final Watcher watcher, final Stat stat) throws KeeperException,
-        InterruptedException {
+            InterruptedException {
         return delegate.getData(path, watcher, stat);
     }
 
     @Override
     public byte[] getData(final String path, final boolean watch, final Stat stat) throws KeeperException,
-        InterruptedException {
+            InterruptedException {
         return delegate.getData(path, watch, stat);
     }
 
     @Override
-    public void
-        getData(final String path, final Watcher watcher, final AsyncCallback.DataCallback cb, final Object ctx) {
+    public void getData(final String path, final Watcher watcher, final AsyncCallback.DataCallback cb, final Object ctx) {
         delegate.getData(path, watcher, cb, ctx);
     }
 
@@ -248,13 +246,13 @@ public class ZooKeeperImpl implements ZooKeeperItf {
 
     @Override
     public Stat setData(final String path, final byte[] data, final int version) throws KeeperException,
-        InterruptedException {
+            InterruptedException {
         return delegate.setData(path, data, version);
     }
 
     @Override
     public void setData(final String path, final byte[] data, final int version, final AsyncCallback.StatCallback cb,
-        final Object ctx) {
+            final Object ctx) {
         delegate.setData(path, data, version, cb, ctx);
     }
 
@@ -270,61 +268,61 @@ public class ZooKeeperImpl implements ZooKeeperItf {
 
     @Override
     public Stat setACL(final String path, final List<ACL> acl, final int version) throws KeeperException,
-        InterruptedException {
+            InterruptedException {
         return delegate.setACL(path, acl, version);
     }
 
     @Override
     public void setACL(final String path, final List<ACL> acl, final int version, final AsyncCallback.StatCallback cb,
-        final Object ctx) {
+            final Object ctx) {
         delegate.setACL(path, acl, version, cb, ctx);
     }
 
     @Override
     public List<String> getChildren(final String path, final Watcher watcher) throws KeeperException,
-        InterruptedException {
+            InterruptedException {
         return delegate.getChildren(path, watcher);
     }
 
     @Override
     public List<String> getChildren(final String path, final boolean watch) throws KeeperException,
-        InterruptedException {
+            InterruptedException {
         return delegate.getChildren(path, watch);
     }
 
     @Override
     public void getChildren(final String path, final Watcher watcher, final AsyncCallback.ChildrenCallback cb,
-        final Object ctx) {
+            final Object ctx) {
         delegate.getChildren(path, watcher, cb, ctx);
     }
 
     @Override
     public void getChildren(final String path, final boolean watch, final AsyncCallback.ChildrenCallback cb,
-        final Object ctx) {
+            final Object ctx) {
         delegate.getChildren(path, watch, cb, ctx);
     }
 
     @Override
     public List<String> getChildren(final String path, final Watcher watcher, final Stat stat) throws KeeperException,
-        InterruptedException {
+            InterruptedException {
         return delegate.getChildren(path, watcher, stat);
     }
 
     @Override
     public List<String> getChildren(final String path, final boolean watch, final Stat stat) throws KeeperException,
-        InterruptedException {
+            InterruptedException {
         return delegate.getChildren(path, watch, stat);
     }
 
     @Override
     public void getChildren(final String path, final Watcher watcher, final AsyncCallback.Children2Callback cb,
-        final Object ctx) {
+            final Object ctx) {
         delegate.getChildren(path, watcher, cb, ctx);
     }
 
     @Override
     public void getChildren(final String path, final boolean watch, final AsyncCallback.Children2Callback cb,
-        final Object ctx) {
+            final Object ctx) {
         delegate.getChildren(path, watch, cb, ctx);
     }
 

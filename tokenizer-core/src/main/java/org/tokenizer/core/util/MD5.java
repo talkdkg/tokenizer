@@ -17,7 +17,6 @@ import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-
 /**
  * 
  * @author Fuad TODO: use ThreadLocal to cache instance
@@ -35,7 +34,6 @@ public class MD5 {
         return md.digest();
     }
 
-
     public static final byte[] digest(String text) {
         try {
             return digest(text.getBytes("UTF-8"));
@@ -44,12 +42,10 @@ public class MD5 {
         }
     }
 
-
     public static final String MD5(final byte[] bytes) {
         byte[] mdbytes = digest(bytes);
         return toHexString(mdbytes);
     }
-
 
     public static final String MD5(final String text) {
         try {
@@ -60,7 +56,6 @@ public class MD5 {
     }
 
     private static final String EMPTY_STRING = "";
-
 
     public final static String toHexString(final byte[] bytes) {
         if (bytes == null || bytes.length == 0)
@@ -76,7 +71,6 @@ public class MD5 {
         return hexString.toString();
     }
 
-
     public static byte[] hex2Byte(final String str) {
         byte[] bytes = new byte[str.length() / 2];
         for (int i = 0; i < bytes.length; i++) {
@@ -84,7 +78,6 @@ public class MD5 {
         }
         return bytes;
     }
-
 
     public static void main(final String[] args) {
         System.out.println(MD5("http://gugehige.exblog.jp/"));

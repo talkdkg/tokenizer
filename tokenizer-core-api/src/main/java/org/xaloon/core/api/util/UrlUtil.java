@@ -22,48 +22,51 @@ import org.xaloon.core.api.path.DelimiterEnum;
  * @author vytautas r.
  */
 public class UrlUtil {
-	private static final String REGEX_DELIM_UNDER = "-";
+    private static final String REGEX_DELIM_UNDER = "-";
 
-	/**
-	 * Checks if context and value have duplication of DELIMITER
-	 * 
-	 * @param context
-	 *            string which will be added to the beginning of value
-	 * @param value
-	 *            string which will be added after context
-	 * @return concatenated string, for example if we have context="context" and value="/value" then result would be "context/value"
-	 */
-	public static String mergeIntoUrl(String context, String value) {
-		if (StringUtils.isEmpty(context)) {
-			return value;
-		}
-		if (StringUtils.isEmpty(value)) {
-			return context;
-		}
-		if (context.endsWith(DelimiterEnum.SLASH.value()) && value.startsWith(DelimiterEnum.SLASH.value())) {
-			return context + value.substring(1);
-		} else if (!context.endsWith(DelimiterEnum.SLASH.value()) && !value.startsWith(DelimiterEnum.SLASH.value())) {
-			return context + DelimiterEnum.SLASH.value() + value;
-		} else {
-			return context + value;
-		}
-	}
+    /**
+     * Checks if context and value have duplication of DELIMITER
+     * 
+     * @param context
+     *            string which will be added to the beginning of value
+     * @param value
+     *            string which will be added after context
+     * @return concatenated string, for example if we have context="context" and value="/value" then result would be
+     *         "context/value"
+     */
+    public static String mergeIntoUrl(String context, String value) {
+        if (StringUtils.isEmpty(context)) {
+            return value;
+        }
+        if (StringUtils.isEmpty(value)) {
+            return context;
+        }
+        if (context.endsWith(DelimiterEnum.SLASH.value()) && value.startsWith(DelimiterEnum.SLASH.value())) {
+            return context + value.substring(1);
+        }
+        else if (!context.endsWith(DelimiterEnum.SLASH.value()) && !value.startsWith(DelimiterEnum.SLASH.value())) {
+            return context + DelimiterEnum.SLASH.value() + value;
+        }
+        else {
+            return context + value;
+        }
+    }
 
-	/**
-	 * Transliterates provided string and removes non-characters
-	 * 
-	 * @param value
-	 *            string value to transliterate and remove non-characters
-	 * @return string representation of encoded value
-	 */
-	public static String encode(String value) {
-		if (StringUtils.isEmpty(value)) {
-			return null;
-		}
-		value = value.trim();
-		value = TransliterateUtils.transliterate(value);
-		value = value.replaceAll("[^a-zA-Z0-9\\s-]", DelimiterEnum.EMPTY.value());
-		value = value.replaceAll(DelimiterEnum.SPACE.value(), REGEX_DELIM_UNDER);
-		return value.replaceAll("---", "-");
-	}
+    /**
+     * Transliterates provided string and removes non-characters
+     * 
+     * @param value
+     *            string value to transliterate and remove non-characters
+     * @return string representation of encoded value
+     */
+    public static String encode(String value) {
+        if (StringUtils.isEmpty(value)) {
+            return null;
+        }
+        value = value.trim();
+        value = TransliterateUtils.transliterate(value);
+        value = value.replaceAll("[^a-zA-Z0-9\\s-]", DelimiterEnum.EMPTY.value());
+        value = value.replaceAll(DelimiterEnum.SPACE.value(), REGEX_DELIM_UNDER);
+        return value.replaceAll("---", "-");
+    }
 }

@@ -16,7 +16,8 @@ package org.xaloon.core.api.cache;
 import java.io.Serializable;
 
 /**
- * Simple cache interface for reading, storing and removing items from cache. It may wrap different implementations for custom solutions
+ * Simple cache interface for reading, storing and removing items from cache. It may wrap different implementations for
+ * custom solutions
  * 
  * @author vytautas r.
  * @version 1.1, 09/30/10
@@ -25,37 +26,37 @@ import java.io.Serializable;
 
 public interface Cache extends Serializable {
 
-	/**
-	 * Read object from cache
-	 * 
-	 * @param <T>
-	 * @param key
-	 *            to read cached object by
-	 * @return cached object. null - if there is no such object by provided key
-	 */
-	<T> T readFromCache(String key);
+    /**
+     * Read object from cache
+     * 
+     * @param <T>
+     * @param key
+     *            to read cached object by
+     * @return cached object. null - if there is no such object by provided key
+     */
+    <T> T readFromCache(String key);
 
-	/**
-	 * Stores object to cache
-	 * 
-	 * @param <T>
-	 * @param key
-	 *            to store object by
-	 * @param value
-	 *            to store into cache
-	 */
-	<T> void storeToCache(String key, T value);
+    /**
+     * Stores object to cache
+     * 
+     * @param <T>
+     * @param key
+     *            to store object by
+     * @param value
+     *            to store into cache
+     */
+    <T> void storeToCache(String key, T value);
 
-	/**
-	 * Removes object from cache
-	 * 
-	 * @param key
-	 *            to remove object by
-	 */
-	void removeFromCache(String key);
+    /**
+     * Removes object from cache
+     * 
+     * @param key
+     *            to remove object by
+     */
+    void removeFromCache(String key);
 
-	/**
-	 * Removes everything from cache
-	 */
-	void clear();
+    /**
+     * Removes everything from cache
+     */
+    void clear();
 }

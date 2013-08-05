@@ -15,11 +15,11 @@ package org.tokenizer.executor.model.api;
 
 @SuppressWarnings("serial")
 public class TaskValidityException extends Exception {
-	public TaskValidityException(String message) {
-		super(message);
-	}
+    public TaskValidityException(String message) {
+        super(message);
+    }
 
-	public TaskValidityException(String message, Throwable cause) {
-		super(message, cause);
-	}
+    public TaskValidityException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }

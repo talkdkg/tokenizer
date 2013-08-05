@@ -19,30 +19,30 @@ import org.xaloon.core.api.inject.ServiceLocator;
  * @author vytautas r.
  */
 public abstract class PasswordEncoder {
-	private static PasswordEncoder passwordEncoder;
+    private static PasswordEncoder passwordEncoder;
 
-	/**
-	 * @param username
-	 * @param password
-	 * @return
-	 */
-	public abstract String encode(String username, String password);
+    /**
+     * @param username
+     * @param password
+     * @return
+     */
+    public abstract String encode(String username, String password);
 
-	/**
-	 * @param username
-	 * @param password
-	 * @param salt
-	 * @return
-	 */
-	public abstract String encode(String username, String password, String salt);
+    /**
+     * @param username
+     * @param password
+     * @param salt
+     * @return
+     */
+    public abstract String encode(String username, String password, String salt);
 
-	/**
-	 * @return
-	 */
-	public static PasswordEncoder get() {
-		if (passwordEncoder == null) {
-			passwordEncoder = ServiceLocator.get().getInstance(PasswordEncoder.class);
-		}
-		return passwordEncoder;
-	}
+    /**
+     * @return
+     */
+    public static PasswordEncoder get() {
+        if (passwordEncoder == null) {
+            passwordEncoder = ServiceLocator.get().getInstance(PasswordEncoder.class);
+        }
+        return passwordEncoder;
+    }
 }

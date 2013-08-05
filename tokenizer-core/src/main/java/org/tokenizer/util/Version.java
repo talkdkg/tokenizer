@@ -21,10 +21,8 @@ import org.tokenizer.util.io.Closer;
 
 public class Version {
 
-    public static String readVersion(final String groupId,
-            final String artifactId) {
-        String propPath = "/META-INF/maven/" + groupId + "/" + artifactId
-                + "/pom.properties";
+    public static String readVersion(final String groupId, final String artifactId) {
+        String propPath = "/META-INF/maven/" + groupId + "/" + artifactId + "/pom.properties";
         InputStream is = Version.class.getResourceAsStream(propPath);
         if (is != null) {
             Properties properties = new Properties();

@@ -14,11 +14,11 @@
 package org.tokenizer.executor.master;
 
 public interface ExecutorInfo {
-  
-  String getVersion();
-  
-  boolean isMaster();
-  
-  void setMaster(boolean master);
-  
+
+    String getVersion();
+
+    boolean isMaster();
+
+    void setMaster(boolean master);
+
 }

@@ -29,46 +29,45 @@ import org.apache.commons.lang.StringUtils;
  */
 public class FilePathInputStreamContainer extends AbstractInputStreamContainer {
 
-
-	/**
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private final String absoluteFilePath;
+    private final String absoluteFilePath;
 
-	/**
-	 * Construct.
-	 * 
-	 * @param absoluteFilePath
-	 * 
-	 * @param options
-	 */
-	public FilePathInputStreamContainer(String absoluteFilePath) {
-		super(new InputStreamContainerOptions());
-		this.absoluteFilePath = absoluteFilePath;
-	}
+    /**
+     * Construct.
+     * 
+     * @param absoluteFilePath
+     * 
+     * @param options
+     */
+    public FilePathInputStreamContainer(String absoluteFilePath) {
+        super(new InputStreamContainerOptions());
+        this.absoluteFilePath = absoluteFilePath;
+    }
 
-	@Override
-	public InputStream getInputStream() throws IOException {
-		if (StringUtils.isEmpty(absoluteFilePath)) {
-			throw new IllegalArgumentException("file path was not provided.");
-		}
-		File file = new File(absoluteFilePath);
-		if (!file.exists()) {
-			throw new FileNotFoundException(String.format("File does not exist: %s", absoluteFilePath));
-		}
-		return new FileInputStream(file);
-	}
+    @Override
+    public InputStream getInputStream() throws IOException {
+        if (StringUtils.isEmpty(absoluteFilePath)) {
+            throw new IllegalArgumentException("file path was not provided.");
+        }
+        File file = new File(absoluteFilePath);
+        if (!file.exists()) {
+            throw new FileNotFoundException(String.format("File does not exist: %s", absoluteFilePath));
+        }
+        return new FileInputStream(file);
+    }
 
-	@Override
-	public void close() {
-		FileUtils.deleteQuietly(new File(absoluteFilePath));
-	}
+    @Override
+    public void close() {
+        FileUtils.deleteQuietly(new File(absoluteFilePath));
+    }
 
-	@Override
-	public boolean isEmpty() {
-		return false;
-	}
+    @Override
+    public boolean isEmpty() {
+        return false;
+    }
 
 }

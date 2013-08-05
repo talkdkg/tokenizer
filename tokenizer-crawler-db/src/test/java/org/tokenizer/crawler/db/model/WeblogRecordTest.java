@@ -13,16 +13,19 @@
  */
 package org.tokenizer.crawler.db.model;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import java.util.LinkedList;
 import java.util.List;
-import org.junit.*;
-import org.tokenizer.crawler.db.model.WeblogRecord;
 
-import static org.junit.Assert.*;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * The class <code>WeblogRecordTest</code> contains tests for the class <code>{@link WeblogRecord}</code>.
- *
+ * 
  * @generatedBy CodePro at 4/1/13 2:52 PM
  * @author Fuad
  * @version $Revision: 1.0 $
@@ -30,12 +33,11 @@ import static org.junit.Assert.*;
 public class WeblogRecordTest {
     /**
      * Run the WeblogRecord() constructor test.
-     *
+     * 
      * @generatedBy CodePro at 4/1/13 2:52 PM
      */
     @Test
-    public void testWeblogRecord_1()
-        throws Exception {
+    public void testWeblogRecord_1() throws Exception {
         WeblogRecord result = new WeblogRecord();
         assertNotNull(result);
         // add additional test code here
@@ -43,14 +45,13 @@ public class WeblogRecordTest {
 
     /**
      * Run the void add(Weblog) method test.
-     *
+     * 
      * @throws Exception
-     *
+     * 
      * @generatedBy CodePro at 4/1/13 2:52 PM
      */
     @Test
-    public void testAdd_1()
-        throws Exception {
+    public void testAdd_1() throws Exception {
         WeblogRecord fixture = new WeblogRecord();
         fixture.setCount(1);
         fixture.setWeblogs(new LinkedList());
@@ -63,14 +64,13 @@ public class WeblogRecordTest {
 
     /**
      * Run the int getCount() method test.
-     *
+     * 
      * @throws Exception
-     *
+     * 
      * @generatedBy CodePro at 4/1/13 2:52 PM
      */
     @Test
-    public void testGetCount_1()
-        throws Exception {
+    public void testGetCount_1() throws Exception {
         WeblogRecord fixture = new WeblogRecord();
         fixture.setCount(1);
         fixture.setWeblogs(new LinkedList());
@@ -83,14 +83,13 @@ public class WeblogRecordTest {
 
     /**
      * Run the int getCountInverted() method test.
-     *
+     * 
      * @throws Exception
-     *
+     * 
      * @generatedBy CodePro at 4/1/13 2:52 PM
      */
     @Test
-    public void testGetCountInverted_1()
-        throws Exception {
+    public void testGetCountInverted_1() throws Exception {
         WeblogRecord fixture = new WeblogRecord();
         fixture.setCount(1);
         fixture.setWeblogs(new LinkedList());
@@ -103,14 +102,13 @@ public class WeblogRecordTest {
 
     /**
      * Run the List<WeblogRecord.Weblog> getWeblogs() method test.
-     *
+     * 
      * @throws Exception
-     *
+     * 
      * @generatedBy CodePro at 4/1/13 2:52 PM
      */
     @Test
-    public void testGetWeblogs_1()
-        throws Exception {
+    public void testGetWeblogs_1() throws Exception {
         WeblogRecord fixture = new WeblogRecord();
         fixture.setCount(1);
         fixture.setWeblogs(new LinkedList());
@@ -124,14 +122,13 @@ public class WeblogRecordTest {
 
     /**
      * Run the void setCount(int) method test.
-     *
+     * 
      * @throws Exception
-     *
+     * 
      * @generatedBy CodePro at 4/1/13 2:52 PM
      */
     @Test
-    public void testSetCount_1()
-        throws Exception {
+    public void testSetCount_1() throws Exception {
         WeblogRecord fixture = new WeblogRecord();
         fixture.setCount(1);
         fixture.setWeblogs(new LinkedList());
@@ -144,14 +141,13 @@ public class WeblogRecordTest {
 
     /**
      * Run the void setCountInverted(int) method test.
-     *
+     * 
      * @throws Exception
-     *
+     * 
      * @generatedBy CodePro at 4/1/13 2:52 PM
      */
     @Test
-    public void testSetCountInverted_1()
-        throws Exception {
+    public void testSetCountInverted_1() throws Exception {
         WeblogRecord fixture = new WeblogRecord();
         fixture.setCount(1);
         fixture.setWeblogs(new LinkedList());
@@ -164,14 +160,13 @@ public class WeblogRecordTest {
 
     /**
      * Run the void setWeblogs(List<Weblog>) method test.
-     *
+     * 
      * @throws Exception
-     *
+     * 
      * @generatedBy CodePro at 4/1/13 2:52 PM
      */
     @Test
-    public void testSetWeblogs_1()
-        throws Exception {
+    public void testSetWeblogs_1() throws Exception {
         WeblogRecord fixture = new WeblogRecord();
         fixture.setCount(1);
         fixture.setWeblogs(new LinkedList());
@@ -184,14 +179,13 @@ public class WeblogRecordTest {
 
     /**
      * Run the String toString() method test.
-     *
+     * 
      * @throws Exception
-     *
+     * 
      * @generatedBy CodePro at 4/1/13 2:52 PM
      */
     @Test
-    public void testToString_1()
-        throws Exception {
+    public void testToString_1() throws Exception {
         WeblogRecord fixture = new WeblogRecord();
         fixture.setCount(1);
         fixture.setWeblogs(new LinkedList());
@@ -204,37 +198,36 @@ public class WeblogRecordTest {
 
     /**
      * Perform pre-test initialization.
-     *
+     * 
      * @throws Exception
-     *         if the initialization fails for some reason
-     *
+     *             if the initialization fails for some reason
+     * 
      * @generatedBy CodePro at 4/1/13 2:52 PM
      */
     @Before
-    public void setUp()
-        throws Exception {
+    public void setUp() throws Exception {
         // add additional set up code here
     }
 
     /**
      * Perform post-test clean-up.
-     *
+     * 
      * @throws Exception
-     *         if the clean-up fails for some reason
-     *
+     *             if the clean-up fails for some reason
+     * 
      * @generatedBy CodePro at 4/1/13 2:52 PM
      */
     @After
-    public void tearDown()
-        throws Exception {
+    public void tearDown() throws Exception {
         // Add additional tear down code here
     }
 
     /**
      * Launch the test.
-     *
-     * @param args the command line arguments
-     *
+     * 
+     * @param args
+     *            the command line arguments
+     * 
      * @generatedBy CodePro at 4/1/13 2:52 PM
      */
     public static void main(String[] args) {

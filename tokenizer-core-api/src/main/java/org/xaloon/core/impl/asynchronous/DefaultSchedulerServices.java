@@ -40,46 +40,45 @@ import org.xaloon.core.api.asynchronous.SchedulerServices;
 @TransactionManagement(TransactionManagementType.CONTAINER)
 public class DefaultSchedulerServices implements SchedulerServices {
 
-	/**
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(DefaultSchedulerServices.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DefaultSchedulerServices.class);
 
-	private ExecutorService executor;
+    private ExecutorService executor;
 
-	private int fixedThreadCount = 20;
+    private int fixedThreadCount = 20;
 
-	@SuppressWarnings("unchecked")
-	public <V, T extends JobParameters> java.util.concurrent.Future<V> runAsynchronous(final ScheduledJobService<T> scheduledJobService,
-		final T jobParameters) {
-		if (LOGGER.isDebugEnabled()) {
-			LOGGER.debug(String.format("%s.runAsynchronous() start", DefaultSchedulerServices.class.getName()));
-		}
-		Future<V> f = getExecutor().submit(new Callable<V>() {
-			@Override
-			public V call() throws Exception {
-				return (V)scheduledJobService.execute(jobParameters, true);
-			}
-		});
-		if (LOGGER.isDebugEnabled()) {
-			LOGGER.debug(String.format("%s.runAsynchronous() end", DefaultSchedulerServices.class.getName()));
-		}
-		return f;
-	};
+    @SuppressWarnings("unchecked")
+    public <V, T extends JobParameters> java.util.concurrent.Future<V> runAsynchronous(
+            final ScheduledJobService<T> scheduledJobService, final T jobParameters) {
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug(String.format("%s.runAsynchronous() start", DefaultSchedulerServices.class.getName()));
+        }
+        Future<V> f = getExecutor().submit(new Callable<V>() {
+            @Override
+            public V call() throws Exception {
+                return (V) scheduledJobService.execute(jobParameters, true);
+            }
+        });
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug(String.format("%s.runAsynchronous() end", DefaultSchedulerServices.class.getName()));
+        }
+        return f;
+    };
 
-	ExecutorService getExecutor() {
-		if (executor == null) {
-			executor = Executors.newFixedThreadPool(fixedThreadCount);
-		}
-		return executor;
-	}
+    ExecutorService getExecutor() {
+        if (executor == null) {
+            executor = Executors.newFixedThreadPool(fixedThreadCount);
+        }
+        return executor;
+    }
 
-	public DefaultSchedulerServices setFixedThreadCount(int fixedThreadCount) {
-		this.fixedThreadCount = fixedThreadCount;
-		return this;
-	}
-
+    public DefaultSchedulerServices setFixedThreadCount(int fixedThreadCount) {
+        this.fixedThreadCount = fixedThreadCount;
+        return this;
+    }
 
 }

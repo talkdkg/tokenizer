@@ -123,7 +123,8 @@ public abstract class AbstractMessageSearch extends AbstractScreen {
                 Component newSearchResultsComponent = buildSearchResults();
                 if (searchResultsComponent == null) {
                     mainLayout.addComponent(newSearchResultsComponent);
-                } else {
+                }
+                else {
                     mainLayout.replaceComponent(searchResultsComponent, newSearchResultsComponent);
                 }
                 searchResultsComponent = newSearchResultsComponent;

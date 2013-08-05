@@ -20,22 +20,22 @@ package org.xaloon.core.api.plugin;
  * 
  */
 public class StringPluginBean extends AbstractPluginBean {
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private String value;
+    private String value;
 
-	/**
-	 * @return plugin bean parameter value
-	 */
-	public String getValue() {
-		return value;
-	}
+    /**
+     * @return plugin bean parameter value
+     */
+    public String getValue() {
+        return value;
+    }
 
-	/**
-	 * @param value
-	 *            sets plugin bean parameter value
-	 */
-	public void setValue(String value) {
-		this.value = value;
-	}
+    /**
+     * @param value
+     *            sets plugin bean parameter value
+     */
+    public void setValue(String value) {
+        this.value = value;
+    }
 }

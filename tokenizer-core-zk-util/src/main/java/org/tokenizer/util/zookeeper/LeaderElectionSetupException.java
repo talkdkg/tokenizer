@@ -15,8 +15,7 @@ package org.tokenizer.util.zookeeper;
 
 public class LeaderElectionSetupException extends Exception {
 
-    public LeaderElectionSetupException(final String message,
-            final Throwable cause) {
+    public LeaderElectionSetupException(final String message, final Throwable cause) {
         super(message, cause);
     }
 }

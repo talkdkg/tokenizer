@@ -75,7 +75,4 @@ public class HostRecord implements Serializable {
         return "HostRecord [host=" + host + "]";
     }
 
-    
-    
-    
 }

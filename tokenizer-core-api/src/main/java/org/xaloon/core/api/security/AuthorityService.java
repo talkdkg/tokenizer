@@ -21,10 +21,10 @@ import org.xaloon.core.api.security.model.Authority;
  */
 public interface AuthorityService extends AbstractAuthorityService<Authority, Authority> {
 
-	/**
-	 * Registers supported permissions by plugin
-	 * 
-	 * @param plugin
-	 */
-	void registerPermissions(Plugin plugin);
+    /**
+     * Registers supported permissions by plugin
+     * 
+     * @param plugin
+     */
+    void registerPermissions(Plugin plugin);
 }

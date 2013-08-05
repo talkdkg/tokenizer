@@ -32,14 +32,13 @@ public class HostLocker {
     private static final Logger LOG = LoggerFactory.getLogger(HostLocker.class);
     private static final String LOCK_PATH = "/org/tokenizer/executor/engine/hostlock";
 
-    public HostLocker(final ZooKeeperItf zk) throws InterruptedException,
-            KeeperException {
+    public HostLocker(final ZooKeeperItf zk) throws InterruptedException, KeeperException {
         this.zk = zk;
         ZkUtil.createPath(zk, LOCK_PATH);
     }
 
-    public HostLocker(final ZooKeeperItf zk, final int waitBetweenTries,
-            final int maxWaitTime) throws InterruptedException, KeeperException {
+    public HostLocker(final ZooKeeperItf zk, final int waitBetweenTries, final int maxWaitTime)
+            throws InterruptedException, KeeperException {
         this.zk = zk;
         this.maxWaitTime = maxWaitTime;
         ZkUtil.createPath(zk, LOCK_PATH);
@@ -58,8 +57,7 @@ public class HostLocker {
      */
     public boolean lock(final String host) throws HostLockException {
         if (zk.isCurrentThreadEventThread())
-            throw new RuntimeException(
-                    "HostLocker should not be used from within the ZooKeeper event thread.");
+            throw new RuntimeException("HostLocker should not be used from within the ZooKeeper event thread.");
         try {
             long startTime = System.currentTimeMillis();
             final String lockPath = getPath(host);
@@ -69,18 +67,14 @@ public class HostLocker {
                     // we have been attempting long enough to get the lock,
                     // without
                     // success
-                    throw new HostLockTimeoutException(
-                            "Failed to obtain a lock for host " + host
-                                    + " within " + maxWaitTime + " ms.");
+                    throw new HostLockTimeoutException("Failed to obtain a lock for host " + host + " within "
+                            + maxWaitTime + " ms.");
                 try {
                     zk.retryOperation(new ZooKeeperOperation<Object>() {
 
                         @Override
-                        public Object execute() throws KeeperException,
-                                InterruptedException {
-                            zk.create(lockPath, data,
-                                    ZooDefs.Ids.OPEN_ACL_UNSAFE,
-                                    CreateMode.EPHEMERAL);
+                        public Object execute() throws KeeperException, InterruptedException {
+                            zk.create(lockPath, data, ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL);
                             return null;
                         }
                     });
@@ -96,24 +90,19 @@ public class HostLocker {
                 // succeeded
                 // creating the node, therefore
                 // read the owner and thread id to check.
-                boolean hasLock = zk
-                        .retryOperation(new ZooKeeperOperation<Boolean>() {
+                boolean hasLock = zk.retryOperation(new ZooKeeperOperation<Boolean>() {
 
-                            @Override
-                            public Boolean execute() throws KeeperException,
-                                    InterruptedException {
-                                try {
-                                    Stat stat = new Stat();
-                                    byte[] currentData = zk.getData(lockPath,
-                                            false, stat);
-                                    return (stat.getEphemeralOwner() == zk
-                                            .getSessionId() && Arrays.equals(
-                                            currentData, data));
-                                } catch (KeeperException.NoNodeException e) {
-                                    return false;
-                                }
-                            }
-                        });
+                    @Override
+                    public Boolean execute() throws KeeperException, InterruptedException {
+                        try {
+                            Stat stat = new Stat();
+                            byte[] currentData = zk.getData(lockPath, false, stat);
+                            return (stat.getEphemeralOwner() == zk.getSessionId() && Arrays.equals(currentData, data));
+                        } catch (KeeperException.NoNodeException e) {
+                            return false;
+                        }
+                    }
+                });
                 if (hasLock)
                     return true;
                 return false;
@@ -121,16 +110,13 @@ public class HostLocker {
         } catch (Throwable throwable) {
             if (throwable instanceof HostLockException)
                 throw (HostLockException) throwable;
-            throw new HostLockException("Error locking a host " + host,
-                    throwable);
+            throw new HostLockException("Error locking a host " + host, throwable);
         }
     }
 
-    public void unlock(final String host) throws HostLockException,
-            InterruptedException, KeeperException {
+    public void unlock(final String host) throws HostLockException, InterruptedException, KeeperException {
         if (zk.isCurrentThreadEventThread())
-            throw new RuntimeException(
-                    "HostLocker should not be used from within the ZooKeeper event thread.");
+            throw new RuntimeException("HostLocker should not be used from within the ZooKeeper event thread.");
         final String lockPath = getPath(host);
         // The below loop is because, even if our thread is interrupted, we
         // still
@@ -147,16 +133,15 @@ public class HostLocker {
                 tokenOk = zk.retryOperation(new ZooKeeperOperation<Boolean>() {
 
                     @Override
-                    public Boolean execute() throws KeeperException,
-                            InterruptedException {
+                    public Boolean execute() throws KeeperException, InterruptedException {
                         Stat stat = new Stat();
                         byte[] data = zk.getData(lockPath, false, stat);
                         if (stat.getEphemeralOwner() == zk.getSessionId()
-                                && Arrays.equals(data, longToBytes(Thread
-                                        .currentThread().getId()))) {
+                                && Arrays.equals(data, longToBytes(Thread.currentThread().getId()))) {
                             zk.delete(lockPath, -1);
                             return true;
-                        } else
+                        }
+                        else
                             return false;
                     }
                 });
@@ -169,9 +154,8 @@ public class HostLocker {
             Thread.currentThread().interrupt();
         }
         if (!tokenOk)
-            throw new HostLockException(
-                    "You cannot remove the lock for a host " + host
-                            + " because the token is incorrect.");
+            throw new HostLockException("You cannot remove the lock for a host " + host
+                    + " because the token is incorrect.");
     }
 
     public void unlockLogFailure(final String host) {
@@ -191,23 +175,19 @@ public class HostLocker {
      * @throws InterruptedException
      * @throws KeeperException
      */
-    public boolean hasLock(final String host) throws HostLockException,
-            InterruptedException, KeeperException {
+    public boolean hasLock(final String host) throws HostLockException, InterruptedException, KeeperException {
         if (zk.isCurrentThreadEventThread())
-            throw new RuntimeException(
-                    "HostLocker should not be used from within the ZooKeeper event thread.");
+            throw new RuntimeException("HostLocker should not be used from within the ZooKeeper event thread.");
         final String lockPath = getPath(host);
         return zk.retryOperation(new ZooKeeperOperation<Boolean>() {
 
             @Override
-            public Boolean execute() throws KeeperException,
-                    InterruptedException {
+            public Boolean execute() throws KeeperException, InterruptedException {
                 try {
                     Stat stat = new Stat();
                     byte[] data = zk.getData(lockPath, false, stat);
                     return stat.getEphemeralOwner() == zk.getSessionId()
-                            && Arrays.equals(data, longToBytes(Thread
-                                    .currentThread().getId()));
+                            && Arrays.equals(data, longToBytes(Thread.currentThread().getId()));
                 } catch (KeeperException.NoNodeException e) {
                     return false;
                 }
@@ -215,14 +195,12 @@ public class HostLocker {
         });
     }
 
-    public boolean exists(final String host) throws HostLockException,
-            InterruptedException, KeeperException {
+    public boolean exists(final String host) throws HostLockException, InterruptedException, KeeperException {
         final String lockPath = getPath(host);
         return zk.retryOperation(new ZooKeeperOperation<Boolean>() {
 
             @Override
-            public Boolean execute() throws KeeperException,
-                    InterruptedException {
+            public Boolean execute() throws KeeperException, InterruptedException {
                 try {
                     if (null != zk.exists(lockPath, false))
                         return true;

@@ -18,19 +18,19 @@ package org.tokenizer.executor.model.configuration;
  */
 @SuppressWarnings("serial")
 public class TaskConfigurationException extends Exception {
-	public TaskConfigurationException() {
-		super();
-	}
+    public TaskConfigurationException() {
+        super();
+    }
 
-	public TaskConfigurationException(String message) {
-		super(message);
-	}
+    public TaskConfigurationException(String message) {
+        super(message);
+    }
 
-	public TaskConfigurationException(String message, Throwable cause) {
-		super(message, cause);
-	}
+    public TaskConfigurationException(String message, Throwable cause) {
+        super(message, cause);
+    }
 
-	public TaskConfigurationException(Throwable cause) {
-		super(cause);
-	}
+    public TaskConfigurationException(Throwable cause) {
+        super(cause);
+    }
 }

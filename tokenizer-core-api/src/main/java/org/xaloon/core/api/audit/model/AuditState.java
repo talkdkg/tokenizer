@@ -20,18 +20,18 @@ package org.xaloon.core.api.audit.model;
  * 
  */
 public enum AuditState {
-	/** indicates, that object is created **/
-	CREATE,
+    /** indicates, that object is created **/
+    CREATE,
 
-	/** indicates, that object is updated **/
-	UPDATE,
+    /** indicates, that object is updated **/
+    UPDATE,
 
-	/** indicates, that object is deleted **/
-	DELETE,
+    /** indicates, that object is deleted **/
+    DELETE,
 
-	/** ndicates, that object is created or updated **/
-	CREATE_OR_UPDATE,
+    /** ndicates, that object is created or updated **/
+    CREATE_OR_UPDATE,
 
-	/** if there is no listed object state **/
-	OTHER
+    /** if there is no listed object state **/
+    OTHER
 }

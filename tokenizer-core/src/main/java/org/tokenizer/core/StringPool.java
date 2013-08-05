@@ -15,11 +15,11 @@ package org.tokenizer.core;
 
 public class StringPool {
 
-	public static final String EMPTY = "";
-	public static final String SPACE = " ";
-	public static final String DASH = "-";
-	public static final String DOT = ".";
-	public static final String COMMA = ",";
-	public static final String NUMBER_SIGN = "#";
+    public static final String EMPTY = "";
+    public static final String SPACE = " ";
+    public static final String DASH = "-";
+    public static final String DOT = ".";
+    public static final String COMMA = ",";
+    public static final String NUMBER_SIGN = "#";
 
 }

@@ -32,120 +32,119 @@ import org.xaloon.core.api.plugin.AbstractPluginBean;
  */
 
 public class MenuItem extends AbstractPluginBean implements Comparable<MenuItem>, Serializable {
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	/** The unique identifier of menu item. Used for link name localization */
-	private String key;
+    /** The unique identifier of menu item. Used for link name localization */
+    private String key;
 
-	/**
-	 * Parameters of url
-	 */
-	private List<KeyValue<String, String>> parameters = new ArrayList<KeyValue<String, String>>();
+    /**
+     * Parameters of url
+     */
+    private List<KeyValue<String, String>> parameters = new ArrayList<KeyValue<String, String>>();
 
-	/**
-	 * Concrete page class
-	 */
-	private Class<?> pageClass;
+    /**
+     * Concrete page class
+     */
+    private Class<?> pageClass;
 
-	/**
-	 * Order of menu item in user interface
-	 */
-	private int order;
+    /**
+     * Order of menu item in user interface
+     */
+    private int order;
 
+    /**
+     * @return order of this menu item
+     */
+    public int getOrder() {
+        return order;
+    }
 
-	/**
-	 * @return order of this menu item
-	 */
-	public int getOrder() {
-		return order;
-	}
+    /**
+     * @param order
+     */
+    public void setOrder(int order) {
+        this.order = order;
+    }
 
-	/**
-	 * @param order
-	 */
-	public void setOrder(int order) {
-		this.order = order;
-	}
+    /**
+     * @param pageClass
+     */
+    public void setPageClass(Class<?> pageClass) {
+        this.pageClass = pageClass;
+    }
 
-	/**
-	 * @param pageClass
-	 */
-	public void setPageClass(Class<?> pageClass) {
-		this.pageClass = pageClass;
-	}
+    /**
+     * @return page class of this menu item
+     */
+    public Class<?> getPageClass() {
+        return pageClass;
+    }
 
-	/**
-	 * @return page class of this menu item
-	 */
-	public Class<?> getPageClass() {
-		return pageClass;
-	}
+    /**
+     * Sorting current menu item by provided order property
+     * <p>
+     * If order property id is not provided then order by name
+     */
+    public int compareTo(MenuItem o) {
+        if (o == null) {
+            return 1;
+        }
+        CompareToBuilder compareToBuilder = new CompareToBuilder();
+        compareToBuilder.append(getOrder(), o.getOrder());
+        compareToBuilder.append(getKey(), o.getKey());
 
-	/**
-	 * Sorting current menu item by provided order property
-	 * <p>
-	 * If order property id is not provided then order by name
-	 */
-	public int compareTo(MenuItem o) {
-		if (o == null) {
-			return 1;
-		}
-		CompareToBuilder compareToBuilder = new CompareToBuilder();
-		compareToBuilder.append(getOrder(), o.getOrder());
-		compareToBuilder.append(getKey(), o.getKey());
+        return compareToBuilder.toComparison();
+    }
 
-		return compareToBuilder.toComparison();
-	}
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null || !(obj instanceof MenuItem)) {
+            return false;
+        }
+        MenuItem menuItem = (MenuItem) obj;
 
-	@Override
-	public boolean equals(Object obj) {
-		if (obj == null || !(obj instanceof MenuItem)) {
-			return false;
-		}
-		MenuItem menuItem = (MenuItem)obj;
+        EqualsBuilder equalsBuilder = new EqualsBuilder();
+        equalsBuilder.append(getOrder(), menuItem.getOrder());
+        return equalsBuilder.isEquals();
+    }
 
-		EqualsBuilder equalsBuilder = new EqualsBuilder();
-		equalsBuilder.append(getOrder(), menuItem.getOrder());
-		return equalsBuilder.isEquals();
-	}
+    @Override
+    public int hashCode() {
+        HashCodeBuilder hashCodeBuilder = new HashCodeBuilder();
+        hashCodeBuilder.append(getOrder());
+        return hashCodeBuilder.hashCode();
+    }
 
-	@Override
-	public int hashCode() {
-		HashCodeBuilder hashCodeBuilder = new HashCodeBuilder();
-		hashCodeBuilder.append(getOrder());
-		return hashCodeBuilder.hashCode();
-	}
+    /**
+     * @param parameters
+     */
+    public void setParameters(List<KeyValue<String, String>> parameters) {
+        this.parameters = parameters;
+    }
 
-	/**
-	 * @param parameters
-	 */
-	public void setParameters(List<KeyValue<String, String>> parameters) {
-		this.parameters = parameters;
-	}
+    /**
+     * @return parameters for this menu item
+     */
+    public List<KeyValue<String, String>> getParameters() {
+        return parameters;
+    }
 
-	/**
-	 * @return parameters for this menu item
-	 */
-	public List<KeyValue<String, String>> getParameters() {
-		return parameters;
-	}
+    /**
+     * @return unique identifier
+     */
+    public String getKey() {
+        return key;
+    }
 
-	/**
-	 * @return unique identifier
-	 */
-	public String getKey() {
-		return key;
-	}
+    /**
+     * @param key
+     */
+    public void setKey(String key) {
+        this.key = key;
+    }
 
-	/**
-	 * @param key
-	 */
-	public void setKey(String key) {
-		this.key = key;
-	}
-
-	@Override
-	public String toString() {
-		return String.format("Order:%d; PageClass: %s", order, pageClass.getName());
-	}
+    @Override
+    public String toString() {
+        return String.format("Order:%d; PageClass: %s", order, pageClass.getName());
+    }
 }

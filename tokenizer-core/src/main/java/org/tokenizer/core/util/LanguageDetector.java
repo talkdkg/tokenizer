@@ -19,7 +19,6 @@ import com.cybozu.labs.langdetect.Detector;
 import com.cybozu.labs.langdetect.DetectorFactory;
 import com.cybozu.labs.langdetect.LangDetectException;
 
-
 public class LanguageDetector {
 
     static {
@@ -29,7 +28,6 @@ public class LanguageDetector {
             throw new RuntimeException(e);
         }
     }
-
 
     public static String detect(String text) throws LangDetectException {
         Detector detector = DetectorFactory.create();

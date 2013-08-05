@@ -482,7 +482,8 @@ public class TaskInfoComponent extends CustomComponent implements Broadcaster.Br
                     taskConfigurationFieldGroup.commit();
                     if (newTaskMode) {
                         update(newTask);
-                    } else {
+                    }
+                    else {
                         update(currentTask);
                     }
                     setReadOnly(true);
@@ -519,34 +520,47 @@ public class TaskInfoComponent extends CustomComponent implements Broadcaster.Br
         ComponentContainer newComponent;
         if (!newTaskMode & readOnly) {
             newComponent = buildTaskInfoBeanComponent(currentTask);
-        } else if (newTaskMode) {
+        }
+        else if (newTaskMode) {
             taskConfigurationFieldGroup = new FieldGroup();
             newComponent = new FormLayout();
             buildSelectTaskImplementationForm(taskConfigurationFieldGroup, newComponent);
-        } else {
+        }
+        else {
             taskConfigurationFieldGroup = new FieldGroup();
             newComponent = new FormLayout();
             if (currentTask.getTaskConfiguration() instanceof HtmlSplitterTaskConfiguration) {
                 buildHtmlSplitterTaskConfigurationForm(taskConfigurationFieldGroup, newComponent);
-            } else if (currentTask.getTaskConfiguration() instanceof MessageParserTaskConfiguration) {
+            }
+            else if (currentTask.getTaskConfiguration() instanceof MessageParserTaskConfiguration) {
                 buildMessageParserTaskConfigurationForm(taskConfigurationFieldGroup, newComponent);
-            } else if (currentTask.getTaskConfiguration() instanceof TweetCollectorTaskConfiguration) {
+            }
+            else if (currentTask.getTaskConfiguration() instanceof TweetCollectorTaskConfiguration) {
                 buildTweetCollectorTaskConfigurationForm(taskConfigurationFieldGroup, newComponent);
-            } else if (currentTask.getTaskConfiguration() instanceof ClassicRobotTaskConfiguration) {
+            }
+            else if (currentTask.getTaskConfiguration() instanceof ClassicRobotTaskConfiguration) {
                 buildClassicRobotTaskConfigurationForm(taskConfigurationFieldGroup, newComponent);
-            } else if (currentTask.getTaskConfiguration() instanceof WeblogsSubscriberTaskConfiguration) {
+            }
+            else if (currentTask.getTaskConfiguration() instanceof WeblogsSubscriberTaskConfiguration) {
                 buildWeblogsSubscriberTaskConfigurationForm(taskConfigurationFieldGroup, newComponent);
-            } else if (currentTask.getTaskConfiguration() instanceof RssFetcherTaskConfiguration) {
-            } else if (currentTask.getTaskConfiguration() instanceof SimpleMultithreadedFetcherTaskConfiguration) {
-            } else if (currentTask.getTaskConfiguration() instanceof SitemapsFetcherTaskConfiguration) {
+            }
+            else if (currentTask.getTaskConfiguration() instanceof RssFetcherTaskConfiguration) {
+            }
+            else if (currentTask.getTaskConfiguration() instanceof SimpleMultithreadedFetcherTaskConfiguration) {
+            }
+            else if (currentTask.getTaskConfiguration() instanceof SitemapsFetcherTaskConfiguration) {
                 buildSitemapsFetcherTaskConfigurationForm(taskConfigurationFieldGroup, newComponent);
-            } else if (currentTask.getTaskConfiguration() instanceof SitemapsPageFetcherTaskConfiguration) {
+            }
+            else if (currentTask.getTaskConfiguration() instanceof SitemapsPageFetcherTaskConfiguration) {
                 buildSitemapsPageFetcherTaskConfigurationForm(taskConfigurationFieldGroup, newComponent);
-            } else if (currentTask.getTaskConfiguration() instanceof SitemapsLinkedPageFetcherTaskConfiguration) {
+            }
+            else if (currentTask.getTaskConfiguration() instanceof SitemapsLinkedPageFetcherTaskConfiguration) {
                 buildSitemapsLinkedPageFetcherTaskConfigurationForm(taskConfigurationFieldGroup, newComponent);
-            } else if (currentTask.getTaskConfiguration() instanceof WeblogsCrawlerTaskConfiguration) {
+            }
+            else if (currentTask.getTaskConfiguration() instanceof WeblogsCrawlerTaskConfiguration) {
                 buildWeblogsCrawlerTaskConfigurationForm(taskConfigurationFieldGroup, newComponent);
-            } else if (currentTask.getTaskConfiguration() instanceof WeblogsParserTaskConfiguration) {
+            }
+            else if (currentTask.getTaskConfiguration() instanceof WeblogsParserTaskConfiguration) {
                 buildWeblogsParserTaskConfigurationForm(taskConfigurationFieldGroup, newComponent);
             }
 
@@ -564,13 +578,17 @@ public class TaskInfoComponent extends CustomComponent implements Broadcaster.Br
         @Override
         public void process(final ExecutorModelEvent event) {
 
+            // if user edits configuration:
+            if (!isReadOnly()) {
+                return;
+            }
+
             UI.getCurrent().access(new Runnable() {
                 @Override
                 public void run() {
                     LOG.debug("Event: {}", event.getType());
                     UUID uuid = event.getUuid();
                     TaskInfoBean task;
-                    boolean propertyAdded = false;
                     try {
                         task = model.getTask(uuid);
                     } catch (TaskNotFoundException e) {
@@ -584,7 +602,8 @@ public class TaskInfoComponent extends CustomComponent implements Broadcaster.Br
                     }
 
                     if (event.getType() == ExecutorModelEventType.TASK_ADDED) {
-                    } else if (event.getType() == ExecutorModelEventType.TASK_UPDATED) {
+                    }
+                    else if (event.getType() == ExecutorModelEventType.TASK_UPDATED) {
                     }
 
                     for (TaskInfoBean t : tasks) {
@@ -648,7 +667,8 @@ public class TaskInfoComponent extends CustomComponent implements Broadcaster.Br
         if (changes) {
             updateTask(mutableTask, lock);
             LOG.debug("Task definition updated: {}", uuid);
-        } else {
+        }
+        else {
             LOG.debug("Task already matches the specified settings, did not update it.");
         }
         unlockTask(lock, mutableTask);
@@ -784,31 +804,40 @@ public class TaskInfoComponent extends CustomComponent implements Broadcaster.Br
                 if ("ClassicRobotTask".equals(selected)) {
                     newTask.setTaskConfiguration(new ClassicRobotTaskConfiguration());
                     buildClassicRobotTaskConfigurationForm(taskConfigurationFieldGroup, newComponent);
-                } else if ("SitemapsFetcherTask".equals(selected)) {
+                }
+                else if ("SitemapsFetcherTask".equals(selected)) {
                     newTask.setTaskConfiguration(new SitemapsFetcherTaskConfiguration());
                     buildSitemapsFetcherTaskConfigurationForm(taskConfigurationFieldGroup, newComponent);
-                } else if ("SitemapsPageFetcherTask".equals(selected)) {
+                }
+                else if ("SitemapsPageFetcherTask".equals(selected)) {
                     newTask.setTaskConfiguration(new SitemapsPageFetcherTaskConfiguration());
                     buildSitemapsPageFetcherTaskConfigurationForm(taskConfigurationFieldGroup, newComponent);
-                } else if ("SitemapsLinkedPageFetcherTask".equals(selected)) {
+                }
+                else if ("SitemapsLinkedPageFetcherTask".equals(selected)) {
                     newTask.setTaskConfiguration(new SitemapsLinkedPageFetcherTaskConfiguration());
                     buildSitemapsLinkedPageFetcherTaskConfigurationForm(taskConfigurationFieldGroup, newComponent);
-                } else if ("HtmlSplitterTask".equals(selected)) {
+                }
+                else if ("HtmlSplitterTask".equals(selected)) {
                     newTask.setTaskConfiguration(new HtmlSplitterTaskConfiguration());
                     buildHtmlSplitterTaskConfigurationForm(taskConfigurationFieldGroup, newComponent);
-                } else if ("MessageParserTask".equals(selected)) {
+                }
+                else if ("MessageParserTask".equals(selected)) {
                     newTask.setTaskConfiguration(new MessageParserTaskConfiguration());
                     buildMessageParserTaskConfigurationForm(taskConfigurationFieldGroup, newComponent);
-                } else if ("TweetCollectorTask".equals(selected)) {
+                }
+                else if ("TweetCollectorTask".equals(selected)) {
                     newTask.setTaskConfiguration(new TweetCollectorTaskConfiguration());
                     buildTweetCollectorTaskConfigurationForm(taskConfigurationFieldGroup, newComponent);
-                } else if ("WeblogsSubscriberTask".equals(selected)) {
+                }
+                else if ("WeblogsSubscriberTask".equals(selected)) {
                     newTask.setTaskConfiguration(new WeblogsSubscriberTaskConfiguration());
                     buildWeblogsSubscriberTaskConfigurationForm(taskConfigurationFieldGroup, newComponent);
-                } else if ("WeblogsCrawlerTask".equals(selected)) {
+                }
+                else if ("WeblogsCrawlerTask".equals(selected)) {
                     newTask.setTaskConfiguration(new WeblogsCrawlerTaskConfiguration());
                     buildWeblogsCrawlerTaskConfigurationForm(taskConfigurationFieldGroup, newComponent);
-                } else if ("WeblogsParserTask".equals(selected)) {
+                }
+                else if ("WeblogsParserTask".equals(selected)) {
                     newTask.setTaskConfiguration(new WeblogsParserTaskConfiguration());
                     buildWeblogsParserTaskConfigurationForm(taskConfigurationFieldGroup, newComponent);
                 }

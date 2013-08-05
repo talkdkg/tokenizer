@@ -19,7 +19,6 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
 import org.apache.zookeeper.KeeperException;
@@ -58,40 +57,35 @@ public class ExecutorMaster implements Executor {
 
     @Inject
     public ExecutorMaster(final ZooKeeperItf zk, final WritableExecutorModel model) {
-        
+
         this.zk = zk;
         this.model = model;
         try {
             start();
-        }
-        catch (LeaderElectionSetupException e) {
+        } catch (LeaderElectionSetupException e) {
             throw new RuntimeException(e);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
-        }
-        catch (InterruptedException e) {
+        } catch (InterruptedException e) {
             throw new RuntimeException(e);
-        }
-        catch (KeeperException e) {
+        } catch (KeeperException e) {
             throw new RuntimeException(e);
         }
     }
 
-    //@PostConstruct
+    // @PostConstruct
     @Inject
     public void start() throws LeaderElectionSetupException, IOException, InterruptedException, KeeperException {
         LOG.warn("start called...");
-        leaderElection =
-            new LeaderElection(zk, "Executor Master", "/org/tokenizer/executor/masters", new MyLeaderElectionCallback());
+        leaderElection = new LeaderElection(zk, "Executor Master", "/org/tokenizer/executor/masters",
+                new MyLeaderElectionCallback());
     }
 
     @PreDestroy
     public void stop() {
         try {
             leaderElection.stop();
-        }
-        catch (InterruptedException e) {
+        } catch (InterruptedException e) {
             LOG.info("Interrupted while shutting down leader election.");
         }
         // Closer.close(jobClient);
@@ -112,7 +106,7 @@ public class ExecutorMaster implements Executor {
             // push out fake events
             for (TaskInfoBean taskInfoBean : taskInfoBeans) {
                 eventWorker
-                    .putEvent(new ExecutorModelEvent(ExecutorModelEventType.TASK_UPDATED, taskInfoBean.getUuid()));
+                        .putEvent(new ExecutorModelEvent(ExecutorModelEventType.TASK_UPDATED, taskInfoBean.getUuid()));
             }
             LOG.info("Startup as Master successful.");
         }
@@ -184,12 +178,11 @@ public class ExecutorMaster implements Executor {
                         LOG.warn("EventWorker queue getting large, size = " + queueSize);
                     }
                     if (event.getType() == ExecutorModelEventType.TASK_ADDED
-                        || event.getType() == ExecutorModelEventType.TASK_UPDATED) {
+                            || event.getType() == ExecutorModelEventType.TASK_UPDATED) {
                         TaskInfoBean taskDefinition = null;
                         try {
                             taskDefinition = model.getTask(event.getUuid());
-                        }
-                        catch (TaskNotFoundException e) {
+                        } catch (TaskNotFoundException e) {
                             // ignore
                         }
                         if (taskDefinition != null) {
@@ -199,11 +192,9 @@ public class ExecutorMaster implements Executor {
                             }
                         }
                     }
-                }
-                catch (InterruptedException e) {
+                } catch (InterruptedException e) {
                     return;
-                }
-                catch (Throwable t) {
+                } catch (Throwable t) {
                     LOG.error("Error processing executor model event in ExecutorMaster.", t);
                 }
             }
@@ -216,8 +207,7 @@ public class ExecutorMaster implements Executor {
         public void process(final ExecutorModelEvent event) {
             try {
                 eventWorker.putEvent(event);
-            }
-            catch (InterruptedException e) {
+            } catch (InterruptedException e) {
                 LOG.info("ExecutorMaster.ExecutorModelListener interrupted.");
             }
         }

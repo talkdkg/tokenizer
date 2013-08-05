@@ -16,7 +16,6 @@ package org.tokenizer.crawler.db.model;
 import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
-import org.tokenizer.crawler.db.model.WeblogRecord;
 
 public class TimestampUrlIDXTest {
 

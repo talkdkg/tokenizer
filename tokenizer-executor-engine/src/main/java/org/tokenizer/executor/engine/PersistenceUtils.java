@@ -41,10 +41,9 @@ public class PersistenceUtils {
 
     private static final Logger LOG = LoggerFactory.getLogger(PersistenceUtils.class);
 
-
     public static boolean checkRobotRules(final UrlRecord urlRecord, final CrawlerRepository repository,
-        final BaseRobotRules baseRobotRules, final MetricsCache metricsCache) throws InterruptedException,
-        ConnectionException {
+            final BaseRobotRules baseRobotRules, final MetricsCache metricsCache) throws InterruptedException,
+            ConnectionException {
         String url = urlRecord.getBaseUrl();
         if (!baseRobotRules.isAllowed(url)) {
             urlRecord.setHttpStatus(-1);
@@ -58,14 +57,13 @@ public class PersistenceUtils {
 
     @Deprecated
     public static FetchedResult fetch(final UrlRecord record, final CrawlerRepository repository,
-        final MetricsCache metricsCache, final SimpleHttpFetcher simpleHttpClient) throws InterruptedException {
+            final MetricsCache metricsCache, final SimpleHttpFetcher simpleHttpClient) throws InterruptedException {
         String url = record.getBaseUrl();
         FetchedResult fetchedResult = null;
         long start = System.currentTimeMillis();
         try {
             fetchedResult = simpleHttpClient.get(url, null);
-        }
-        catch (RedirectFetchException e) {
+        } catch (RedirectFetchException e) {
             String redirectedUrl = e.getRedirectedUrl();
             LOG.debug("Redirected to {}", redirectedUrl);
             record.setHttpStatus(e.getHttpStatusCode());
@@ -77,8 +75,7 @@ public class PersistenceUtils {
                 UrlRecord urlRecord = new UrlRecord(normalizedRedirectedUrl);
                 try {
                     repository.insert(urlRecord);
-                }
-                catch (ConnectionException e1) {
+                } catch (ConnectionException e1) {
                     LOG.error("repository not available... sleeping 60 seconds", e);
                     Thread.sleep(60000);
                 }
@@ -87,13 +84,11 @@ public class PersistenceUtils {
                 LOG.debug("redirected extrenal host ignored: {}", normalizedRedirectedUrl);
             }
             return null;
-        }
-        catch (HttpFetchException e) {
+        } catch (HttpFetchException e) {
             record.setHttpStatus(e.getHttpStatus());
             record.setFetchTime(System.currentTimeMillis());
             return null;
-        }
-        catch (BaseFetchException e) {
+        } catch (BaseFetchException e) {
             if (e.getMessage().contains("Aborted due to INTERRUPTED")) {
                 throw new InterruptedException("Aborted...");
             }
@@ -116,14 +111,14 @@ public class PersistenceUtils {
     }
 
     public static void injectIfNotExists(final SyndEntry entry, final CrawlerRepository repository,
-        final MetricsCache metricsCache) throws InterruptedException {
+            final MetricsCache metricsCache) throws InterruptedException {
         // TODO:
         // record = repository.create(record);
         // metricsCache.increment(MetricsCache.LILY_INJECTS_COUNT);
     }
 
     private static void createRecord(final SyndEntry entry, final CrawlerRepository repository)
-        throws InterruptedException {
+            throws InterruptedException {
         // TODO: not implemented yet
         String url = entry.getLink().trim();
         List<SyndCategory> categories = entry.getCategories();

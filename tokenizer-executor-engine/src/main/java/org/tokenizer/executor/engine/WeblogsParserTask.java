@@ -55,14 +55,14 @@ public class WeblogsParserTask extends AbstractTask<WeblogsParserTaskConfigurati
     private static BaseUrlNormalizer urlNormalizer = new SimpleUrlNormalizer();
 
     public WeblogsParserTask(UUID uuid, String friendlyName, ZooKeeperItf zk,
-        final WeblogsParserTaskConfiguration taskConfiguration, CrawlerRepository crawlerRepository,
-        WritableExecutorModel model, HostLocker hostLocker) {
+            final WeblogsParserTaskConfiguration taskConfiguration, CrawlerRepository crawlerRepository,
+            WritableExecutorModel model, HostLocker hostLocker) {
 
         super(uuid, friendlyName, zk, taskConfiguration, crawlerRepository, model, hostLocker);
 
-        UserAgent userAgent =
-            new UserAgent(this.taskConfiguration.getAgentName(), this.taskConfiguration.getEmailAddress(),
-                this.taskConfiguration.getWebAddress(), UserAgent.DEFAULT_BROWSER_VERSION, "2.1");
+        UserAgent userAgent = new UserAgent(this.taskConfiguration.getAgentName(),
+                this.taskConfiguration.getEmailAddress(), this.taskConfiguration.getWebAddress(),
+                UserAgent.DEFAULT_BROWSER_VERSION, "2.1");
         LOG.warn("userAgent: {}", userAgent.getUserAgentString());
         httpClient = new SimpleHttpFetcher2(DEFAULT_MAX_THREADS, userAgent);
         httpClient.setSocketTimeout(30000);
@@ -80,8 +80,8 @@ public class WeblogsParserTask extends AbstractTask<WeblogsParserTaskConfigurati
 
         for (HostRecord hostRecord : hostRecords) {
             LOG.debug(hostRecord.toString());
-            List<FetchedResultRecord> fetchedResultRecords =
-                crawlerRepository.listFetchedResultRecords(hostRecord.getHost());
+            List<FetchedResultRecord> fetchedResultRecords = crawlerRepository.listFetchedResultRecords(hostRecord
+                    .getHost());
             for (FetchedResultRecord fetchedResultRecord : fetchedResultRecords) {
                 LOG.debug(fetchedResultRecord.toString());
                 List<Outlink> outlinks = parse(fetchedResultRecord.getFetchedResult());
@@ -98,12 +98,10 @@ public class WeblogsParserTask extends AbstractTask<WeblogsParserTaskConfigurati
                         UrlHeadRecord urlHeadRecord = new UrlHeadRecord(fetchedResult);
                         crawlerRepository.insertIfNotExists(urlHeadRecord);
 
-                    }
-                    catch (RedirectFetchException e) {
+                    } catch (RedirectFetchException e) {
                         String redirectedUrl2 = e.getRedirectedUrl();
                         LOG.error("secondary redirect: {}", redirectedUrl2);
-                    }
-                    catch (BaseFetchException e) {
+                    } catch (BaseFetchException e) {
                         if (e.getMessage().contains("Aborted due to INTERRUPTED")) {
                             throw new InterruptedException("Aborted...");
                         }

@@ -24,8 +24,7 @@ import org.apache.tika.mime.MediaType;
 
 public class HttpUtils {
 
-    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory
-            .getLogger(HttpUtils.class);
+    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(HttpUtils.class);
     public static String DEFAULT_CHARSET = "UTF-8";
     public static final String URL_PREFIX = "http://";
     public static final String URL_PREFIX_HTTPS = "https://";
@@ -177,12 +176,10 @@ public class HttpUtils {
     }
 
     public static byte[] intToBytes(final int i) {
-        return new byte[] { (byte) (i >>> 24), (byte) (i >>> 16),
-                (byte) (i >>> 8), (byte) i };
+        return new byte[] { (byte) (i >>> 24), (byte) (i >>> 16), (byte) (i >>> 8), (byte) i };
     }
 
     public static int bytesToInt(final byte[] b) {
-        return b[3] & 0xFF | (b[2] & 0xFF) << 8 | (b[1] & 0xFF) << 16
-                | (b[0] & 0xFF) << 24;
+        return b[3] & 0xFF | (b[2] & 0xFF) << 8 | (b[1] & 0xFF) << 16 | (b[0] & 0xFF) << 24;
     }
 }

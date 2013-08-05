@@ -40,13 +40,11 @@ public class AutomatonURLFilter extends RegexURLFilterBase {
         super();
     }
 
-    public AutomatonURLFilter(final String filename) throws IOException,
-            PatternSyntaxException {
+    public AutomatonURLFilter(final String filename) throws IOException, PatternSyntaxException {
         super(filename);
     }
 
-    public AutomatonURLFilter(final Reader reader) throws IOException,
-            IllegalArgumentException {
+    public AutomatonURLFilter(final Reader reader) throws IOException, IllegalArgumentException {
         super(reader);
     }
 
@@ -55,15 +53,13 @@ public class AutomatonURLFilter extends RegexURLFilterBase {
         return new Rule(sign, regex);
     }
 
-
     private class Rule extends RegexRule {
 
         private final RunAutomaton automaton;
 
         Rule(final boolean sign, final String regex) {
             super(sign, regex);
-            automaton = new RunAutomaton(
-                    new RegExp(regex, RegExp.ALL).toAutomaton());
+            automaton = new RunAutomaton(new RegExp(regex, RegExp.ALL).toAutomaton());
         }
 
         @Override

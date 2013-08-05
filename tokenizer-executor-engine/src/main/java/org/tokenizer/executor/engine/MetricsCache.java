@@ -41,8 +41,7 @@ import org.tokenizer.util.zookeeper.ZkLockException;
  */
 public class MetricsCache {
 
-    private static final Logger LOG = LoggerFactory
-            .getLogger(MetricsCache.class);
+    private static final Logger LOG = LoggerFactory.getLogger(MetricsCache.class);
     private static final long COMMIT_INTERVAL = 1 * 1000L;
     public static final String URL_ROBOTS_KEY = "robots.txt restricted";
     public static final String URL_TOTAL_KEY = "URLs processed";
@@ -79,8 +78,7 @@ public class MetricsCache {
      * @param key
      * @throws InterruptedException
      */
-    public synchronized void increment(final String key)
-            throws InterruptedException {
+    public synchronized void increment(final String key) throws InterruptedException {
         increment(key, 1L);
     }
 
@@ -90,8 +88,7 @@ public class MetricsCache {
      * @param key
      * @throws InterruptedException
      */
-    public synchronized void increment(final String key, final long value)
-            throws InterruptedException {
+    public synchronized void increment(final String key, final long value) throws InterruptedException {
         Long count = cache.get(key);
         if (count == null) {
             count = 0L;
@@ -145,15 +142,12 @@ public class MetricsCache {
                 value = value + cache.get(key);
                 taskDefinition.addCounter(key, value);
                 // it will update twice, and second update will be correct one:
-                if (key.equals(URL_OK_KEY)
-                        || key.equals(TOTAL_HTTP_RESPONSE_TIME_MS)) {
+                if (key.equals(URL_OK_KEY) || key.equals(TOTAL_HTTP_RESPONSE_TIME_MS)) {
                     Long count = taskDefinition.getCounters().get(URL_OK_KEY);
-                    Long time = taskDefinition.getCounters().get(
-                            TOTAL_HTTP_RESPONSE_TIME_MS);
+                    Long time = taskDefinition.getCounters().get(TOTAL_HTTP_RESPONSE_TIME_MS);
                     if (count != null && count > 0 && time != null) {
                         Long average = (long) (time / count);
-                        taskDefinition.addCounter(
-                                AVERAGE_HTTP_RESPONSE_TIME_MS, average);
+                        taskDefinition.addCounter(AVERAGE_HTTP_RESPONSE_TIME_MS, average);
                     }
                 }
             }

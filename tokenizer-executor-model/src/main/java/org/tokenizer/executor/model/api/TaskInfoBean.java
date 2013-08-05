@@ -21,7 +21,6 @@ import java.util.UUID;
 
 import org.tokenizer.executor.model.configuration.AbstractTaskConfiguration;
 
-
 public class TaskInfoBean implements Serializable {
 
     /**
@@ -37,82 +36,66 @@ public class TaskInfoBean implements Serializable {
     private long metricsUpdateTimestamp;
     private final UUID uuid;
 
-
     public String getName() {
         return taskConfiguration.getName();
     }
-
 
     public String getImplementationName() {
         return taskConfiguration.getImplementationName();
     }
 
-
     public String getGeneralState() {
         return taskConfiguration.getGeneralState().toString();
     }
-
 
     public TaskInfoBean(final UUID uuid) {
         this.uuid = uuid;
     }
 
-
     public UUID getUuid() {
         return uuid;
     }
-
 
     public long getMetricsUpdateTimestamp() {
         return metricsUpdateTimestamp;
     }
 
-
     public void setMetricsUpdateTimestamp(final long metricsUpdateTimestamp) {
         this.metricsUpdateTimestamp = metricsUpdateTimestamp;
     }
-
 
     public long getSubmitTime() {
         return submitTime;
     }
 
-
     public Date getSubmitDate() {
         return new Date(submitTime);
     }
-
 
     public void setSubmitTime(final long submitTime) {
         this.submitTime = submitTime;
     }
 
-
     public Map<String, Long> getCounters() {
         return counters;
     }
-
 
     public void setCounters(final Map<String, Long> counters) {
         this.counters = counters;
     }
 
-
     public void addCounter(final String key, final Long value) {
         this.counters.put(key, value);
     }
-
 
     public int getZkDataVersion() {
         return zkDataVersion;
     }
 
-
     public void setZkDataVersion(final int zkDataVersion) {
         checkIfMutable();
         this.zkDataVersion = zkDataVersion;
     }
-
 
     public void makeImmutable() {
         this.immutable = true;
@@ -131,22 +114,18 @@ public class TaskInfoBean implements Serializable {
         // }
     }
 
-
     public AbstractTaskConfiguration getTaskConfiguration() {
         return taskConfiguration;
     }
-
 
     public void setTaskConfiguration(final AbstractTaskConfiguration taskConfiguration) {
         this.taskConfiguration = taskConfiguration;
     }
 
-
     @Override
     public int hashCode() {
         return uuid.hashCode();
     }
-
 
     @Override
     public boolean equals(final Object obj) {
@@ -164,16 +143,17 @@ public class TaskInfoBean implements Serializable {
             if (other.uuid != null) {
                 return false;
             }
-        } else if (!uuid.equals(other.uuid)) {
+        }
+        else if (!uuid.equals(other.uuid)) {
             return false;
         }
         return true;
     }
 
-
     @Override
     public String toString() {
-        return "TaskInfoBean [taskConfiguration=" + taskConfiguration + ", zkDataVersion=" + zkDataVersion + ", immutable=" + immutable + ", submitTime=" + submitTime
-                + ", counters=" + counters + ", metricsUpdateTimestamp=" + metricsUpdateTimestamp + ", uuid=" + uuid + "]";
+        return "TaskInfoBean [taskConfiguration=" + taskConfiguration + ", zkDataVersion=" + zkDataVersion
+                + ", immutable=" + immutable + ", submitTime=" + submitTime + ", counters=" + counters
+                + ", metricsUpdateTimestamp=" + metricsUpdateTimestamp + ", uuid=" + uuid + "]";
     }
 }

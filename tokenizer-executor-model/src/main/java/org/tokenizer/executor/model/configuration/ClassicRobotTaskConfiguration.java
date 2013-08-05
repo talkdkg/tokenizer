@@ -102,14 +102,16 @@ public class ClassicRobotTaskConfiguration extends AbstractFetcherTaskConfigurat
             if (other.agentName != null) {
                 return false;
             }
-        } else if (!agentName.equals(other.agentName)) {
+        }
+        else if (!agentName.equals(other.agentName)) {
             return false;
         }
         if (emailAddress == null) {
             if (other.emailAddress != null) {
                 return false;
             }
-        } else if (!emailAddress.equals(other.emailAddress)) {
+        }
+        else if (!emailAddress.equals(other.emailAddress)) {
             return false;
         }
         if (followExternal != other.followExternal) {
@@ -122,21 +124,24 @@ public class ClassicRobotTaskConfiguration extends AbstractFetcherTaskConfigurat
             if (other.host != null) {
                 return false;
             }
-        } else if (!host.equals(other.host)) {
+        }
+        else if (!host.equals(other.host)) {
             return false;
         }
         if (webAddress == null) {
             if (other.webAddress != null) {
                 return false;
             }
-        } else if (!webAddress.equals(other.webAddress)) {
+        }
+        else if (!webAddress.equals(other.webAddress)) {
             return false;
         }
         if (urlFilterConfig == null) {
             if (other.urlFilterConfig != null) {
                 return false;
             }
-        } else if (!urlFilterConfig.equals(other.urlFilterConfig)) {
+        }
+        else if (!urlFilterConfig.equals(other.urlFilterConfig)) {
             return false;
         }
         return true;

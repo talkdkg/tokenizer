@@ -29,8 +29,7 @@ public class TokenizerServer {
     private void start() {
         try {
             TServerSocket serverTransport = new TServerSocket(port);
-            TThreadPoolServer.Args args = new TThreadPoolServer.Args(
-                    serverTransport);
+            TThreadPoolServer.Args args = new TThreadPoolServer.Args(serverTransport);
             args.minWorkerThreads(4);
             args.maxWorkerThreads(16);
             ThriftTokenizerService.Processor processor = new ThriftTokenizerService.Processor(

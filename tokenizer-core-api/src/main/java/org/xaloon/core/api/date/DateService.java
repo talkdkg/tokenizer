@@ -22,21 +22,21 @@ import java.util.Date;
  */
 public interface DateService extends Serializable {
 
-	/**
-	 * @return instance of the {@link DateFormat} with short date format
-	 */
-	DateFormat getShortDateFormat();
+    /**
+     * @return instance of the {@link DateFormat} with short date format
+     */
+    DateFormat getShortDateFormat();
 
-	/**
-	 * 
-	 * @return instance of the {@link DateFormat} with long date format
-	 */
-	DateFormat getLongDateFormat();
+    /**
+     * 
+     * @return instance of the {@link DateFormat} with long date format
+     */
+    DateFormat getLongDateFormat();
 
-	/**
-	 * @param dateToFormat
-	 * @return formatted date with long date format
-	 */
-	String formatWithLongDate(Date dateToFormat);
+    /**
+     * @param dateToFormat
+     * @return formatted date with long date format
+     */
+    String formatWithLongDate(Date dateToFormat);
 
 }

@@ -27,7 +27,8 @@ public class ResourceUtils {
     public static String applicationBasePath() {
         if (VaadinService.getCurrent() != null) {
             return VaadinService.getCurrent().getBaseDirectory().getAbsolutePath();
-        } else {
+        }
+        else {
             return new File(".").getAbsolutePath();
         }
 

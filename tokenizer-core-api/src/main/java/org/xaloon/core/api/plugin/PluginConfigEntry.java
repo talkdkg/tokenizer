@@ -16,7 +16,8 @@ package org.xaloon.core.api.plugin;
 import java.io.Serializable;
 
 /**
- * This is technical configuration POJO for a plugin. It should be used in design time and should be performed on application startup.
+ * This is technical configuration POJO for a plugin. It should be used in design time and should be performed on
+ * application startup.
  * 
  * @author vytautas r.
  */

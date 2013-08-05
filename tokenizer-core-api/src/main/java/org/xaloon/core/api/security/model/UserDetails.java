@@ -22,68 +22,68 @@ import org.xaloon.core.api.persistence.Persistable;
  * @author vytautas r.
  */
 public interface UserDetails extends Persistable {
-	/**
-	 * @return username
-	 */
-	String getUsername();
+    /**
+     * @return username
+     */
+    String getUsername();
 
-	/**
-	 * @return encrypted password
-	 */
-	String getPassword();
+    /**
+     * @return encrypted password
+     */
+    String getPassword();
 
-	/**
-	 * @return account non expired
-	 */
-	boolean isAccountNonExpired();
+    /**
+     * @return account non expired
+     */
+    boolean isAccountNonExpired();
 
-	/**
-	 * @param flag
-	 *            new flag to set
-	 */
-	void setAccountNonExpired(boolean flag);
+    /**
+     * @param flag
+     *            new flag to set
+     */
+    void setAccountNonExpired(boolean flag);
 
-	/**
-	 * @return account non locked
-	 */
-	boolean isAccountNonLocked();
+    /**
+     * @return account non locked
+     */
+    boolean isAccountNonLocked();
 
-	/**
-	 * @param flag
-	 *            new flag to set
-	 */
-	void setAccountNonLocked(boolean flag);
+    /**
+     * @param flag
+     *            new flag to set
+     */
+    void setAccountNonLocked(boolean flag);
 
-	/**
-	 * @return credentials non expired
-	 */
-	boolean isCredentialsNonExpired();
+    /**
+     * @return credentials non expired
+     */
+    boolean isCredentialsNonExpired();
 
-	/**
-	 * @param flag
-	 *            new flag to set
-	 */
-	void setCredentialsNonExpired(boolean flag);
+    /**
+     * @param flag
+     *            new flag to set
+     */
+    void setCredentialsNonExpired(boolean flag);
 
-	/**
-	 * @return enabled
-	 */
-	boolean isEnabled();
+    /**
+     * @return enabled
+     */
+    boolean isEnabled();
 
-	/**
-	 * @param flag
-	 *            new flag to set
-	 */
-	void setEnabled(boolean flag);
+    /**
+     * @param flag
+     *            new flag to set
+     */
+    void setEnabled(boolean flag);
 
-	/**
-	 * @return list of available user aliases.
-	 */
-	List<? extends KeyValue<String, String>> getAliases();
+    /**
+     * @return list of available user aliases.
+     */
+    List<? extends KeyValue<String, String>> getAliases();
 
-	<T extends SecurityGroup> List<T> getGroups();
+    <T extends SecurityGroup> List<T> getGroups();
 
-	<T extends SecurityRole> List<T> getRoles();
+    <T extends SecurityRole> List<T> getRoles();
 
-	<T extends Authority> List<T> getAuthorities();
+    <T extends Authority> List<T> getAuthorities();
 }

@@ -62,5 +62,4 @@ public abstract class RegexRule {
         return "RegexRule [sign=" + sign + ", regex=" + regex + "]";
     }
 
-
 }

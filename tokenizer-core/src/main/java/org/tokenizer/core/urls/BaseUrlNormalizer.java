@@ -15,13 +15,13 @@ package org.tokenizer.core.urls;
 
 public abstract class BaseUrlNormalizer {
 
-	/**
-	 * Convert <url> into a normalized format, where unimportant differences between two URLs have been removed.
-	 * 
-	 * @param url
-	 *            - URL to normalize. Might not be valid, e.g. missing a protocol
-	 * @return - normalized URL. Still might not be valid, if input URL (for example) uses an unknown protocol and thus
-	 *         no checks can be done.
-	 */
-	public abstract String normalize(String url);
+    /**
+     * Convert <url> into a normalized format, where unimportant differences between two URLs have been removed.
+     * 
+     * @param url
+     *            - URL to normalize. Might not be valid, e.g. missing a protocol
+     * @return - normalized URL. Still might not be valid, if input URL (for example) uses an unknown protocol and thus
+     *         no checks can be done.
+     */
+    public abstract String normalize(String url);
 }

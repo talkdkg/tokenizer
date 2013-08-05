@@ -25,8 +25,8 @@ import crawlercommons.fetcher.FetchedResult;
 public class SitemapsPageFetcherTask extends AbstractFetcherTask<SitemapsPageFetcherTaskConfiguration> {
 
     public SitemapsPageFetcherTask(final UUID uuid, final String friendlyName, final ZooKeeperItf zk,
-        final SitemapsPageFetcherTaskConfiguration taskConfiguration, final CrawlerRepository repository,
-        final WritableExecutorModel fetcherModel, final HostLocker hostLocker) {
+            final SitemapsPageFetcherTaskConfiguration taskConfiguration, final CrawlerRepository repository,
+            final WritableExecutorModel fetcherModel, final HostLocker hostLocker) {
         super(uuid, friendlyName, zk, taskConfiguration, repository, fetcherModel, hostLocker);
     }
 

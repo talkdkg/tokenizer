@@ -26,78 +26,77 @@ import org.xaloon.core.jpa.message.model.JpaMessage;
 @Entity
 @Table(name = "XAL_COMMENT")
 public class JpaComment extends JpaMessage implements Comment {
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	@Column(name = "ENABLED", nullable = false)
-	private boolean enabled;
+    @Column(name = "ENABLED", nullable = false)
+    private boolean enabled;
 
-	@Column(name = "ENTITY_ID", nullable = false)
-	private Long entityId;
+    @Column(name = "ENTITY_ID", nullable = false)
+    private Long entityId;
 
-	@Column(name = "CATEGORY_ID", nullable = false)
-	private Long categoryId;
+    @Column(name = "CATEGORY_ID", nullable = false)
+    private Long categoryId;
 
-	@Column(name = "PATH")
-	private String path;
+    @Column(name = "PATH")
+    private String path;
 
-	@Column(name = "INAPPROPRIATE")
-	private boolean inappropriate;
+    @Column(name = "INAPPROPRIATE")
+    private boolean inappropriate;
 
-	/**
-	 * Gets inappropriate.
-	 * 
-	 * @return inappropriate
-	 */
-	public boolean isInappropriate() {
-		return inappropriate;
-	}
+    /**
+     * Gets inappropriate.
+     * 
+     * @return inappropriate
+     */
+    public boolean isInappropriate() {
+        return inappropriate;
+    }
 
-	/**
-	 * Sets inappropriate.
-	 * 
-	 * @param inappropriate
-	 *            inappropriate
-	 */
-	public void setInappropriate(boolean inappropriate) {
-		this.inappropriate = inappropriate;
-	}
+    /**
+     * Sets inappropriate.
+     * 
+     * @param inappropriate
+     *            inappropriate
+     */
+    public void setInappropriate(boolean inappropriate) {
+        this.inappropriate = inappropriate;
+    }
 
-	/**
-	 * @return path where comment was posted
-	 */
-	public String getPath() {
-		return path;
-	}
+    /**
+     * @return path where comment was posted
+     */
+    public String getPath() {
+        return path;
+    }
 
-	/**
-	 * @param path
-	 */
-	public void setPath(String path) {
-		this.path = path;
-	}
+    /**
+     * @param path
+     */
+    public void setPath(String path) {
+        this.path = path;
+    }
 
+    public Long getEntityId() {
+        return entityId;
+    }
 
-	public Long getEntityId() {
-		return entityId;
-	}
+    public void setEntityId(Long entityId) {
+        this.entityId = entityId;
+    }
 
-	public void setEntityId(Long entityId) {
-		this.entityId = entityId;
-	}
+    public Long getCategoryId() {
+        return categoryId;
+    }
 
-	public Long getCategoryId() {
-		return categoryId;
-	}
+    public void setCategoryId(Long categoryId) {
+        this.categoryId = categoryId;
+    }
 
-	public void setCategoryId(Long categoryId) {
-		this.categoryId = categoryId;
-	}
+    public boolean isEnabled() {
+        return enabled;
+    }
 
-	public boolean isEnabled() {
-		return enabled;
-	}
-
-	public void setEnabled(boolean enabled) {
-		this.enabled = enabled;
-	}
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
 }

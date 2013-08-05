@@ -19,8 +19,8 @@ import java.io.Serializable;
  * @author vytautas r.
  */
 public interface PluginRegistryListener extends Serializable {
-	/**
-	 * @param registeredPlugin
-	 */
-	void onAfterPluginRegister(Plugin registeredPlugin);
+    /**
+     * @param registeredPlugin
+     */
+    void onAfterPluginRegister(Plugin registeredPlugin);
 }

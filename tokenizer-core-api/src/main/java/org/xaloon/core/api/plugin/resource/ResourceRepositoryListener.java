@@ -17,7 +17,6 @@ import java.io.Serializable;
 
 import org.xaloon.core.api.plugin.Plugin;
 
-
 /**
  * Resource repository listener will be called when resource will be stored into repository.
  * 
@@ -25,26 +24,26 @@ import org.xaloon.core.api.plugin.Plugin;
  */
 public interface ResourceRepositoryListener extends Serializable {
 
-	/**
-	 * Method is called before saving property into repository
-	 * 
-	 * @param plugin
-	 *            plugin which contains modified property
-	 * @param propertyKey
-	 *            property key which will store value
-	 * @param value
-	 *            value which is modified
-	 */
-	void onBeforeSaveProperty(Plugin plugin, String propertyKey, Object value);
+    /**
+     * Method is called before saving property into repository
+     * 
+     * @param plugin
+     *            plugin which contains modified property
+     * @param propertyKey
+     *            property key which will store value
+     * @param value
+     *            value which is modified
+     */
+    void onBeforeSaveProperty(Plugin plugin, String propertyKey, Object value);
 
-	/**
-	 * Method is called after saving property into repository
-	 * 
-	 * @param plugin
-	 *            plugin which contains modified property
-	 * @param propertyKey
-	 *            property key which will store value
-	 */
-	void onAfterSaveProperty(Plugin plugin, String propertyKey);
+    /**
+     * Method is called after saving property into repository
+     * 
+     * @param plugin
+     *            plugin which contains modified property
+     * @param propertyKey
+     *            property key which will store value
+     */
+    void onAfterSaveProperty(Plugin plugin, String propertyKey);
 
 }

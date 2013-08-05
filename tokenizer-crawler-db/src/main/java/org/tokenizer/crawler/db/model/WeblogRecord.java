@@ -34,8 +34,7 @@ public class WeblogRecord {
     public int getCountInverted() {
         return Integer.MAX_VALUE - count;
     }
-    
-    
+
     public void setCount(int count) {
         this.count = count;
     }
@@ -43,7 +42,7 @@ public class WeblogRecord {
     public void setCountInverted(int countInverted) {
         this.count = Integer.MAX_VALUE - countInverted;
     }
-    
+
     public List<Weblog> getWeblogs() {
         return weblogs;
     }
@@ -58,8 +57,7 @@ public class WeblogRecord {
 
     @Override
     public String toString() {
-        return "WeblogBatchRecord [count=" + count + ", weblogs=" + weblogs
-                + "]";
+        return "WeblogBatchRecord [count=" + count + ", weblogs=" + weblogs + "]";
     }
 
     public static class Weblog {
@@ -100,14 +98,12 @@ public class WeblogRecord {
         }
 
         public void setUpdateTimestamp(Date batchUpdateTimestamp, int seconds) {
-            this.updateTimestamp = new Date(batchUpdateTimestamp.getTime()
-                    - 1000 * seconds);
+            this.updateTimestamp = new Date(batchUpdateTimestamp.getTime() - 1000 * seconds);
         }
 
         @Override
         public String toString() {
-            return "\nWeblog [name=" + name + ", url=" + url
-                    + ", updateTimestamp=" + updateTimestamp + "]";
+            return "\nWeblog [name=" + name + ", url=" + url + ", updateTimestamp=" + updateTimestamp + "]";
         }
 
     }

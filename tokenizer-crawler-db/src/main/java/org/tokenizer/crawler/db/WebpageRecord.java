@@ -49,8 +49,7 @@ public class WebpageRecord implements Serializable {
         xmlLinks.add(xmlLink);
     }
 
-    public WebpageRecord(final String url, final Date timestamp,
-            final String charset, final byte[] content,
+    public WebpageRecord(final String url, final Date timestamp, final String charset, final byte[] content,
             final ArrayList<byte[]> xmlLinks) {
         this.digest = MD5.digest(content);
         this.url = url;
@@ -64,24 +63,18 @@ public class WebpageRecord implements Serializable {
         }
     }
 
-    public WebpageRecord(final String url, final long timestamp,
-            final String charset, final byte[] content,
+    public WebpageRecord(final String url, final long timestamp, final String charset, final byte[] content,
             final ArrayList<byte[]> xmlLinks) {
         this(url, new Date(timestamp), charset, content, xmlLinks);
     }
 
-    public WebpageRecord(final byte[] digest, final String url,
-            final byte[] hostInverted_splitAttemptCounter,
-            final Date timestamp, final String charset, final byte[] content,
-            final ArrayList<byte[]> xmlLinks) {
+    public WebpageRecord(final byte[] digest, final String url, final byte[] hostInverted_splitAttemptCounter,
+            final Date timestamp, final String charset, final byte[] content, final ArrayList<byte[]> xmlLinks) {
         this.digest = digest;
         this.url = url;
-        byte[] splitAttemptCounterBytes = Arrays.copyOfRange(
-                hostInverted_splitAttemptCounter,
-                hostInverted_splitAttemptCounter.length - 4,
-                hostInverted_splitAttemptCounter.length);
-        this.splitAttemptCounter = HttpUtils
-                .bytesToInt(splitAttemptCounterBytes);
+        byte[] splitAttemptCounterBytes = Arrays.copyOfRange(hostInverted_splitAttemptCounter,
+                hostInverted_splitAttemptCounter.length - 4, hostInverted_splitAttemptCounter.length);
+        this.splitAttemptCounter = HttpUtils.bytesToInt(splitAttemptCounterBytes);
         this.host = HttpUtils.getHost(url);
         this.hostInverted = HttpUtils.getHostInverted(host);
         this.timestamp = timestamp;
@@ -130,10 +123,8 @@ public class WebpageRecord implements Serializable {
 
     @Override
     public String toString() {
-        return "WebpageRecord [digest=" + Arrays.toString(digest) + ", url="
-                + url + ", host=" + host + ", hostInverted="
-                + Arrays.toString(hostInverted) + ", timestamp=" + timestamp
-                + ", charset=" + charset + ", splitAttemptCounter="
-                + splitAttemptCounter + "]";
+        return "WebpageRecord [digest=" + Arrays.toString(digest) + ", url=" + url + ", host=" + host
+                + ", hostInverted=" + Arrays.toString(hostInverted) + ", timestamp=" + timestamp + ", charset="
+                + charset + ", splitAttemptCounter=" + splitAttemptCounter + "]";
     }
 }

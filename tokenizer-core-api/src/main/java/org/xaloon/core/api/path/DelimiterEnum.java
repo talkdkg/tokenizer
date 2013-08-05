@@ -18,47 +18,46 @@ package org.xaloon.core.api.path;
  */
 public enum DelimiterEnum {
 
-
-	/**
+    /**
 	 * 
 	 */
-	DOT("."),
+    DOT("."),
 
-	/**
+    /**
 	 * 
 	 */
-	SLASH("/"),
+    SLASH("/"),
 
-	/**
+    /**
 	 * 
 	 */
-	SPACE(" "),
+    SPACE(" "),
 
-	/**
+    /**
 	 * 
 	 */
-	EMPTY(""),
+    EMPTY(""),
 
-	/**
+    /**
 	 * 
 	 */
-	DASH("-");
+    DASH("-");
 
-	private final String value;
+    private final String value;
 
-	private DelimiterEnum(String value) {
-		this.value = value;
-	}
+    private DelimiterEnum(String value) {
+        this.value = value;
+    }
 
-	/**
-	 * @return string representation of delimiter value
-	 */
-	public String value() {
-		return value;
-	}
+    /**
+     * @return string representation of delimiter value
+     */
+    public String value() {
+        return value;
+    }
 
-	@Override
-	public String toString() {
-		return value;
-	}
+    @Override
+    public String toString() {
+        return value;
+    }
 }

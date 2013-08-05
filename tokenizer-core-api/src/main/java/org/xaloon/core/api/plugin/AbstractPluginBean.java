@@ -16,7 +16,8 @@ package org.xaloon.core.api.plugin;
 import java.io.Serializable;
 
 /**
- * Abstract java bean which should contain configuration properties for concrete plugin. Every java bean should extend this class in order to be used
+ * Abstract java bean which should contain configuration properties for concrete plugin. Every java bean should extend
+ * this class in order to be used
  * as configuration parameter container.
  * 
  * @author vytautas r.
@@ -25,14 +26,15 @@ import java.io.Serializable;
  */
 
 public class AbstractPluginBean implements Serializable {
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	/**
-	 * Any additional rules to check before setting plugin visibility. If plugin is not valid then it will not be visible by default.
-	 * 
-	 * @return additional rules to check for plugin validity.
-	 */
-	public boolean isValid() {
-		return true;
-	}
+    /**
+     * Any additional rules to check before setting plugin visibility. If plugin is not valid then it will not be
+     * visible by default.
+     * 
+     * @return additional rules to check for plugin validity.
+     */
+    public boolean isValid() {
+        return true;
+    }
 }

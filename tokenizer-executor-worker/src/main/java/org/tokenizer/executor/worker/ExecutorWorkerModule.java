@@ -12,6 +12,7 @@
  * forbidden unless prior written permission is obtained from Tokenizer Inc.
  */
 package org.tokenizer.executor.worker;
+
 import org.tokenizer.crawler.db.CrawlerRepository;
 import org.tokenizer.crawler.db.CrawlerRepositoryCassandraImpl;
 import org.tokenizer.executor.model.api.WritableExecutorModel;
@@ -20,7 +21,6 @@ import org.tokenizer.util.zookeeper.ZooKeeperImpl;
 import org.tokenizer.util.zookeeper.ZooKeeperItf;
 
 import com.google.inject.AbstractModule;
-import com.google.inject.Singleton;
 
 public class ExecutorWorkerModule extends AbstractModule {
 

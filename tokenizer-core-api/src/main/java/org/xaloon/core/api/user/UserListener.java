@@ -23,11 +23,12 @@ import org.xaloon.core.api.user.model.User;
  * @author vytautas r.
  */
 public interface UserListener extends Serializable {
-	/**
-	 * This method is invoked before user is removed from the system. One should register it's own listenere if there are some actions to be taken
-	 * before final user removal, for example, clean up user comments, blogs, etc.
-	 * 
-	 * @param userToBeDeleted
-	 */
-	void onBeforeDelete(User userToBeDeleted);
+    /**
+     * This method is invoked before user is removed from the system. One should register it's own listenere if there
+     * are some actions to be taken
+     * before final user removal, for example, clean up user comments, blogs, etc.
+     * 
+     * @param userToBeDeleted
+     */
+    void onBeforeDelete(User userToBeDeleted);
 }

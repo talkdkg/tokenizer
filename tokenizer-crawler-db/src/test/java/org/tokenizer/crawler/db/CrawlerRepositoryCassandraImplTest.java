@@ -146,7 +146,6 @@ public class CrawlerRepositoryCassandraImplTest {
         assertNotNull(result);
     }
 
-
     /**
      * Run the void getKeyspaceDefinition() method test.
      * 

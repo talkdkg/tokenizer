@@ -132,7 +132,8 @@ public class MessageSearchComponent extends CustomComponent {
                 Component newSearchResultsComponent = buildSearchResults();
                 if (searchResultsComponent == null) {
                     mainLayout.addComponent(newSearchResultsComponent);
-                } else {
+                }
+                else {
                     mainLayout.replaceComponent(searchResultsComponent, newSearchResultsComponent);
                 }
                 searchResultsComponent = newSearchResultsComponent;
@@ -644,9 +645,11 @@ public class MessageSearchComponent extends CustomComponent {
             for (PivotField sentimentPivotField : sentimentPivots) {
                 if (sentimentPivotField.getValue().equals("Negative")) {
                     negative[i] = sentimentPivotField.getCount();
-                } else if (sentimentPivotField.getValue().equals("Positive")) {
+                }
+                else if (sentimentPivotField.getValue().equals("Positive")) {
                     positive[i] = sentimentPivotField.getCount();
-                } else {
+                }
+                else {
                     neutral[i] = sentimentPivotField.getCount();
                 }
             }

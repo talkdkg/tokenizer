@@ -19,7 +19,9 @@ import java.util.Set;
 public interface Text {
 
     List<Sentence> getSentences();
+
     Set<String> getFeatures();
+
     int getSentiment();
 
 }

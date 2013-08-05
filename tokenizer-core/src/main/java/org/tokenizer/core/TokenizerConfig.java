@@ -22,8 +22,7 @@ import org.slf4j.LoggerFactory;
 
 public class TokenizerConfig {
 
-    private static final Logger LOG = LoggerFactory
-            .getLogger(TokenizerConfig.class);
+    private static final Logger LOG = LoggerFactory.getLogger(TokenizerConfig.class);
     public static final String MAX_WAIT_MILLISECONDS = "max.wait.milliseconds";
     public static final String MAX_SOCKETS = "max.sockets";
     public static final String MAX_ACTIVE_THREADS = "max.active.threads";
@@ -46,18 +45,14 @@ public class TokenizerConfig {
                 }
                 try {
                     properties = new Properties();
-                    properties.load(new FileInputStream(home
-                            + "/config.properties"));
+                    properties.load(new FileInputStream(home + "/config.properties"));
                 } catch (IOException e) {
                     try {
                         home = "/usr/java/tokenizer/conf";
                         properties = new Properties();
-                        properties.load(new FileInputStream(home
-                                + "/config.properties"));
+                        properties.load(new FileInputStream(home + "/config.properties"));
                     } catch (IOException e2) {
-                        throw new RuntimeException(
-                                "Can't load configuration from " + home
-                                        + "/config.properties");
+                        throw new RuntimeException("Can't load configuration from " + home + "/config.properties");
                     }
                 }
             }
@@ -70,9 +65,7 @@ public class TokenizerConfig {
         try {
             return Integer.parseInt(value);
         } catch (Exception e) {
-            LOG.warn(
-                    "Can't load configuration parameter: {}; using default: {}",
-                    key, defaultValue);
+            LOG.warn("Can't load configuration parameter: {}; using default: {}", key, defaultValue);
             return defaultValue;
         }
     }

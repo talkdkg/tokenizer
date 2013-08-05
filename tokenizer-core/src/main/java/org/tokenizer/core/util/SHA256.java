@@ -31,34 +31,34 @@ import java.security.NoSuchAlgorithmException;
  */
 public class SHA256 {
 
-	public static final String SHA256(byte[] bytes) {
-		MessageDigest md;
-		try {
-			md = MessageDigest.getInstance("SHA-256");
-		} catch (NoSuchAlgorithmException e) {
-			throw new RuntimeException(e);
-		}
-		md.update(bytes);
-		byte[] mdbytes = md.digest();
+    public static final String SHA256(byte[] bytes) {
+        MessageDigest md;
+        try {
+            md = MessageDigest.getInstance("SHA-256");
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
+        md.update(bytes);
+        byte[] mdbytes = md.digest();
 
-		// convert the byte to hex format
-		StringBuffer hexString = new StringBuffer();
-		for (int i = 0; i < mdbytes.length; i++) {
-			String hex = Integer.toHexString(0xff & mdbytes[i]);
-			if (hex.length() == 1)
-				hexString.append('0');
-			hexString.append(hex);
-		}
+        // convert the byte to hex format
+        StringBuffer hexString = new StringBuffer();
+        for (int i = 0; i < mdbytes.length; i++) {
+            String hex = Integer.toHexString(0xff & mdbytes[i]);
+            if (hex.length() == 1)
+                hexString.append('0');
+            hexString.append(hex);
+        }
 
-		return hexString.toString();
-	}
+        return hexString.toString();
+    }
 
-	public static final String SHA256(String text) {
-		try {
-			return SHA256(text.getBytes("UTF-8"));
-		} catch (UnsupportedEncodingException e) {
-			throw new RuntimeException(e);
-		}
-	}
+    public static final String SHA256(String text) {
+        try {
+            return SHA256(text.getBytes("UTF-8"));
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
 }

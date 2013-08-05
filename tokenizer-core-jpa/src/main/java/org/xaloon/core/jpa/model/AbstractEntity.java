@@ -34,84 +34,84 @@ import org.xaloon.core.api.persistence.Persistable;
  */
 @MappedSuperclass
 public abstract class AbstractEntity implements Persistable {
-	/**
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	@Id
-	@Column(name = "ID", nullable = false)
-	@GeneratedValue(strategy = GenerationType.TABLE)
-	private Long id;
+    @Id
+    @Column(name = "ID", nullable = false)
+    @GeneratedValue(strategy = GenerationType.TABLE)
+    private Long id;
 
-	@Column(name = "CREATE_DATE", nullable = false, updatable = false)
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date createDate;
+    @Column(name = "CREATE_DATE", nullable = false, updatable = false)
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date createDate;
 
-	@Column(name = "UPDATE_DATE", updatable = true)
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date updateDate;
+    @Column(name = "UPDATE_DATE", updatable = true)
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date updateDate;
 
-	/**
-	 * @return unique identifier of entity
-	 */
-	public Long getId() {
-		return id;
-	}
+    /**
+     * @return unique identifier of entity
+     */
+    public Long getId() {
+        return id;
+    }
 
-	/**
-	 * @param id
-	 */
-	public void setId(Long id) {
-		this.id = id;
-	}
+    /**
+     * @param id
+     */
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-	/**
-	 * @return date when instance was created
-	 */
-	public Date getCreateDate() {
-		return createDate;
-	}
+    /**
+     * @return date when instance was created
+     */
+    public Date getCreateDate() {
+        return createDate;
+    }
 
-	/**
-	 * @param createDate
-	 */
-	public void setCreateDate(Date createDate) {
-		this.createDate = createDate;
-	}
+    /**
+     * @param createDate
+     */
+    public void setCreateDate(Date createDate) {
+        this.createDate = createDate;
+    }
 
-	/**
-	 * @param updateDate
-	 */
-	public void setUpdateDate(Date updateDate) {
-		this.updateDate = updateDate;
-	}
+    /**
+     * @param updateDate
+     */
+    public void setUpdateDate(Date updateDate) {
+        this.updateDate = updateDate;
+    }
 
-	/**
-	 * @return date when instance was updated
-	 */
-	public Date getUpdateDate() {
-		return updateDate;
-	}
+    /**
+     * @return date when instance was updated
+     */
+    public Date getUpdateDate() {
+        return updateDate;
+    }
 
-	/**
-	 * @return true if entity is not persisted yet
-	 */
-	public boolean isNew() {
-		return (id == null);
-	}
+    /**
+     * @return true if entity is not persisted yet
+     */
+    public boolean isNew() {
+        return (id == null);
+    }
 
-	@PreUpdate
-	protected void beforeUpdate() {
-		setUpdateDate(new Date());
-	}
+    @PreUpdate
+    protected void beforeUpdate() {
+        setUpdateDate(new Date());
+    }
 
-	@PrePersist
-	protected void beforeCreate() {
-		if (getCreateDate() == null) {
-			Date cd = new Date();
-			setCreateDate(cd);
-			setUpdateDate(cd);
-		}
-	}
+    @PrePersist
+    protected void beforeCreate() {
+        if (getCreateDate() == null) {
+            Date cd = new Date();
+            setCreateDate(cd);
+            setUpdateDate(cd);
+        }
+    }
 }

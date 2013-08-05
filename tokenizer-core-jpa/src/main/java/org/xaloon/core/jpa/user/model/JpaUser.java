@@ -40,151 +40,153 @@ import org.xaloon.core.jpa.storage.model.JpaFileDescriptor;
 @Cacheable
 @Entity
 @DiscriminatorValue("2")
-@Table(name = "XAL_USER", uniqueConstraints = { @UniqueConstraint(columnNames = { "USERNAME" }), @UniqueConstraint(columnNames = { "EMAIL" }) })
+@Table(name = "XAL_USER", uniqueConstraints = { @UniqueConstraint(columnNames = { "USERNAME" }),
+        @UniqueConstraint(columnNames = { "EMAIL" }) })
 public class JpaUser extends AbstractUser {
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	@Column(name = "USERNAME", nullable = false)
-	private String username;
+    @Column(name = "USERNAME", nullable = false)
+    private String username;
 
-	@Column(name = "FIRST_NAME")
-	private String firstName;
+    @Column(name = "FIRST_NAME")
+    private String firstName;
 
-	@Column(name = "LAST_NAME")
-	private String lastName;
+    @Column(name = "LAST_NAME")
+    private String lastName;
 
-	@Column(name = "EMAIL", nullable = false)
-	private String email;
+    @Column(name = "EMAIL", nullable = false)
+    private String email;
 
-	@Column(name = "TIMEZONE")
-	private String timezone;
+    @Column(name = "TIMEZONE")
+    private String timezone;
 
-	@Column(name = "SIGNATURE", length = 4000)
-	private String signature;
+    @Column(name = "SIGNATURE", length = 4000)
+    private String signature;
 
-	@Column(name = "IS_EXTERNAL", nullable = false)
-	private boolean external;
+    @Column(name = "IS_EXTERNAL", nullable = false)
+    private boolean external;
 
-	@ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-	@JoinColumn(name = "PHOTO_THUMBNAIL_ID", referencedColumnName = "ID")
-	private JpaFileDescriptor photoThumbnail;
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinColumn(name = "PHOTO_THUMBNAIL_ID", referencedColumnName = "ID")
+    private JpaFileDescriptor photoThumbnail;
 
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "user", orphanRemoval = true)
-	private List<JpaUserProperties> properties = new ArrayList<JpaUserProperties>();
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "user", orphanRemoval = true)
+    private List<JpaUserProperties> properties = new ArrayList<JpaUserProperties>();
 
-	private transient String displayName;
+    private transient String displayName;
 
-	public String getUsername() {
-		return username;
-	}
+    public String getUsername() {
+        return username;
+    }
 
-	public void setUsername(String username) {
-		this.username = username;
-	}
+    public void setUsername(String username) {
+        this.username = username;
+    }
 
-	public String getFirstName() {
-		return firstName;
-	}
+    public String getFirstName() {
+        return firstName;
+    }
 
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
-	}
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
 
-	public String getLastName() {
-		return lastName;
-	}
+    public String getLastName() {
+        return lastName;
+    }
 
-	public void setLastName(String lastName) {
-		this.lastName = lastName;
-	}
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
 
-	public String getEmail() {
-		return email;
-	}
+    public String getEmail() {
+        return email;
+    }
 
-	public void setEmail(String email) {
-		this.email = email;
-	}
+    public void setEmail(String email) {
+        this.email = email;
+    }
 
-	public String getTimezone() {
-		return timezone;
-	}
+    public String getTimezone() {
+        return timezone;
+    }
 
-	public void setTimezone(String timezone) {
-		this.timezone = timezone;
-	}
+    public void setTimezone(String timezone) {
+        this.timezone = timezone;
+    }
 
-	public String getSignature() {
-		return signature;
-	}
+    public String getSignature() {
+        return signature;
+    }
 
-	public void setSignature(String signature) {
-		this.signature = signature;
-	}
+    public void setSignature(String signature) {
+        this.signature = signature;
+    }
 
-	public boolean isExternal() {
-		return external;
-	}
+    public boolean isExternal() {
+        return external;
+    }
 
-	public void setExternal(boolean external) {
-		this.external = external;
-	}
+    public void setExternal(boolean external) {
+        this.external = external;
+    }
 
-	public FileDescriptor getPhotoThumbnail() {
-		return photoThumbnail;
-	}
+    public FileDescriptor getPhotoThumbnail() {
+        return photoThumbnail;
+    }
 
-	/**
-	 * @param photoThumbnail
-	 */
-	public void setPhotoThumbnail(JpaFileDescriptor photoThumbnail) {
-		this.photoThumbnail = photoThumbnail;
-	}
+    /**
+     * @param photoThumbnail
+     */
+    public void setPhotoThumbnail(JpaFileDescriptor photoThumbnail) {
+        this.photoThumbnail = photoThumbnail;
+    }
 
-	public String getDisplayName() {
-		if (!StringUtils.isEmpty(displayName)) {
-			return displayName;
-		}
-		StringBuilder result = new StringBuilder();
-		if (!StringUtils.isEmpty(firstName)) {
-			result.append(firstName);
-		}
-		if (!StringUtils.isEmpty(lastName)) {
-			result.append(DelimiterEnum.SPACE.value());
-			result.append(lastName);
-		}
-		if (result.length() > 1) {
-			displayName = result.toString().trim();
-			return displayName;
-		} else {
-			return username;
-		}
+    public String getDisplayName() {
+        if (!StringUtils.isEmpty(displayName)) {
+            return displayName;
+        }
+        StringBuilder result = new StringBuilder();
+        if (!StringUtils.isEmpty(firstName)) {
+            result.append(firstName);
+        }
+        if (!StringUtils.isEmpty(lastName)) {
+            result.append(DelimiterEnum.SPACE.value());
+            result.append(lastName);
+        }
+        if (result.length() > 1) {
+            displayName = result.toString().trim();
+            return displayName;
+        }
+        else {
+            return username;
+        }
 
-	}
+    }
 
-	@Override
-	public void setPhotoThumbnail(FileDescriptor photoThumbnail) {
-		this.photoThumbnail = (JpaFileDescriptor)photoThumbnail;
-	}
+    @Override
+    public void setPhotoThumbnail(FileDescriptor photoThumbnail) {
+        this.photoThumbnail = (JpaFileDescriptor) photoThumbnail;
+    }
 
-	/**
-	 * Gets properties.
-	 * 
-	 * @return properties
-	 */
-	public List<JpaUserProperties> getProperties() {
-		return properties;
-	}
+    /**
+     * Gets properties.
+     * 
+     * @return properties
+     */
+    public List<JpaUserProperties> getProperties() {
+        return properties;
+    }
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public void setProperties(List<? extends KeyValue<String, String>> properties) {
-		this.properties = (List<JpaUserProperties>)properties;
-	}
+    @SuppressWarnings("unchecked")
+    @Override
+    public void setProperties(List<? extends KeyValue<String, String>> properties) {
+        this.properties = (List<JpaUserProperties>) properties;
+    }
 
-	@Override
-	public String toString() {
-		return String.format("[%s] username=%s, firstName=%s, lastName=%s, email=%s, external=%b", this.getClass().getSimpleName(), getUsername(),
-			getFirstName(), getLastName(), getEmail(), isExternal());
-	}
+    @Override
+    public String toString() {
+        return String.format("[%s] username=%s, firstName=%s, lastName=%s, email=%s, external=%b", this.getClass()
+                .getSimpleName(), getUsername(), getFirstName(), getLastName(), getEmail(), isExternal());
+    }
 }

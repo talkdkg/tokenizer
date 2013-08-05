@@ -14,7 +14,7 @@
 package org.tokenizer.core.parser;
 
 public enum ParserCounters {
-	DOCUMENTS_PARSED, // successfully parsed a document.
-	DOCUMENTS_FAILED
-	// failed to parse a document
+    DOCUMENTS_PARSED, // successfully parsed a document.
+    DOCUMENTS_FAILED
+    // failed to parse a document
 }

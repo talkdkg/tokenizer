@@ -33,96 +33,96 @@ import org.xaloon.core.jpa.model.AbstractEntity;
 @Table(name = "XAL_AUDIT_ENTITY_ITEM")
 public class JpaAuditEntityItem extends AbstractEntity implements AuditEntityItem {
 
-	/**
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	@ManyToOne(fetch = FetchType.LAZY, optional = false)
-	@JoinColumn(name = "AUDIT_ENTITY_ID", referencedColumnName = "ID")
-	private JpaAuditEntity auditEntity;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "AUDIT_ENTITY_ID", referencedColumnName = "ID")
+    private JpaAuditEntity auditEntity;
 
-	@Column(name = "FIELD_NAME", length = 255)
-	private String name;
+    @Column(name = "FIELD_NAME", length = 255)
+    private String name;
 
-	@Column(name = "FIELD_VALUE", length = 2000)
-	private String value;
+    @Column(name = "FIELD_VALUE", length = 2000)
+    private String value;
 
-	private transient boolean key;
+    private transient boolean key;
 
-	/**
-	 * Gets auditEntity.
-	 * 
-	 * @return auditEntity
-	 */
-	public JpaAuditEntity getAuditEntity() {
-		return auditEntity;
-	}
+    /**
+     * Gets auditEntity.
+     * 
+     * @return auditEntity
+     */
+    public JpaAuditEntity getAuditEntity() {
+        return auditEntity;
+    }
 
-	/**
-	 * Sets auditEntity.
-	 * 
-	 * @param auditEntity
-	 *            auditEntity
-	 */
-	public void setAuditEntity(AuditEntity auditEntity) {
-		this.auditEntity = (JpaAuditEntity)auditEntity;
-	}
+    /**
+     * Sets auditEntity.
+     * 
+     * @param auditEntity
+     *            auditEntity
+     */
+    public void setAuditEntity(AuditEntity auditEntity) {
+        this.auditEntity = (JpaAuditEntity) auditEntity;
+    }
 
-	/**
-	 * Gets name.
-	 * 
-	 * @return name
-	 */
-	public String getName() {
-		return name;
-	}
+    /**
+     * Gets name.
+     * 
+     * @return name
+     */
+    public String getName() {
+        return name;
+    }
 
-	/**
-	 * Sets name.
-	 * 
-	 * @param name
-	 *            name
-	 */
-	public void setName(String name) {
-		this.name = name;
-	}
+    /**
+     * Sets name.
+     * 
+     * @param name
+     *            name
+     */
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	/**
-	 * Gets value.
-	 * 
-	 * @return value
-	 */
-	public String getValue() {
-		return value;
-	}
+    /**
+     * Gets value.
+     * 
+     * @return value
+     */
+    public String getValue() {
+        return value;
+    }
 
-	/**
-	 * Sets value.
-	 * 
-	 * @param value
-	 *            value
-	 */
-	public void setValue(String value) {
-		this.value = value;
-	}
+    /**
+     * Sets value.
+     * 
+     * @param value
+     *            value
+     */
+    public void setValue(String value) {
+        this.value = value;
+    }
 
-	/**
-	 * Gets key.
-	 * 
-	 * @return key
-	 */
-	public boolean isKey() {
-		return key;
-	}
+    /**
+     * Gets key.
+     * 
+     * @return key
+     */
+    public boolean isKey() {
+        return key;
+    }
 
-	/**
-	 * Sets key.
-	 * 
-	 * @param key
-	 *            key
-	 */
-	public void setKey(boolean key) {
-		this.key = key;
-	}
+    /**
+     * Sets key.
+     * 
+     * @param key
+     *            key
+     */
+    public void setKey(boolean key) {
+        this.key = key;
+    }
 }

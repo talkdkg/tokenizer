@@ -18,9 +18,9 @@ package org.tokenizer.core.urls;
  */
 public abstract class BaseUrlValidator {
 
-	/**
-	 * Return true if the url is valid
-	 */
-	public abstract boolean isValid(String url);
+    /**
+     * Return true if the url is valid
+     */
+    public abstract boolean isValid(String url);
 
 }

@@ -61,7 +61,8 @@ public class BasicForest<V> {
     public void addChild(V parentNode, V childNode) {
         if (parentNode == null) {
             addNode(childNode);
-        } else {
+        }
+        else {
             graph.addEdge(newEdge(), parentNode, childNode);
         }
     }
@@ -170,7 +171,8 @@ public class BasicForest<V> {
             return;
         if (children.size() == 0) {
             leaves.add(parentNode);
-        } else {
+        }
+        else {
             for (V v : children) {
                 findLeaves(v, leaves);
             }
@@ -260,7 +262,8 @@ public class BasicForest<V> {
     public V getRoot() {
         if (getRoots().isEmpty()) {
             return null;
-        } else {
+        }
+        else {
             return getRoots().get(0);
         }
     }

@@ -30,8 +30,7 @@ public class StripDocumentHandler implements ContentHandler, LexicalHandler {
         this(contentHandler, null);
     }
 
-    public StripDocumentHandler(ContentHandler contentHandler,
-            LexicalHandler lexicalHandler) {
+    public StripDocumentHandler(ContentHandler contentHandler, LexicalHandler lexicalHandler) {
         this.ch = contentHandler;
         this.lh = lexicalHandler;
     }
@@ -47,14 +46,12 @@ public class StripDocumentHandler implements ContentHandler, LexicalHandler {
     }
 
     @Override
-    public void characters(char ch[], int start, int length)
-            throws SAXException {
+    public void characters(char ch[], int start, int length) throws SAXException {
         this.ch.characters(ch, start, length);
     }
 
     @Override
-    public void ignorableWhitespace(char ch[], int start, int length)
-            throws SAXException {
+    public void ignorableWhitespace(char ch[], int start, int length) throws SAXException {
         this.ch.ignorableWhitespace(ch, start, length);
     }
 
@@ -74,32 +71,27 @@ public class StripDocumentHandler implements ContentHandler, LexicalHandler {
     }
 
     @Override
-    public void processingInstruction(String target, String data)
-            throws SAXException {
+    public void processingInstruction(String target, String data) throws SAXException {
         ch.processingInstruction(target, data);
     }
 
     @Override
-    public void startPrefixMapping(String prefix, String uri)
-            throws SAXException {
+    public void startPrefixMapping(String prefix, String uri) throws SAXException {
         ch.startPrefixMapping(prefix, uri);
     }
 
     @Override
-    public void endElement(String namespaceURI, String localName, String qName)
-            throws SAXException {
+    public void endElement(String namespaceURI, String localName, String qName) throws SAXException {
         ch.endElement(namespaceURI, localName, qName);
     }
 
     @Override
-    public void startElement(String namespaceURI, String localName,
-            String qName, Attributes atts) throws SAXException {
+    public void startElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException {
         ch.startElement(namespaceURI, localName, qName, atts);
     }
 
     @Override
-    public void startDTD(String name, String publicId, String systemId)
-            throws SAXException {
+    public void startDTD(String name, String publicId, String systemId) throws SAXException {
     }
 
     @Override

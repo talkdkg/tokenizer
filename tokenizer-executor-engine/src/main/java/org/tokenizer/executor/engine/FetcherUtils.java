@@ -22,13 +22,9 @@ import crawlercommons.robots.BaseRobotRules;
 
 public class FetcherUtils {
 
-    
-    
-    
-    public static boolean checkRobotRules(final UrlRecord urlRecord,
-            final CrawlerRepository repository,
-            final BaseRobotRules baseRobotRules, final MetricsCache metricsCache)
-            throws InterruptedException, ConnectionException {
+    public static boolean checkRobotRules(final UrlRecord urlRecord, final CrawlerRepository repository,
+            final BaseRobotRules baseRobotRules, final MetricsCache metricsCache) throws InterruptedException,
+            ConnectionException {
         String url = urlRecord.getBaseUrl();
         if (!baseRobotRules.isAllowed(url)) {
             urlRecord.setHttpStatus(-1);
@@ -40,5 +36,4 @@ public class FetcherUtils {
         return true;
     }
 
-    
 }

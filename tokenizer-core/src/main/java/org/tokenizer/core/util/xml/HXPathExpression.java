@@ -60,8 +60,7 @@ public class HXPathExpression {
         return (NodeList) expr.evaluate(node, XPathConstants.NODESET);
     }
 
-    public List<Node> evalAsNativeNodeList(Node node)
-            throws XPathExpressionException {
+    public List<Node> evalAsNativeNodeList(Node node) throws XPathExpressionException {
         NodeList list = (NodeList) expr.evaluate(node, XPathConstants.NODESET);
         List<Node> newList = new ArrayList<Node>(list.getLength());
         for (int i = 0; i < list.getLength(); i++) {
@@ -70,8 +69,7 @@ public class HXPathExpression {
         return newList;
     }
 
-    public List<Element> evalAsNativeElementList(Node node)
-            throws XPathExpressionException {
+    public List<Element> evalAsNativeElementList(Node node) throws XPathExpressionException {
         NodeList list = (NodeList) expr.evaluate(node, XPathConstants.NODESET);
         List<Element> newList = new ArrayList<Element>(list.getLength());
         for (int i = 0; i < list.getLength(); i++) {
@@ -80,8 +78,7 @@ public class HXPathExpression {
         return newList;
     }
 
-    public Element evalAsNativeElement(Node node)
-            throws XPathExpressionException {
+    public Element evalAsNativeElement(Node node) throws XPathExpressionException {
         return (Element) expr.evaluate(node, XPathConstants.NODE);
     }
 }

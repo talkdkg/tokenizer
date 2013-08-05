@@ -15,8 +15,8 @@ package org.tokenizer.executor.master;
 
 public interface ExecutorInfoMBean {
 
-	String getVersion();
+    String getVersion();
 
-	boolean isMaster();
+    boolean isMaster();
 
 }

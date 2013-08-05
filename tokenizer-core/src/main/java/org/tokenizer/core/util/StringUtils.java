@@ -17,27 +17,27 @@ import java.util.ArrayList;
 
 public class StringUtils {
 
-	// Do our own version of String.split(), which returns every section even if
-	// it's empty. This then satisfies what we need, namely:
-	//
-	// "a=b" => "a" "b"
-	// "" => ""
-	// "=" => "" ""
-	// "a=" => "a" ""
-	// "a==" => "a" "" ""
-	public static String[] splitOnChar(String str, char c) {
-		ArrayList<String> result = new ArrayList<String>();
+    // Do our own version of String.split(), which returns every section even if
+    // it's empty. This then satisfies what we need, namely:
+    //
+    // "a=b" => "a" "b"
+    // "" => ""
+    // "=" => "" ""
+    // "a=" => "a" ""
+    // "a==" => "a" "" ""
+    public static String[] splitOnChar(String str, char c) {
+        ArrayList<String> result = new ArrayList<String>();
 
-		int lastOffset = 0;
-		int curOffset;
-		while ((curOffset = str.indexOf(c, lastOffset)) != -1) {
-			result.add(str.substring(lastOffset, curOffset));
-			lastOffset = curOffset + 1;
-		}
+        int lastOffset = 0;
+        int curOffset;
+        while ((curOffset = str.indexOf(c, lastOffset)) != -1) {
+            result.add(str.substring(lastOffset, curOffset));
+            lastOffset = curOffset + 1;
+        }
 
-		result.add(str.substring(lastOffset));
+        result.add(str.substring(lastOffset));
 
-		return result.toArray(new String[result.size()]);
-	}
+        return result.toArray(new String[result.size()]);
+    }
 
 }

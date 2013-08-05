@@ -39,121 +39,122 @@ import org.xaloon.core.jpa.plugin.resource.model.PluginEntity;
 @TransactionManagement(TransactionManagementType.CONTAINER)
 public class JpaPluginResourceRepository implements PluginResourceRepository {
 
-	/**
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(JpaPluginResourceRepository.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(JpaPluginResourceRepository.class);
 
-	/** Plugin bean data property name */
-	private static final String PLUGIN_DATA = "DATA";
+    /** Plugin bean data property name */
+    private static final String PLUGIN_DATA = "DATA";
 
-	/** Plugin enabled/disabled property name */
-	private static final String PLUGIN_ENABLED = "ENABLED";
+    /** Plugin enabled/disabled property name */
+    private static final String PLUGIN_ENABLED = "ENABLED";
 
-	@Inject
-	@Named("persistenceServices")
-	private PersistenceServices persistenceServices;
+    @Inject
+    @Named("persistenceServices")
+    private PersistenceServices persistenceServices;
 
-	private Cache pluginResourceCache;
+    private Cache pluginResourceCache;
 
-	@Override
-	public void delete(Plugin plugin) {
+    @Override
+    public void delete(Plugin plugin) {
 
-	}
+    }
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public <T extends AbstractPluginBean> T getPluginBean(Plugin plugin) {
-		T data = getPluginDataFromCache(plugin);
-		if (data == null) {
-			PluginEntity pluginEntity = findPluginEntity(plugin);
-			if (pluginEntity != null) {
-				data = (T)Configuration.get().getPluginBeanSerializer().deserialize(pluginEntity.getPluginData());
-				putPluginEntityToCache(plugin.getId(), data);
-			}
-		}
-		return data;
-	}
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T extends AbstractPluginBean> T getPluginBean(Plugin plugin) {
+        T data = getPluginDataFromCache(plugin);
+        if (data == null) {
+            PluginEntity pluginEntity = findPluginEntity(plugin);
+            if (pluginEntity != null) {
+                data = (T) Configuration.get().getPluginBeanSerializer().deserialize(pluginEntity.getPluginData());
+                putPluginEntityToCache(plugin.getId(), data);
+            }
+        }
+        return data;
+    }
 
-	private <T extends AbstractPluginBean> T getPluginDataFromCache(Plugin plugin) {
-		Cache cache = getPluginResourceCache();
-		if (cache != null) {
-			return cache.readFromCache(plugin.getId());
-		}
-		return null;
-	}
+    private <T extends AbstractPluginBean> T getPluginDataFromCache(Plugin plugin) {
+        Cache cache = getPluginResourceCache();
+        if (cache != null) {
+            return cache.readFromCache(plugin.getId());
+        }
+        return null;
+    }
 
-	@Override
-	public <T extends AbstractPluginBean> void setPluginBean(Plugin plugin, T pluginBean) {
-		String pluginBeanValue = Configuration.get().getPluginBeanSerializer().serialize(pluginBean);
-		PluginEntity pluginEntity = findPluginEntity(plugin);
-		Configuration.get().getResourceRepositoryListeners().onBeforeSaveProperty(plugin, PLUGIN_DATA, pluginBeanValue);
-		if (pluginEntity == null) {
-			pluginEntity = createNewEntity(plugin, pluginBeanValue);
-		} else {
-			pluginEntity.setPluginData(pluginBeanValue);
-			persistenceServices.createOrEdit(pluginEntity);
-		}
-		Configuration.get().getResourceRepositoryListeners().onAfterSaveProperty(plugin, PLUGIN_DATA);
-		putPluginEntityToCache(pluginEntity.getPluginKey(), pluginBean);
-	}
+    @Override
+    public <T extends AbstractPluginBean> void setPluginBean(Plugin plugin, T pluginBean) {
+        String pluginBeanValue = Configuration.get().getPluginBeanSerializer().serialize(pluginBean);
+        PluginEntity pluginEntity = findPluginEntity(plugin);
+        Configuration.get().getResourceRepositoryListeners().onBeforeSaveProperty(plugin, PLUGIN_DATA, pluginBeanValue);
+        if (pluginEntity == null) {
+            pluginEntity = createNewEntity(plugin, pluginBeanValue);
+        }
+        else {
+            pluginEntity.setPluginData(pluginBeanValue);
+            persistenceServices.createOrEdit(pluginEntity);
+        }
+        Configuration.get().getResourceRepositoryListeners().onAfterSaveProperty(plugin, PLUGIN_DATA);
+        putPluginEntityToCache(pluginEntity.getPluginKey(), pluginBean);
+    }
 
-	private PluginEntity createNewEntity(Plugin plugin, String pluginBeanValue) {
-		try {
-			PluginEntity pluginEntity = new PluginEntity();
-			pluginEntity.setPluginKey(plugin.getId());
-			pluginEntity.setEnabled(Boolean.TRUE);
-			pluginEntity.setPluginData(pluginBeanValue);
-			return persistenceServices.createOrEdit(pluginEntity);
-		} catch (Exception e) {
-			LOGGER.error("Could not create plugin entity. Is it already existing?", e);
-			PluginEntity found = findPluginEntity(plugin);
-			if (found != null) {
-				LOGGER.info(String.format("Plugin entity already registered: %s", plugin.getId()));
-			}
-			return found;
-		}
-	}
+    private PluginEntity createNewEntity(Plugin plugin, String pluginBeanValue) {
+        try {
+            PluginEntity pluginEntity = new PluginEntity();
+            pluginEntity.setPluginKey(plugin.getId());
+            pluginEntity.setEnabled(Boolean.TRUE);
+            pluginEntity.setPluginData(pluginBeanValue);
+            return persistenceServices.createOrEdit(pluginEntity);
+        } catch (Exception e) {
+            LOGGER.error("Could not create plugin entity. Is it already existing?", e);
+            PluginEntity found = findPluginEntity(plugin);
+            if (found != null) {
+                LOGGER.info(String.format("Plugin entity already registered: %s", plugin.getId()));
+            }
+            return found;
+        }
+    }
 
-	private <T extends AbstractPluginBean> void putPluginEntityToCache(String id, T data) {
-		if (data == null) {
-			return;
-		}
-		Cache cache = getPluginResourceCache();
-		if (cache != null) {
-			cache.storeToCache(id, data);
-		}
-	}
+    private <T extends AbstractPluginBean> void putPluginEntityToCache(String id, T data) {
+        if (data == null) {
+            return;
+        }
+        Cache cache = getPluginResourceCache();
+        if (cache != null) {
+            cache.storeToCache(id, data);
+        }
+    }
 
-	private PluginEntity findPluginEntity(Plugin plugin) {
-		QueryBuilder query = new QueryBuilder("select pl from " + PluginEntity.class.getSimpleName() + " pl");
-		query.addParameter("pl.pluginKey", "PLUGIN_KEY", plugin.getId());
-		return persistenceServices.executeQuerySingle(query);
-	}
+    private PluginEntity findPluginEntity(Plugin plugin) {
+        QueryBuilder query = new QueryBuilder("select pl from " + PluginEntity.class.getSimpleName() + " pl");
+        query.addParameter("pl.pluginKey", "PLUGIN_KEY", plugin.getId());
+        return persistenceServices.executeQuerySingle(query);
+    }
 
-	@Override
-	public void setEnabled(Plugin plugin, boolean enabled) {
-		PluginEntity pluginEntity = findPluginEntity(plugin);
-		Configuration.get().getResourceRepositoryListeners().onBeforeSaveProperty(plugin, PLUGIN_ENABLED, enabled);
-		pluginEntity.setEnabled(enabled);
-		persistenceServices.createOrEdit(pluginEntity);
-	}
+    @Override
+    public void setEnabled(Plugin plugin, boolean enabled) {
+        PluginEntity pluginEntity = findPluginEntity(plugin);
+        Configuration.get().getResourceRepositoryListeners().onBeforeSaveProperty(plugin, PLUGIN_ENABLED, enabled);
+        pluginEntity.setEnabled(enabled);
+        persistenceServices.createOrEdit(pluginEntity);
+    }
 
-	@Override
-	public boolean isEnabled(Plugin plugin) {
-		PluginEntity pluginEntity = findPluginEntity(plugin);
-		if (pluginEntity == null) {
-			throw new RuntimeException("Plugin entity not found: " + plugin.getId());
-		}
-		return pluginEntity.isEnabled();
-	}
+    @Override
+    public boolean isEnabled(Plugin plugin) {
+        PluginEntity pluginEntity = findPluginEntity(plugin);
+        if (pluginEntity == null) {
+            throw new RuntimeException("Plugin entity not found: " + plugin.getId());
+        }
+        return pluginEntity.isEnabled();
+    }
 
-	private Cache getPluginResourceCache() {
-		if (pluginResourceCache == null) {
-			pluginResourceCache = Configuration.get().getPluginResourceCache();
-		}
-		return pluginResourceCache;
-	}
+    private Cache getPluginResourceCache() {
+        if (pluginResourceCache == null) {
+            pluginResourceCache = Configuration.get().getPluginResourceCache();
+        }
+        return pluginResourceCache;
+    }
 }

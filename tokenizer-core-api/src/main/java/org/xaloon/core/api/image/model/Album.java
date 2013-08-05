@@ -20,100 +20,99 @@ import org.xaloon.core.api.plugin.comment.Commentable;
 import org.xaloon.core.api.storage.FileDescriptor;
 import org.xaloon.core.api.user.model.User;
 
-
 /**
  * @author vytautas r.
  */
 public interface Album extends Persistable, Commentable {
 
-	/**
-	 * Gets title.
-	 * 
-	 * @return title
-	 */
-	String getTitle();
+    /**
+     * Gets title.
+     * 
+     * @return title
+     */
+    String getTitle();
 
-	/**
-	 * Sets title.
-	 * 
-	 * @param title
-	 *            title
-	 */
-	void setTitle(String title);
+    /**
+     * Sets title.
+     * 
+     * @param title
+     *            title
+     */
+    void setTitle(String title);
 
-	/**
-	 * Gets description.
-	 * 
-	 * @return description
-	 */
-	String getDescription();
+    /**
+     * Gets description.
+     * 
+     * @return description
+     */
+    String getDescription();
 
-	/**
-	 * Sets description.
-	 * 
-	 * @param description
-	 *            description
-	 */
-	void setDescription(String description);
+    /**
+     * Sets description.
+     * 
+     * @param description
+     *            description
+     */
+    void setDescription(String description);
 
-	/**
-	 * Gets parent.
-	 * 
-	 * @return parent
-	 */
-	Album getParent();
+    /**
+     * Gets parent.
+     * 
+     * @return parent
+     */
+    Album getParent();
 
-	/**
-	 * Sets parent.
-	 * 
-	 * @param parent
-	 *            parent
-	 */
-	void setParent(Album parent);
+    /**
+     * Sets parent.
+     * 
+     * @param parent
+     *            parent
+     */
+    void setParent(Album parent);
 
-	/**
-	 * Gets thumbnail.
-	 * 
-	 * @return thumbnail
-	 */
-	FileDescriptor getThumbnail();
+    /**
+     * Gets thumbnail.
+     * 
+     * @return thumbnail
+     */
+    FileDescriptor getThumbnail();
 
-	/**
-	 * Sets thumbnail.
-	 * 
-	 * @param thumbnail
-	 *            thumbnail
-	 */
-	void setThumbnail(FileDescriptor thumbnail);
+    /**
+     * Sets thumbnail.
+     * 
+     * @param thumbnail
+     *            thumbnail
+     */
+    void setThumbnail(FileDescriptor thumbnail);
 
-	/**
-	 * Gets images.
-	 * 
-	 * @return images
-	 */
-	<T extends ImageComposition> List<T> getImages();
+    /**
+     * Gets images.
+     * 
+     * @return images
+     */
+    <T extends ImageComposition> List<T> getImages();
 
-	/**
-	 * Sets images.
-	 * 
-	 * @param images
-	 *            images
-	 */
-	void setImages(List<? extends ImageComposition> images);
+    /**
+     * Sets images.
+     * 
+     * @param images
+     *            images
+     */
+    void setImages(List<? extends ImageComposition> images);
 
-	/**
-	 * Gets owner.
-	 * 
-	 * @return owner
-	 */
-	User getOwner();
+    /**
+     * Gets owner.
+     * 
+     * @return owner
+     */
+    User getOwner();
 
-	/**
-	 * Sets owner.
-	 * 
-	 * @param owner
-	 *            owner
-	 */
-	void setOwner(User owner);
+    /**
+     * Sets owner.
+     * 
+     * @param owner
+     *            owner
+     */
+    void setOwner(User owner);
 
 }

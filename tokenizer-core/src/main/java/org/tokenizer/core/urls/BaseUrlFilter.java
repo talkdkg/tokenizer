@@ -20,9 +20,9 @@ import org.tokenizer.core.datum.UrlDatum;
  */
 public abstract class BaseUrlFilter {
 
-	/**
-	 * Return true if we should filter out (remove) the datum
-	 */
-	public abstract boolean isRemove(UrlDatum datum);
+    /**
+     * Return true if we should filter out (remove) the datum
+     */
+    public abstract boolean isRemove(UrlDatum datum);
 
 }

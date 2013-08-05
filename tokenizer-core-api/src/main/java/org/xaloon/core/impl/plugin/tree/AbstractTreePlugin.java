@@ -19,9 +19,9 @@ import java.util.Map;
 import org.xaloon.core.api.plugin.AbstractPlugin;
 import org.xaloon.core.api.plugin.AbstractPluginBean;
 
-
 /**
- * Base tree plugin, which holds object hierarchy in memory while application is running. It should be used for dynamic menu panel
+ * Base tree plugin, which holds object hierarchy in memory while application is running. It should be used for dynamic
+ * menu panel
  * 
  * @author vytautas r.
  * @version 1.1, 09/28/10
@@ -32,48 +32,49 @@ import org.xaloon.core.api.plugin.AbstractPluginBean;
  * @param <K>
  */
 
-public abstract class AbstractTreePlugin<K extends AbstractPluginBean, T extends Comparable<T>> extends AbstractPlugin<K> {
-	private static final long serialVersionUID = 1L;
+public abstract class AbstractTreePlugin<K extends AbstractPluginBean, T extends Comparable<T>> extends
+        AbstractPlugin<K> {
+    private static final long serialVersionUID = 1L;
 
-	/**
-	 * Whole tree of menu items
-	 */
-	private final GenericTreeNode<T> tree = new GenericTreeNode<T>();
+    /**
+     * Whole tree of menu items
+     */
+    private final GenericTreeNode<T> tree = new GenericTreeNode<T>();
 
-	/**
-	 * Tree nodes by concrete url
-	 */
-	private final Map<String, GenericTreeNode<T>> treeNodesByUrl = new HashMap<String, GenericTreeNode<T>>();
+    /**
+     * Tree nodes by concrete url
+     */
+    private final Map<String, GenericTreeNode<T>> treeNodesByUrl = new HashMap<String, GenericTreeNode<T>>();
 
-	/**
-	 * Tree nodes by concrete context
-	 */
-	private final Map<String, GenericTreeNode<T>> treeNodesByContext = new HashMap<String, GenericTreeNode<T>>();
+    /**
+     * Tree nodes by concrete context
+     */
+    private final Map<String, GenericTreeNode<T>> treeNodesByContext = new HashMap<String, GenericTreeNode<T>>();
 
-	/**
-	 * Returns whole tree of business tree items
-	 * 
-	 * @return object of root tree node
-	 */
-	public GenericTreeNode<T> getTree() {
-		return tree;
-	}
+    /**
+     * Returns whole tree of business tree items
+     * 
+     * @return object of root tree node
+     */
+    public GenericTreeNode<T> getTree() {
+        return tree;
+    }
 
-	/**
-	 * Returns all tree node map, which contains nodes by concrete url
-	 * 
-	 * @return map container of tree nodes
-	 */
-	public Map<String, GenericTreeNode<T>> getTreeNodesByUrl() {
-		return treeNodesByUrl;
-	}
+    /**
+     * Returns all tree node map, which contains nodes by concrete url
+     * 
+     * @return map container of tree nodes
+     */
+    public Map<String, GenericTreeNode<T>> getTreeNodesByUrl() {
+        return treeNodesByUrl;
+    }
 
-	/**
-	 * Returns all tree node map, which contains nodes by concrete context
-	 * 
-	 * @return map container of tree nodes
-	 */
-	public Map<String, GenericTreeNode<T>> getTreeNodesByContext() {
-		return treeNodesByContext;
-	}
+    /**
+     * Returns all tree node map, which contains nodes by concrete context
+     * 
+     * @return map container of tree nodes
+     */
+    public Map<String, GenericTreeNode<T>> getTreeNodesByContext() {
+        return treeNodesByContext;
+    }
 }

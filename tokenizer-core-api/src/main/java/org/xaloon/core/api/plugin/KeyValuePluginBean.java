@@ -20,22 +20,22 @@ package org.xaloon.core.api.plugin;
  * 
  */
 public class KeyValuePluginBean extends StringPluginBean {
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private String key;
+    private String key;
 
-	/**
-	 * @return parameter name
-	 */
-	public String getKey() {
-		return key;
-	}
+    /**
+     * @return parameter name
+     */
+    public String getKey() {
+        return key;
+    }
 
-	/**
-	 * @param key
-	 *            sets parameter name
-	 */
-	public void setKey(String key) {
-		this.key = key;
-	}
+    /**
+     * @param key
+     *            sets parameter name
+     */
+    public void setKey(String key) {
+        this.key = key;
+    }
 }

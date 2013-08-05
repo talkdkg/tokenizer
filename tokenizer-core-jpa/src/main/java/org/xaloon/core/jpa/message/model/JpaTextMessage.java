@@ -36,37 +36,36 @@ import org.xaloon.core.jpa.classifier.model.JpaClassifierItem;
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @DiscriminatorColumn(name = "MESSAGE_TYPE", discriminatorType = DiscriminatorType.STRING)
 public class JpaTextMessage extends JpaMessage implements TextMessage {
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @JoinColumn(name = "CLASSIFIER_ITEM_FOLDER_ID", referencedColumnName = "ID")
+    private JpaClassifierItem folder;
 
-	@ManyToOne(fetch = FetchType.EAGER, optional = false)
-	@JoinColumn(name = "CLASSIFIER_ITEM_FOLDER_ID", referencedColumnName = "ID")
-	private JpaClassifierItem folder;
+    @Column(name = "SUBJECT")
+    private String subject;
 
-	@Column(name = "SUBJECT")
-	private String subject;
+    public String getSubject() {
+        return subject;
+    }
 
-	public String getSubject() {
-		return subject;
-	}
+    public void setSubject(String subject) {
+        this.subject = subject;
+    }
 
-	public void setSubject(String subject) {
-		this.subject = subject;
-	}
+    public ClassifierItem getFolder() {
+        return folder;
+    }
 
-	public ClassifierItem getFolder() {
-		return folder;
-	}
+    /**
+     * @param folder
+     */
+    public void setFolder(JpaClassifierItem folder) {
+        this.folder = folder;
+    }
 
-	/**
-	 * @param folder
-	 */
-	public void setFolder(JpaClassifierItem folder) {
-		this.folder = folder;
-	}
-
-	@Override
-	public void setFolder(ClassifierItem messageFolder) {
-		folder = (JpaClassifierItem)messageFolder;
-	}
+    @Override
+    public void setFolder(ClassifierItem messageFolder) {
+        folder = (JpaClassifierItem) messageFolder;
+    }
 }

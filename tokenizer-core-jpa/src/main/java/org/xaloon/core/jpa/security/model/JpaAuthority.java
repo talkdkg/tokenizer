@@ -36,75 +36,74 @@ import org.xaloon.core.jpa.model.BookmarkableEntity;
 @Entity
 @Table(name = "XAL_SECURITY_AUTHORITY", uniqueConstraints = @UniqueConstraint(columnNames = { "AUTHORITY" }))
 public class JpaAuthority extends BookmarkableEntity implements Authority {
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	@Column(name = "AUTHORITY", nullable = false)
-	private String name;
+    @Column(name = "AUTHORITY", nullable = false)
+    private String name;
 
-	@ManyToMany(fetch = FetchType.LAZY)
-	@JoinTable(name = "XAL_SECURITY_USER_AUTHORITIES", joinColumns = @JoinColumn(name = "AUTHORITY_ID", referencedColumnName = "ID"), inverseJoinColumns = @JoinColumn(name = "USER_DETAILS_ID", referencedColumnName = "ID"))
-	private List<JpaUserDetails> users = new ArrayList<JpaUserDetails>();
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "XAL_SECURITY_USER_AUTHORITIES", joinColumns = @JoinColumn(name = "AUTHORITY_ID", referencedColumnName = "ID"), inverseJoinColumns = @JoinColumn(name = "USER_DETAILS_ID", referencedColumnName = "ID"))
+    private List<JpaUserDetails> users = new ArrayList<JpaUserDetails>();
 
-	/**
-	 * Gets users.
-	 * 
-	 * @return users
-	 */
-	public List<JpaUserDetails> getUsers() {
-		return users;
-	}
+    /**
+     * Gets users.
+     * 
+     * @return users
+     */
+    public List<JpaUserDetails> getUsers() {
+        return users;
+    }
 
-	/**
-	 * Sets users.
-	 * 
-	 * @param users
-	 *            users
-	 */
-	public void setUsers(List<JpaUserDetails> users) {
-		this.users = users;
-	}
+    /**
+     * Sets users.
+     * 
+     * @param users
+     *            users
+     */
+    public void setUsers(List<JpaUserDetails> users) {
+        this.users = users;
+    }
 
+    /**
+     * Gets name.
+     * 
+     * @return name
+     */
+    public String getName() {
+        return name;
+    }
 
-	/**
-	 * Gets name.
-	 * 
-	 * @return name
-	 */
-	public String getName() {
-		return name;
-	}
+    /**
+     * Sets name.
+     * 
+     * @param name
+     *            name
+     */
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	/**
-	 * Sets name.
-	 * 
-	 * @param name
-	 *            name
-	 */
-	public void setName(String name) {
-		this.name = name;
-	}
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null || !(obj instanceof JpaAuthority)) {
+            return false;
+        }
+        JpaAuthority entity = (JpaAuthority) obj;
 
-	@Override
-	public boolean equals(Object obj) {
-		if (obj == null || !(obj instanceof JpaAuthority)) {
-			return false;
-		}
-		JpaAuthority entity = (JpaAuthority)obj;
+        EqualsBuilder equalsBuilder = new EqualsBuilder();
+        equalsBuilder.append(getId(), entity.getId());
+        return equalsBuilder.isEquals();
+    }
 
-		EqualsBuilder equalsBuilder = new EqualsBuilder();
-		equalsBuilder.append(getId(), entity.getId());
-		return equalsBuilder.isEquals();
-	}
+    @Override
+    public int hashCode() {
+        HashCodeBuilder hashCodeBuilder = new HashCodeBuilder();
+        hashCodeBuilder.append(getId());
+        return hashCodeBuilder.hashCode();
+    }
 
-	@Override
-	public int hashCode() {
-		HashCodeBuilder hashCodeBuilder = new HashCodeBuilder();
-		hashCodeBuilder.append(getId());
-		return hashCodeBuilder.hashCode();
-	}
-
-	@Override
-	public String toString() {
-		return String.format("[%s] authority=%s", this.getClass().getSimpleName(), getName());
-	}
+    @Override
+    public String toString() {
+        return String.format("[%s] authority=%s", this.getClass().getSimpleName(), getName());
+    }
 }

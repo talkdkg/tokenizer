@@ -27,26 +27,26 @@ import org.xaloon.core.jpa.model.AbstractEntity;
 @Table(name = "XAL_FILE_STORAGE")
 public class JpaFileStorage extends AbstractEntity {
 
-	/**
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	@Lob
-	@Column(name = "BINARY_DATA")
-	private byte[] file;
+    @Lob
+    @Column(name = "BINARY_DATA")
+    private byte[] file;
 
-	/**
-	 * @return lazily fetched file
-	 */
-	public byte[] getFile() {
-		return file;
-	}
+    /**
+     * @return lazily fetched file
+     */
+    public byte[] getFile() {
+        return file;
+    }
 
-	/**
-	 * @param file
-	 */
-	public void setFile(byte[] file) {
-		this.file = file;
-	}
+    /**
+     * @param file
+     */
+    public void setFile(byte[] file) {
+        this.file = file;
+    }
 }

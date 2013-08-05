@@ -25,38 +25,38 @@ import org.xaloon.core.api.user.model.User;
  */
 public interface Message extends Persistable {
 
-	/**
-	 * @return message creating date
-	 */
-	Date getCreateDate();
+    /**
+     * @return message creating date
+     */
+    Date getCreateDate();
 
-	/**
-	 * @param messageCreateDate
-	 */
-	void setCreateDate(Date messageCreateDate);
+    /**
+     * @param messageCreateDate
+     */
+    void setCreateDate(Date messageCreateDate);
 
-	/**
-	 * @return user who sent the message
-	 */
-	User getFromUser();
+    /**
+     * @return user who sent the message
+     */
+    User getFromUser();
 
-	/**
-	 * @param fromUser
-	 */
-	void setFromUser(User fromUser);
+    /**
+     * @param fromUser
+     */
+    void setFromUser(User fromUser);
 
-	/**
-	 * @return message body
-	 */
-	String getMessage();
+    /**
+     * @return message body
+     */
+    String getMessage();
 
-	/**
-	 * @param messageBody
-	 */
-	void setMessage(String messageBody);
+    /**
+     * @param messageBody
+     */
+    void setMessage(String messageBody);
 
-	/**
-	 * @return list of attachments for this message
-	 */
-	List<? extends FileDescriptor> getAttachments();
+    /**
+     * @return list of attachments for this message
+     */
+    List<? extends FileDescriptor> getAttachments();
 }

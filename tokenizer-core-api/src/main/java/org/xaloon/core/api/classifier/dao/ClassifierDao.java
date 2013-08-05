@@ -23,59 +23,59 @@ import org.xaloon.core.api.classifier.Classifier;
  */
 public interface ClassifierDao extends Serializable {
 
-	/**
-	 * @return total count of existing classifiers
-	 */
-	Long getCount();
+    /**
+     * @return total count of existing classifiers
+     */
+    Long getCount();
 
-	/**
-	 * @param <T>
-	 * @param first
-	 *            start position to search for classifiers. -1,0 - search from start position
-	 * @param count
-	 *            maximum count of classifiers to return. -1 - return all
-	 * @return list of classifier instances. empty list is returned if no classifiers found.
-	 */
-	<T extends Classifier> List<T> findClassifiers(long first, long count);
+    /**
+     * @param <T>
+     * @param first
+     *            start position to search for classifiers. -1,0 - search from start position
+     * @param count
+     *            maximum count of classifiers to return. -1 - return all
+     * @return list of classifier instances. empty list is returned if no classifiers found.
+     */
+    <T extends Classifier> List<T> findClassifiers(long first, long count);
 
-	/**
-	 * Loads classifier by it's primary key
-	 * 
-	 * @param <T>
-	 * 
-	 * @param id
-	 *            unique key to load by
-	 * @return classifier instance
-	 */
-	<T extends Classifier> T loadClassifierById(Long id);
+    /**
+     * Loads classifier by it's primary key
+     * 
+     * @param <T>
+     * 
+     * @param id
+     *            unique key to load by
+     * @return classifier instance
+     */
+    <T extends Classifier> T loadClassifierById(Long id);
 
-	/**
-	 * Persists instance of classifier into storage.
-	 * 
-	 * @param <T>
-	 * 
-	 * @param item
-	 *            instance to persist.
-	 */
-	<T extends Classifier> void createClassifier(T item);
+    /**
+     * Persists instance of classifier into storage.
+     * 
+     * @param <T>
+     * 
+     * @param item
+     *            instance to persist.
+     */
+    <T extends Classifier> void createClassifier(T item);
 
-	/**
-	 * Creates new empty instance of classifier
-	 * 
-	 * @param <T>
-	 * 
-	 * @return instance of classifier
-	 */
-	<T extends Classifier> T newClassifier();
+    /**
+     * Creates new empty instance of classifier
+     * 
+     * @param <T>
+     * 
+     * @return instance of classifier
+     */
+    <T extends Classifier> T newClassifier();
 
-	/**
-	 * Searches storage for classifier by provided type
-	 * 
-	 * @param <T>
-	 * 
-	 * @param type
-	 *            string representation of classifier type used in query to search for classifier
-	 * @return classifier instance found in storage. null is returned if not found.
-	 */
-	<T extends Classifier> T findClassifierByType(String type);
+    /**
+     * Searches storage for classifier by provided type
+     * 
+     * @param <T>
+     * 
+     * @param type
+     *            string representation of classifier type used in query to search for classifier
+     * @return classifier instance found in storage. null is returned if not found.
+     */
+    <T extends Classifier> T findClassifierByType(String type);
 }

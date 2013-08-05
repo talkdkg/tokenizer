@@ -15,7 +15,7 @@ package org.tokenizer.executor.engine;
 
 @SuppressWarnings("serial")
 public class HostLockTimeoutException extends HostLockException {
-  public HostLockTimeoutException(String message) {
-    super(message);
-  }
+    public HostLockTimeoutException(String message) {
+        super(message);
+    }
 }

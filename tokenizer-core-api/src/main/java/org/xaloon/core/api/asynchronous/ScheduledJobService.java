@@ -18,11 +18,11 @@ package org.xaloon.core.api.asynchronous;
  * @param <T>
  */
 public interface ScheduledJobService<T extends JobParameters> {
-	/**
-	 * @param <V>
-	 * @param jobParameters
-	 * @param isScheduled
-	 * @return any calculated result if necessary
-	 */
-	<V> V execute(T jobParameters, boolean isScheduled);
+    /**
+     * @param <V>
+     * @param jobParameters
+     * @param isScheduled
+     * @return any calculated result if necessary
+     */
+    <V> V execute(T jobParameters, boolean isScheduled);
 }

@@ -25,22 +25,22 @@ import javax.persistence.PersistenceContext;
 @Named("persistenceServices")
 @Stateless(mappedName = "persistenceServices")
 public class DefaultPersistenceServices extends AbstractPersistenceServices {
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
     @Inject
-	private transient EntityManager em;
+    private transient EntityManager em;
 
-	/**
-	 * @param em
-	 *            instance used to interact with the persistence context.
-	 */
-	@PersistenceContext(unitName = DEFAULT_UNIT_NAME)
+    /**
+     * @param em
+     *            instance used to interact with the persistence context.
+     */
+    @PersistenceContext(unitName = DEFAULT_UNIT_NAME)
     public void setEm(final EntityManager em) {
-		this.em = em;
-	}
+        this.em = em;
+    }
 
-	@Override
-	public EntityManager getEm() {
-		return em;
-	}
+    @Override
+    public EntityManager getEm() {
+        return em;
+    }
 }

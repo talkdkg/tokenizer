@@ -19,14 +19,14 @@ import org.xaloon.core.api.persistence.Persistable;
  * @author vytautas r.
  */
 public interface Classifier extends Persistable {
-	/**
-	 * @see ClassifierType
-	 * @return type of classifier
-	 */
-	String getType();
+    /**
+     * @see ClassifierType
+     * @return type of classifier
+     */
+    String getType();
 
-	/**
-	 * @return name of classifier
-	 */
-	String getName();
+    /**
+     * @return name of classifier
+     */
+    String getName();
 }

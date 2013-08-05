@@ -108,16 +108,13 @@ public abstract class AbstractTask<T extends AbstractTaskConfiguration> implemen
         while (!Thread.interrupted()) {
             try {
                 process();
-            }
-            catch (InterruptedException e) {
+            } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
-            }
-            catch (ConnectionException e) {
+            } catch (ConnectionException e) {
                 LOG.error("Repository unavailable; sleeping 1 second...", e);
                 try {
                     Thread.sleep(1000);
-                }
-                catch (InterruptedException e1) {
+                } catch (InterruptedException e1) {
                     Thread.currentThread().interrupt();
                 }
             }
@@ -126,8 +123,7 @@ public abstract class AbstractTask<T extends AbstractTaskConfiguration> implemen
 
     public void start() throws InterruptedException, LeaderElectionSetupException, KeeperException {
         if (leaderElection == null) {
-            leaderElection =
-                new LeaderElection(zk, "Master " + this.getClass().getCanonicalName(),
+            leaderElection = new LeaderElection(zk, "Master " + this.getClass().getCanonicalName(),
                     "/org/tokenizer/executor/engine/" + this.getClass().getCanonicalName() + "/" + this.uuid, this);
         }
     }
@@ -141,8 +137,7 @@ public abstract class AbstractTask<T extends AbstractTaskConfiguration> implemen
             this.leaderElection = null;
             shutdown();
             LOG.warn("Stopped.");
-        }
-        catch (InterruptedException e) {
+        } catch (InterruptedException e) {
             if (thread != null) {
                 thread.interrupt();
             }

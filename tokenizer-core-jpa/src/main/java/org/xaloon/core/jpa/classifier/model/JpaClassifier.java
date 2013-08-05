@@ -34,55 +34,55 @@ import org.xaloon.core.jpa.model.AbstractEntity;
 @Table(name = "XAL_CLASSIFIER", uniqueConstraints = @UniqueConstraint(columnNames = { "CL_TYPE" }))
 public class JpaClassifier extends AbstractEntity implements Classifier {
 
-	/**
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	@Column(name = "CL_TYPE", nullable = false)
-	private String type;
+    @Column(name = "CL_TYPE", nullable = false)
+    private String type;
 
-	@Column(name = "CL_NAME", nullable = false)
-	private String name;
+    @Column(name = "CL_NAME", nullable = false)
+    private String name;
 
-	/**
-	 * @param type
-	 */
-	public void setType(String type) {
-		this.type = type;
-	}
+    /**
+     * @param type
+     */
+    public void setType(String type) {
+        this.type = type;
+    }
 
-	/**
-	 * @see ClassifierType
-	 * @return type of classifier
-	 */
-	public String getType() {
-		return type;
-	}
+    /**
+     * @see ClassifierType
+     * @return type of classifier
+     */
+    public String getType() {
+        return type;
+    }
 
-	/**
-	 * @param name
-	 */
-	public void setName(String name) {
-		this.name = name;
-	}
+    /**
+     * @param name
+     */
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	/**
-	 * @return name of classifier
-	 */
-	public String getName() {
-		return name;
-	}
+    /**
+     * @return name of classifier
+     */
+    public String getName() {
+        return name;
+    }
 
-	@Override
-	@PrePersist
-	public void beforeCreate() {
-		super.beforeCreate();
-		setType(getType().toUpperCase());
-	}
+    @Override
+    @PrePersist
+    public void beforeCreate() {
+        super.beforeCreate();
+        setType(getType().toUpperCase());
+    }
 
-	@Override
-	public String toString() {
-		return String.format("[%s] type=%s, name=%s", this.getClass().getSimpleName(), getType(), getName());
-	}
+    @Override
+    public String toString() {
+        return String.format("[%s] type=%s, name=%s", this.getClass().getSimpleName(), getType(), getName());
+    }
 }

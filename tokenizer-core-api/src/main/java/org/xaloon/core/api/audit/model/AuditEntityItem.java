@@ -19,63 +19,63 @@ import org.xaloon.core.api.persistence.Persistable;
  * @author vytautas r.
  */
 public interface AuditEntityItem extends Persistable {
-	/**
-	 * Gets auditEntity.
-	 * 
-	 * @return auditEntity
-	 */
-	AuditEntity getAuditEntity();
+    /**
+     * Gets auditEntity.
+     * 
+     * @return auditEntity
+     */
+    AuditEntity getAuditEntity();
 
-	/**
-	 * Sets auditEntity.
-	 * 
-	 * @param auditEntity
-	 *            auditEntity
-	 */
-	void setAuditEntity(AuditEntity auditEntity);
+    /**
+     * Sets auditEntity.
+     * 
+     * @param auditEntity
+     *            auditEntity
+     */
+    void setAuditEntity(AuditEntity auditEntity);
 
-	/**
-	 * Gets name.
-	 * 
-	 * @return name
-	 */
-	String getName();
+    /**
+     * Gets name.
+     * 
+     * @return name
+     */
+    String getName();
 
-	/**
-	 * Sets name.
-	 * 
-	 * @param name
-	 *            name
-	 */
-	void setName(String name);
+    /**
+     * Sets name.
+     * 
+     * @param name
+     *            name
+     */
+    void setName(String name);
 
-	/**
-	 * Gets value.
-	 * 
-	 * @return value
-	 */
-	String getValue();
+    /**
+     * Gets value.
+     * 
+     * @return value
+     */
+    String getValue();
 
-	/**
-	 * Sets value.
-	 * 
-	 * @param value
-	 *            value
-	 */
-	void setValue(String value);
+    /**
+     * Sets value.
+     * 
+     * @param value
+     *            value
+     */
+    void setValue(String value);
 
-	/**
-	 * Gets key.
-	 * 
-	 * @return key
-	 */
-	boolean isKey();
+    /**
+     * Gets key.
+     * 
+     * @return key
+     */
+    boolean isKey();
 
-	/**
-	 * Sets key.
-	 * 
-	 * @param key
-	 *            key
-	 */
-	void setKey(boolean key);
+    /**
+     * Sets key.
+     * 
+     * @param key
+     *            key
+     */
+    void setKey(boolean key);
 }

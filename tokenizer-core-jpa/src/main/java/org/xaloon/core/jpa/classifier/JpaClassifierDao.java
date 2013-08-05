@@ -36,51 +36,51 @@ import org.xaloon.core.jpa.classifier.model.JpaClassifier;
 @TransactionManagement(TransactionManagementType.CONTAINER)
 public class JpaClassifierDao implements ClassifierDao {
 
-	/**
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	@Inject
-	@Named("persistenceServices")
-	private PersistenceServices persistenceServices;
+    @Inject
+    @Named("persistenceServices")
+    private PersistenceServices persistenceServices;
 
-	@Override
-	public Long getCount() {
-		return persistenceServices.getCount(JpaClassifier.class);
-	}
+    @Override
+    public Long getCount() {
+        return persistenceServices.getCount(JpaClassifier.class);
+    }
 
-	@Override
-	public <T extends Classifier> List<T> findClassifiers(long first, long count) {
-		QueryBuilder queryBuilder = new QueryBuilder("select cl from " + JpaClassifier.class.getSimpleName() + " cl ");
-		queryBuilder.setFirstRow(first);
-		queryBuilder.setCount(count);
-		queryBuilder.addOrderBy("cl.name asc");
-		return persistenceServices.executeQuery(queryBuilder);
-	}
+    @Override
+    public <T extends Classifier> List<T> findClassifiers(long first, long count) {
+        QueryBuilder queryBuilder = new QueryBuilder("select cl from " + JpaClassifier.class.getSimpleName() + " cl ");
+        queryBuilder.setFirstRow(first);
+        queryBuilder.setCount(count);
+        queryBuilder.addOrderBy("cl.name asc");
+        return persistenceServices.executeQuery(queryBuilder);
+    }
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public <T extends Classifier> T loadClassifierById(Long id) {
-		return (T)persistenceServices.find(JpaClassifier.class, id);
-	}
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T extends Classifier> T loadClassifierById(Long id) {
+        return (T) persistenceServices.find(JpaClassifier.class, id);
+    }
 
-	@Override
-	public <T extends Classifier> void createClassifier(T item) {
-		persistenceServices.createOrEdit(item);
-	}
+    @Override
+    public <T extends Classifier> void createClassifier(T item) {
+        persistenceServices.createOrEdit(item);
+    }
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public <T extends Classifier> T newClassifier() {
-		return (T)new JpaClassifier();
-	}
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T extends Classifier> T newClassifier() {
+        return (T) new JpaClassifier();
+    }
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public <T extends Classifier> T findClassifierByType(String type) {
-		QueryBuilder queryBuilder = new QueryBuilder("select cl from " + JpaClassifier.class.getSimpleName() + " cl ");
-		queryBuilder.addParameter("cl.type", "CL_TYPE", type.toUpperCase());
-		return (T)persistenceServices.executeQuerySingle(queryBuilder);
-	}
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T extends Classifier> T findClassifierByType(String type) {
+        QueryBuilder queryBuilder = new QueryBuilder("select cl from " + JpaClassifier.class.getSimpleName() + " cl ");
+        queryBuilder.addParameter("cl.type", "CL_TYPE", type.toUpperCase());
+        return (T) persistenceServices.executeQuerySingle(queryBuilder);
+    }
 }

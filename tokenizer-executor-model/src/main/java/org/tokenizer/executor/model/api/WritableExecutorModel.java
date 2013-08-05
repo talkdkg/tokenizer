@@ -20,43 +20,36 @@ import org.tokenizer.util.zookeeper.ZkLockException;
 
 public interface WritableExecutorModel extends ExecutorModel {
 
-    void addTask(TaskInfoBean task) throws TaskExistsException,
-            TaskModelException, TaskValidityException;
+    void addTask(TaskInfoBean task) throws TaskExistsException, TaskModelException, TaskValidityException;
 
     /**
      * Loads a task and returns it in a mutable way.
      * 
      * <p>
-     * This differs from {@link #getTask(UUID)} in that the returned
-     * TaskInfoBean is mutable (updateable) and it is also freshly loaded from
-     * storage.
+     * This differs from {@link #getTask(UUID)} in that the returned TaskInfoBean is mutable (updateable) and it is also
+     * freshly loaded from storage.
      */
-    TaskInfoBean getMutableTask(UUID uuid) throws InterruptedException,
-            KeeperException, TaskNotFoundException;
+    TaskInfoBean getMutableTask(UUID uuid) throws InterruptedException, KeeperException, TaskNotFoundException;
 
     /**
      * Updates a Task.
      * 
      * <p>
-     * The update will only succeed if it was not modified since it was read.
-     * This situation can be avoided by taking a lock on the Task before reading
-     * it. In fact, you are obliged to do so, and to pass your lock, of which it
-     * will be validated that it really is the owner of the Task lock.
+     * The update will only succeed if it was not modified since it was read. This situation can be avoided by taking a
+     * lock on the Task before reading it. In fact, you are obliged to do so, and to pass your lock, of which it will be
+     * validated that it really is the owner of the Task lock.
      */
-    void updateTask(final TaskInfoBean task, String lock)
-            throws InterruptedException, KeeperException,
-            TaskNotFoundException, TaskConcurrentModificationException,
-            ZkLockException, TaskUpdateException, TaskValidityException;
+    void updateTask(final TaskInfoBean task, String lock) throws InterruptedException, KeeperException,
+            TaskNotFoundException, TaskConcurrentModificationException, ZkLockException, TaskUpdateException,
+            TaskValidityException;
 
     /**
      * Internal Task update method, <b>this method is only intended for internal
      * Executor components</b>. It is similar to the update method but bypasses
      * some checks.
      */
-    void updateTaskInternal(final TaskInfoBean task)
-            throws InterruptedException, KeeperException,
-            TaskNotFoundException, TaskConcurrentModificationException,
-            TaskValidityException;
+    void updateTaskInternal(final TaskInfoBean task) throws InterruptedException, KeeperException,
+            TaskNotFoundException, TaskConcurrentModificationException, TaskValidityException;
 
     void deleteTask(final UUID uuid) throws TaskModelException;
 
@@ -64,11 +57,10 @@ public interface WritableExecutorModel extends ExecutorModel {
      * Takes a lock on this Task.
      * 
      * <p>
-     * Taking a lock can avoid concurrent modification exceptions when updating
-     * the Task.
+     * Taking a lock can avoid concurrent modification exceptions when updating the Task.
      */
-    String lockTask(UUID uuid) throws ZkLockException, TaskNotFoundException,
-            InterruptedException, KeeperException, TaskModelException;
+    String lockTask(UUID uuid) throws ZkLockException, TaskNotFoundException, InterruptedException, KeeperException,
+            TaskModelException;
 
     void unlockTask(String lock) throws ZkLockException;
 
@@ -78,7 +70,6 @@ public interface WritableExecutorModel extends ExecutorModel {
      * Internal lock method; <b>this method is only intended for internal
      * Executor components</b>.
      */
-    String lockTaskInternal(UUID uuid, boolean checkDeleted)
-            throws ZkLockException, TaskNotFoundException,
+    String lockTaskInternal(UUID uuid, boolean checkDeleted) throws ZkLockException, TaskNotFoundException,
             InterruptedException, KeeperException, TaskModelException;
 }

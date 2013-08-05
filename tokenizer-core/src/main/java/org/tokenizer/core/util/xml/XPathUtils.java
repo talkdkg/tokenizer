@@ -31,8 +31,7 @@ import org.w3c.dom.NodeList;
 public class XPathUtils {
     public static NodeList evalNodeList(String expression, Node node) {
         try {
-            return (NodeList) LocalXPathFactory.newXPath().evaluate(expression,
-                    node, XPathConstants.NODESET);
+            return (NodeList) LocalXPathFactory.newXPath().evaluate(expression, node, XPathConstants.NODESET);
         } catch (XPathExpressionException e) {
             throw new RuntimeException(e);
         }
@@ -40,13 +39,10 @@ public class XPathUtils {
 
     public static Element evalElement(String expression, Node node) {
         try {
-            Node result = (Node) LocalXPathFactory.newXPath().evaluate(
-                    expression, node, XPathConstants.NODE);
+            Node result = (Node) LocalXPathFactory.newXPath().evaluate(expression, node, XPathConstants.NODE);
             if (!(result instanceof Element))
-                throw new RuntimeException(
-                        "Expected an element from the evaluation of the xpath expression "
-                                + expression + ", but got a "
-                                + result.getClass().getName());
+                throw new RuntimeException("Expected an element from the evaluation of the xpath expression "
+                        + expression + ", but got a " + result.getClass().getName());
             return (Element) result;
         } catch (XPathExpressionException e) {
             throw new RuntimeException(e);
@@ -55,8 +51,7 @@ public class XPathUtils {
 
     public static String evalString(String expression, Node node) {
         try {
-            return (String) LocalXPathFactory.newXPath().evaluate(expression,
-                    node, XPathConstants.STRING);
+            return (String) LocalXPathFactory.newXPath().evaluate(expression, node, XPathConstants.STRING);
         } catch (XPathExpressionException e) {
             throw new RuntimeException(e);
         }
@@ -64,8 +59,7 @@ public class XPathUtils {
 
     public static int evalInt(String expression, Node node) {
         try {
-            Number result = (Number) LocalXPathFactory.newXPath().evaluate(
-                    expression, node, XPathConstants.NUMBER);
+            Number result = (Number) LocalXPathFactory.newXPath().evaluate(expression, node, XPathConstants.NUMBER);
             return result.intValue();
         } catch (XPathExpressionException e) {
             throw new RuntimeException(e);

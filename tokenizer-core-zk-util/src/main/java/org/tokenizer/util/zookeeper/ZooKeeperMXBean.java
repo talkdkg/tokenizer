@@ -27,8 +27,7 @@ public class ZooKeeperMXBean {
     private final String connectString;
     private final int sessionTimeout;
 
-    public ZooKeeperMXBean(final String connectString,
-            final int sessionTimeout, final ZooKeeperItf zk) {
+    public ZooKeeperMXBean(final String connectString, final int sessionTimeout, final ZooKeeperItf zk) {
         this.zk = zk;
         this.connectString = connectString;
         this.sessionTimeout = sessionTimeout;
@@ -46,9 +45,8 @@ public class ZooKeeperMXBean {
      * Invalidates our ZooKeeper's session. Meant for testing purposes.
      * 
      * <p>
-     * Note that you can also close connections and sessions through the JMX
-     * beans provided by the ZooKeeper server(s), which I find often more
-     * practical.
+     * Note that you can also close connections and sessions through the JMX beans provided by the ZooKeeper server(s),
+     * which I find often more practical.
      */
     public void invalidateSession() throws IOException, InterruptedException {
         // The below is the standard way to invalidate a session from the
@@ -63,11 +61,9 @@ public class ZooKeeperMXBean {
             public void process(final WatchedEvent event) {
             }
         };
-        ZooKeeper zk2 = new ZooKeeper(connectString, sessionTimeout, watcher,
-                zk.getSessionId(), zk.getSessionPasswd());
+        ZooKeeper zk2 = new ZooKeeper(connectString, sessionTimeout, watcher, zk.getSessionId(), zk.getSessionPasswd());
         long waitUntil = System.currentTimeMillis() + sessionTimeout;
-        while (zk2.getState() != CONNECTED
-                && waitUntil > System.currentTimeMillis()) {
+        while (zk2.getState() != CONNECTED && waitUntil > System.currentTimeMillis()) {
             try {
                 Thread.sleep(100);
             } catch (InterruptedException e) {
@@ -75,10 +71,8 @@ public class ZooKeeperMXBean {
             }
         }
         if (zk2.getState() != CONNECTED)
-            throw new IOException(
-                    "Failed to make a connection with ZooKeeper within the timeout "
-                            + sessionTimeout + ", connect string: "
-                            + connectString);
+            throw new IOException("Failed to make a connection with ZooKeeper within the timeout " + sessionTimeout
+                    + ", connect string: " + connectString);
         else {
             zk2.close();
         }

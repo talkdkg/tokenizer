@@ -19,49 +19,49 @@ package org.xaloon.core.impl.plugin.category;
  * @author vytautas r.
  */
 public interface DefaultPluginCategories {
-	/**
-	 * Global administration category
-	 */
-	String ADMINISTRATION = "/administration";
+    /**
+     * Global administration category
+     */
+    String ADMINISTRATION = "/administration";
 
-	/**
-	 * Global advertisement category
-	 */
-	String ADVERTISEMENT = "/advertisement";
+    /**
+     * Global advertisement category
+     */
+    String ADVERTISEMENT = "/advertisement";
 
-	/**
-	 * Google category
-	 */
-	String GOOGLE = "/google";
+    /**
+     * Google category
+     */
+    String GOOGLE = "/google";
 
-	/**
-	 * Statistics category
-	 */
-	String STATISTICS = "/stats";
+    /**
+     * Statistics category
+     */
+    String STATISTICS = "/stats";
 
-	/**
-	 * Tools category
-	 */
-	String TOOLS = "/tools";
+    /**
+     * Tools category
+     */
+    String TOOLS = "/tools";
 
-	/**
-	 * Payment related category
-	 */
-	String PAYMENT = "/payment";
+    /**
+     * Payment related category
+     */
+    String PAYMENT = "/payment";
 
-	/**
-	 * Products related category
-	 */
-	String PRODUCTS = "/products";
+    /**
+     * Products related category
+     */
+    String PRODUCTS = "/products";
 
-	/**
-	 * Communication related category
-	 */
-	String COMMUNICATION = "/communication";
+    /**
+     * Communication related category
+     */
+    String COMMUNICATION = "/communication";
 
-	/**
-	 * Security category
-	 */
-	String SECURITY = "/security";
+    /**
+     * Security category
+     */
+    String SECURITY = "/security";
 
 }

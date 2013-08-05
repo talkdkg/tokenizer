@@ -20,24 +20,23 @@ import org.xaloon.core.api.classifier.ClassifierItem;
  */
 public interface TextMessage extends Message {
 
-	/**
-	 * @return folder where text message resides
-	 */
-	ClassifierItem getFolder();
+    /**
+     * @return folder where text message resides
+     */
+    ClassifierItem getFolder();
 
-	/**
-	 * @param messageFolder
-	 */
-	void setFolder(ClassifierItem messageFolder);
+    /**
+     * @param messageFolder
+     */
+    void setFolder(ClassifierItem messageFolder);
 
+    /**
+     * @return subject of this message
+     */
+    String getSubject();
 
-	/**
-	 * @return subject of this message
-	 */
-	String getSubject();
-
-	/**
-	 * @param messageSubject
-	 */
-	void setSubject(String messageSubject);
+    /**
+     * @param messageSubject
+     */
+    void setSubject(String messageSubject);
 }

@@ -13,15 +13,18 @@
  */
 package org.tokenizer.crawler.db;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import java.util.Map;
-import org.junit.*;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.tokenizer.crawler.db.model.HostRecord;
 
-import static org.junit.Assert.*;
-
 /**
- * The class <code>HostRecordTest</code> contains tests for the class
- * <code>{@link HostRecord}</code>.
+ * The class <code>HostRecordTest</code> contains tests for the class <code>{@link HostRecord}</code>.
  * 
  * @generatedBy CodePro at 4/1/13 2:52 PM
  * @author Fuad
@@ -45,13 +48,13 @@ public class HostRecordTest {
         // add additional test code here
         assertNotNull(result);
         assertEquals(null, result.getTld());
-        
+
         result = new HostRecord("www.amazon.com");
         assertNotNull(result);
         assertEquals("com", result.getTld());
         assertEquals("com.amazon.www", new String(result.getHostInverted(), "ASCII"));
         assertEquals("com.amazon.www", new String(result.getHostInverted(), "UTF-8"));
-        
+
     }
 
     /**

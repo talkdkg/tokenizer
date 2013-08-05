@@ -15,13 +15,12 @@ package org.xaloon.core.api.security.model;
 
 import java.util.List;
 
-
 /**
  * @author vytautas r.
  */
 public interface SecurityRole extends SecurityEntity {
-	<T extends Authority> List<T> getAuthorities();
+    <T extends Authority> List<T> getAuthorities();
 
-	<T extends UserDetails> List<T> getUsers();
+    <T extends UserDetails> List<T> getUsers();
 
 }

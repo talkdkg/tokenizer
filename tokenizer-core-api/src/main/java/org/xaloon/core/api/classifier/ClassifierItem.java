@@ -13,7 +13,6 @@
  */
 package org.xaloon.core.api.classifier;
 
-
 import org.xaloon.core.api.bookmark.Bookmarkable;
 import org.xaloon.core.api.persistence.Persistable;
 
@@ -21,25 +20,25 @@ import org.xaloon.core.api.persistence.Persistable;
  * @author vytautas r.
  */
 public interface ClassifierItem extends Bookmarkable, Persistable {
-	/**
-	 * Returns unique user friendly representation code of classifier item. should be displayed in UI
-	 * 
-	 * @return unique string code of classifier
-	 */
-	String getCode();
+    /**
+     * Returns unique user friendly representation code of classifier item. should be displayed in UI
+     * 
+     * @return unique string code of classifier
+     */
+    String getCode();
 
-	/**
-	 * @return name of classifier item
-	 */
-	String getName();
+    /**
+     * @return name of classifier item
+     */
+    String getName();
 
-	/**
-	 * @return classifier instance to whom belongs classifier item. cannot be null
-	 */
-	Classifier getClassifier();
+    /**
+     * @return classifier instance to whom belongs classifier item. cannot be null
+     */
+    Classifier getClassifier();
 
-	/**
-	 * @return parent instance of item. null is returned when item is root
-	 */
-	ClassifierItem getParent();
+    /**
+     * @return parent instance of item. null is returned when item is root
+     */
+    ClassifierItem getParent();
 }

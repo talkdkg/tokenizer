@@ -23,10 +23,9 @@ import javax.persistence.Table;
 @Table(name = "XAL_KEY_VALUE")
 public class JpaKeyValue extends MappableKeyValue {
 
-	/**
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
-
+    private static final long serialVersionUID = 1L;
 
 }

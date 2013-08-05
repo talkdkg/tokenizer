@@ -49,8 +49,7 @@ public class LocaleHelper {
         boolean hasCountry = !locale.getCountry().equals("");
         boolean hasVariant = !locale.getVariant().equals("");
         if (hasLanguage && hasCountry && hasVariant)
-            return locale.getLanguage() + separator + locale.getCountry()
-                    + separator + locale.getVariant();
+            return locale.getLanguage() + separator + locale.getCountry() + separator + locale.getVariant();
         else if (hasLanguage && hasCountry)
             return locale.getLanguage() + separator + locale.getCountry();
         else if (hasLanguage)
