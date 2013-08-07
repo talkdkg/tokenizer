@@ -20,16 +20,16 @@ import uk.co.q3c.v7.i18n.I18NKeys;
 
 public enum DemoLabelKeys implements I18NKeys<DemoLabels> {
 
-    _nullkey_, Yes, No, View1, View2, Home, Private, Public, Reset_Account, Logout, Unlock_Account, Enable_Account, Login, Refresh_Account, Request_Account, TaskInfoComponent;
+    _nullkey_, Yes, No, View1, View2, Home, Private, Public, Reset_Account, Logout, Unlock_Account, Enable_Account, Login, Refresh_Account, Request_Account, TaskInfoComponent, UrlSearchComponent;
 
     @Override
-    public DemoLabels getBundle(Locale locale) {
+    public DemoLabels getBundle(final Locale locale) {
         ResourceBundle bundle = ResourceBundle.getBundle(DemoLabels.class.getName(), locale);
         return (DemoLabels) bundle;
     }
 
     @Override
-    public String getValue(Locale locale) {
+    public String getValue(final Locale locale) {
         String mapValue = getBundle(locale).getValue(this);
         if (mapValue == null) {
             return this.name().replace("_", " ");

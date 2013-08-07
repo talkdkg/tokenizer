@@ -82,13 +82,15 @@ public class UrlSearchComponent extends CustomComponent {
     CrawlerRepository repository;
 
     @Inject
-    public UrlSearchComponent(WritableExecutorModel model, CrawlerRepository repository) {
+    public UrlSearchComponent(final WritableExecutorModel model, final CrawlerRepository repository) {
         this.model = model;
         this.repository = repository;
 
         buildMainLayout();
         setCompositionRoot(mainLayout);
         setCaption("Personal details");
+        // mainLayout.setSizeFull();
+
     }
 
     private void buildMainLayout() {
@@ -106,10 +108,10 @@ public class UrlSearchComponent extends CustomComponent {
         query.setWidth(COMMON_FIELD_WIDTH, Unit.EM);
         componentContainer.addComponent(query);
         fieldGroup.bind(query, "query");
-        TextField httpResponseCode = new TextField("httpResponseCode");
-        httpResponseCode.setWidth(8, Unit.EM);
-        componentContainer.addComponent(httpResponseCode);
-        fieldGroup.bind(httpResponseCode, "httpResponseCode");
+        TextField httpStatus = new TextField("httpStatus");
+        httpStatus.setWidth(8, Unit.EM);
+        componentContainer.addComponent(httpStatus);
+        fieldGroup.bind(httpStatus, "httpStatus");
         myQuery = new MyQuery();
         BeanItem<MyQuery> myQueryItem = new BeanItem<MyQuery>(myQuery);
         fieldGroup.setItemDataSource(myQueryItem);
@@ -186,8 +188,8 @@ public class UrlSearchComponent extends CustomComponent {
         lazyQueryContainer.addContainerProperty("host", String.class, "", true, false);
         lazyQueryContainer.addContainerProperty("highlightSnippet", String.class, "", true, false);
         table.setContainerDataSource(lazyQueryContainer);
-        table.setVisibleColumns(new String[] { "id", "host", "highlightSnippet" });
-        table.setColumnHeaders(new String[] { "ID", "Host", "URL" });
+        table.setVisibleColumns(new String[] { "host", "highlightSnippet" });
+        table.setColumnHeaders(new String[] { "Host", "URL" });
         table.addValueChangeListener(new ValueChangeListener() {
 
             private static final long serialVersionUID = 1L;
@@ -252,17 +254,22 @@ public class UrlSearchComponent extends CustomComponent {
         messageLayout = new VerticalLayout();
         Panel messages = new Panel("Parsed Messages", messageLayout);
         component.addTab(messages);
-        setHeight(100, Unit.PERCENTAGE);
+
+        // component.setHeight(100, Unit.PERCENTAGE);
+        component.setSizeUndefined();
+
         // byte[] urlRecordDigest = MD5.hex2Byte(currentBean.id);
         WebpageRecord webpage = null;
         String html = null;
         try {
-            UrlRecord urlRecord = repository.getUrlRecord(currentBean.id);
-            if (urlRecord.getWebpageDigest() == null || urlRecord.getWebpageDigest() == DefaultValues.EMPTY_ARRAY)
+            UrlRecord urlRecord = repository.getUrlRecord(currentBean.url);
+            if (urlRecord.getWebpageDigest() == null || urlRecord.getWebpageDigest() == DefaultValues.EMPTY_ARRAY) {
                 return component;
+            }
             webpage = repository.getWebpageRecord(urlRecord.getWebpageDigest());
-            if (webpage == null)
+            if (webpage == null) {
                 return component;
+            }
             html = new String(webpage.getContent(), webpage.getCharset());
             List<XmlRecord> xmlRecords = repository.listXmlRecords(webpage.getXmlLinks());
             for (XmlRecord xmlRecord : xmlRecords) {
@@ -364,14 +371,14 @@ public class UrlSearchComponent extends CustomComponent {
     public class MyQuery implements Serializable {
 
         private String query = "";
-        private String httpResponseCode = "";
+        private String httpStatus = "";
 
-        public String getHttpResponseCode() {
-            return httpResponseCode;
+        public String getHttpStatus() {
+            return httpStatus;
         }
 
-        public void setHttpResponseCode(final String httpResponseCode) {
-            this.httpResponseCode = httpResponseCode;
+        public void setHttpStatus(final String httpStatus) {
+            this.httpStatus = httpStatus;
         }
 
         public String getQuery() {
@@ -384,7 +391,7 @@ public class UrlSearchComponent extends CustomComponent {
 
         @Override
         public String toString() {
-            return "MyQuery [query=" + query + ", httpResponseCode=" + httpResponseCode + "]";
+            return "MyQuery [query=" + query + ", httpStatus=" + httpStatus + "]";
         }
     }
 
@@ -447,8 +454,8 @@ public class UrlSearchComponent extends CustomComponent {
             SolrQuery solrQuery = new SolrQuery();
             solrQuery.setQuery(myQuery.getQuery());
             try {
-                Integer.parseInt(myQuery.getHttpResponseCode());
-                solrQuery.setFilterQueries("httpResponseCode:" + myQuery.getHttpResponseCode());
+                Integer.parseInt(myQuery.getHttpStatus());
+                solrQuery.setFilterQueries("httpStatus:" + myQuery.getHttpStatus());
             } catch (NumberFormatException e) {
             }
             solrQuery.setStart(0);
@@ -480,8 +487,8 @@ public class UrlSearchComponent extends CustomComponent {
             SolrQuery solrQuery = new SolrQuery();
             solrQuery.setQuery(myQuery.getQuery());
             try {
-                Integer.parseInt(myQuery.getHttpResponseCode());
-                solrQuery.setFilterQueries("httpResponseCode:" + myQuery.getHttpResponseCode());
+                Integer.parseInt(myQuery.getHttpStatus());
+                solrQuery.setFilterQueries("httpStatus:" + myQuery.getHttpStatus());
             } catch (NumberFormatException e) {
             }
             // solrQuery.setFacet(true);

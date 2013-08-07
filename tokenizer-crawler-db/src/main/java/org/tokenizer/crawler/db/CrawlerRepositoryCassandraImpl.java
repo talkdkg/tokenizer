@@ -102,7 +102,7 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
      * This is classic table key:=URL and columns:= all the response headers except webpage content
      * Additional indexes will be created
      * If we make it "wide-row" per host... we still need additional indexes; however, our first additional index will
-     * be <Host, Url> (for only sitemaps URL)
+     * be <Host, Url> (for only sitemaps URL)...
      * Right now simplest solution... later can be refactored
      * see TDE-20
      * 
@@ -650,6 +650,8 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
         //@formatter:on
 
         LOG.debug("urlRecord persisted: {}", urlRecord);
+
+        submitToSolr(urlRecord);
 
     }
 
@@ -1369,12 +1371,13 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
     }
 
     private void submitToSolr(final UrlRecord urlRecord) {
+        LOG.debug("adding to solr: {}", urlRecord);
         SolrServer solrServer = SolrUtils.getSolrServer();
         SolrInputDocument doc = new SolrInputDocument();
-        // doc.addField("id", MD5.MD5(urlRecord.getBaseUrl()));
-        doc.addField("id", urlRecord.getBaseUrl());
+        doc.addField("id", MD5.MD5(urlRecord.getBaseUrl()));
+        // doc.addField("id", urlRecord.getBaseUrl());
         doc.addField("host", urlRecord.getBaseHost());
-        // doc.addField("url", urlRecord.getBaseUrl());
+        doc.addField("url", urlRecord.getBaseUrl());
         doc.addField("httpStatus", urlRecord.getHttpStatus());
         try {
             solrServer.add(doc);
@@ -1383,7 +1386,11 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
         } catch (IOException e) {
             LOG.error("", e);
         }
+        // try {
         // solrServer.commit();
+        // } catch (SolrServerException | IOException e) {
+        // e.printStackTrace();
+        // }
     }
 
     private void submitToSolr(final MessageRecord messageRecord) {

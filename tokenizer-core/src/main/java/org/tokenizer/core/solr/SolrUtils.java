@@ -31,7 +31,7 @@ public class SolrUtils {
 
     private static final Logger LOG = LoggerFactory.getLogger(SolrUtils.class);
     private static final String SOLR_URL_BASE = TokenizerConfig.getProperties().getProperty("solr.url.base",
-            "http://localhost:8080/solr");
+            "http://localhost:28080/solr");
 
     private static SolrServer solrServer = null;
     private static SolrServer solrServerMessages = null;
