@@ -1,2 +1,7 @@
 This is simplest sample for udating table cell (Vadin 7.0.1, Cometd):
 http://code.google.com/a/eclipselabs.org/p/vaadin-push-example/
+
+
+Vaadin 7.1, "push", and Shiro:
+http://mikepilone.blogspot.ca/
+https://gist.github.com/mpilone/

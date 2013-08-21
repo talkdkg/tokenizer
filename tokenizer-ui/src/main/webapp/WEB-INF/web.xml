@@ -17,8 +17,10 @@
         <url-pattern>/*</url-pattern>
     </filter-mapping>
     <listener>
-        <listener-class>org.tokenizer.ui.v7.modules.MainGuiceServletInjector</listener-class>
+        <listener-class>org.tokenizer.ui.MyGuiceServletContextListener</listener-class>
     </listener>
+    
+<!--     
     <servlet>
         <servlet-name>V7 Application</servlet-name>
         <servlet-class>uk.co.q3c.v7.base.guice.BaseServlet</servlet-class>
@@ -38,7 +40,7 @@
         </init-param>
         <init-param>
             <param-name>legacyPropertyToString</param-name>
-            <!--  false, warning, true -->
+             false, warning, true
             <param-value>warning</param-value>
         </init-param>
         <async-supported>true</async-supported>
@@ -47,4 +49,6 @@
         <servlet-name>V7 Application</servlet-name>
         <url-pattern>/*</url-pattern>
     </servlet-mapping>
-</web-app>
+ -->
+ 
+ </web-app>

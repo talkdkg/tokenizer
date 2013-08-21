@@ -16,22 +16,22 @@ package org.tokenizer.ui.v7.i18n;
 import java.lang.annotation.Annotation;
 
 import uk.co.q3c.v7.i18n.I18NAnnotationReader;
-import uk.co.q3c.v7.i18n.I18NKeys;
+import uk.co.q3c.v7.i18n.I18NKey;
 
 public class DemoI18Nreader implements I18NAnnotationReader {
 
     @Override
-    public I18NKeys<?> caption(Annotation annotation) {
+    public I18NKey<?> caption(Annotation annotation) {
         return ((DemoI18N) annotation).caption();
     }
 
     @Override
-    public I18NKeys<?> description(Annotation annotation) {
+    public I18NKey<?> description(Annotation annotation) {
         return ((DemoI18N) annotation).description();
     }
 
     @Override
-    public I18NKeys<?> value(Annotation annotation) {
+    public I18NKey<?> value(Annotation annotation) {
         return ((DemoI18N) annotation).value();
     }
 }
