@@ -15,9 +15,14 @@ package org.tokenizer.ui.v7.modules;
 
 import javax.inject.Inject;
 
+import org.xaloon.core.api.security.external.AuthenticationFacade;
+import org.xaloon.core.jpa.user.JpaUserDao;
+
 import uk.co.q3c.v7.base.navigate.V7Navigator;
 import uk.co.q3c.v7.base.ui.ScopedUI;
 
+import com.google.inject.Injector;
+import com.google.inject.persist.PersistService;
 import com.vaadin.annotations.Push;
 import com.vaadin.annotations.Theme;
 import com.vaadin.data.util.converter.ConverterFactory;
@@ -36,6 +41,10 @@ public class DemoUI extends ScopedUI implements Broadcaster.BroadcastListener {
      */
     private static final long serialVersionUID = 1L;
     private VerticalLayout layout;
+
+    
+    //@Inject
+    //private AuthenticationFacade authenticationFacade;
 
     @Inject
     protected DemoUI(final V7Navigator navigator, final ErrorHandler errorHandler,

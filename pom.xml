@@ -297,11 +297,11 @@
                 <artifactId>orientdb-object</artifactId>
                 <version>${orientdb.version}</version>
             </dependency>
-        <dependency>
-            <groupId>com.thoughtworks.xstream</groupId>
-            <artifactId>xstream</artifactId>
-<version>${xstream.version}</version>
-        </dependency>
+            <dependency>
+                <groupId>com.thoughtworks.xstream</groupId>
+                <artifactId>xstream</artifactId>
+                <version>${xstream.version}</version>
+            </dependency>
             <dependency>
                 <groupId>commons-beanutils</groupId>
                 <artifactId>commons-beanutils</artifactId>
@@ -487,11 +487,11 @@
                 <artifactId>zookeeper</artifactId>
                 <version>${version.zookeeper}</version>
             </dependency>
-        <dependency>
-            <groupId>org.aspectj</groupId>
-            <artifactId>aspectjweaver</artifactId>
-            <version>${aspectjweaver.version}</version>
-        </dependency>
+            <dependency>
+                <groupId>org.aspectj</groupId>
+                <artifactId>aspectjweaver</artifactId>
+                <version>${aspectjweaver.version}</version>
+            </dependency>
             <dependency>
                 <groupId>org.ccil.cowan.tagsoup</groupId>
                 <artifactId>tagsoup</artifactId>
@@ -581,6 +581,16 @@
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>tokenizer-core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>tokenizer-core-jpa</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>tokenizer-core-api</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -700,7 +710,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.0</version>
+                <version>3.1</version>
                 <configuration>
                     <source>1.7</source>
                     <target>1.7</target>

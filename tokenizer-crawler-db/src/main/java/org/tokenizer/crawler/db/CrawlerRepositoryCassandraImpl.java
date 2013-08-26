@@ -588,16 +588,14 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
         }
     }
 
+    // URL Records:
     @Override
-    public UrlRecord loadUrlRecord(final String url) throws ConnectionException {
+    public UrlRecord retrieveUrlRecord(final String url) throws ConnectionException {
         OperationResult<ColumnList<String>> result = keyspace.prepareQuery(CF_URL_RECORDS).getKey(url).execute();
-        if (result.getResult().isEmpty()) {
-            return null;
-        }
-        else {
-            return toUrlRecord(url, result.getResult());
-        }
+        ColumnList<String> columns = result.getResult();
+        return toUrlRecord(url, columns);
     }
+
 
     @Override
     public void delete(final UrlRecord urlRecord) throws ConnectionException {
@@ -1653,13 +1651,6 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
         }
     }
 
-    // URL Records:
-    @Override
-    public UrlRecord getUrlRecord(final String key) throws ConnectionException {
-        OperationResult<ColumnList<String>> result = keyspace.prepareQuery(CF_URL_RECORDS).getKey(key).execute();
-        ColumnList<String> columns = result.getResult();
-        return toUrlRecord(key, columns);
-    }
 
     // CF_URL_SITEMAP_IDX
     @Override

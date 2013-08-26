@@ -262,7 +262,7 @@ public class UrlSearchComponent extends CustomComponent {
         WebpageRecord webpage = null;
         String html = null;
         try {
-            UrlRecord urlRecord = repository.getUrlRecord(currentBean.url);
+            UrlRecord urlRecord = repository.retrieveUrlRecord(currentBean.url);
             if (urlRecord.getWebpageDigest() == null || urlRecord.getWebpageDigest() == DefaultValues.EMPTY_ARRAY) {
                 return component;
             }

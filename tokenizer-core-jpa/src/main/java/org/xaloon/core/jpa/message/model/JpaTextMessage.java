@@ -34,7 +34,7 @@ import org.xaloon.core.jpa.classifier.model.JpaClassifierItem;
 @Entity
 @Table(name = "XAL_TEXT_MESSAGE")
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-@DiscriminatorColumn(name = "MESSAGE_TYPE", discriminatorType = DiscriminatorType.STRING)
+//@DiscriminatorColumn(name = "MESSAGE_TYPE", discriminatorType = DiscriminatorType.STRING)
 public class JpaTextMessage extends JpaMessage implements TextMessage {
     private static final long serialVersionUID = 1L;
 

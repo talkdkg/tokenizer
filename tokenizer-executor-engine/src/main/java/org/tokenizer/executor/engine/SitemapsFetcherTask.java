@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.tokenizer.crawler.db.CrawlerRepository;
+import org.tokenizer.crawler.db.UrlRecord;
 import org.tokenizer.crawler.db.model.TimestampUrlIDX;
 import org.tokenizer.crawler.db.model.UrlSitemapIDX;
 import org.tokenizer.executor.model.api.WritableExecutorModel;
@@ -77,6 +78,7 @@ public class SitemapsFetcherTask extends AbstractTask<SitemapsFetcherTaskConfigu
             LOG.error("", e);
             return;
         }
+        LOG.debug("robotsUrl: {}", robotsUrl);
         BaseRobotRules rules = RobotUtils.getRobotRules(fetcher, parser, robotsUrl);
         List<String> sitemaps = rules.getSitemaps();
         for (String sitemapIndexUrl : sitemaps) {
@@ -149,15 +151,19 @@ public class SitemapsFetcherTask extends AbstractTask<SitemapsFetcherTaskConfigu
 
                     // if we don't have it in URL_RECORDS, then we don't have it (must not) in an index.
                     // Be careful: do not insert same URL into index twice!
-                    if (crawlerRepository.loadUrlRecord(baseUrl) == null) {
+                    if (crawlerRepository.retrieveUrlRecord(baseUrl) == null) {
+                        LOG.debug("urlRecord not found: {}", baseUrl);
                         TimestampUrlIDX timestampUrlIDX = new TimestampUrlIDX(baseUrl);
                         crawlerRepository.insert(timestampUrlIDX);
+                        UrlRecord urlRecord = new UrlRecord(baseUrl);
+                        crawlerRepository.insert(urlRecord);
                     }
 
                     UrlSitemapIDX urlSitemapIDX = new UrlSitemapIDX(baseUrl);
                     crawlerRepository.insertIfNotExists(urlSitemapIDX);
 
                     LOG.debug("urlSitemapIDX ... created ... : {}", urlSitemapIDX);
+                    
                 }
                 metricsCache.increment(MetricsCache.SITEMAPS_PROCESSED);
             }

@@ -250,3 +250,26 @@ public class TweetCollectorTask extends AbstractTask<TweetCollectorTaskConfigura
         super.shutdown();
     }
 }
+
+/*
+ * 
+ * SAMPLE CODE for MySQL etc.
+ * 
+ * import javax.persistence.EntityManager;
+ * 
+ * 
+ * private EntityManager manager;
+ * 
+ * EntityManagerFactory factory = Persistence.createEntityManagerFactory("persistenceUnit");
+ * manager = factory.createEntityManager();
+ * 
+ * StatusVO vo = new StatusVO(status);
+ * EntityTransaction tx = manager.getTransaction();
+ * tx.begin();
+ * try {
+ * manager.merge(vo);
+ * } catch (Exception e) {
+ * e.printStackTrace();
+ * }
+ * tx.commit();
+ */

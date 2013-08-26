@@ -126,7 +126,7 @@ public abstract class AbstractFetcherTask<T extends AbstractFetcherTaskConfigura
 
             if (!accept(timestampUrlIDX.getUrl())) {
                 crawlerRepository.delete(timestampUrlIDX);
-                UrlRecord urlRecord = crawlerRepository.getUrlRecord(timestampUrlIDX.getUrl());
+                UrlRecord urlRecord = crawlerRepository.retrieveUrlRecord(timestampUrlIDX.getUrl());
                 if (urlRecord != null) {
                     crawlerRepository.delete(urlRecord);
                 }
@@ -143,7 +143,7 @@ public abstract class AbstractFetcherTask<T extends AbstractFetcherTaskConfigura
 
             LOG.debug("Trying URL: {}", url);
 
-            UrlRecord urlRecord = crawlerRepository.getUrlRecord(url);
+            UrlRecord urlRecord = crawlerRepository.retrieveUrlRecord(url);
 
             if (urlRecord == null) {
                 urlRecord = new UrlRecord(url);
@@ -196,7 +196,7 @@ public abstract class AbstractFetcherTask<T extends AbstractFetcherTaskConfigura
                     continue;
                 }
 
-                if (crawlerRepository.loadUrlRecord(redirectedUrl) == null) {
+                if (crawlerRepository.retrieveUrlRecord(redirectedUrl) == null) {
                     TimestampUrlIDX o = new TimestampUrlIDX(redirectedUrl);
                     crawlerRepository.insert(timestampUrlIDX);
                     UrlRecord redirectedUrlRecord = new UrlRecord(redirectedUrl);
@@ -306,7 +306,7 @@ public abstract class AbstractFetcherTask<T extends AbstractFetcherTaskConfigura
     protected void refreshHome() throws ConnectionException, InterruptedException {
 
         String url = "http://" + taskConfiguration.getHost() + "/";
-        UrlRecord urlRecord = crawlerRepository.loadUrlRecord(url);
+        UrlRecord urlRecord = crawlerRepository.retrieveUrlRecord(url);
 
         if (urlRecord == null) {
             LOG.info("UrlRecord not found: {}", url);
@@ -375,7 +375,7 @@ public abstract class AbstractFetcherTask<T extends AbstractFetcherTaskConfigura
 
             if (!urlCache.containsKey(url) && robotRules.isAllowed(url)) {
 
-                UrlRecord urlRecord = crawlerRepository.loadUrlRecord(url);
+                UrlRecord urlRecord = crawlerRepository.retrieveUrlRecord(url);
 
                 if (urlRecord == null) {
                     TimestampUrlIDX timestampUrlIDX = new TimestampUrlIDX(url);

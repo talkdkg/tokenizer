@@ -49,8 +49,6 @@ public interface CrawlerRepository {
     List<UrlRecord> listUrlRecords(final String host, final int httpResponseCode, byte[] startRowkey, int count)
             throws ConnectionException;
 
-    UrlRecord loadUrlRecord(final String url) throws ConnectionException;
-
     int countUrlRecords() throws ConnectionException;
 
     int countUrlRecords(final String host, final int httpResponseCode) throws ConnectionException;
@@ -114,7 +112,7 @@ public interface CrawlerRepository {
     // /////////////////////////////////////////////////////////
 
     // URL Records
-    UrlRecord getUrlRecord(final String key) throws ConnectionException;
+    UrlRecord retrieveUrlRecord(final String url) throws ConnectionException;
 
     // CF_URL_SITEMAP_IDX
 
