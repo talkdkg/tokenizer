@@ -29,8 +29,11 @@ import org.tokenizer.util.zookeeper.ZooKeeperItf;
 
 import com.netflix.astyanax.connectionpool.exceptions.ConnectionException;
 
+import crawlercommons.fetcher.AbortedFetchException;
+import crawlercommons.fetcher.AbortedFetchReason;
 import crawlercommons.fetcher.BaseFetchException;
 import crawlercommons.fetcher.FetchedResult;
+import crawlercommons.fetcher.HttpFetchException;
 import crawlercommons.fetcher.http.BaseHttpFetcher;
 import crawlercommons.fetcher.http.UserAgent;
 import crawlercommons.robots.BaseRobotRules;
@@ -119,15 +122,19 @@ public class SitemapsFetcherTask extends AbstractTask<SitemapsFetcherTaskConfigu
                 LOG.debug("fetching sitemap: {}", sitemapUrl);
                 try {
                     result = fetcher.get(sitemapUrl);
-                } catch (BaseFetchException e) {
-                    // TODO: this is stupid... I am forced:
-                    if (e.getMessage().contains("Aborted due to INTERRUPTED")) {
+                } catch (HttpFetchException e) {
+                    LOG.error("HttpFetchException, Status: {}, Headers: {}", e.getHttpStatus(), e.getHttpHeaders());
+                } catch (AbortedFetchException e) {
+                    if (e.getAbortReason().equals(AbortedFetchReason.INTERRUPTED)) {
                         throw new InterruptedException();
                     }
                     else {
                         LOG.error("", e);
                         continue;
                     }
+                } catch (BaseFetchException e) {
+                    LOG.error("", e);
+                    continue;
                 }
                 content = result.getContent();
                 LOG.debug("contentType: {} \t URL: {}", result.getContentType(), result.getFetchedUrl());

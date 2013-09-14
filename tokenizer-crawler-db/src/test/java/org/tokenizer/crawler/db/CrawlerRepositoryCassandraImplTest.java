@@ -90,15 +90,6 @@ public class CrawlerRepositoryCassandraImplTest {
         }
     }
 
-    // @Test
-    public void webpageCounterTest() {
-        try {
-            repository.countWebpageRecords("www.amazon.com", 0);
-        } catch (ConnectionException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-    }
 
     public static void main(final String[] args) throws Exception {
         setup();

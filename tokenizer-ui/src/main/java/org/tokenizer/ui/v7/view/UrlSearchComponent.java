@@ -24,7 +24,9 @@ import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.beans.Field;
 import org.apache.solr.client.solrj.response.QueryResponse;
+import org.apache.tika.utils.CharsetUtils;
 import org.tokenizer.core.solr.SolrUtils;
+import org.tokenizer.core.util.HttpUtils;
 import org.tokenizer.core.util.MD5;
 import org.tokenizer.crawler.db.CrawlerRepository;
 import org.tokenizer.crawler.db.DefaultValues;
@@ -243,7 +245,8 @@ public class UrlSearchComponent extends CustomComponent {
         Panel htmlPanel = new Panel("HTML", htmlLabel);
         component.addTab(htmlPanel);
         sourceLabel = new Label();
-        sourceLabel.setContentMode(ContentMode.TEXT);
+        sourceLabel.setContentMode(ContentMode.PREFORMATTED);
+        
         Panel sourcePanel = new Panel("Source", sourceLabel);
         component.addTab(sourcePanel);
         // XML Snippets:
@@ -263,15 +266,22 @@ public class UrlSearchComponent extends CustomComponent {
         String html = null;
         try {
             UrlRecord urlRecord = repository.retrieveUrlRecord(currentBean.url);
-            if (urlRecord.getWebpageDigest() == null || urlRecord.getWebpageDigest() == DefaultValues.EMPTY_ARRAY) {
-                return component;
-            }
-            webpage = repository.getWebpageRecord(urlRecord.getWebpageDigest());
+            //if (urlRecord.getWebpageDigest() == null || urlRecord.getWebpageDigest() == DefaultValues.EMPTY_ARRAY) {
+            //    return component;
+            //}
+            webpage = repository.getWebpageRecord(urlRecord.getBaseUrl());
             if (webpage == null) {
                 return component;
             }
-            html = new String(webpage.getContent(), webpage.getCharset());
-            List<XmlRecord> xmlRecords = repository.listXmlRecords(webpage.getXmlLinks());
+
+            String charset = webpage.getCharset();
+            html = new String(webpage.getContent(), charset);
+            
+            LOG.debug("Charset: {}", charset);
+            
+            
+            // TODO: !!!
+            List<XmlRecord> xmlRecords = repository.listXmlRecords(new byte[0][0]);
             for (XmlRecord xmlRecord : xmlRecords) {
                 if (xmlRecord == null) {
                     continue;
@@ -297,7 +307,10 @@ public class UrlSearchComponent extends CustomComponent {
                 form.addComponent(text);
                 xmlLayout.addComponent(panel);
             }
-            List<MessageRecord> messageRecords = repository.listMessageRecords(webpage.getXmlLinks());
+            
+            // TODO: !!!
+            List<MessageRecord> messageRecords = repository.listMessageRecords(new byte[0][0]);
+            
             for (MessageRecord messageRecord : messageRecords) {
                 if (messageRecord == null) {
                     continue;

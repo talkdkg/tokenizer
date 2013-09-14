@@ -32,6 +32,7 @@ public class ClassicRobotTask extends AbstractFetcherTask<ClassicRobotTaskConfig
     public ClassicRobotTask(UUID uuid, String friendlyName, ZooKeeperItf zk,
             ClassicRobotTaskConfiguration taskConfiguration, CrawlerRepository crawlerRepository,
             WritableExecutorModel fetcherModel, HostLocker hostLocker) {
+        
         super(uuid, friendlyName, zk, taskConfiguration, crawlerRepository, fetcherModel, hostLocker);
 
         if (getTaskConfiguration().getUrlFilterConfig() == null) {

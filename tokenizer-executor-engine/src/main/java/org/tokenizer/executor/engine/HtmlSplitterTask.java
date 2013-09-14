@@ -72,15 +72,15 @@ public class HtmlSplitterTask extends AbstractTask<HtmlSplitterTaskConfiguration
                 Thread.sleep(60000);
                 continue;
             }
-            LOG.debug("processing URL: {}", webpageRecord.getUrl());
+            //LOG.debug("processing URL: {}", webpageRecord.getUrl());
             List<XmlRecord> xmlRecords = parse(webpageRecord);
             for (XmlRecord xmlRecord : xmlRecords) {
                 // LOG.warn("xmlRecord: {}", xmlRecord);
                 crawlerRepository.insertIfNotExist(xmlRecord);
                 metricsCache.increment(MetricsCache.XML_TOTAL_KEY);
-                webpageRecord.addXmlLink(xmlRecord.getDigest());
+                //webpageRecord.addXmlLink(xmlRecord.getDigest());
             }
-            webpageRecord.incrementSplitAttemptCounter();
+            //webpageRecord.incrementSplitAttemptCounter();
             crawlerRepository.updateSplitAttemptCounterAndLinks(webpageRecord);
             metricsCache.increment(MetricsCache.URL_TOTAL_KEY);
         }

@@ -24,8 +24,9 @@ import org.tokenizer.executor.model.api.TaskGeneralState;
 public abstract class AbstractTaskConfiguration implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    private String name;
-    private TaskGeneralState generalState = TaskGeneralState.START_REQUESTED;
+    
+    protected String name;
+    protected TaskGeneralState generalState = TaskGeneralState.START_REQUESTED;
 
     public String getName() {
         return name;

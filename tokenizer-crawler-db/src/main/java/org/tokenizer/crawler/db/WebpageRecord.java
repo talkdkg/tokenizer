@@ -14,117 +14,238 @@
 package org.tokenizer.crawler.db;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
 
+import org.apache.tika.metadata.Metadata;
+import org.apache.tika.utils.CharsetUtils;
 import org.tokenizer.core.util.HttpUtils;
-import org.tokenizer.core.util.MD5;
+
+import crawlercommons.fetcher.FetchedResult;
 
 public class WebpageRecord implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    private static final ArrayList<byte[]> EMPTY_ARRAYLIST = new ArrayList<byte[]>();
-    private byte[] digest = DefaultValues.EMPTY_ARRAY;
-    private String host = DefaultValues.EMPTY_STRING;
-    private String url = DefaultValues.EMPTY_STRING;
-    private byte[] hostInverted = DefaultValues.EMPTY_ARRAY;
-    private Date timestamp = DefaultValues.EMPTY_DATE;
-    private String charset = DefaultValues.EMPTY_STRING;
-    private byte[] content = DefaultValues.EMPTY_ARRAY;
-    private int splitAttemptCounter = 0;
-    private ArrayList<byte[]> xmlLinks = EMPTY_ARRAYLIST;
 
-    public ArrayList<byte[]> getXmlLinks() {
-        return xmlLinks;
+    // 'vertical' index, defined by 'baseUrl' value:
+    private final String host;
+
+    // fields from crawlercommons.fetcher.FetchedResult, except not-used Payload:
+    // primary key:
+    private final String baseUrl;
+
+    private final String fetchedUrl;
+    private final long fetchTime;
+    private final byte[] content;
+    private final String contentType;
+    private final int responseRate;
+    private final Metadata headers;
+    private final String newBaseUrl;
+    private final int numRedirects;
+    // should be IP address:
+    private final String hostAddress;
+    private final int httpStatus;
+    private final String reasonPhrase;
+
+    // Indexes for internal processing:
+    private int extractOutlinksAttemptCounter;
+
+    public WebpageRecord(final FetchedResult fetchedResult) {
+        //@formatter:off
+        this(
+                HttpUtils.getHost(fetchedResult.getBaseUrl()), 
+                fetchedResult.getBaseUrl(), 
+                fetchedResult.getFetchedUrl(), 
+                fetchedResult.getFetchTime(),
+                fetchedResult.getContent(),
+                fetchedResult.getContentType(), 
+                fetchedResult.getResponseRate(), 
+                fetchedResult.getHeaders(), 
+                fetchedResult.getNewBaseUrl(), 
+                fetchedResult.getNumRedirects(), 
+                fetchedResult.getHostAddress(), 
+                fetchedResult.getHttpStatus(), 
+                fetchedResult.getReasonPhrase(),
+                0);
+        //@formatter:on
     }
 
-    public void setXmlLinks(final ArrayList<byte[]> xmlLinks) {
-        if (xmlLinks != null) {
-            this.xmlLinks = xmlLinks;
+    // @formatter:off
+    public WebpageRecord(
+            final String host, 
+            final String baseUrl, 
+            final String fetchedUrl,
+            final long fetchTime, 
+            final byte[] content, 
+            final String contentType, 
+            final int responseRate,
+            final Metadata headers, 
+            final String newBaseUrl, 
+            final int numRedirects, 
+            final String hostAddress,
+            final int httpStatus, 
+            final String reasonPhrase,
+            final int extractOutlinksAttemptCounter) {
+        // @formatter:on
+
+        if (host != null) {
+            this.host = host;
         }
-    }
-
-    public void addXmlLink(final byte[] xmlLink) {
-        xmlLinks.add(xmlLink);
-    }
-
-    public WebpageRecord(final String url, final Date timestamp, final String charset, final byte[] content,
-            final ArrayList<byte[]> xmlLinks) {
-        this.digest = MD5.digest(content);
-        this.url = url;
-        this.host = HttpUtils.getHost(url);
-        this.hostInverted = HttpUtils.getHostInverted(host);
-        this.timestamp = timestamp;
-        this.charset = charset;
-        this.content = content;
-        if (xmlLinks != null) {
-            this.xmlLinks = xmlLinks;
+        else {
+            this.host = DefaultValues.EMPTY_STRING;
         }
-    }
 
-    public WebpageRecord(final String url, final long timestamp, final String charset, final byte[] content,
-            final ArrayList<byte[]> xmlLinks) {
-        this(url, new Date(timestamp), charset, content, xmlLinks);
-    }
-
-    public WebpageRecord(final byte[] digest, final String url, final byte[] hostInverted_splitAttemptCounter,
-            final Date timestamp, final String charset, final byte[] content, final ArrayList<byte[]> xmlLinks) {
-        this.digest = digest;
-        this.url = url;
-        byte[] splitAttemptCounterBytes = Arrays.copyOfRange(hostInverted_splitAttemptCounter,
-                hostInverted_splitAttemptCounter.length - 4, hostInverted_splitAttemptCounter.length);
-        this.splitAttemptCounter = HttpUtils.bytesToInt(splitAttemptCounterBytes);
-        this.host = HttpUtils.getHost(url);
-        this.hostInverted = HttpUtils.getHostInverted(host);
-        this.timestamp = timestamp;
-        this.charset = charset;
-        this.content = content;
-        if (xmlLinks != null) {
-            this.xmlLinks = xmlLinks;
+        if (baseUrl != null) {
+            this.baseUrl = baseUrl;
         }
-    }
+        else {
+            this.baseUrl = DefaultValues.EMPTY_STRING;
+        }
 
-    public String getUrl() {
-        return url;
+        if (fetchedUrl != null) {
+            this.fetchedUrl = fetchedUrl;
+        }
+        else {
+            this.fetchedUrl = DefaultValues.EMPTY_STRING;
+        }
+
+        this.fetchTime = fetchTime;
+
+        if (content != null) {
+            this.content = content;
+        }
+        else {
+            this.content = DefaultValues.EMPTY_ARRAY;
+        }
+
+        if (contentType != null) {
+            this.contentType = contentType;
+        }
+        else {
+            this.contentType = DefaultValues.EMPTY_STRING;
+        }
+
+        this.responseRate = responseRate;
+
+        if (headers != null) {
+            this.headers = headers;
+        }
+        else {
+            this.headers = DefaultValues.EMPTY_METADATA;
+        }
+
+        if (newBaseUrl != null) {
+            this.newBaseUrl = newBaseUrl;
+        }
+        else {
+            this.newBaseUrl = DefaultValues.EMPTY_STRING;
+        }
+
+        this.numRedirects = numRedirects;
+
+        if (hostAddress != null) {
+            this.hostAddress = hostAddress;
+        }
+        else {
+            this.hostAddress = DefaultValues.EMPTY_STRING;
+        }
+
+        this.httpStatus = httpStatus;
+
+        if (reasonPhrase != null) {
+            this.reasonPhrase = reasonPhrase;
+        }
+        else {
+            this.reasonPhrase = DefaultValues.EMPTY_STRING;
+        }
+
+        this.extractOutlinksAttemptCounter = extractOutlinksAttemptCounter;
+        
     }
 
     public String getHost() {
         return host;
     }
 
-    public byte[] getHostInverted() {
-        return hostInverted;
+    public String getBaseUrl() {
+        return baseUrl;
     }
 
-    public Date getTimestamp() {
-        return timestamp;
+    public String getFetchedUrl() {
+        return fetchedUrl;
     }
 
-    public String getCharset() {
-        return charset;
-    }
-
-    public int getSplitAttemptCounter() {
-        return splitAttemptCounter;
-    }
-
-    public void incrementSplitAttemptCounter() {
-        this.splitAttemptCounter++;
-    }
-
-    public byte[] getDigest() {
-        return digest;
+    public long getFetchTime() {
+        return fetchTime;
     }
 
     public byte[] getContent() {
         return content;
     }
 
-    @Override
-    public String toString() {
-        return "WebpageRecord [digest=" + Arrays.toString(digest) + ", url=" + url + ", host=" + host
-                + ", hostInverted=" + Arrays.toString(hostInverted) + ", timestamp=" + timestamp + ", charset="
-                + charset + ", splitAttemptCounter=" + splitAttemptCounter + "]";
+    public String getContentType() {
+        return contentType;
     }
+
+    public int getResponseRate() {
+        return responseRate;
+    }
+
+    public Metadata getHeaders() {
+        return headers;
+    }
+
+    public String getNewBaseUrl() {
+        return newBaseUrl;
+    }
+
+    public int getNumRedirects() {
+        return numRedirects;
+    }
+
+    public String getHostAddress() {
+        return hostAddress;
+    }
+
+    public int getHttpStatus() {
+        return httpStatus;
+    }
+
+    public String getReasonPhrase() {
+        return reasonPhrase;
+    }
+
+    public FetchedResult toFetchedResult() {
+        // @formatter:off
+        return new FetchedResult(
+                baseUrl, 
+                fetchedUrl, 
+                fetchTime, 
+                headers, 
+                content, 
+                contentType, 
+                responseRate,
+                null,
+                newBaseUrl, 
+                numRedirects, 
+                hostAddress, 
+                httpStatus, 
+                reasonPhrase);
+     // @formatter:on
+    }
+
+    public String getCharset() {
+        return CharsetUtils.clean(HttpUtils.getCharsetFromContentType(getContentType()));
+    }
+
+    public int getExtractOutlinksAttemptCounter() {
+        return extractOutlinksAttemptCounter;
+    }
+
+    public void setExtractOutlinksAttemptCounter(int extractOutlinksAttemptCounter) {
+        this.extractOutlinksAttemptCounter = extractOutlinksAttemptCounter;
+    }
+
+    public void incrementExtractOutlinksAttemptCounter() {
+        this.extractOutlinksAttemptCounter++;
+    }
+
 }

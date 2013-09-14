@@ -131,7 +131,7 @@ public abstract class AbstractFetcherTask<T extends AbstractFetcherTaskConfigura
                     crawlerRepository.delete(urlRecord);
                 }
                 if (urlRecord != null) {
-                    crawlerRepository.deleteWebpageRecord(urlRecord.getWebpageDigest());
+                    crawlerRepository.deleteWebpageRecord(urlRecord.getBaseUrl());
                 }
                 continue;
             }
@@ -256,12 +256,11 @@ public abstract class AbstractFetcherTask<T extends AbstractFetcherTaskConfigura
             urlRecord.setNumRedirects(fetchedResult.getNumRedirects());
             urlRecord.setReasonPhrase(fetchedResult.getReasonPhrase());
 
-            String charset = CharsetUtils.clean(HttpUtils.getCharsetFromContentType(fetchedResult.getContentType()));
-            WebpageRecord webpageRecord = new WebpageRecord(urlRecord.getBaseUrl(), urlRecord.getFetchTime(), charset,
-                    fetchedResult.getContent(), null);
+            //String charset = CharsetUtils.clean(HttpUtils.getCharsetFromContentType(fetchedResult.getContentType()));
+            WebpageRecord webpageRecord = new WebpageRecord(fetchedResult);
             crawlerRepository.insertIfNotExists(webpageRecord);
 
-            urlRecord.setWebpageDigest(webpageRecord.getDigest());
+            //urlRecord.setWebpageDigest(webpageRecord.getDigest());
             crawlerRepository.update(urlRecord);
 
             // if all prev. were successful then... note that previously we did it before UrlRecord updates...

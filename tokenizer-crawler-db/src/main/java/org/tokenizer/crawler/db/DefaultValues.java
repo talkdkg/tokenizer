@@ -25,4 +25,6 @@ public interface DefaultValues {
     public static final String UTF8_CHARSET = "UTF-8";
     public static final String ASCII_CHARSET = "US-ASCII";
     public static final Metadata EMPTY_METADATA = new Metadata();
+    public static final int ZERO = 0;
+
 }

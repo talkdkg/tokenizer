@@ -35,8 +35,6 @@ public interface CrawlerRepository {
 
     void delete(final UrlRecord urlRecord) throws ConnectionException;
 
-    void deleteWebpageRecord(final byte[] webpageDigest) throws ConnectionException;
-
     void filter(final String host, final URLFilter urlFilter);
 
     List<UrlRecord> listUrlRecords(String host, int httpResponseCode, int maxResults) throws ConnectionException;
@@ -52,17 +50,6 @@ public interface CrawlerRepository {
     int countUrlRecords() throws ConnectionException;
 
     int countUrlRecords(final String host, final int httpResponseCode) throws ConnectionException;
-
-    void insertIfNotExists(WebpageRecord webpageRecord) throws ConnectionException;
-
-    void updateSplitAttemptCounterAndLinks(final WebpageRecord webpageRecord) throws ConnectionException;
-
-    WebpageRecord getWebpageRecord(byte[] digest) throws ConnectionException;
-
-    List<WebpageRecord> listWebpageRecords(final String host, final int splitAttemptCounter, final int maxResults)
-            throws ConnectionException;
-
-    int countWebpageRecords(final String host, final int splitAttemptCounter) throws ConnectionException;
 
     void insertIfNotExist(final XmlRecord xmlRecord) throws ConnectionException;
 
@@ -134,5 +121,22 @@ public interface CrawlerRepository {
     TimestampUrlIDX load(TimestampUrlIDX timestampUrlIDX) throws ConnectionException;
 
     List<TimestampUrlIDX> loadTimestampUrlIDX(String host) throws ConnectionException;
+
+    void incrementExtractOutlinksAttemptCounter(final WebpageRecord webpageRecord) throws ConnectionException;
+
+    // WebPage Records:
+    void deleteWebpageRecord(final String baseUrl) throws ConnectionException;
+
+    List<WebpageRecord> listWebpageRecordsByExtractOutlinksAttemptCounter(final String host,
+            final int extractOutlinksAttemptCounter, final int maxResults) throws ConnectionException;
+
+    void insertIfNotExists(WebpageRecord webpageRecord) throws ConnectionException;
+
+    void updateSplitAttemptCounterAndLinks(final WebpageRecord webpageRecord) throws ConnectionException;
+
+    WebpageRecord getWebpageRecord(String baseUrl) throws ConnectionException;
+
+    List<WebpageRecord> listWebpageRecords(final String host, final int splitAttemptCounter, final int maxResults)
+            throws ConnectionException;
 
 }

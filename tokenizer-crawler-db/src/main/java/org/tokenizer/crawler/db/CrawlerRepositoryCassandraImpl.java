@@ -31,6 +31,7 @@ import org.apache.solr.common.SolrInputDocument;
 import org.apache.tika.metadata.Metadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tokenizer.core.StringPool;
 import org.tokenizer.core.solr.SolrUtils;
 import org.tokenizer.core.util.HttpUtils;
 import org.tokenizer.core.util.JavaSerializationUtils;
@@ -146,8 +147,8 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
             UrlSitemapIDX.class);
 
     private final static String WEBPAGE_RECORDS = "webpage_records";
-    protected final ColumnFamily<byte[], String> CF_WEBPAGE_RECORDS = ColumnFamily.newColumnFamily(WEBPAGE_RECORDS,
-            BytesArraySerializer.get(), StringSerializer.get());
+    protected final ColumnFamily<String, String> CF_WEBPAGE_RECORDS = ColumnFamily.newColumnFamily(WEBPAGE_RECORDS,
+            StringSerializer.get(), StringSerializer.get());
 
     private final static String XML_RECORDS = "xml_records";
     protected final ColumnFamily<byte[], String> CF_XML_RECORDS = ColumnFamily.newColumnFamily(XML_RECORDS,
@@ -314,14 +315,16 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
 
                             .build());
         }
+
+        // @formatter:off
         if (def.getColumnFamily(WEBPAGE_RECORDS) == null) {
             keyspace.createColumnFamily(
                     CF_WEBPAGE_RECORDS,
                     ImmutableMap
                             .<String, Object> builder()
                             .put("default_validation_class", "BytesType")
-                            .put("key_validation_class", "BytesType")
-                            .put("Caching", "ALL")
+                            .put("key_validation_class", "AsciiType")
+                            .put("Caching", "NONE")
                             .put("compression_options",
                                     ImmutableMap.<String, Object> builder()
                                             .put("sstable_compression", "SnappyCompressor")
@@ -329,27 +332,53 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
                             .put("column_metadata",
                                     ImmutableMap
                                             .<String, Object> builder()
-                                            .put("url",
+                                            .put("host",
+                                                    ImmutableMap.<String, Object> builder()
+                                                            .put("validation_class", "AsciiType")
+                                                            .put("index_name", "HOST")
+                                                            .put("index_type", "KEYS").build()).build())
+                                            .put("fetchedUrl",
                                                     ImmutableMap.<String, Object> builder()
                                                             .put("validation_class", "AsciiType").build())
-                                            .put("hostInverted_splitAttemptCounter",
+                                            .put("fetchTime",
                                                     ImmutableMap.<String, Object> builder()
-                                                            .put("validation_class", "BytesType")
-                                                            .put("index_type", "KEYS").build())
-                                            .put("timestamp",
-                                                    ImmutableMap.<String, Object> builder()
-                                                            .put("validation_class", "DateType").build())
-                                            .put("charset",
-                                                    ImmutableMap.<String, Object> builder()
-                                                            .put("validation_class", "AsciiType").build())
+                                                            .put("validation_class", "LongType").build())
                                             .put("content",
                                                     ImmutableMap.<String, Object> builder()
                                                             .put("validation_class", "BytesType").build())
-                                            .put("xmlLinks",
+                                            .put("contentType",
                                                     ImmutableMap.<String, Object> builder()
-                                                            .put("validation_class", "BytesType").build()).build())
+                                                            .put("validation_class", "AsciiType").build())
+                                            .put("responseRate",
+                                                    ImmutableMap.<String, Object> builder()
+                                                            .put("validation_class", "IntegerType").build())
+                                            .put("headers",
+                                                    ImmutableMap.<String, Object> builder()
+                                                            .put("validation_class", "BytesType").build())
+                                            .put("newBaseUrl",
+                                                    ImmutableMap.<String, Object> builder()
+                                                            .put("validation_class", "AsciiType").build())
+                                            .put("numRedirects",
+                                                    ImmutableMap.<String, Object> builder()
+                                                            .put("validation_class", "IntegerType").build())
+                                            .put("hostAddress",
+                                                    ImmutableMap.<String, Object> builder()
+                                                            .put("validation_class", "AsciiType").build())
+                                            .put("httpStatus",
+                                                    ImmutableMap.<String, Object> builder()
+                                                            .put("validation_class", "IntegerType").build())
+                                            .put("reasonPhrase",
+                                                    ImmutableMap.<String, Object> builder()
+                                                            .put("validation_class", "AsciiType").build())
+                                            .put("host_extractOutlinksAttemptCounter",
+                                                    ImmutableMap.<String, Object> builder()
+                                                            .put("validation_class", "AsciiType")
+                                                            .put("index_name", "HOST_EXTRACT_OUTLINKS_ATTEMPT_COUNTER")
+                                                            .put("index_type", "KEYS").build())
                             .build());
         }
+        // @formatter:on
+ 
         // ////////////
         // XML Records
         // ////////////
@@ -596,7 +625,6 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
         return toUrlRecord(url, columns);
     }
 
-
     @Override
     public void delete(final UrlRecord urlRecord) throws ConnectionException {
         LOG.warn("deleting record {}", urlRecord);
@@ -611,13 +639,11 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
     }
 
     @Override
-    public void deleteWebpageRecord(final byte[] webpageDigest) throws ConnectionException {
+    public void deleteWebpageRecord(final String baseUrl) throws ConnectionException {
         MutationBatch m = keyspace.prepareMutationBatch();
-        if (webpageDigest != null && webpageDigest.length > 0) {
-            m = keyspace.prepareMutationBatch();
-            m.withRow(CF_WEBPAGE_RECORDS, webpageDigest).delete();
-            m.execute();
-        }
+        m = keyspace.prepareMutationBatch();
+        m.withRow(CF_WEBPAGE_RECORDS, baseUrl).delete();
+        m.execute();
     }
 
     @Override
@@ -805,7 +831,7 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
     public void insertIfNotExists(final WebpageRecord webpageRecord) throws ConnectionException {
         try {
             OperationResult<ColumnList<String>> result = keyspace.prepareQuery(CF_WEBPAGE_RECORDS)
-                    .getKey(webpageRecord.getDigest()).execute();
+                    .getKey(webpageRecord.getBaseUrl()).execute();
             if (result.getResult().isEmpty()) {
                 insert(webpageRecord);
             }
@@ -815,34 +841,50 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
 
     }
 
+    // @formatter:off
     protected void insert(final WebpageRecord webpageRecord) throws ConnectionException {
         MutationBatch m = keyspace.prepareMutationBatch();
-        m.withRow(CF_WEBPAGE_RECORDS, webpageRecord.getDigest())
-                .putColumn("url", webpageRecord.getUrl(), null)
-                .putColumn(
-                        "hostInverted_splitAttemptCounter",
-                        ArrayUtils.addAll(webpageRecord.getHostInverted(),
-                                HttpUtils.intToBytes(webpageRecord.getSplitAttemptCounter())), null)
-                .putColumn("timestamp", webpageRecord.getTimestamp(), null)
-                .putColumn("charset", webpageRecord.getCharset(), null)
+        m.withRow(CF_WEBPAGE_RECORDS, webpageRecord.getBaseUrl())
+                .putColumn("host", webpageRecord.getHost(), null)
+                .putColumn("fetchedUrl", webpageRecord.getFetchedUrl(), null)
+                .putColumn("fetchTime", webpageRecord.getFetchTime(), null)
                 .putColumn("content", webpageRecord.getContent(), null)
-                .putColumn("xmlLinks", JavaSerializationUtils.serialize(webpageRecord.getXmlLinks()), null);
+                .putColumn("contentType", webpageRecord.getContentType(), null)
+                .putColumn("responseRate", webpageRecord.getResponseRate(), null)
+                .putColumn("headers", JavaSerializationUtils.serialize(webpageRecord.getHeaders()), null)
+                .putColumn("newBaseUrl", webpageRecord.getNewBaseUrl(), null)
+                .putColumn("numRedirects", webpageRecord.getNumRedirects(), null)
+                .putColumn("hostAddress", webpageRecord.getHostAddress(), null)
+                .putColumn("httpStatus", webpageRecord.getHttpStatus(), null)
+                .putColumn("reasonPhrase", webpageRecord.getReasonPhrase(), null)
+                .putColumn("host_extractOutlinksAttemptCounter", webpageRecord.getHost() + StringPool.SPACE + webpageRecord.getExtractOutlinksAttemptCounter(), null);
         m.execute();
         LOG.debug("webpageRecord inserted: {}", webpageRecord);
     }
+    // @formatter:on
 
     @Override
     public void updateSplitAttemptCounterAndLinks(final WebpageRecord webpageRecord) throws ConnectionException {
-        MutationBatch m = keyspace.prepareMutationBatch();
-        m.withRow(CF_WEBPAGE_RECORDS, webpageRecord.getDigest())
-                .putColumn(
-                        "hostInverted_splitAttemptCounter",
-                        ArrayUtils.addAll(webpageRecord.getHostInverted(),
-                                HttpUtils.intToBytes(webpageRecord.getSplitAttemptCounter())), null)
-                .putColumn("xmlLinks", JavaSerializationUtils.serialize(webpageRecord.getXmlLinks()), null);
-        m.execute();
+        // MutationBatch m = keyspace.prepareMutationBatch();
+        // m.withRow(CF_WEBPAGE_RECORDS, webpageRecord.getDigest())
+        // .putColumn(
+        // "hostInverted_splitAttemptCounter",
+        // ArrayUtils.addAll(webpageRecord.getHostInverted(),
+        // HttpUtils.intToBytes(webpageRecord.getSplitAttemptCounter())), null)
+        // .putColumn("xmlLinks", JavaSerializationUtils.serialize(webpageRecord.getXmlLinks()), null);
+        // m.execute();
     }
 
+    @Override
+    public void incrementExtractOutlinksAttemptCounter(final WebpageRecord webpageRecord) throws ConnectionException {
+        webpageRecord.incrementExtractOutlinksAttemptCounter();
+        String host_outlinkExtractCounter = webpageRecord.getHost() + " " + webpageRecord.getExtractOutlinksAttemptCounter();
+        MutationBatch m = keyspace.prepareMutationBatch();
+        m.withRow(CF_WEBPAGE_RECORDS, webpageRecord.getBaseUrl()).putColumn("host_outlinkExtractCounter",
+                host_outlinkExtractCounter, null);
+        m.execute();
+    }
+    
     @Override
     public void updateParseAttemptCounter(final XmlRecord xmlRecord) throws ConnectionException {
         MutationBatch m = keyspace.prepareMutationBatch();
@@ -855,35 +897,54 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
     }
 
     @Override
-    public WebpageRecord getWebpageRecord(final byte[] digest) throws ConnectionException {
-        OperationResult<ColumnList<String>> result = keyspace.prepareQuery(CF_WEBPAGE_RECORDS).getKey(digest).execute();
+    public WebpageRecord getWebpageRecord(final String baseUrl) throws ConnectionException {
+        OperationResult<ColumnList<String>> result = keyspace.prepareQuery(CF_WEBPAGE_RECORDS).getKey(baseUrl)
+                .execute();
         ColumnList<String> columns = result.getResult();
-        return toWebpageRecord(digest, columns);
+        return toWebpageRecord(baseUrl, columns);
     }
 
     @Override
+    @Deprecated
     public List<WebpageRecord> listWebpageRecords(final String host, final int splitAttemptCounter, final int maxResults)
             throws ConnectionException {
-        byte[] hostInverted = HttpUtils.getHostInverted(host);
-        byte[] hostInverted_splitAttemptCounter = ArrayUtils.addAll(hostInverted,
-                HttpUtils.intToBytes(splitAttemptCounter));
-        LOG.debug(Arrays.toString(hostInverted_splitAttemptCounter));
-        //@formatter:off
-        IndexQuery<byte[], String> query = keyspace
+         //@formatter:off
+        IndexQuery<String, String> query = keyspace
                 .prepareQuery(CF_WEBPAGE_RECORDS)
                 .setConsistencyLevel(ConsistencyLevel.CL_ONE)
                 .searchWithIndex()
                 .setRowLimit(maxResults)
                 .autoPaginateRows(false)
                 .addExpression()
-                .whereColumn("hostInverted_splitAttemptCounter")
+                .whereColumn("host")
                 .equals()
-                .value(hostInverted_splitAttemptCounter);
+                .value(host);
         //@formatter:on
-        OperationResult<Rows<byte[], String>> result = query.execute();
+        OperationResult<Rows<String, String>> result = query.execute();
         return toWebpageRecordList(result);
     }
 
+    @Override
+    public List<WebpageRecord> listWebpageRecordsByExtractOutlinksAttemptCounter(final String host, final int extractOutlinksAttemptCounter, final int maxResults)
+            throws ConnectionException {
+        
+         //@formatter:off
+        IndexQuery<String, String> query = keyspace
+                .prepareQuery(CF_WEBPAGE_RECORDS)
+                .setConsistencyLevel(ConsistencyLevel.CL_ONE)
+                .searchWithIndex()
+                .setRowLimit(maxResults)
+                .autoPaginateRows(false)
+                .addExpression()
+                .whereColumn("host_extractOutlinksAttemptCounter")
+                .equals()
+                .value(host + StringPool.SPACE + extractOutlinksAttemptCounter);
+        //@formatter:on
+        OperationResult<Rows<String, String>> result = query.execute();
+        return toWebpageRecordList(result);
+    }
+    
+    
     @Override
     public void insertIfNotExist(final XmlRecord xmlRecord) throws ConnectionException {
         OperationResult<ColumnList<String>> result = keyspace.prepareQuery(CF_XML_RECORDS)
@@ -1080,23 +1141,6 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
          */
     }
 
-    @Override
-    public int countWebpageRecords(final String host, final int splitAttemptCounter) throws ConnectionException {
-        LOG.trace("countWebpageRecords called... host: {}, splitAttemptCounter: {}", host, splitAttemptCounter);
-        double nanoStart = System.nanoTime();
-        OperationResult<Rows<byte[], String>> rows = keyspace.prepareQuery(CF_WEBPAGE_RECORDS).searchWithIndex()
-                .setRowLimit(10000).autoPaginateRows(true).addExpression().whereColumn("hostInverted").equals()
-                .value(HttpUtils.getHostInverted(host)).addExpression().whereColumn("splitAttemptCounter").equals()
-                .value(splitAttemptCounter).execute();
-        int counter = 0;
-        // for (Row<byte[], String> row : rows.getResult()) {
-        // counter++;
-        // }
-        counter = rows.getResult().size();
-        double timeTaken = (System.nanoTime() - nanoStart) / (1e9);
-        LOG.debug("Time taken to count " + counter + " Webpage records is " + timeTaken + " seconds.");
-        return counter;
-    }
 
     @Override
     public int countXmlRecords(final String host, final int parseAttemptCounter) throws ConnectionException {
@@ -1167,34 +1211,47 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
         return list;
     }
 
-    protected static WebpageRecord toWebpageRecord(final Row<byte[], String> row) {
-        byte[] digest = row.getKey();
+    protected static WebpageRecord toWebpageRecord(final Row<String, String> row) {
+        String baseUrl = row.getKey();
         ColumnList<String> columns = row.getColumns();
-        return toWebpageRecord(digest, columns);
+        return toWebpageRecord(baseUrl, columns);
     }
 
-    protected static WebpageRecord toWebpageRecord(final byte[] digest, final ColumnList<String> columns) {
+    protected static WebpageRecord toWebpageRecord(String baseUrl, final ColumnList<String> columns) {
+
         if (columns.isEmpty()) {
             return null;
         }
-        String url = columns.getStringValue("url", null);
-        byte[] hostInverted_splitAttemptCounter = columns.getByteArrayValue("hostInverted_splitAttemptCounter", null);
-        Date timestamp = columns.getDateValue("timestamp", null);
-        String charset = columns.getStringValue("charset", null);
-        byte[] content = columns.getByteArrayValue("content", null);
-        byte[] xmlLinksSerialized = columns.getByteArrayValue("xmlLinks", null);
-        ArrayList<byte[]> xmlLinks = (ArrayList<byte[]>) JavaSerializationUtils.deserialize(xmlLinksSerialized);
-        if (hostInverted_splitAttemptCounter == null || hostInverted_splitAttemptCounter.length < 5) {
-            LOG.error("Incorrect hostInverted_splitAttemptCounter with size less than 5; url: {}", url);
-            // trying to recover from previously non-indexed field:
-            return new WebpageRecord(url, timestamp, charset, content, xmlLinks);
-        }
-        return new WebpageRecord(digest, url, hostInverted_splitAttemptCounter, timestamp, charset, content, xmlLinks);
+
+        final String host = columns.getStringValue("host", null);
+        final String fetchedUrl = columns.getStringValue("fetchedUrl", null);
+        final long fetchTime = columns.getLongValue("fetchTime", 0L);
+        final byte[] content = columns.getByteArrayValue("content", null);
+        final String contentType = columns.getStringValue("contentType", null);
+        final int responseRate = columns.getIntegerValue("responseRate", 0);
+        final Metadata headers = (Metadata) JavaSerializationUtils.deserialize(columns.getByteArrayValue("headers",
+                null));
+        final String newBaseUrl = columns.getStringValue("newBaseUrl", null);
+        final int numRedirects = columns.getIntegerValue("numRedirects", 0);
+        final String hostAddress = columns.getStringValue("hostAddress", null);
+        final int httpStatus = columns.getIntegerValue("httpStatus", 0);
+        final String reasonPhrase = columns.getStringValue("reasonPhrase", null);
+
+        String host_extractOutlinksAttemptCounter = columns.getStringValue("host_extractOutlinksAttemptCounter", null);
+        
+        String extractOutlinksAttemptCounterString = host_extractOutlinksAttemptCounter.substring(host.length());
+        
+        int extractOutlinksAttemptCounter = Integer.parseInt(extractOutlinksAttemptCounterString);
+        
+        
+        return new WebpageRecord(host, baseUrl, fetchedUrl, fetchTime, content, contentType, responseRate, headers,
+                newBaseUrl, numRedirects, hostAddress, httpStatus, reasonPhrase, extractOutlinksAttemptCounter);
+
     }
 
-    private static List<WebpageRecord> toWebpageRecordList(final OperationResult<Rows<byte[], String>> result) {
+    private static List<WebpageRecord> toWebpageRecordList(final OperationResult<Rows<String, String>> result) {
         List<WebpageRecord> list = new ArrayList<WebpageRecord>();
-        for (Row<byte[], String> row : result.getResult()) {
+        for (Row<String, String> row : result.getResult()) {
             list.add(toWebpageRecord(row));
         }
         return list;
@@ -1273,10 +1330,10 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
                     .setRowLimit(100)
                     .setRepeatLastToken(true)
                     .withColumnSlice(columns)
-                    .executeWithCallback(new RowCallback<byte[], String>() {
+                    .executeWithCallback(new RowCallback<String, String>() {
                         @Override
-                        public void success(final Rows<byte[], String> rows) {
-                            for (Row<byte[], String> row : rows) {
+                        public void success(final Rows<String, String> rows) {
+                            for (Row<String, String> row : rows) {
                                 String url = row.getColumns().getStringValue("url",null);
                                 String host = HttpUtils.getHost(url);
                                 byte[] hostInverted = HttpUtils.getHostInverted(host);
@@ -1343,7 +1400,8 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
                                     LOG.debug("Filtering URL: {}", url);
                                     try {
                                         deleteUrlRecord(row.getKey());
-                                        deleteWebpageRecord(webpageDigest);
+                                        //deleteWebpageRecord(webpageDigest);
+                                        deleteWebpageRecord(url);
                                         counter.incrementAndGet();
                                         if (counter.get() % 1000 == 0) {
                                             LOG.warn("{}: {} URL records deleted...", host, counter.get());
@@ -1650,7 +1708,6 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
             insert(urlHeadRecord);
         }
     }
-
 
     // CF_URL_SITEMAP_IDX
     @Override
