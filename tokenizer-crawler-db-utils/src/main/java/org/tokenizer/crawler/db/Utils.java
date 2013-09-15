@@ -19,6 +19,8 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tokenizer.crawler.db.model.UrlRecord;
+import org.tokenizer.crawler.db.model.WebpageRecord;
 
 import com.netflix.astyanax.RowCallback;
 import com.netflix.astyanax.connectionpool.exceptions.ConnectionException;
@@ -118,10 +120,10 @@ public class Utils {
                             .getAllRows()
                             .setRowLimit(100)                           
                             .setRepeatLastToken(true)
-                             .executeWithCallback(new RowCallback<String, String>() {
+                             .executeWithCallback(new RowCallback<byte[], String>() {
                                 @Override
-                                public void success(final Rows<String, String> rows) {
-                                    for (Row<String, String> row : rows) {
+                                public void success(final Rows<byte[], String> rows) {
+                                    for (Row<byte[], String> row : rows) {
                                         ColumnList<String> columns = row.getColumns();
                                         WebpageRecord record = CrawlerRepositoryCassandraImpl.toWebpageRecord(row.getKey(), columns);         
                                         try {

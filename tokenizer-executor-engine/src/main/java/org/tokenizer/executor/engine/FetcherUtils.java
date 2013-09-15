@@ -14,7 +14,7 @@
 package org.tokenizer.executor.engine;
 
 import org.tokenizer.crawler.db.CrawlerRepository;
-import org.tokenizer.crawler.db.UrlRecord;
+import org.tokenizer.crawler.db.model.UrlRecord;
 
 import com.netflix.astyanax.connectionpool.exceptions.ConnectionException;
 

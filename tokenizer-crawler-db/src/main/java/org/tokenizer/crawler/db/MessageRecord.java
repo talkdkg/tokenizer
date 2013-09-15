@@ -19,6 +19,7 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.tokenizer.core.util.MD5;
+import org.tokenizer.crawler.db.model.UrlRecord;
 
 public class MessageRecord implements Serializable {
 

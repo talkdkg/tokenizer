@@ -22,6 +22,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tokenizer.crawler.db.model.UrlRecord;
+import org.tokenizer.crawler.db.model.WebpageRecord;
 
 import com.netflix.astyanax.connectionpool.exceptions.ConnectionException;
 import com.netflix.astyanax.test.TestKeyspace;

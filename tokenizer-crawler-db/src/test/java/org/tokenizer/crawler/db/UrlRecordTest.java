@@ -15,6 +15,7 @@ package org.tokenizer.crawler.db;
 
 import org.junit.After;
 import org.junit.Before;
+import org.tokenizer.crawler.db.model.UrlRecord;
 
 /**
  * The class <code>UrlRecordTest</code> contains tests for the class <code>{@link UrlRecord}</code>.

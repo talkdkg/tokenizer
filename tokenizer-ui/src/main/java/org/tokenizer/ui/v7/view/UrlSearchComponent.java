@@ -31,9 +31,9 @@ import org.tokenizer.core.util.MD5;
 import org.tokenizer.crawler.db.CrawlerRepository;
 import org.tokenizer.crawler.db.DefaultValues;
 import org.tokenizer.crawler.db.MessageRecord;
-import org.tokenizer.crawler.db.UrlRecord;
-import org.tokenizer.crawler.db.WebpageRecord;
 import org.tokenizer.crawler.db.XmlRecord;
+import org.tokenizer.crawler.db.model.UrlRecord;
+import org.tokenizer.crawler.db.model.WebpageRecord;
 import org.tokenizer.executor.model.api.WritableExecutorModel;
 import org.vaadin.addons.lazyquerycontainer.LazyQueryContainer;
 import org.vaadin.addons.lazyquerycontainer.Query;
@@ -269,7 +269,7 @@ public class UrlSearchComponent extends CustomComponent {
             //if (urlRecord.getWebpageDigest() == null || urlRecord.getWebpageDigest() == DefaultValues.EMPTY_ARRAY) {
             //    return component;
             //}
-            webpage = repository.getWebpageRecord(urlRecord.getBaseUrl());
+            webpage = repository.retrieveWebpageRecord(urlRecord.getWebpageDigest());
             if (webpage == null) {
                 return component;
             }

@@ -22,8 +22,10 @@ import org.tokenizer.crawler.db.model.FetchedResultRecord;
 import org.tokenizer.crawler.db.model.HostRecord;
 import org.tokenizer.crawler.db.model.TimestampUrlIDX;
 import org.tokenizer.crawler.db.model.UrlHeadRecord;
+import org.tokenizer.crawler.db.model.UrlRecord;
 import org.tokenizer.crawler.db.model.UrlSitemapIDX;
 import org.tokenizer.crawler.db.model.WeblogRecord;
+import org.tokenizer.crawler.db.model.WebpageRecord;
 
 import com.netflix.astyanax.connectionpool.exceptions.ConnectionException;
 
@@ -122,10 +124,15 @@ public interface CrawlerRepository {
 
     List<TimestampUrlIDX> loadTimestampUrlIDX(String host) throws ConnectionException;
 
+    // ////////////////
+    // WebpageRecord //
+    // ////////////////
+
+    WebpageRecord retrieveWebpageRecord(final byte[] digest) throws ConnectionException;
+
     void incrementExtractOutlinksAttemptCounter(final WebpageRecord webpageRecord) throws ConnectionException;
 
-    // WebPage Records:
-    void deleteWebpageRecord(final String baseUrl) throws ConnectionException;
+    void deleteWebpageRecord(final byte[] digest) throws ConnectionException;
 
     List<WebpageRecord> listWebpageRecordsByExtractOutlinksAttemptCounter(final String host,
             final int extractOutlinksAttemptCounter, final int maxResults) throws ConnectionException;
@@ -134,7 +141,6 @@ public interface CrawlerRepository {
 
     void updateSplitAttemptCounterAndLinks(final WebpageRecord webpageRecord) throws ConnectionException;
 
-    WebpageRecord getWebpageRecord(String baseUrl) throws ConnectionException;
 
     List<WebpageRecord> listWebpageRecords(final String host, final int splitAttemptCounter, final int maxResults)
             throws ConnectionException;

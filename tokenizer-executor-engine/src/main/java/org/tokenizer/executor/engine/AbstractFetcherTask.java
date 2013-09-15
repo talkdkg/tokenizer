@@ -31,9 +31,9 @@ import org.tokenizer.core.urls.SimpleUrlValidator;
 import org.tokenizer.core.util.HttpUtils;
 import org.tokenizer.core.util.ParserPolicy;
 import org.tokenizer.crawler.db.CrawlerRepository;
-import org.tokenizer.crawler.db.UrlRecord;
-import org.tokenizer.crawler.db.WebpageRecord;
 import org.tokenizer.crawler.db.model.TimestampUrlIDX;
+import org.tokenizer.crawler.db.model.UrlRecord;
+import org.tokenizer.crawler.db.model.WebpageRecord;
 import org.tokenizer.executor.model.api.WritableExecutorModel;
 import org.tokenizer.executor.model.configuration.AbstractFetcherTaskConfiguration;
 import org.tokenizer.util.zookeeper.ZooKeeperItf;
@@ -129,9 +129,7 @@ public abstract class AbstractFetcherTask<T extends AbstractFetcherTaskConfigura
                 UrlRecord urlRecord = crawlerRepository.retrieveUrlRecord(timestampUrlIDX.getUrl());
                 if (urlRecord != null) {
                     crawlerRepository.delete(urlRecord);
-                }
-                if (urlRecord != null) {
-                    crawlerRepository.deleteWebpageRecord(urlRecord.getBaseUrl());
+                    crawlerRepository.deleteWebpageRecord(urlRecord.getWebpageDigest());
                 }
                 continue;
             }
@@ -191,7 +189,7 @@ public abstract class AbstractFetcherTask<T extends AbstractFetcherTaskConfigura
                 }
 
                 String redirectedHost = HttpUtils.getHost(redirectedUrl);
-                if (!urlRecord.getBaseHost().equals(redirectedHost)) {
+                if (!urlRecord.getHost().equals(redirectedHost)) {
                     LOG.debug("redirected extrenal host ignored: {}", redirectedHost);
                     continue;
                 }
@@ -256,11 +254,11 @@ public abstract class AbstractFetcherTask<T extends AbstractFetcherTaskConfigura
             urlRecord.setNumRedirects(fetchedResult.getNumRedirects());
             urlRecord.setReasonPhrase(fetchedResult.getReasonPhrase());
 
-            //String charset = CharsetUtils.clean(HttpUtils.getCharsetFromContentType(fetchedResult.getContentType()));
+            // String charset = CharsetUtils.clean(HttpUtils.getCharsetFromContentType(fetchedResult.getContentType()));
             WebpageRecord webpageRecord = new WebpageRecord(fetchedResult);
             crawlerRepository.insertIfNotExists(webpageRecord);
 
-            //urlRecord.setWebpageDigest(webpageRecord.getDigest());
+            urlRecord.setWebpageDigest(webpageRecord.getDigest());
             crawlerRepository.update(urlRecord);
 
             // if all prev. were successful then... note that previously we did it before UrlRecord updates...

@@ -20,8 +20,8 @@ import java.util.List;
 import java.util.UUID;
 
 import org.tokenizer.crawler.db.CrawlerRepository;
-import org.tokenizer.crawler.db.UrlRecord;
 import org.tokenizer.crawler.db.model.TimestampUrlIDX;
+import org.tokenizer.crawler.db.model.UrlRecord;
 import org.tokenizer.crawler.db.model.UrlSitemapIDX;
 import org.tokenizer.executor.model.api.WritableExecutorModel;
 import org.tokenizer.executor.model.configuration.SitemapsFetcherTaskConfiguration;

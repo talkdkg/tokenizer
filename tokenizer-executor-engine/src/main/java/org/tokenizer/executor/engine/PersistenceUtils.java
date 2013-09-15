@@ -24,7 +24,7 @@ import org.tokenizer.core.urls.SimpleUrlNormalizer;
 import org.tokenizer.core.urls.SimpleUrlValidator;
 import org.tokenizer.core.util.HttpUtils;
 import org.tokenizer.crawler.db.CrawlerRepository;
-import org.tokenizer.crawler.db.UrlRecord;
+import org.tokenizer.crawler.db.model.UrlRecord;
 
 import com.netflix.astyanax.connectionpool.exceptions.ConnectionException;
 import com.sun.syndication.feed.synd.SyndCategory;
@@ -71,7 +71,7 @@ public class PersistenceUtils {
             metricsCache.increment(MetricsCache.REDIRECT_COUNT);
             String normalizedRedirectedUrl = urlNormalizer.normalize(redirectedUrl);
             String redirectedHost = HttpUtils.getHost(normalizedRedirectedUrl);
-            if (record.getBaseHost().equals(redirectedHost)) {
+            if (record.getHost().equals(redirectedHost)) {
                 UrlRecord urlRecord = new UrlRecord(normalizedRedirectedUrl);
                 try {
                     repository.insert(urlRecord);

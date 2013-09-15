@@ -11,13 +11,15 @@
  * Dissemination of this information or reproduction of this material is strictly 
  * forbidden unless prior written permission is obtained from Tokenizer Inc.
  */
-package org.tokenizer.crawler.db;
+package org.tokenizer.crawler.db.model;
 
 import java.io.Serializable;
 
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.utils.CharsetUtils;
 import org.tokenizer.core.util.HttpUtils;
+import org.tokenizer.core.util.MD5;
+import org.tokenizer.crawler.db.DefaultValues;
 
 import crawlercommons.fetcher.FetchedResult;
 
@@ -25,13 +27,18 @@ public class WebpageRecord implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    // Primary Key, based upon "content" field; for better performance we desided not to concatenate "host" with
+    // "content"...
+    // In the future it can be "host" + MD5(content)... but we should have duplicate of almost all fields (except
+    // "content) in UrlRecord
+    // TODO: "Redirects" and other types of response should be stored in UrlRecord too
+    private byte[] digest;
+
     // 'vertical' index, defined by 'baseUrl' value:
     private final String host;
 
     // fields from crawlercommons.fetcher.FetchedResult, except not-used Payload:
-    // primary key:
     private final String baseUrl;
-
     private final String fetchedUrl;
     private final long fetchTime;
     private final byte[] content;
@@ -51,6 +58,7 @@ public class WebpageRecord implements Serializable {
     public WebpageRecord(final FetchedResult fetchedResult) {
         //@formatter:off
         this(
+                null,
                 HttpUtils.getHost(fetchedResult.getBaseUrl()), 
                 fetchedResult.getBaseUrl(), 
                 fetchedResult.getFetchedUrl(), 
@@ -70,6 +78,7 @@ public class WebpageRecord implements Serializable {
 
     // @formatter:off
     public WebpageRecord(
+            final byte[] digest,
             final String host, 
             final String baseUrl, 
             final String fetchedUrl,
@@ -85,6 +94,8 @@ public class WebpageRecord implements Serializable {
             final String reasonPhrase,
             final int extractOutlinksAttemptCounter) {
         // @formatter:on
+
+        this.digest = digest;
 
         if (host != null) {
             this.host = host;
@@ -158,7 +169,7 @@ public class WebpageRecord implements Serializable {
         }
 
         this.extractOutlinksAttemptCounter = extractOutlinksAttemptCounter;
-        
+
     }
 
     public String getHost() {
@@ -246,6 +257,16 @@ public class WebpageRecord implements Serializable {
 
     public void incrementExtractOutlinksAttemptCounter() {
         this.extractOutlinksAttemptCounter++;
+    }
+
+    public byte[] getDigest() {
+        if (this.digest == null) {
+            if (this.content == null)
+                this.digest = new byte[0];
+            else
+                this.digest = MD5.digest(this.content);
+        }
+        return this.digest;
     }
 
 }
