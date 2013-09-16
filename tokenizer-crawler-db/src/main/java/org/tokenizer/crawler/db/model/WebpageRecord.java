@@ -251,6 +251,10 @@ public class WebpageRecord implements Serializable {
         return extractOutlinksAttemptCounter;
     }
 
+    public String getHostExtractOutlinksAttemptCounter() {
+        return getHost() + String.valueOf(getExtractOutlinksAttemptCounter());
+    }
+    
     public void setExtractOutlinksAttemptCounter(int extractOutlinksAttemptCounter) {
         this.extractOutlinksAttemptCounter = extractOutlinksAttemptCounter;
     }

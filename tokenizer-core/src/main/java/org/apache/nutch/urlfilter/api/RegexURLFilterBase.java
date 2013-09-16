@@ -110,7 +110,7 @@ public abstract class RegexURLFilterBase implements URLFilter {
                 return rule.accept();
             }
         }
-        LOG.warn("No rules match for {} - NOT FILTERING", url);
+        LOG.debug("No rules match for {}", url);
         return false;
     }
 

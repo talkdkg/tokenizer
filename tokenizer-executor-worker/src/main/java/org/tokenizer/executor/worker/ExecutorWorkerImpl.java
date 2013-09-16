@@ -27,6 +27,7 @@ import org.tokenizer.executor.engine.AbstractTask;
 import org.tokenizer.executor.engine.ClassicRobotTask;
 import org.tokenizer.executor.engine.HostLocker;
 import org.tokenizer.executor.engine.HtmlSplitterTask;
+import org.tokenizer.executor.engine.OutlinkExtractorTask;
 import org.tokenizer.executor.engine.RssFetcherTask;
 import org.tokenizer.executor.engine.SimpleMultithreadedFetcher;
 import org.tokenizer.executor.engine.SitemapsFetcherTask;
@@ -49,6 +50,7 @@ import org.tokenizer.executor.model.configuration.AbstractTaskConfiguration;
 import org.tokenizer.executor.model.configuration.ClassicRobotTaskConfiguration;
 import org.tokenizer.executor.model.configuration.HtmlSplitterTaskConfiguration;
 import org.tokenizer.executor.model.configuration.MessageParserTaskConfiguration;
+import org.tokenizer.executor.model.configuration.OutlinkExtractorTaskConfiguration;
 import org.tokenizer.executor.model.configuration.RssFetcherTaskConfiguration;
 import org.tokenizer.executor.model.configuration.SimpleMultithreadedFetcherTaskConfiguration;
 import org.tokenizer.executor.model.configuration.SitemapsFetcherTaskConfiguration;
@@ -259,6 +261,11 @@ public class ExecutorWorkerImpl implements ExecutorWorker {
         else if (taskConfiguration instanceof SitemapsLinkedPageFetcherTaskConfiguration) {
             task = new SitemapsLinkedPageFetcherTask(taskInfo.getUuid(), taskInfo.getTaskConfiguration().getName(), zk,
                     (SitemapsLinkedPageFetcherTaskConfiguration) taskConfiguration, repository, executorModel,
+                    hostLocker);
+        }
+        else if (taskConfiguration instanceof OutlinkExtractorTaskConfiguration) {
+            task = new OutlinkExtractorTask(taskInfo.getUuid(), taskInfo.getTaskConfiguration().getName(), zk,
+                    (OutlinkExtractorTaskConfiguration) taskConfiguration, repository, executorModel,
                     hostLocker);
         }
         else if (taskConfiguration instanceof WeblogsParserTaskConfiguration) {

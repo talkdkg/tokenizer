@@ -39,6 +39,7 @@ import org.tokenizer.executor.model.configuration.AbstractTaskConfiguration;
 import org.tokenizer.executor.model.configuration.ClassicRobotTaskConfiguration;
 import org.tokenizer.executor.model.configuration.HtmlSplitterTaskConfiguration;
 import org.tokenizer.executor.model.configuration.MessageParserTaskConfiguration;
+import org.tokenizer.executor.model.configuration.OutlinkExtractorTaskConfiguration;
 import org.tokenizer.executor.model.configuration.RssFetcherTaskConfiguration;
 import org.tokenizer.executor.model.configuration.SimpleMultithreadedFetcherTaskConfiguration;
 import org.tokenizer.executor.model.configuration.SitemapsFetcherTaskConfiguration;
@@ -375,6 +376,25 @@ public class TaskInfoComponent extends CustomComponent implements Broadcaster.Br
         componentContainer.addComponent(formControls);
 
     }
+    
+    private void buildOutlinkExtractorTaskConfigurationForm(final FieldGroup fieldGroup,
+            final ComponentContainer componentContainer) {
+        buildBaseTaskConfigurationForm(fieldGroup, componentContainer);
+        TextField host = new TextField("Host:");
+        TextField extractOutlinksAttemptCounter = new TextField("Extract Outlinks Attempt Counter:");
+        TextArea urlFilterConfig = new TextArea("URL Filter");
+        urlFilterConfig.setRows(20);
+        urlFilterConfig.setColumns(30);
+        componentContainer.addComponent(host);
+        componentContainer.addComponent(urlFilterConfig);
+        componentContainer.addComponent(extractOutlinksAttemptCounter);
+        fieldGroup.bind(host, "host");
+        fieldGroup.bind(urlFilterConfig, "urlFilterConfig");
+        fieldGroup.bind(extractOutlinksAttemptCounter, "extractOutlinksAttemptCounter");
+        componentContainer.addComponent(formControls);
+    }
+
+
 
     private void buildSitemapsLinkedPageFetcherTaskConfigurationForm(final FieldGroup fieldGroup,
             final ComponentContainer componentContainer) {
@@ -556,6 +576,9 @@ public class TaskInfoComponent extends CustomComponent implements Broadcaster.Br
             }
             else if (currentTask.getTaskConfiguration() instanceof SitemapsLinkedPageFetcherTaskConfiguration) {
                 buildSitemapsLinkedPageFetcherTaskConfigurationForm(taskConfigurationFieldGroup, newComponent);
+            }
+            else if (currentTask.getTaskConfiguration() instanceof OutlinkExtractorTaskConfiguration) {
+                buildOutlinkExtractorTaskConfigurationForm(taskConfigurationFieldGroup, newComponent);
             }
             else if (currentTask.getTaskConfiguration() instanceof WeblogsCrawlerTaskConfiguration) {
                 buildWeblogsCrawlerTaskConfigurationForm(taskConfigurationFieldGroup, newComponent);
@@ -784,6 +807,7 @@ public class TaskInfoComponent extends CustomComponent implements Broadcaster.Br
         type.addItem("ClassicRobotTask");
         type.addItem("SitemapsFetcherTask");
         type.addItem("SitemapsPageFetcherTask");
+        type.addItem("OutlinkExtractorTask");
         type.addItem("SitemapsLinkedPageFetcherTask");
         type.addItem("HtmlSplitterTask");
         type.addItem("MessageParserTask");
@@ -812,6 +836,10 @@ public class TaskInfoComponent extends CustomComponent implements Broadcaster.Br
                 else if ("SitemapsPageFetcherTask".equals(selected)) {
                     newTask.setTaskConfiguration(new SitemapsPageFetcherTaskConfiguration());
                     buildSitemapsPageFetcherTaskConfigurationForm(taskConfigurationFieldGroup, newComponent);
+                }
+                else if ("OutlinkExtractorTask".equals(selected)) {
+                    newTask.setTaskConfiguration(new OutlinkExtractorTaskConfiguration());
+                    buildOutlinkExtractorTaskConfigurationForm(taskConfigurationFieldGroup, newComponent);
                 }
                 else if ("SitemapsLinkedPageFetcherTask".equals(selected)) {
                     newTask.setTaskConfiguration(new SitemapsLinkedPageFetcherTaskConfiguration());

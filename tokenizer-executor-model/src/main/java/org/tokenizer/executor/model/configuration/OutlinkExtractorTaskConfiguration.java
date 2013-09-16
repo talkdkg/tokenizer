@@ -37,6 +37,9 @@ public class OutlinkExtractorTaskConfiguration extends AbstractTaskConfiguration
     protected String host;
 
     private String urlFilterConfig = DEFAULT_URL_FILTER;
+    
+    private int extractOutlinksAttemptCounter = 0;
+
 
     @Override
     public String getImplementationName() {
@@ -57,6 +60,16 @@ public class OutlinkExtractorTaskConfiguration extends AbstractTaskConfiguration
 
     public void setHost(String host) {
         this.host = host;
+    }
+    
+    
+
+    public int getExtractOutlinksAttemptCounter() {
+        return extractOutlinksAttemptCounter;
+    }
+
+    public void setExtractOutlinksAttemptCounter(int extractOutlinksAttemptCounter) {
+        this.extractOutlinksAttemptCounter = extractOutlinksAttemptCounter;
     }
 
     @Override
@@ -93,8 +106,9 @@ public class OutlinkExtractorTaskConfiguration extends AbstractTaskConfiguration
 
     @Override
     public String toString() {
-        return "OutlinkExtractorTaskConfiguration [name=" + name + "host=" + host + ", generalState=" + generalState
-                + ", urlFilterConfig=" + urlFilterConfig + "]";
+        return "OutlinkExtractorTaskConfiguration [host=" + host + ", urlFilterConfig=" + urlFilterConfig
+                + ", extractOutlinksAttemptCounter=" + extractOutlinksAttemptCounter + "]";
     }
+
 
 }

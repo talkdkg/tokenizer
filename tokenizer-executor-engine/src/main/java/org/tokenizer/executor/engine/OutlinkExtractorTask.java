@@ -1,9 +1,15 @@
 package org.tokenizer.executor.engine;
 
+import java.io.IOException;
+import java.io.Reader;
+import java.io.StringReader;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.apache.nutch.net.URLFilter;
+import org.apache.nutch.urlfilter.automaton.AutomatonURLFilter;
 import org.tokenizer.core.datum.Outlink;
 import org.tokenizer.core.datum.ParsedDatum;
 import org.tokenizer.core.parser.SimpleParser;
@@ -41,6 +47,10 @@ public class OutlinkExtractorTask extends AbstractTask<OutlinkExtractorTaskConfi
     private static BaseUrlValidator urlValidator = new SimpleUrlValidator();
     private static BaseUrlNormalizer urlNormalizer = new SimpleUrlNormalizer();
 
+
+    private URLFilter urlFilter;
+
+    
     // @formatter:off
     public OutlinkExtractorTask(
             UUID uuid, 
@@ -60,16 +70,37 @@ public class OutlinkExtractorTask extends AbstractTask<OutlinkExtractorTaskConfi
                 hostLocker);
         //@formatter:on
 
+        Reader reader = new StringReader(this.taskConfiguration.getUrlFilterConfig());
+        try {
+            this.urlFilter = new AutomatonURLFilter(reader);
+        } catch (IllegalArgumentException e) {
+            LOG.error("", e);
+            throw (e);
+        } catch (IOException e) {
+            LOG.error("", e);
+            throw new RuntimeException(e);
+        }
+
     }
 
     @Override
     protected void process() throws InterruptedException, ConnectionException {
-        // TODO Auto-generated method stub
+        List<WebpageRecord> webpageRecords = crawlerRepository.listWebpageRecordsByExtractOutlinksAttemptCounter(
+                taskConfiguration.getHost(), taskConfiguration.getExtractOutlinksAttemptCounter(), 100);
+
+        for (WebpageRecord webpageRecord : webpageRecords) {
+            parse(webpageRecord);
+        }
 
     }
 
     private boolean accept(final String url) {
-        return true;
+        if (urlFilter != null) {
+            return urlFilter.accept(url);
+        }
+        else {
+            return false;
+        }
     }
 
     protected void parse(final WebpageRecord webpageRecord) throws InterruptedException, ConnectionException {
@@ -79,6 +110,8 @@ public class OutlinkExtractorTask extends AbstractTask<OutlinkExtractorTaskConfi
 
         ParsedDatum parsedDatum = parser.parse(webpageRecord.toFetchedResult());
 
+        webpageRecord.incrementExtractOutlinksAttemptCounter();
+        
         if (parsedDatum == null) {
             return;
         }
@@ -103,9 +136,8 @@ public class OutlinkExtractorTask extends AbstractTask<OutlinkExtractorTaskConfi
             }
 
             // This is definition of "domain constrained crawl" (vertical crawl):
-            String baseHost = HttpUtils.getHost(webpageRecord.getHost());
-            if (!baseHost.equals(host)) {
-                LOG.debug("extrenal host ignored; baseHost: {} external: {}", baseHost, host);
+             if (!webpageRecord.getHost().equals(host)) {
+                LOG.debug("extrenal host ignored; initial: {} external: {}", webpageRecord.getHost(), host);
                 continue;
             }
 
@@ -126,6 +158,10 @@ public class OutlinkExtractorTask extends AbstractTask<OutlinkExtractorTaskConfi
 
                 urlCache.put(url, null);
 
+                metricsCache.increment(MetricsCache.URL_INJECTED);
+
+                LOG.debug("URL extracted: {}", url);
+                
             }
 
         }

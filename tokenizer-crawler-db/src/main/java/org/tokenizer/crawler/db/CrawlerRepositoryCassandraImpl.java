@@ -395,7 +395,7 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
                                                     ImmutableMap.<String, Object> builder()
                                                             .put("validation_class", "AsciiType")
                                                             .put("index_name", "IDX_WEBPAGE_RECORDS_HOST")
-                                                            .put("index_type", "KEYS").build()).build())
+                                                            .put("index_type", "KEYS").build())
                                             .put("baseUrl",
                                                     ImmutableMap.<String, Object> builder()
                                                             .put("validation_class", "AsciiType").build())
@@ -437,7 +437,7 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
                                                             .put("validation_class", "AsciiType")
                                                             .put("index_name", "IDX_WEBPAGE_RECORDS_HOST_EXTRACT_OUTLINKS_ATTEMPT_COUNTER")
                                                             .put("index_type", "KEYS").build())
-                            .build());
+                            .build()).build());
         }
         // @formatter:on
 
@@ -922,7 +922,7 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
                 .putColumn("hostAddress", webpageRecord.getHostAddress(), null)
                 .putColumn("httpStatus", webpageRecord.getHttpStatus(), null)
                 .putColumn("reasonPhrase", webpageRecord.getReasonPhrase(), null)
-                .putColumn("host_extractOutlinksAttemptCounter", webpageRecord.getHost() + String.valueOf(webpageRecord.getExtractOutlinksAttemptCounter()), null);
+                .putColumn("host_extractOutlinksAttemptCounter", webpageRecord.getHostExtractOutlinksAttemptCounter(), null);
         m.execute();
         LOG.debug("webpageRecord inserted: {}", webpageRecord);
     }
@@ -943,11 +943,9 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
     @Override
     public void incrementExtractOutlinksAttemptCounter(final WebpageRecord webpageRecord) throws ConnectionException {
         webpageRecord.incrementExtractOutlinksAttemptCounter();
-        String host_extractOutlinksAttemptCounter = webpageRecord.getHost() + " "
-                + webpageRecord.getExtractOutlinksAttemptCounter();
         MutationBatch m = keyspace.prepareMutationBatch();
         m.withRow(CF_WEBPAGE_RECORDS, webpageRecord.getDigest()).putColumn("host_extractOutlinksAttemptCounter",
-                host_extractOutlinksAttemptCounter, null);
+                webpageRecord.getHostExtractOutlinksAttemptCounter(), null);
         m.execute();
     }
 
@@ -992,7 +990,6 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
     @Override
     public List<WebpageRecord> listWebpageRecordsByExtractOutlinksAttemptCounter(final String host,
             final int extractOutlinksAttemptCounter, final int maxResults) throws ConnectionException {
-
         //@formatter:off
         IndexQuery<byte[], String> query = keyspace
                 .prepareQuery(CF_WEBPAGE_RECORDS)
@@ -1003,7 +1000,7 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
                 .addExpression()
                 .whereColumn("host_extractOutlinksAttemptCounter")
                 .equals()
-                .value(host + StringPool.SPACE + extractOutlinksAttemptCounter);
+                .value(host + String.valueOf(extractOutlinksAttemptCounter));
         //@formatter:on
         OperationResult<Rows<byte[], String>> result = query.execute();
         return toWebpageRecordList(result);

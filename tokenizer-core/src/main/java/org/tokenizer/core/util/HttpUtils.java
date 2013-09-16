@@ -73,7 +73,7 @@ public class HttpUtils {
             URL url2 = new URL(url);
             return url2.getHost();
         } catch (MalformedURLException e) {
-            LOG.warn("Malformed URL: {}", url);
+            LOG.warn("Malformed URL: {}", url, e);
             return EMPTY_STRING;
         }
     }
