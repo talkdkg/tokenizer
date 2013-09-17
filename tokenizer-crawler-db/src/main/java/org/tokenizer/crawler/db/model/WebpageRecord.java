@@ -14,7 +14,9 @@
 package org.tokenizer.crawler.db.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.utils.CharsetUtils;
 import org.tokenizer.core.util.HttpUtils;
@@ -29,8 +31,7 @@ public class WebpageRecord implements Serializable {
 
     // Primary Key, based upon "content" field; for better performance we desided not to concatenate "host" with
     // "content"...
-    // In the future it can be "host" + MD5(content)... but we should have duplicate of almost all fields (except
-    // "content) in UrlRecord
+    // common pattern: MD5.digest(ArrayUtils.addAll(host.getBytes(), content));
     // TODO: "Redirects" and other types of response should be stored in UrlRecord too
     private byte[] digest;
 
@@ -54,6 +55,9 @@ public class WebpageRecord implements Serializable {
 
     // Indexes for internal processing:
     private int extractOutlinksAttemptCounter;
+    private int splitAttemptCounter;
+
+    private ArrayList<byte[]> xmlLinks = new ArrayList<byte[]>();
 
     public WebpageRecord(final FetchedResult fetchedResult) {
         //@formatter:off
@@ -72,6 +76,7 @@ public class WebpageRecord implements Serializable {
                 fetchedResult.getHostAddress(), 
                 fetchedResult.getHttpStatus(), 
                 fetchedResult.getReasonPhrase(),
+                0,
                 0);
         //@formatter:on
     }
@@ -92,7 +97,8 @@ public class WebpageRecord implements Serializable {
             final String hostAddress,
             final int httpStatus, 
             final String reasonPhrase,
-            final int extractOutlinksAttemptCounter) {
+            final int extractOutlinksAttemptCounter,
+            final int splitAttemptCounter) {
         // @formatter:on
 
         this.digest = digest;
@@ -170,6 +176,7 @@ public class WebpageRecord implements Serializable {
 
         this.extractOutlinksAttemptCounter = extractOutlinksAttemptCounter;
 
+        this.splitAttemptCounter = splitAttemptCounter;
     }
 
     public String getHost() {
@@ -254,7 +261,7 @@ public class WebpageRecord implements Serializable {
     public String getHostExtractOutlinksAttemptCounter() {
         return getHost() + String.valueOf(getExtractOutlinksAttemptCounter());
     }
-    
+
     public void setExtractOutlinksAttemptCounter(int extractOutlinksAttemptCounter) {
         this.extractOutlinksAttemptCounter = extractOutlinksAttemptCounter;
     }
@@ -263,14 +270,42 @@ public class WebpageRecord implements Serializable {
         this.extractOutlinksAttemptCounter++;
     }
 
+    public int getSplitAttemptCounter() {
+        return splitAttemptCounter;
+    }
+
+    public String getHostSplitAttemptCounter() {
+        return getHost() + String.valueOf(getSplitAttemptCounter());
+    }
+
+    public void setSplitAttemptCounter(int splitAttemptCounter) {
+        this.splitAttemptCounter = splitAttemptCounter;
+    }
+
+    public void incrementSplitAttemptCounter() {
+        this.splitAttemptCounter++;
+    }
+
     public byte[] getDigest() {
         if (this.digest == null) {
             if (this.content == null)
                 this.digest = new byte[0];
             else
-                this.digest = MD5.digest(this.content);
+                this.digest = MD5.digest(ArrayUtils.addAll(getHost().getBytes(), getContent()));
         }
         return this.digest;
+    }
+
+    public ArrayList<byte[]> getXmlLinks() {
+        return xmlLinks;
+    }
+
+    public void setXmlLinks(ArrayList<byte[]> xmlLinks) {
+        this.xmlLinks = xmlLinks;
+    }
+
+    public void addXmlLink(byte[] digest) {
+        this.xmlLinks.add(digest);
     }
 
 }

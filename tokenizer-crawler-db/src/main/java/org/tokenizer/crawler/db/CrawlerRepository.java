@@ -20,12 +20,14 @@ import java.util.List;
 import org.apache.nutch.net.URLFilter;
 import org.tokenizer.crawler.db.model.FetchedResultRecord;
 import org.tokenizer.crawler.db.model.HostRecord;
+import org.tokenizer.crawler.db.model.MessageRecord;
 import org.tokenizer.crawler.db.model.TimestampUrlIDX;
 import org.tokenizer.crawler.db.model.UrlHeadRecord;
 import org.tokenizer.crawler.db.model.UrlRecord;
 import org.tokenizer.crawler.db.model.UrlSitemapIDX;
 import org.tokenizer.crawler.db.model.WeblogRecord;
 import org.tokenizer.crawler.db.model.WebpageRecord;
+import org.tokenizer.crawler.db.model.XmlRecord;
 
 import com.netflix.astyanax.connectionpool.exceptions.ConnectionException;
 

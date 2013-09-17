@@ -15,6 +15,7 @@ package org.tokenizer.crawler.db;
 
 import org.junit.After;
 import org.junit.Before;
+import org.tokenizer.crawler.db.model.XmlRecord;
 
 /**
  * The class <code>XmlRecordTest</code> contains tests for the class <code>{@link XmlRecord}</code>.

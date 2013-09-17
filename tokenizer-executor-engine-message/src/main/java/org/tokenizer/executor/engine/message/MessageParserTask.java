@@ -27,8 +27,8 @@ import javax.xml.xpath.XPathExpressionException;
 import org.tokenizer.core.util.xml.HXPathExpression;
 import org.tokenizer.core.util.xml.LocalXPathFactory;
 import org.tokenizer.crawler.db.CrawlerRepository;
-import org.tokenizer.crawler.db.MessageRecord;
-import org.tokenizer.crawler.db.XmlRecord;
+import org.tokenizer.crawler.db.model.MessageRecord;
+import org.tokenizer.crawler.db.model.XmlRecord;
 import org.tokenizer.executor.engine.AbstractTask;
 import org.tokenizer.executor.engine.HostLocker;
 import org.tokenizer.executor.engine.MetricsCache;
@@ -123,7 +123,7 @@ public class MessageParserTask extends AbstractTask<MessageParserTaskConfigurati
             LOG.trace("xmlRecord: {}", xmlRecord);
             try {
                 MessageRecord message = parse(xmlRecord);
-                LOG.trace(message.toString());
+                LOG.trace("message: {}", message);
                 crawlerRepository.insertIfNotExists(message);
                 metricsCache.increment(MetricsCache.MESSAGE_TOTAL_KEY);
                 xmlRecord.incrementParseAttemptCounter();

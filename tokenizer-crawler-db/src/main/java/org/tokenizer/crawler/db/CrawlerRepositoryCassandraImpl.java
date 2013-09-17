@@ -31,20 +31,21 @@ import org.apache.solr.common.SolrInputDocument;
 import org.apache.tika.metadata.Metadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tokenizer.core.StringPool;
 import org.tokenizer.core.solr.SolrUtils;
 import org.tokenizer.core.util.HttpUtils;
 import org.tokenizer.core.util.JavaSerializationUtils;
 import org.tokenizer.core.util.MD5;
 import org.tokenizer.crawler.db.model.FetchedResultRecord;
 import org.tokenizer.crawler.db.model.HostRecord;
+import org.tokenizer.crawler.db.model.MessageRecord;
 import org.tokenizer.crawler.db.model.TimestampUrlIDX;
 import org.tokenizer.crawler.db.model.UrlHeadRecord;
 import org.tokenizer.crawler.db.model.UrlRecord;
 import org.tokenizer.crawler.db.model.UrlSitemapIDX;
 import org.tokenizer.crawler.db.model.WeblogRecord;
-import org.tokenizer.crawler.db.model.WebpageRecord;
 import org.tokenizer.crawler.db.model.WeblogRecord.Weblog;
+import org.tokenizer.crawler.db.model.WebpageRecord;
+import org.tokenizer.crawler.db.model.XmlRecord;
 import org.tokenizer.nlp.NlpTools;
 import org.tokenizer.nlp.Text;
 
@@ -437,6 +438,14 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
                                                             .put("validation_class", "AsciiType")
                                                             .put("index_name", "IDX_WEBPAGE_RECORDS_HOST_EXTRACT_OUTLINKS_ATTEMPT_COUNTER")
                                                             .put("index_type", "KEYS").build())
+                                           .put("host_splitAttemptCounter",
+                                                    ImmutableMap.<String, Object> builder()
+                                                            .put("validation_class", "AsciiType")
+                                                            .put("index_name", "IDX_WEBPAGE_RECORDS_HOST_SPLIT_ATTEMPT_COUNTER")
+                                                            .put("index_type", "KEYS").build())
+                                           .put("xmlLinks",
+                                                    ImmutableMap.<String, Object> builder()
+                                                            .put("validation_class", "BytesType").build())
                             .build()).build());
         }
         // @formatter:on
@@ -451,21 +460,27 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
                             .<String, Object> builder()
                             .put("default_validation_class", "BytesType")
                             .put("key_validation_class", "BytesType")
-                            .put("Caching", "ALL")
+                            .put("Caching", "KEYS")
                             .put("column_metadata",
                                     ImmutableMap
                                             .<String, Object> builder()
                                             .put("timestamp",
                                                     ImmutableMap.<String, Object> builder()
                                                             .put("validation_class", "DateType").build())
-                                            .put("hostInverted_parseAttemptCounter",
+                                            .put("host",
                                                     ImmutableMap.<String, Object> builder()
                                                             .put("validation_class", "BytesType")
                                                             .put("index_type", "KEYS").build())
                                             .put("content",
                                                     ImmutableMap.<String, Object> builder()
-                                                            .put("validation_class", "BytesType").build()).build())
-                            .build());
+                                                            .put("validation_class", "BytesType").build())
+                                            .put("host_parseAttemptCounter",
+                                                    ImmutableMap
+                                                            .<String, Object> builder()
+                                                            .put("validation_class", "AsciiType")
+                                                            .put("index_name",
+                                                                    "IDX_XML_RECORDS_HOST_PARSE_ATTEMPT_COUNTER")
+                                                            .put("index_type", "KEYS").build()).build()).build());
         }
         // //////////
         // Message Records
@@ -922,27 +937,21 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
                 .putColumn("hostAddress", webpageRecord.getHostAddress(), null)
                 .putColumn("httpStatus", webpageRecord.getHttpStatus(), null)
                 .putColumn("reasonPhrase", webpageRecord.getReasonPhrase(), null)
-                .putColumn("host_extractOutlinksAttemptCounter", webpageRecord.getHostExtractOutlinksAttemptCounter(), null);
+                .putColumn("host_extractOutlinksAttemptCounter", webpageRecord.getHostExtractOutlinksAttemptCounter(), null)
+                .putColumn("host_splitAttemptCounter", webpageRecord.getHostSplitAttemptCounter(), null)
+                .putColumn("xmlLinks", JavaSerializationUtils.serialize(webpageRecord.getXmlLinks()), null);
         m.execute();
         LOG.debug("webpageRecord inserted: {}", webpageRecord);
     }
     // @formatter:on
 
     @Override
-    public void updateSplitAttemptCounterAndLinks(final WebpageRecord webpageRecord) throws ConnectionException {
-        // MutationBatch m = keyspace.prepareMutationBatch();
-        // m.withRow(CF_WEBPAGE_RECORDS, webpageRecord.getDigest())
-        // .putColumn(
-        // "hostInverted_splitAttemptCounter",
-        // ArrayUtils.addAll(webpageRecord.getHostInverted(),
-        // HttpUtils.intToBytes(webpageRecord.getSplitAttemptCounter())), null)
-        // .putColumn("xmlLinks", JavaSerializationUtils.serialize(webpageRecord.getXmlLinks()), null);
-        // m.execute();
-    }
-
-    @Override
     public void incrementExtractOutlinksAttemptCounter(final WebpageRecord webpageRecord) throws ConnectionException {
         webpageRecord.incrementExtractOutlinksAttemptCounter();
+        updateExtractOutlinksAttemptCounter(webpageRecord);
+    }
+
+    public void updateExtractOutlinksAttemptCounter(WebpageRecord webpageRecord) throws ConnectionException {
         MutationBatch m = keyspace.prepareMutationBatch();
         m.withRow(CF_WEBPAGE_RECORDS, webpageRecord.getDigest()).putColumn("host_extractOutlinksAttemptCounter",
                 webpageRecord.getHostExtractOutlinksAttemptCounter(), null);
@@ -950,13 +959,20 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
     }
 
     @Override
+    public void updateSplitAttemptCounterAndLinks(final WebpageRecord webpageRecord) throws ConnectionException {
+        MutationBatch m = keyspace.prepareMutationBatch();
+        m.withRow(CF_WEBPAGE_RECORDS, webpageRecord.getDigest()).putColumn("host_splitAttemptCounter",
+                webpageRecord.getHostSplitAttemptCounter(), null);
+        m.withRow(CF_WEBPAGE_RECORDS, webpageRecord.getDigest()).putColumn("xmlLinks",
+                JavaSerializationUtils.serialize(webpageRecord.getXmlLinks()), null);
+        m.execute();
+    }
+
+    @Override
     public void updateParseAttemptCounter(final XmlRecord xmlRecord) throws ConnectionException {
         MutationBatch m = keyspace.prepareMutationBatch();
-        m.withRow(CF_XML_RECORDS, xmlRecord.getDigest())
-                .putColumn(
-                        "hostInverted_parseAttemptCounter",
-                        ArrayUtils.addAll(xmlRecord.getHostInverted(),
-                                HttpUtils.intToBytes(xmlRecord.getParseAttemptCounter())), null);
+        m.withRow(CF_XML_RECORDS, xmlRecord.getDigest()).putColumn("host_parseAttemptCounter",
+                xmlRecord.getHostParseAttemptCounter(), null);
         m.execute();
     }
 
@@ -979,9 +995,9 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
                 .setRowLimit(maxResults)
                 .autoPaginateRows(false)
                 .addExpression()
-                .whereColumn("host")
+                .whereColumn("host_splitAttemptCounter")
                 .equals()
-                .value(host);
+                .value(host + String.valueOf(splitAttemptCounter));
         //@formatter:on
         OperationResult<Rows<byte[], String>> result = query.execute();
         return toWebpageRecordList(result);
@@ -1017,13 +1033,10 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
 
     protected void insert(final XmlRecord xmlRecord) throws ConnectionException {
         MutationBatch m = keyspace.prepareMutationBatch();
-        m.withRow(CF_XML_RECORDS, xmlRecord.getDigest())
+        m.withRow(CF_XML_RECORDS, xmlRecord.getDigest()).putColumn("host", xmlRecord.getHost(), null)
                 .putColumn("timestamp", xmlRecord.getTimestamp(), null)
                 .putColumn("content", xmlRecord.getContent(), null)
-                .putColumn(
-                        "hostInverted_parseAttemptCounter",
-                        ArrayUtils.addAll(xmlRecord.getHostInverted(),
-                                HttpUtils.intToBytes(xmlRecord.getParseAttemptCounter())), null);
+                .putColumn("host_parseAttemptCounter", xmlRecord.getHostParseAttemptCounter(), null);
         m.execute();
     }
 
@@ -1031,9 +1044,6 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
     public List<XmlRecord> listXmlRecords(final String host, final int parseAttemptCounter, final int maxResults)
             throws ConnectionException {
         double nanoStart = System.nanoTime();
-        byte[] hostInverted = HttpUtils.getHostInverted(host);
-        byte[] hostInverted_parseAttemptCounter = ArrayUtils.addAll(hostInverted,
-                HttpUtils.intToBytes(parseAttemptCounter));
         //@formatter:off
         IndexQuery<byte[], String> query = keyspace
                 .prepareQuery(CF_XML_RECORDS)
@@ -1042,9 +1052,9 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
                 .setRowLimit(maxResults)
                 .autoPaginateRows(false)
                 .addExpression()
-                .whereColumn("hostInverted_parseAttemptCounter")
+                .whereColumn("host_parseAttemptCounter")
                 .equals()
-                .value(hostInverted_parseAttemptCounter);
+                .value(host + String.valueOf(parseAttemptCounter));
         //@formatter:on
         OperationResult<Rows<byte[], String>> result = query.execute();
         if (LOG.isDebugEnabled()) {
@@ -1326,8 +1336,21 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
 
         int extractOutlinksAttemptCounter = Integer.parseInt(extractOutlinksAttemptCounterString);
 
-        return new WebpageRecord(digest, host, baseUrl, fetchedUrl, fetchTime, content, contentType, responseRate,
-                headers, newBaseUrl, numRedirects, hostAddress, httpStatus, reasonPhrase, extractOutlinksAttemptCounter);
+        String host_splitAttemptCounter = columns.getStringValue("host_splitAttemptCounter", null);
+
+        String splitAttemptCounterString = host_splitAttemptCounter.substring(host.length());
+
+        int splitAttemptCounter = Integer.parseInt(splitAttemptCounterString);
+
+        WebpageRecord webpageRecord = new WebpageRecord(digest, host, baseUrl, fetchedUrl, fetchTime, content,
+                contentType, responseRate, headers, newBaseUrl, numRedirects, hostAddress, httpStatus, reasonPhrase,
+                extractOutlinksAttemptCounter, splitAttemptCounter);
+        final ArrayList<byte[]> xmlLinks = (ArrayList<byte[]>) JavaSerializationUtils.deserialize(columns
+                .getByteArrayValue("xmlLinks", null));
+
+        webpageRecord.setXmlLinks(xmlLinks);
+
+        return webpageRecord;
 
     }
 
@@ -1345,11 +1368,18 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
             return null;
         }
         Date timestamp = columns.getDateValue("timestamp", null);
-        byte[] hostInverted_parseAttemptCounter = columns.getByteArrayValue("hostInverted_parseAttemptCounter", null);
+        String host = columns.getStringValue("host", null);
         byte[] content = columns.getByteArrayValue("content", null);
-        XmlRecord xmlRecord = new XmlRecord(digest, timestamp, hostInverted_parseAttemptCounter, content);
-        LOG.trace(xmlRecord.toString());
+
+        String host_parseAttemptCounter = columns.getStringValue("host_parseAttemptCounter", null);
+        String parseAttemptCounterString = host_parseAttemptCounter.substring(host.length());
+        int parseAttemptCounter = Integer.parseInt(parseAttemptCounterString);
+
+        XmlRecord xmlRecord = new XmlRecord(digest, timestamp, host, content, parseAttemptCounter);
+        LOG.trace("xmlRecord: {}", xmlRecord);
+
         return xmlRecord;
+
     }
 
     protected static XmlRecord toXmlRecord(final Row<byte[], String> row) {

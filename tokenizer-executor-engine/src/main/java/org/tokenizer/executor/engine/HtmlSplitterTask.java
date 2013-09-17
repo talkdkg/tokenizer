@@ -27,8 +27,8 @@ import org.tokenizer.core.parser.HtmlParser;
 import org.tokenizer.core.util.xml.HXPathExpression;
 import org.tokenizer.core.util.xml.LocalXPathFactory;
 import org.tokenizer.crawler.db.CrawlerRepository;
-import org.tokenizer.crawler.db.XmlRecord;
 import org.tokenizer.crawler.db.model.WebpageRecord;
+import org.tokenizer.crawler.db.model.XmlRecord;
 import org.tokenizer.executor.model.api.WritableExecutorModel;
 import org.tokenizer.executor.model.configuration.HtmlSplitterTaskConfiguration;
 import org.tokenizer.util.zookeeper.ZooKeeperItf;
@@ -74,13 +74,14 @@ public class HtmlSplitterTask extends AbstractTask<HtmlSplitterTaskConfiguration
             }
             //LOG.debug("processing URL: {}", webpageRecord.getUrl());
             List<XmlRecord> xmlRecords = parse(webpageRecord);
+            webpageRecord.getXmlLinks().clear();
             for (XmlRecord xmlRecord : xmlRecords) {
                 // LOG.warn("xmlRecord: {}", xmlRecord);
                 crawlerRepository.insertIfNotExist(xmlRecord);
                 metricsCache.increment(MetricsCache.XML_TOTAL_KEY);
-                //webpageRecord.addXmlLink(xmlRecord.getDigest());
+                webpageRecord.addXmlLink(xmlRecord.getDigest());
             }
-            //webpageRecord.incrementSplitAttemptCounter();
+            webpageRecord.incrementSplitAttemptCounter();
             crawlerRepository.updateSplitAttemptCounterAndLinks(webpageRecord);
             metricsCache.increment(MetricsCache.URL_TOTAL_KEY);
         }

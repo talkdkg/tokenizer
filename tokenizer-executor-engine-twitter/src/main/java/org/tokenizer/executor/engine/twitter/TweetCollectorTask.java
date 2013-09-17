@@ -28,7 +28,7 @@ import org.tokenizer.core.TokenizerConfig;
 import org.tokenizer.core.util.LanguageDetector;
 import org.tokenizer.core.util.MD5;
 import org.tokenizer.crawler.db.CrawlerRepository;
-import org.tokenizer.crawler.db.MessageRecord;
+import org.tokenizer.crawler.db.model.MessageRecord;
 import org.tokenizer.executor.engine.AbstractTask;
 import org.tokenizer.executor.engine.HostLocker;
 import org.tokenizer.executor.engine.MetricsCache;

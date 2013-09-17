@@ -11,7 +11,7 @@
  * Dissemination of this information or reproduction of this material is strictly 
  * forbidden unless prior written permission is obtained from Tokenizer Inc.
  */
-package org.tokenizer.crawler.db;
+package org.tokenizer.crawler.db.model;
 
 import java.io.Serializable;
 
@@ -19,7 +19,7 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.tokenizer.core.util.MD5;
-import org.tokenizer.crawler.db.model.UrlRecord;
+import org.tokenizer.crawler.db.DefaultValues;
 
 public class MessageRecord implements Serializable {
 
