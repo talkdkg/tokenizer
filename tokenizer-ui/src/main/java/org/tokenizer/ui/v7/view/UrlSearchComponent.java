@@ -128,7 +128,7 @@ public class UrlSearchComponent extends CustomComponent {
             @Override
             public void buttonClick(final ClickEvent event) {
                 LOG.debug(myQuery.toString());
-                querySolr(myQuery);
+                initialQuerySolr(myQuery);
                 Component newSearchResultsComponent = buildSearchResults();
                 if (searchResultsComponent == null) {
                     mainLayout.addComponent(newSearchResultsComponent);
@@ -145,36 +145,23 @@ public class UrlSearchComponent extends CustomComponent {
         return formControls;
     }
 
-    private void querySolr(final MyQuery q) {
+    private void initialQuerySolr(final MyQuery q) {
         SolrServer solrServer = SolrUtils.getSolrServer();
         SolrQuery solrQuery = new SolrQuery();
         solrQuery.setQuery(q.getQuery());
-        solrQuery.setFacet(true);
-        solrQuery.setFacetMinCount(10);
-        solrQuery.addFacetField("host");
-        solrQuery.setHighlight(true);
-        solrQuery.setHighlightSnippets(1);
-        solrQuery.setHighlightFragsize(4096);
-        solrQuery.setParam("hl.fl", "url");
-        solrQuery.setRows(10);
-        // for better performance:
+        try {
+            Integer.parseInt(myQuery.getHttpStatus());
+            solrQuery.setFilterQueries("httpStatus:" + myQuery.getHttpStatus());
+        } catch (NumberFormatException e) {
+        }
+        solrQuery.setRows(0);
         solrQuery.setSortField("_docid_", ORDER.asc);
         try {
             queryResponse = solrServer.query(solrQuery);
         } catch (SolrServerException e) {
             LOG.error(e.getMessage());
-            beans = new ArrayList<UrlBean>();
         }
-        LOG.debug(queryResponse.toString());
-        beans = queryResponse.getBeans(UrlBean.class);
-        for (UrlBean bean : beans) {
-            String id = bean.getId();
-            if (queryResponse.getHighlighting().get(id) != null) {
-                List<String> highlightSnippets = queryResponse.getHighlighting().get(id).get("url");
-                bean.setHighlightSnippet(highlightSnippets.get(0));
-            }
-            LOG.debug(bean.toString());
-        }
+
     }
 
     private Component buildSearchResults() {
@@ -246,7 +233,7 @@ public class UrlSearchComponent extends CustomComponent {
         component.addTab(htmlPanel);
         sourceLabel = new Label();
         sourceLabel.setContentMode(ContentMode.PREFORMATTED);
-        
+
         Panel sourcePanel = new Panel("Source", sourceLabel);
         component.addTab(sourcePanel);
         // XML Snippets:
@@ -266,9 +253,9 @@ public class UrlSearchComponent extends CustomComponent {
         String html = null;
         try {
             UrlRecord urlRecord = repository.retrieveUrlRecord(currentBean.url);
-            //if (urlRecord.getWebpageDigest() == null || urlRecord.getWebpageDigest() == DefaultValues.EMPTY_ARRAY) {
-            //    return component;
-            //}
+            // if (urlRecord.getWebpageDigest() == null || urlRecord.getWebpageDigest() == DefaultValues.EMPTY_ARRAY) {
+            // return component;
+            // }
             webpage = repository.retrieveWebpageRecord(urlRecord.getWebpageDigest());
             if (webpage == null) {
                 return component;
@@ -276,10 +263,9 @@ public class UrlSearchComponent extends CustomComponent {
 
             String charset = webpage.getCharset();
             html = new String(webpage.getContent(), charset);
-            
+
             LOG.debug("Charset: {}", charset);
-            
-            
+
             // TODO: !!!
             List<XmlRecord> xmlRecords = repository.listXmlRecords(new byte[0][0]);
             for (XmlRecord xmlRecord : xmlRecords) {
@@ -307,10 +293,10 @@ public class UrlSearchComponent extends CustomComponent {
                 form.addComponent(text);
                 xmlLayout.addComponent(panel);
             }
-            
+
             // TODO: !!!
             List<MessageRecord> messageRecords = repository.listMessageRecords(new byte[0][0]);
-            
+
             for (MessageRecord messageRecord : messageRecords) {
                 if (messageRecord == null) {
                     continue;
@@ -475,9 +461,10 @@ public class UrlSearchComponent extends CustomComponent {
             solrQuery.setRows(0);
             solrQuery.setSortField("_docid_", ORDER.asc);
             try {
-                LOG.debug("Querying Solr... {}", solrQuery);
+                LOG.debug("PRE-Querying Solr... {}", solrQuery);
                 queryResponse = solrServer.query(solrQuery);
                 numFound = queryResponse.getResults().getNumFound();
+                LOG.debug("PRE-Querying queryResponse: {}", queryResponse);
             } catch (SolrServerException e) {
             }
         }
