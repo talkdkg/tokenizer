@@ -216,6 +216,8 @@ public class TaskInfoComponent extends CustomComponent implements Broadcaster.Br
         dateXPath.setWidth(COMMON_FIELD_WIDTH, Unit.EM);
         TextField userRatingXPath = new TextField("userRatingXPath");
         userRatingXPath.setWidth(COMMON_FIELD_WIDTH, Unit.EM);
+        TextField locationXPath = new TextField("locationXPath");
+        locationXPath.setWidth(COMMON_FIELD_WIDTH, Unit.EM);
         TextField parseAttemptCounter = new TextField("parseAttemptCounter");
         parseAttemptCounter.setWidth(COMMON_FIELD_WIDTH, Unit.EM);
         componentContainer.addComponent(host);
@@ -227,6 +229,7 @@ public class TaskInfoComponent extends CustomComponent implements Broadcaster.Br
         componentContainer.addComponent(contentXPath);
         componentContainer.addComponent(dateXPath);
         componentContainer.addComponent(userRatingXPath);
+        componentContainer.addComponent(locationXPath);
         componentContainer.addComponent(parseAttemptCounter);
         fieldGroup.bind(host, "host");
         fieldGroup.bind(topicXPath, "topicXPath");
@@ -237,6 +240,7 @@ public class TaskInfoComponent extends CustomComponent implements Broadcaster.Br
         fieldGroup.bind(contentXPath, "contentXPath");
         fieldGroup.bind(dateXPath, "dateXPath");
         fieldGroup.bind(userRatingXPath, "userRatingXPath");
+        fieldGroup.bind(locationXPath, "locationXPath");
         fieldGroup.bind(parseAttemptCounter, "parseAttemptCounter");
         componentContainer.addComponent(formControls);
     }

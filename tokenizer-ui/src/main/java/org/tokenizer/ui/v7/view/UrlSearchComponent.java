@@ -69,7 +69,7 @@ import com.vaadin.ui.VerticalLayout;
 
 @SuppressWarnings("serial")
 public class UrlSearchComponent extends CustomComponent {
-
+    
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(UrlSearchComponent.class);
     private static final int COMMON_FIELD_WIDTH = 48;
     private VerticalLayout mainLayout;
@@ -82,19 +82,19 @@ public class UrlSearchComponent extends CustomComponent {
     Component crawledContentTabSheet;
     WritableExecutorModel model;
     CrawlerRepository repository;
-
+    
     @Inject
     public UrlSearchComponent(final WritableExecutorModel model, final CrawlerRepository repository) {
         this.model = model;
         this.repository = repository;
-
+        
         buildMainLayout();
         setCompositionRoot(mainLayout);
         setCaption("Personal details");
         // mainLayout.setSizeFull();
-
+        
     }
-
+    
     private void buildMainLayout() {
         mainLayout = new VerticalLayout();
         mainLayout.setSpacing(true);
@@ -102,7 +102,7 @@ public class UrlSearchComponent extends CustomComponent {
         mainLayout.addComponent(buildSearchForm());
         mainLayout.addComponent(buildFormControls());
     }
-
+    
     private Component buildSearchForm() {
         ComponentContainer componentContainer = new FormLayout();
         FieldGroup fieldGroup = new FieldGroup();
@@ -120,11 +120,11 @@ public class UrlSearchComponent extends CustomComponent {
         fieldGroup.setBuffered(false);
         return componentContainer;
     }
-
+    
     private Component buildFormControls() {
         ComponentContainer formControls = new HorizontalLayout();
         Button search = new Button("Search", new Button.ClickListener() {
-
+            
             @Override
             public void buttonClick(final ClickEvent event) {
                 LOG.debug(myQuery.toString());
@@ -144,7 +144,7 @@ public class UrlSearchComponent extends CustomComponent {
         formControls.addComponent(search);
         return formControls;
     }
-
+    
     private void initialQuerySolr(final MyQuery q) {
         SolrServer solrServer = SolrUtils.getSolrServer();
         SolrQuery solrQuery = new SolrQuery();
@@ -152,8 +152,7 @@ public class UrlSearchComponent extends CustomComponent {
         try {
             Integer.parseInt(myQuery.getHttpStatus());
             solrQuery.setFilterQueries("httpStatus:" + myQuery.getHttpStatus());
-        } catch (NumberFormatException e) {
-        }
+        } catch (NumberFormatException e) {}
         solrQuery.setRows(0);
         solrQuery.setSortField("_docid_", ORDER.asc);
         try {
@@ -161,9 +160,9 @@ public class UrlSearchComponent extends CustomComponent {
         } catch (SolrServerException e) {
             LOG.error(e.getMessage());
         }
-
+        
     }
-
+    
     private Component buildSearchResults() {
         VerticalLayout layout = new VerticalLayout();
         final Table table = new Table(null);
@@ -177,12 +176,12 @@ public class UrlSearchComponent extends CustomComponent {
         lazyQueryContainer.addContainerProperty("host", String.class, "", true, false);
         lazyQueryContainer.addContainerProperty("highlightSnippet", String.class, "", true, false);
         table.setContainerDataSource(lazyQueryContainer);
-        table.setVisibleColumns(new String[] { "host", "highlightSnippet" });
-        table.setColumnHeaders(new String[] { "Host", "URL" });
+        table.setVisibleColumns(new String[] {"host", "highlightSnippet"});
+        table.setColumnHeaders(new String[] {"Host", "URL"});
         table.addValueChangeListener(new ValueChangeListener() {
-
+            
             private static final long serialVersionUID = 1L;
-
+            
             @Override
             public void valueChange(final ValueChangeEvent event) {
                 Object itemId = table.getValue();
@@ -200,7 +199,7 @@ public class UrlSearchComponent extends CustomComponent {
             }
         });
         table.addGeneratedColumn("highlightSnippet", new ColumnGenerator() {
-
+            
             @Override
             public Object generateCell(final Table source, final Object itemId, final Object columnId) {
                 final Item item = source.getItem(itemId);
@@ -219,7 +218,7 @@ public class UrlSearchComponent extends CustomComponent {
         layout.addComponent(label);
         return layout;
     }
-
+    
     private Component buildCrawledContentTabSheet() {
         Label htmlLabel;
         Label sourceLabel;
@@ -233,7 +232,7 @@ public class UrlSearchComponent extends CustomComponent {
         component.addTab(htmlPanel);
         sourceLabel = new Label();
         sourceLabel.setContentMode(ContentMode.PREFORMATTED);
-
+        
         Panel sourcePanel = new Panel("Source", sourceLabel);
         component.addTab(sourcePanel);
         // XML Snippets:
@@ -244,29 +243,29 @@ public class UrlSearchComponent extends CustomComponent {
         messageLayout = new VerticalLayout();
         Panel messages = new Panel("Parsed Messages", messageLayout);
         component.addTab(messages);
-
+        
         // component.setHeight(100, Unit.PERCENTAGE);
         component.setSizeUndefined();
-
+        
         // byte[] urlRecordDigest = MD5.hex2Byte(currentBean.id);
         WebpageRecord webpage = null;
         String html = null;
         try {
             UrlRecord urlRecord = repository.retrieveUrlRecord(currentBean.url);
-            // if (urlRecord.getWebpageDigest() == null || urlRecord.getWebpageDigest() == DefaultValues.EMPTY_ARRAY) {
+            // if (urlRecord.getWebpageDigest() == null ||
+            // urlRecord.getWebpageDigest() == DefaultValues.EMPTY_ARRAY) {
             // return component;
             // }
             webpage = repository.retrieveWebpageRecord(urlRecord.getWebpageDigest());
             if (webpage == null) {
                 return component;
             }
-
+            
             String charset = webpage.getCharset();
             html = new String(webpage.getContent(), charset);
-
+            
             LOG.debug("Charset: {}", charset);
-
-
+            
             List<XmlRecord> xmlRecords = repository.listXmlRecords(webpage.getXmlLinks());
             for (XmlRecord xmlRecord : xmlRecords) {
                 if (xmlRecord == null) {
@@ -285,83 +284,68 @@ public class UrlSearchComponent extends CustomComponent {
                 field.setReadOnly(true);
                 field.setWidth(COMMON_FIELD_WIDTH, Unit.EM);
                 form.addComponent(field);
-                
                 Label xmlSnippetLabel = new Label();
                 xmlSnippetLabel.setContentMode(ContentMode.PREFORMATTED);
                 xmlSnippetLabel.setValue(new String(xmlRecord.getContent(), "UTF-8"));
-                
-                TextArea text = new TextArea("Content");
-                
-                //text.setValue(new String(xmlRecord.getContent(), "UTF-8"));
-                //text.setReadOnly(true);
-                //text.setSizeFull();
-                //text.setRows(25);
                 form.addComponent(xmlSnippetLabel);
                 xmlLayout.addComponent(panel);
-                
             }
-
-            // TODO: !!!
-            List<MessageRecord> messageRecords = repository.listMessageRecords(new byte[0][0]);
-
+            
+            List<MessageRecord> messageRecords = repository.listMessageRecords(webpage.getXmlLinks());
+            
             for (MessageRecord messageRecord : messageRecords) {
                 if (messageRecord == null) {
                     continue;
                 }
                 FormLayout form = new FormLayout();
                 Panel panel = new Panel("Parsed Message", form);
-                TextField field = new TextField("Digest");
-                field.setValue(MD5.toHexString(messageRecord.getDigest()));
-                field.setReadOnly(true);
-                field.setWidth(COMMON_FIELD_WIDTH, Unit.EM);
-                form.addComponent(field);
-                field = new TextField("Host");
-                field.setValue(messageRecord.getHost());
-                field.setReadOnly(true);
-                field.setWidth(COMMON_FIELD_WIDTH, Unit.EM);
-                form.addComponent(field);
-                field = new TextField("Topic");
-                field.setValue(messageRecord.getTopic());
-                field.setReadOnly(true);
-                field.setWidth(COMMON_FIELD_WIDTH, Unit.EM);
-                form.addComponent(field);
-                field = new TextField("Date");
-                field.setValue(messageRecord.getDate());
-                field.setReadOnly(true);
-                field.setWidth(COMMON_FIELD_WIDTH, Unit.EM);
-                form.addComponent(field);
-                field = new TextField("Author");
-                field.setValue(messageRecord.getAuthor());
-                field.setReadOnly(true);
-                field.setWidth(COMMON_FIELD_WIDTH, Unit.EM);
-                form.addComponent(field);
-                field = new TextField("Age");
-                field.setValue(messageRecord.getAge());
-                field.setReadOnly(true);
-                field.setWidth(COMMON_FIELD_WIDTH, Unit.EM);
-                form.addComponent(field);
-                field = new TextField("Sex");
-                field.setValue(messageRecord.getSex());
-                field.setReadOnly(true);
-                field.setWidth(COMMON_FIELD_WIDTH, Unit.EM);
-                form.addComponent(field);
-                field = new TextField("Title");
-                field.setValue(messageRecord.getTitle());
-                field.setReadOnly(true);
-                form.addComponent(field);
-                field.setWidth(COMMON_FIELD_WIDTH, Unit.EM);
-                TextArea text = new TextArea("Content");
-                text.setValue(messageRecord.getContent());
-                text.setReadOnly(true);
-                text.setSizeFull();
-                text.setRows(25);
-                form.addComponent(text);
-                field = new TextField("User Rating");
-                field.setValue(messageRecord.getUserRating());
-                field.setReadOnly(true);
-                field.setWidth(COMMON_FIELD_WIDTH, Unit.EM);
-                form.addComponent(field);
+                
+                form.addComponent(new Label("MD5:"));
+                Label label = new Label(MD5.toHexString(messageRecord.getDigest()),ContentMode.PREFORMATTED);
+                form.addComponent(label);
+                
+                form.addComponent(new Label("Host:"));
+                label = new Label(messageRecord.getHost(),ContentMode.PREFORMATTED);
+                form.addComponent(label);
+                
+                form.addComponent(new Label("Topic:"));
+                label = new Label(messageRecord.getTopic(),ContentMode.PREFORMATTED);
+                form.addComponent(label);
+
+                form.addComponent(new Label("Date:"));
+                label = new Label(messageRecord.getDate(),ContentMode.PREFORMATTED);
+                form.addComponent(label);
+
+                form.addComponent(new Label("Author:"));
+                label = new Label(messageRecord.getAuthor(),ContentMode.PREFORMATTED);
+                form.addComponent(label);
+
+                form.addComponent(new Label("Age:"));
+                label = new Label(messageRecord.getAge(),ContentMode.PREFORMATTED);
+                form.addComponent(label);
+
+                form.addComponent(new Label("Sex:"));
+                label = new Label(messageRecord.getSex(),ContentMode.PREFORMATTED);
+                form.addComponent(label);
+
+                form.addComponent(new Label("Title:"));
+                label = new Label(messageRecord.getTitle(),ContentMode.PREFORMATTED);
+                form.addComponent(label);
+                
+                form.addComponent(new Label("Content:"));
+                label = new Label(messageRecord.getContent(),ContentMode.PREFORMATTED);
+                form.addComponent(label);
+
+                form.addComponent(new Label("User Rating:"));
+                label = new Label(messageRecord.getUserRating(),ContentMode.PREFORMATTED);
+                form.addComponent(label);
+                
+                form.addComponent(new Label("Location:"));
+                label = new Label(messageRecord.getLocation(),ContentMode.PREFORMATTED);
+                form.addComponent(label);
+ 
                 messageLayout.addComponent(panel);
+ 
             }
         } catch (ConnectionException e) {
             LOG.error("", e);
@@ -373,36 +357,36 @@ public class UrlSearchComponent extends CustomComponent {
         sourceLabel.setValue(html);
         return component;
     }
-
+    
     public class MyQuery implements Serializable {
-
+        
         private String query = "";
         private String httpStatus = "";
-
+        
         public String getHttpStatus() {
             return httpStatus;
         }
-
+        
         public void setHttpStatus(final String httpStatus) {
             this.httpStatus = httpStatus;
         }
-
+        
         public String getQuery() {
             return query;
         }
-
+        
         public void setQuery(final String query) {
             this.query = query;
         }
-
+        
         @Override
         public String toString() {
             return "MyQuery [query=" + query + ", httpStatus=" + httpStatus + "]";
         }
     }
-
+    
     public static class UrlBean {
-
+        
         @Field
         String id;
         @Field
@@ -410,51 +394,51 @@ public class UrlSearchComponent extends CustomComponent {
         @Field
         String url;
         String highlightSnippet;
-
+        
         public String getId() {
             return id;
         }
-
+        
         public void setId(final String id) {
             this.id = id;
         }
-
+        
         public String getHost() {
             return host;
         }
-
+        
         public void setHost(final String host) {
             this.host = host;
         }
-
+        
         public String getUrl() {
             return url;
         }
-
+        
         public void setUrl(final String url) {
             this.url = url;
         }
-
+        
         public String getHighlightSnippet() {
             return highlightSnippet;
         }
-
+        
         public void setHighlightSnippet(final String highlightSnippet) {
             this.highlightSnippet = highlightSnippet;
         }
-
+        
         @Override
         public String toString() {
             return "UrlBean [id=" + id + ", host=" + host + ", url=" + url + ", highlightSnippet=" + highlightSnippet
                     + "]";
         }
     }
-
+    
     public class UrlQuery implements Query {
-
+        
         SolrServer solrServer;
         long numFound = 0;
-
+        
         public UrlQuery() {
             solrServer = SolrUtils.getSolrServer();
             SolrQuery solrQuery = new SolrQuery();
@@ -462,8 +446,7 @@ public class UrlSearchComponent extends CustomComponent {
             try {
                 Integer.parseInt(myQuery.getHttpStatus());
                 solrQuery.setFilterQueries("httpStatus:" + myQuery.getHttpStatus());
-            } catch (NumberFormatException e) {
-            }
+            } catch (NumberFormatException e) {}
             solrQuery.setStart(0);
             solrQuery.setRows(0);
             solrQuery.setSortField("_docid_", ORDER.asc);
@@ -472,21 +455,20 @@ public class UrlSearchComponent extends CustomComponent {
                 queryResponse = solrServer.query(solrQuery);
                 numFound = queryResponse.getResults().getNumFound();
                 LOG.debug("PRE-Querying queryResponse: {}", queryResponse);
-            } catch (SolrServerException e) {
-            }
+            } catch (SolrServerException e) {}
         }
-
+        
         @Override
         public Item constructItem() {
             PropertysetItem item = new PropertysetItem();
             return item;
         }
-
+        
         @Override
         public boolean deleteAllItems() {
             throw new UnsupportedOperationException();
         }
-
+        
         @Override
         public List<Item> loadItems(final int startIndex, final int count) {
             LOG.debug("loadItems() called... startIndex: {}, count: {}", startIndex, count);
@@ -496,8 +478,7 @@ public class UrlSearchComponent extends CustomComponent {
             try {
                 Integer.parseInt(myQuery.getHttpStatus());
                 solrQuery.setFilterQueries("httpStatus:" + myQuery.getHttpStatus());
-            } catch (NumberFormatException e) {
-            }
+            } catch (NumberFormatException e) {}
             // solrQuery.setFacet(true);
             // solrQuery.setFacetMinCount(10);
             // solrQuery.addFacetField("host");
@@ -532,28 +513,28 @@ public class UrlSearchComponent extends CustomComponent {
             }
             return items;
         }
-
+        
         @Override
         public void saveItems(final List<Item> arg0, final List<Item> arg1, final List<Item> arg2) {
             throw new UnsupportedOperationException();
         }
-
+        
         @Override
         public int size() {
             return (int) numFound;
         }
     }
-
+    
     public class UrlQueryFactory implements QueryFactory {
-
+        
         private QueryDefinition queryDefinition;
-
+        
         @Override
         public Query constructQuery(final Object[] sortPropertyIds, final boolean[] ascendingStates) {
             LOG.debug("query constructor called...");
             return new UrlQuery();
         }
-
+        
         @Override
         public void setQueryDefinition(final QueryDefinition queryDefinition) {
             this.queryDefinition = queryDefinition;

@@ -42,7 +42,7 @@ import org.xml.sax.SAXException;
 import com.netflix.astyanax.connectionpool.exceptions.ConnectionException;
 
 public class MessageParserTask extends AbstractTask<MessageParserTaskConfiguration> {
-
+    
     // single thread only!
     private HXPathExpression topicXPathExpression;
     private HXPathExpression authorXPathExpression;
@@ -52,13 +52,14 @@ public class MessageParserTask extends AbstractTask<MessageParserTaskConfigurati
     private HXPathExpression contentXPathExpression;
     private HXPathExpression dateXPathExpression;
     private HXPathExpression userRatingXPathExpression;
-
+    private HXPathExpression locationXPathExpression;
+    
     public MessageParserTask(final UUID uuid, final String friendlyName, final ZooKeeperItf zk,
             final MessageParserTaskConfiguration taskConfiguration, final CrawlerRepository crawlerRepository,
             final WritableExecutorModel model, final HostLocker hostLocker) {
-
+        
         super(uuid, friendlyName, zk, taskConfiguration, crawlerRepository, model, hostLocker);
-
+        
         try {
             topicXPathExpression = new HXPathExpression(LocalXPathFactory.newXPath().compile(
                     this.taskConfiguration.getTopicXPath()));
@@ -107,14 +108,20 @@ public class MessageParserTask extends AbstractTask<MessageParserTaskConfigurati
         } catch (XPathExpressionException e) {
             LOG.warn(e.getMessage());
         }
+        try {
+            locationXPathExpression = new HXPathExpression(LocalXPathFactory.newXPath().compile(
+                    this.taskConfiguration.getLocationXPath()));
+        } catch (XPathExpressionException e) {
+            LOG.warn(e.getMessage());
+        }
         LOG.debug("Instance created");
     }
-
+    
     @Override
     protected void process() throws InterruptedException, ConnectionException {
         if (topicXPathExpression == null && authorXPathExpression == null && ageXPathExpression == null
                 && sexXPathExpression == null && userRatingXPathExpression == null && titleXPathExpression == null
-                && contentXPathExpression == null && dateXPathExpression == null) {
+                && contentXPathExpression == null && dateXPathExpression == null && locationXPathExpression == null) {
             return;
         }
         List<XmlRecord> xmlRecords = crawlerRepository.listXmlRecords(taskConfiguration.getHost(),
@@ -139,7 +146,7 @@ public class MessageParserTask extends AbstractTask<MessageParserTaskConfigurati
             }
         }
     }
-
+    
     public MessageRecord parse(final XmlRecord xmlRecord) throws XPathExpressionException,
             ParserConfigurationException, SAXException, IOException {
         InputStream is = new ByteArrayInputStream(xmlRecord.getContent());
@@ -155,10 +162,12 @@ public class MessageParserTask extends AbstractTask<MessageParserTaskConfigurati
         String author = (authorXPathExpression == null ? null : authorXPathExpression.evalAsString(node));
         String title = (titleXPathExpression == null ? null : titleXPathExpression.evalAsString(node));
         String content = (contentXPathExpression == null ? null : contentXPathExpression.evalAsString(node));
+        //content = content.replaceAll("\\s+", " ");
         String date = (dateXPathExpression == null ? null : dateXPathExpression.evalAsString(node));
         String age = (ageXPathExpression == null ? null : ageXPathExpression.evalAsString(node));
         String sex = (sexXPathExpression == null ? null : sexXPathExpression.evalAsString(node));
         String userRating = (userRatingXPathExpression == null ? null : userRatingXPathExpression.evalAsString(node));
+        String location = (locationXPathExpression == null ? null : locationXPathExpression.evalAsString(node));
         MessageRecord messageRecord = new MessageRecord(xmlRecord.getDigest(), author, title, content);
         messageRecord.setHost(xmlRecord.getHost());
         messageRecord.setTopic(topic);
@@ -166,7 +175,8 @@ public class MessageParserTask extends AbstractTask<MessageParserTaskConfigurati
         messageRecord.setAge(age);
         messageRecord.setSex(sex);
         messageRecord.setUserRating(userRating);
+        messageRecord.setLocation(location);
         return messageRecord;
     }
-
+    
 }
