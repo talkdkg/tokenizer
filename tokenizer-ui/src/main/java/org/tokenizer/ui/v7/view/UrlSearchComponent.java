@@ -266,8 +266,8 @@ public class UrlSearchComponent extends CustomComponent {
 
             LOG.debug("Charset: {}", charset);
 
-            // TODO: !!!
-            List<XmlRecord> xmlRecords = repository.listXmlRecords(new byte[0][0]);
+
+            List<XmlRecord> xmlRecords = repository.listXmlRecords(webpage.getXmlLinks());
             for (XmlRecord xmlRecord : xmlRecords) {
                 if (xmlRecord == null) {
                     continue;
@@ -285,13 +285,20 @@ public class UrlSearchComponent extends CustomComponent {
                 field.setReadOnly(true);
                 field.setWidth(COMMON_FIELD_WIDTH, Unit.EM);
                 form.addComponent(field);
+                
+                Label xmlSnippetLabel = new Label();
+                xmlSnippetLabel.setContentMode(ContentMode.PREFORMATTED);
+                xmlSnippetLabel.setValue(new String(xmlRecord.getContent(), "UTF-8"));
+                
                 TextArea text = new TextArea("Content");
-                text.setValue(new String(xmlRecord.getContent(), "UTF-8"));
-                text.setReadOnly(true);
-                text.setSizeFull();
-                text.setRows(25);
-                form.addComponent(text);
+                
+                //text.setValue(new String(xmlRecord.getContent(), "UTF-8"));
+                //text.setReadOnly(true);
+                //text.setSizeFull();
+                //text.setRows(25);
+                form.addComponent(xmlSnippetLabel);
                 xmlLayout.addComponent(panel);
+                
             }
 
             // TODO: !!!

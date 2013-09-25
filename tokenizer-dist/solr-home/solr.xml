@@ -2,7 +2,6 @@
 <solr persistent="false">
     <cores adminPath="/admin/cores" host="${host:}" hostPort="${jetty.port:8983}" hostContext="${hostContext:solr}">
         <core name="url_records" instanceDir="url_records" />
-<!--         <core name="messages" instanceDir="messages" />
- -->
+        <core name="messages" instanceDir="messages" />
     </cores>
 </solr>

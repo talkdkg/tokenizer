@@ -6,9 +6,9 @@
     <schemaFactory class="ClassicIndexSchemaFactory" />
     <updateHandler class="solr.DirectUpdateHandler2">
         <autoCommit>
-            <maxDocs>100000</maxDocs>
-            <maxTime>3600000</maxTime>
-            <openSearcher>false</openSearcher>
+            <maxDocs>1000</maxDocs>
+            <maxTime>30000</maxTime>
+            <openSearcher>true</openSearcher>
         </autoCommit>
         <updateLog>
             <str name="dir">/data/solr/url_records</str>

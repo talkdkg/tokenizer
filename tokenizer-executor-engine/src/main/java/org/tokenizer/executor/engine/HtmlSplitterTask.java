@@ -24,6 +24,7 @@ import javax.xml.xpath.XPathExpressionException;
 
 import org.apache.commons.lang.StringUtils;
 import org.tokenizer.core.parser.HtmlParser;
+import org.tokenizer.core.util.MD5;
 import org.tokenizer.core.util.xml.HXPathExpression;
 import org.tokenizer.core.util.xml.LocalXPathFactory;
 import org.tokenizer.crawler.db.CrawlerRepository;
@@ -38,98 +39,130 @@ import org.xml.sax.InputSource;
 
 import com.netflix.astyanax.connectionpool.exceptions.ConnectionException;
 
-public class HtmlSplitterTask extends AbstractTask<HtmlSplitterTaskConfiguration> {
+public class HtmlSplitterTask extends
+		AbstractTask<HtmlSplitterTaskConfiguration> {
 
-    // single thread only!
-    private HXPathExpression splitterXPathExpression = null;
+	// single thread only!
+	private HXPathExpression splitterXPathExpression = null;
 
-    public HtmlSplitterTask(final UUID uuid, final String friendlyName, final ZooKeeperItf zk,
-            final HtmlSplitterTaskConfiguration taskConfiguration, final CrawlerRepository crawlerRepository,
-            final WritableExecutorModel model, final HostLocker hostLocker) {
+	public HtmlSplitterTask(final UUID uuid, final String friendlyName,
+			final ZooKeeperItf zk,
+			final HtmlSplitterTaskConfiguration taskConfiguration,
+			final CrawlerRepository crawlerRepository,
+			final WritableExecutorModel model, final HostLocker hostLocker) {
 
-        super(uuid, friendlyName, zk, taskConfiguration, crawlerRepository, model, hostLocker);
+		super(uuid, friendlyName, zk, taskConfiguration, crawlerRepository,
+				model, hostLocker);
 
-        try {
-            splitterXPathExpression = new HXPathExpression(LocalXPathFactory.newXPath().compile(
-                    this.taskConfiguration.getXpath()));
-        } catch (XPathExpressionException e) {
-            LOG.error("", e);
-        }
+		try {
+			splitterXPathExpression = new HXPathExpression(LocalXPathFactory
+					.newXPath().compile(this.taskConfiguration.getXpath()));
+		} catch (XPathExpressionException e) {
+			LOG.error("", e);
+		}
 
-    }
+	}
 
-    @Override
-    protected void process() throws InterruptedException, ConnectionException {
-        if (splitterXPathExpression == null) {
-            return;
-        }
-        List<WebpageRecord> webpageRecords = crawlerRepository.listWebpageRecords(taskConfiguration.getHost(),
-                taskConfiguration.getSplitAttemptCounter(), 100);
-        for (WebpageRecord webpageRecord : webpageRecords) {
-            // yes, we encountered that when created dummy task with host=null:
-            if (webpageRecord == null) {
-                LOG.warn("webpageRecord is null, sleeping 60 seconds...");
-                Thread.sleep(60000);
-                continue;
-            }
-            //LOG.debug("processing URL: {}", webpageRecord.getUrl());
-            List<XmlRecord> xmlRecords = parse(webpageRecord);
-            webpageRecord.getXmlLinks().clear();
-            for (XmlRecord xmlRecord : xmlRecords) {
-                // LOG.warn("xmlRecord: {}", xmlRecord);
-                crawlerRepository.insertIfNotExist(xmlRecord);
-                metricsCache.increment(MetricsCache.XML_TOTAL_KEY);
-                webpageRecord.addXmlLink(xmlRecord.getDigest());
-            }
-            webpageRecord.incrementSplitAttemptCounter();
-            crawlerRepository.updateSplitAttemptCounterAndLinks(webpageRecord);
-            metricsCache.increment(MetricsCache.URL_TOTAL_KEY);
-        }
-        // to prevent spin-loop in case if no records available:
-        if (webpageRecords == null || webpageRecords.size() == 0) {
-            LOG.warn("Sleeping 60 seconds...");
-            Thread.sleep(60000);
-        }
-    }
+	@Override
+	protected void process() throws InterruptedException, ConnectionException {
+		if (splitterXPathExpression == null) {
+			return;
+		}
+		List<WebpageRecord> webpageRecords = crawlerRepository
+				.listWebpageRecords(taskConfiguration.getHost(),
+						taskConfiguration.getSplitAttemptCounter(), 100);
+		for (WebpageRecord webpageRecord : webpageRecords) {
+			// yes, we encountered that when created dummy task with host=null:
+			if (webpageRecord == null) {
+				LOG.warn("webpageRecord is null, sleeping 60 seconds...");
+				Thread.sleep(60000);
+				continue;
+			}
+			// LOG.debug("processing URL: {}", webpageRecord.getUrl());
+			List<XmlRecord> xmlRecords = parse(webpageRecord);
+			webpageRecord.getXmlLinks().clear();
+			if (xmlRecords == null) {
+				webpageRecord.incrementSplitAttemptCounter();
+				crawlerRepository.updateSplitAttemptCounterAndLinks(webpageRecord);
+				metricsCache.increment(MetricsCache.URL_TOTAL_KEY);
+				return;
+			}
+			for (XmlRecord xmlRecord : xmlRecords) {
+				// LOG.warn("xmlRecord: {}", xmlRecord);
+				crawlerRepository.insertIfNotExist(xmlRecord);
+				metricsCache.increment(MetricsCache.XML_TOTAL_KEY);
+				webpageRecord.addXmlLink(xmlRecord.getDigest());
+			}
+			webpageRecord.incrementSplitAttemptCounter();
+			crawlerRepository.updateSplitAttemptCounterAndLinks(webpageRecord);
+			metricsCache.increment(MetricsCache.URL_TOTAL_KEY);
+		}
+		// to prevent spin-loop in case if no records available:
+		if (webpageRecords == null || webpageRecords.size() == 0) {
+			LOG.warn("Sleeping 60 seconds...");
+			Thread.sleep(60000);
+		}
+	}
 
-    public List<XmlRecord> parse(final WebpageRecord page) {
-        return parse(page.getHost(), page.getContent(), page.getCharset());
-    }
+	public List<XmlRecord> parse(final WebpageRecord page) {
+		// try {
+		// tch (UnsupportedEncodingException e) {
+		// LOG.error("", e);
+		// }
 
-    public List<XmlRecord> parse(final String host, final byte[] content, final String charset) {
-        try {
-            LOG.trace("Processing HTML: {}", new String(content, charset));
-        } catch (UnsupportedEncodingException e) {
-            LOG.error("", e);
-        }
-        List<XmlRecord> results = new ArrayList<XmlRecord>();
-        InputStream is = new ByteArrayInputStream(content);
-        InputSource source = new InputSource(is);
-        source.setEncoding(charset);
-        Document document = HtmlParser.parse(source);
-        if (document == null) {
-            return null;
-        }
-        List<Node> nodes;
-        try {
-            nodes = splitterXPathExpression.evalAsNativeNodeList(document);
-        } catch (XPathExpressionException e) {
-            LOG.error(StringUtils.EMPTY, e);
-            return null;
-        }
-        for (Node node : nodes) {
-            String xml = HtmlParser.format(node);
-            LOG.trace("XML Snippet Retrieved:\n{}", xml);
-            XmlRecord record;
-            try {
-                record = new XmlRecord(host, xml.getBytes("UTF-8"));
-                results.add(record);
-                LOG.debug("XML record created: {}", record);
-            } catch (UnsupportedEncodingException e) {
-                LOG.error("", e);
-            }
-        }
-        return results;
-    }
+		String contentString = null;
+
+		if (LOG.isDebugEnabled()) {
+			try {
+				contentString = new String(page.getContent(), page.getCharset());
+			} catch (UnsupportedEncodingException e) {
+				LOG.error("", e);
+			}
+		}
+		LOG.trace("Processing HTML: {}", contentString);
+
+		List<XmlRecord> results = new ArrayList<XmlRecord>();
+		InputStream is = new ByteArrayInputStream(page.getContent());
+		InputSource inputSource = new InputSource(is);
+		LOG.debug("charset: {}", page.getCharset());
+		// iso-8859-1?
+
+		// May be a null parameter
+		//inputSource.setSystemId(MD5.toHexString(page.getDigest()));
+
+		// May be a null parameter
+		//inputSource.setPublicId(page.getBaseUrl());
+
+		
+		inputSource.setEncoding(page.getCharset());
+		
+		Document document = HtmlParser.parse(inputSource);
+		if (document == null) {
+			LOG.debug("Document is 'null'... Content size: {}", page.getContent().length);
+			LOG.debug("Last 200 characters: {}",
+					contentString.substring(contentString.length() - 200));
+			return null;
+		}
+		List<Node> nodes;
+		try {
+			nodes = splitterXPathExpression.evalAsNativeNodeList(document);
+		} catch (XPathExpressionException e) {
+			LOG.error(StringUtils.EMPTY, e);
+			return null;
+		}
+		for (Node node : nodes) {
+			String xml = HtmlParser.format(node);
+			LOG.debug("XML Snippet Retrieved:\n{}", xml);
+			XmlRecord record;
+			try {
+				record = new XmlRecord(page.getHost(), xml.getBytes("UTF-8"));
+				results.add(record);
+				LOG.debug("XML record created: {}", record);
+			} catch (UnsupportedEncodingException e) {
+				LOG.error("", e);
+			}
+		}
+		return results;
+	}
 
 }

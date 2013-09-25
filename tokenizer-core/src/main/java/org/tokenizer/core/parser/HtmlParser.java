@@ -15,16 +15,17 @@ package org.tokenizer.core.parser;
 
 import java.io.ByteArrayOutputStream;
 
-import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMResult;
-import javax.xml.transform.sax.SAXSource;
+import javax.xml.transform.sax.SAXTransformerFactory;
+import javax.xml.transform.sax.TransformerHandler;
 
 import org.apache.commons.lang.StringUtils;
+import org.ccil.cowan.tagsoup.HTMLSchema;
 import org.ccil.cowan.tagsoup.Parser;
+import org.ccil.cowan.tagsoup.Schema;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -39,105 +40,162 @@ import org.w3c.dom.traversal.NodeFilter;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXNotRecognizedException;
 import org.xml.sax.SAXNotSupportedException;
-import org.xml.sax.XMLReader;
 
 public class HtmlParser {
 
-    private static final LSSerializerFilter defaultLSSerializerFilter = new OutputFilter();
-    private static final Logger LOG = LoggerFactory.getLogger(HtmlParser.class);
+	private static final LSSerializerFilter defaultLSSerializerFilter = new OutputFilter();
+	private static final Logger LOG = LoggerFactory.getLogger(HtmlParser.class);
+	private static final Schema HTML_SCHEMA = new HTMLSchema();
 
-    public static Document parse(final InputSource inputSource) {
-        try {
-            XMLReader reader = new Parser();
-            reader.setFeature(Parser.namespacesFeature, false);
-            reader.setFeature(Parser.namespacePrefixesFeature, false);
-            reader.setFeature(Parser.ignoreBogonsFeature, true);
-            reader.setFeature(Parser.bogonsEmptyFeature, false);
-            Transformer transformer = TransformerFactory.newInstance().newTransformer();
-            DOMResult result = new DOMResult();
-            transformer.transform(new SAXSource(reader, inputSource), result);
-            Node htmlNode = result.getNode();
-            return (Document) htmlNode;
-        } catch (SAXNotRecognizedException e) {
-            LOG.error(StringUtils.EMPTY, e);
-        } catch (SAXNotSupportedException e) {
-            LOG.error(StringUtils.EMPTY, e);
-        } catch (TransformerConfigurationException e) {
-            LOG.error(StringUtils.EMPTY, e);
-        } catch (TransformerFactoryConfigurationError e) {
-            LOG.error(StringUtils.EMPTY, e);
-        } catch (TransformerException e) {
-            LOG.error(StringUtils.EMPTY, e);
-        }
-        return null;
-    }
+	public static Document parse(final InputSource inputSource) {
+		try {
+			Parser parser = new Parser();
+			parser.setFeature(Parser.namespacesFeature, false);
+			parser.setFeature(Parser.namespacePrefixesFeature, false);
+			parser.setProperty(org.ccil.cowan.tagsoup.Parser.schemaProperty,
+					HTML_SCHEMA);
+			parser.setFeature(Parser.ignoreBogonsFeature, true);
 
-    public static String format(final Node node) {
-        return format(node, defaultLSSerializerFilter);
-    }
+			SAXTransformerFactory stf = (SAXTransformerFactory) TransformerFactory
+					.newInstance();
 
-    public static String format(final Node node, final LSSerializerFilter filter) {
-        try {
-            DOMImplementationRegistry registry = DOMImplementationRegistry.newInstance();
-            DOMImplementationLS impl = (DOMImplementationLS) registry.getDOMImplementation("LS");
-            LSSerializer writer = impl.createLSSerializer();
-            writer.setFilter(filter);
-            // writer.getDomConfig().setParameter("format-pretty-print",
-            // Boolean.TRUE);
-            LSOutput output = impl.createLSOutput();
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            output.setByteStream(out);
-            writer.write(node, output);
-            String xmlStr = new String(out.toByteArray());
-            return xmlStr;
-        } catch (ClassCastException e) {
-            LOG.error(StringUtils.EMPTY, e);
-        } catch (ClassNotFoundException e) {
-            LOG.error(StringUtils.EMPTY, e);
-        } catch (InstantiationException e) {
-            LOG.error(StringUtils.EMPTY, e);
-        } catch (IllegalAccessException e) {
-            LOG.error(StringUtils.EMPTY, e);
-        }
-        return null;
-    }
-    // and using Saxon, as per Michael Kay
-    // http://stackoverflow.com/questions/6783225/tagsoup-and-xpath
-    // processor proc = new Processor();
-    // InputStream input = new FileInputStream("/tmp/g.html");
-    // XMLReader reader = new Parser();
-    // reader.setFeature(Parser.namespacesFeature, false);
-    // Source source = new SAXSource(parser, input);
-    //
-    // DocumentBuilder builder = proc.newDocumentBuilder();
-    // XdmNode input = builder.build(source);
-    //
-    // XPathCompiler compiler = proc.newXPathCompiler();
-    // XdmValue result = compiler.evaluate("//span", input);
-    // System.out.println(result.size());
+			TransformerHandler transformerHandler = stf.newTransformerHandler();
+
+			DOMResult domResult = new DOMResult();
+			transformerHandler.setResult(domResult);
+			parser.setContentHandler(transformerHandler);
+			parser.parse(inputSource);
+
+			return (Document) domResult.getNode();
+
+		} catch (SAXNotRecognizedException e) {
+			LOG.error(StringUtils.EMPTY, e);
+		} catch (SAXNotSupportedException e) {
+			LOG.error(StringUtils.EMPTY, e);
+		} catch (TransformerConfigurationException e) {
+			LOG.error(StringUtils.EMPTY, e);
+		} catch (TransformerFactoryConfigurationError e) {
+			LOG.error(StringUtils.EMPTY, e);
+		} catch (Throwable t) {
+			LOG.error("", t);
+		}
+
+		return null;
+	}
+
+	/*
+	 * 
+	 * public static Document parse2(final InputSource inputSource) {
+	 * 
+	 * SAX2DOM sax2dom = null;
+	 * 
+	 * try { sax2dom = new SAX2DOM(false); org.ccil.cowan.tagsoup.Parser parser
+	 * = new org.ccil.cowan.tagsoup.Parser();
+	 * 
+	 * // TIKA-528: Reuse share schema to avoid heavy instantiation
+	 * parser.setProperty(org.ccil.cowan.tagsoup.Parser.schemaProperty,
+	 * HTML_SCHEMA); // TIKA-599: Shared schema is thread-safe only if bogons
+	 * are ignored parser.setFeature(
+	 * org.ccil.cowan.tagsoup.Parser.ignoreBogonsFeature, true);
+	 * 
+	 * parser.setFeature(Parser.namespacesFeature, false);
+	 * parser.setFeature(Parser.namespacePrefixesFeature, false);
+	 * parser.setFeature(Parser.ignoreBogonsFeature, true);
+	 * parser.setFeature(Parser.bogonsEmptyFeature, false); //
+	 * parser.setProperty(Parser.autoDetectorProperty, false);
+	 * 
+	 * parser.setContentHandler(sax2dom);
+	 * 
+	 * // ransformer transformer = //
+	 * TransformerFactory.newInstance().newTransformer(); // DOMResult result =
+	 * new DOMResult(); // transformer.transform(new SAXSource(parser,
+	 * inputSource), // result); // Node htmlNode = result.getNode(); // return
+	 * (Document) htmlNode;
+	 * 
+	 * parser.parse(inputSource); Node doc = sax2dom.getDOM();
+	 * LOG.debug("{}",doc);
+	 * 
+	 * return (Document) doc;
+	 * 
+	 * } catch (ParserConfigurationException e) { // TODO Auto-generated catch
+	 * block e.printStackTrace(); } // Parse the HTML document catch
+	 * (SAXNotRecognizedException e) { // TODO Auto-generated catch block
+	 * e.printStackTrace(); } catch (SAXNotSupportedException e) { // TODO
+	 * Auto-generated catch block e.printStackTrace(); } catch (IOException e) {
+	 * // TODO Auto-generated catch block e.printStackTrace(); } catch
+	 * (SAXException e) { // TODO Auto-generated catch block
+	 * e.printStackTrace(); }
+	 * 
+	 * return null; }
+	 */
+
+	public static String format(final Node node) {
+		return format(node, defaultLSSerializerFilter);
+	}
+
+	public static String format(final Node node, final LSSerializerFilter filter) {
+		try {
+			DOMImplementationRegistry registry = DOMImplementationRegistry
+					.newInstance();
+			DOMImplementationLS impl = (DOMImplementationLS) registry
+					.getDOMImplementation("LS");
+			LSSerializer writer = impl.createLSSerializer();
+			writer.setFilter(filter);
+			writer.getDomConfig().setParameter("format-pretty-print",
+					Boolean.TRUE);
+			LSOutput output = impl.createLSOutput();
+			ByteArrayOutputStream out = new ByteArrayOutputStream();
+			output.setByteStream(out);
+			writer.write(node, output);
+			String xmlStr = new String(out.toByteArray());
+			return xmlStr;
+		} catch (ClassCastException e) {
+			LOG.error(StringUtils.EMPTY, e);
+		} catch (ClassNotFoundException e) {
+			LOG.error(StringUtils.EMPTY, e);
+		} catch (InstantiationException e) {
+			LOG.error(StringUtils.EMPTY, e);
+		} catch (IllegalAccessException e) {
+			LOG.error(StringUtils.EMPTY, e);
+		}
+		return null;
+	}
+	// and using Saxon, as per Michael Kay
+	// http://stackoverflow.com/questions/6783225/tagsoup-and-xpath
+	// processor proc = new Processor();
+	// InputStream input = new FileInputStream("/tmp/g.html");
+	// XMLReader reader = new Parser();
+	// reader.setFeature(Parser.namespacesFeature, false);
+	// Source source = new SAXSource(parser, input);
+	//
+	// DocumentBuilder builder = proc.newDocumentBuilder();
+	// XdmNode input = builder.build(source);
+	//
+	// XPathCompiler compiler = proc.newXPathCompiler();
+	// XdmValue result = compiler.evaluate("//span", input);
+	// System.out.println(result.size());
 }
 
 class OutputFilter implements LSSerializerFilter {
 
-    @Override
-    public short acceptNode(final Node n) {
-        if (n instanceof Element) {
-            Element element = (Element) n;
-            // Commented out: <a>Fuad</a>Efendi will become FuadEfendi (without
-            // spaces) and we do not need that...
-            // if (element.getTagName().equals("span")
-            // || element.getTagName().equals("b")
-            // || element.getTagName().equals("a")) {
-            // return NodeFilter.FILTER_SKIP;
-            // }
-            return NodeFilter.FILTER_ACCEPT;
-        }
-        else
-            return NodeFilter.FILTER_SKIP;
-    }
+	@Override
+	public short acceptNode(final Node n) {
+		if (n instanceof Element) {
+			Element element = (Element) n;
+			// Commented out: <a>Fuad</a>Efendi will become FuadEfendi (without
+			// spaces) and we do not need that...
+			// if (element.getTagName().equals("span")
+			// || element.getTagName().equals("b")
+			// || element.getTagName().equals("a")) {
+			// return NodeFilter.FILTER_SKIP;
+			// }
+			return NodeFilter.FILTER_ACCEPT;
+		} else
+			return NodeFilter.FILTER_SKIP;
+	}
 
-    @Override
-    public int getWhatToShow() {
-        return NodeFilter.SHOW_ELEMENT + NodeFilter.SHOW_ATTRIBUTE;
-    }
+	@Override
+	public int getWhatToShow() {
+		return NodeFilter.SHOW_ELEMENT + NodeFilter.SHOW_ATTRIBUTE;
+	}
 }
