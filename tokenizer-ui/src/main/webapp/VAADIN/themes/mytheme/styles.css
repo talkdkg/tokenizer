@@ -1,8 +1,10 @@
 @import "../reindeer/legacy-styles.css";
 
- em {
-    color: blue;
-    font-style: normal;
-   
+em {
+	color: blue;
+	font-style: normal;
 }
- 
+
+.v-label-mystyle {
+	white-space: pre-wrap;
+}

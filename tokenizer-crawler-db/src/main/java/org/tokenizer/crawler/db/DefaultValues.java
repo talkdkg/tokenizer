@@ -16,6 +16,7 @@ package org.tokenizer.crawler.db;
 import java.util.Date;
 
 import org.apache.tika.metadata.Metadata;
+import org.tokenizer.nlp.TextImpl;
 
 public interface DefaultValues {
 
@@ -26,5 +27,6 @@ public interface DefaultValues {
     public static final String ASCII_CHARSET = "US-ASCII";
     public static final Metadata EMPTY_METADATA = new Metadata();
     public static final int ZERO = 0;
+    public static final TextImpl EMPTY_REVIEW = new TextImpl();
 
 }

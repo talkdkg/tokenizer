@@ -48,6 +48,7 @@ import org.tokenizer.crawler.db.model.WebpageRecord;
 import org.tokenizer.crawler.db.model.XmlRecord;
 import org.tokenizer.nlp.NlpTools;
 import org.tokenizer.nlp.Text;
+import org.tokenizer.nlp.TextImpl;
 
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableMap;
@@ -631,7 +632,11 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
                                                     ImmutableMap.<String,Object> builder()
                                                             .put("validation_class",
                                                                     "UTF8Type")
-                                                            .build()).build())
+                                                            .build())
+                                            .put("reviewText",
+                                                    ImmutableMap.<String,Object> builder()
+                                                            .put("validation_class",
+                                                                    "BytesType").build()).build())
                             .build());
         }
         
@@ -1153,6 +1158,10 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
     }
     
     protected void insert(final MessageRecord messageRecord) throws ConnectionException {
+        
+        Text reviewText = nlpTools.process(messageRecord.getContent());
+        messageRecord.setReviewText((TextImpl)reviewText);
+        
         MutationBatch m = keyspace.prepareMutationBatch();
         m.withRow(CF_MESSAGE_RECORDS, messageRecord.getDigest())
                 .putColumn("host", messageRecord.getHost(), null)
@@ -1164,7 +1173,8 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
                 .putColumn("title", messageRecord.getTitle(), null)
                 .putColumn("content", messageRecord.getContent(), null)
                 .putColumn("userRating", messageRecord.getUserRating(), null)
-                .putColumn("location", messageRecord.getLocation(), null);
+                .putColumn("location", messageRecord.getLocation(), null)
+                .putColumn("reviewText", JavaSerializationUtils.serialize(messageRecord.getReviewText()), null);
         m.execute();
     }
     
@@ -1423,8 +1433,14 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
         String content = columns.getStringValue("content", null);
         String userRating = columns.getStringValue("userRating", null);
         String location = columns.getStringValue("location", null);
+        final TextImpl reviewText = (TextImpl) JavaSerializationUtils.deserialize(columns.getByteArrayValue(
+                "reviewText", null));
+
         MessageRecord messageRecord = new MessageRecord(digest, host, topic, date, author, age, sex, title, content, userRating,
                 location);
+        
+        messageRecord.setReviewText(reviewText);
+        
         return messageRecord;
     }
     
@@ -1573,7 +1589,7 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
         doc.addField("userRating_s", messageRecord.getUserRating());
         doc.addField("location_s", messageRecord.getLocation());
         
-        Text text = nlpTools.process(messageRecord.getContent());
+        Text text = messageRecord.getReviewText();
         
         Set<String> features = text.getFeatures();
         

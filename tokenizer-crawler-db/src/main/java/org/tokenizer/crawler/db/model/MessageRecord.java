@@ -20,6 +20,7 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.tokenizer.core.util.MD5;
 import org.tokenizer.crawler.db.DefaultValues;
+import org.tokenizer.nlp.TextImpl;
 
 public class MessageRecord implements Serializable {
     
@@ -38,6 +39,7 @@ public class MessageRecord implements Serializable {
     private String content = DefaultValues.EMPTY_STRING;
     private String userRating = DefaultValues.EMPTY_STRING;
     private String location = DefaultValues.EMPTY_STRING;
+    private TextImpl reviewText = DefaultValues.EMPTY_REVIEW;
     
     private static final DateTimeFormatter fmt = DateTimeFormat
             .forPattern("MMMM d, yyyy");
@@ -117,7 +119,7 @@ public class MessageRecord implements Serializable {
             
             try {
                 DateTime dt = fmt.parseDateTime(date);
-                 return TWITTER_DATE_FORMATTER.print(dt);
+                return TWITTER_DATE_FORMATTER.print(dt);
             } catch (IllegalArgumentException e2) {
                 LOG.error("Can't parse date: {}", date);
             }
@@ -185,6 +187,14 @@ public class MessageRecord implements Serializable {
     
     public void setLocation(String location) {
         if (location != null) this.location = location;
+    }
+    
+    public TextImpl getReviewText() {
+        return reviewText;
+    }
+    
+    public void setReviewText(TextImpl reviewText) {
+        if (reviewText != null) this.reviewText = reviewText;
     }
     
     @Override

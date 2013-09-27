@@ -118,7 +118,7 @@ public class MyGuiceServletContextListener extends GuiceServletContextListener {
 
         baseModules.add(new JpaPersistModule("default-persistence-unit"));
 
-        baseModules.add(new PersistenceServicesModule());
+        //baseModules.add(new PersistenceServicesModule());
 
         baseModules.add(new ThreadScopeModule());
         baseModules.add(new UIScopeModule());

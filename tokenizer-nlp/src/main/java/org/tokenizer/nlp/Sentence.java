@@ -18,12 +18,16 @@ import java.util.Set;
 
 public interface Sentence {
     Set<String> getFeatures();
-
+    
+    void addFeature(String feature);
+    
     String getSentence();
 
     String getTreebank();
 
     List<String> getChunks();
 
+    void addChunk(String chunk);
+    
     int getSentiment();
 }

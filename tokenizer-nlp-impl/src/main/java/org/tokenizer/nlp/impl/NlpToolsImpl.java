@@ -15,6 +15,7 @@ package org.tokenizer.nlp.impl;
 
 import org.tokenizer.nlp.NlpTools;
 import org.tokenizer.nlp.Text;
+import org.tokenizer.nlp.TextImpl;
 
 /**
  *

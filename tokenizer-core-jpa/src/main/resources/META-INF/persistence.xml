@@ -11,7 +11,7 @@
             <property name="hibernate.show_sql" value="true" />
             <property name="hibernate.connection.url" value="jdbc:mysql://localhost/tokenizer?autoReconnect=true" />
             <property name="hibernate.connection.driver_class" value="com.mysql.jdbc.Driver" />
-            <property name="hibernate.connection.username" value="root" />
+            <property name="hibernate.connection.username" value="tokenizer" />
             <property name="hibernate.connection.password" value="" />
             <property name="hibernate.max_fetch_depth" value="0" />
         </properties>

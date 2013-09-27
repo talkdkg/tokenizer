@@ -24,17 +24,17 @@ import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.beans.Field;
 import org.apache.solr.client.solrj.response.QueryResponse;
-import org.apache.tika.utils.CharsetUtils;
 import org.tokenizer.core.solr.SolrUtils;
-import org.tokenizer.core.util.HttpUtils;
 import org.tokenizer.core.util.MD5;
 import org.tokenizer.crawler.db.CrawlerRepository;
-import org.tokenizer.crawler.db.DefaultValues;
 import org.tokenizer.crawler.db.model.MessageRecord;
 import org.tokenizer.crawler.db.model.UrlRecord;
 import org.tokenizer.crawler.db.model.WebpageRecord;
 import org.tokenizer.crawler.db.model.XmlRecord;
 import org.tokenizer.executor.model.api.WritableExecutorModel;
+import org.tokenizer.nlp.Sentence;
+import org.tokenizer.nlp.SentenceImpl;
+import org.tokenizer.nlp.TextImpl;
 import org.vaadin.addons.lazyquerycontainer.LazyQueryContainer;
 import org.vaadin.addons.lazyquerycontainer.Query;
 import org.vaadin.addons.lazyquerycontainer.QueryDefinition;
@@ -63,7 +63,6 @@ import com.vaadin.ui.Panel;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Table.ColumnGenerator;
-import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 
@@ -298,54 +297,132 @@ public class UrlSearchComponent extends CustomComponent {
                     continue;
                 }
                 FormLayout form = new FormLayout();
-                Panel panel = new Panel("Parsed Message", form);
+                VerticalLayout layout = new VerticalLayout();
+                layout.addComponent(form);
+                Panel panel = new Panel("Parsed Message", layout);
+                panel.setWidth("100%");
+                layout.setWidth("100%");
+                form.setWidth("100%");
                 
                 form.addComponent(new Label("MD5:"));
-                Label label = new Label(MD5.toHexString(messageRecord.getDigest()),ContentMode.PREFORMATTED);
+                Label label = new Label(MD5.toHexString(messageRecord.getDigest()), ContentMode.TEXT);
                 form.addComponent(label);
+                label.addStyleName("mystyle");
+                label.setWidth("100%");
                 
                 form.addComponent(new Label("Host:"));
-                label = new Label(messageRecord.getHost(),ContentMode.PREFORMATTED);
+                label = new Label(messageRecord.getHost(), ContentMode.TEXT);
                 form.addComponent(label);
+                label.addStyleName("mystyle");
+                label.setWidth("100%");
                 
                 form.addComponent(new Label("Topic:"));
-                label = new Label(messageRecord.getTopic(),ContentMode.PREFORMATTED);
+                label = new Label(messageRecord.getTopic(), ContentMode.TEXT);
                 form.addComponent(label);
-
+                label.addStyleName("mystyle");
+                label.setWidth("100%");
+                
                 form.addComponent(new Label("Date:"));
-                label = new Label(messageRecord.getDate(),ContentMode.PREFORMATTED);
+                label = new Label(messageRecord.getDate(), ContentMode.TEXT);
                 form.addComponent(label);
-
+                label.addStyleName("mystyle");
+                label.setWidth("100%");
+                
                 form.addComponent(new Label("Author:"));
-                label = new Label(messageRecord.getAuthor(),ContentMode.PREFORMATTED);
+                label = new Label(messageRecord.getAuthor(), ContentMode.TEXT);
                 form.addComponent(label);
-
+                label.addStyleName("mystyle");
+                label.setWidth("100%");
+                
                 form.addComponent(new Label("Age:"));
-                label = new Label(messageRecord.getAge(),ContentMode.PREFORMATTED);
+                label = new Label(messageRecord.getAge(), ContentMode.TEXT);
                 form.addComponent(label);
-
+                label.addStyleName("mystyle");
+                label.setWidth("100%");
+                
                 form.addComponent(new Label("Sex:"));
-                label = new Label(messageRecord.getSex(),ContentMode.PREFORMATTED);
+                label = new Label(messageRecord.getSex(), ContentMode.TEXT);
                 form.addComponent(label);
-
+                label.addStyleName("mystyle");
+                label.setWidth("100%");
+                
                 form.addComponent(new Label("Title:"));
-                label = new Label(messageRecord.getTitle(),ContentMode.PREFORMATTED);
+                label = new Label(messageRecord.getTitle(), ContentMode.TEXT);
                 form.addComponent(label);
+                label.addStyleName("mystyle");
+                label.setWidth("100%");
                 
                 form.addComponent(new Label("Content:"));
-                label = new Label(messageRecord.getContent(),ContentMode.PREFORMATTED);
+                label = new Label(messageRecord.getContent(), ContentMode.TEXT);
                 form.addComponent(label);
-
+                label.addStyleName("mystyle");
+                label.setWidth("100%");
+                
                 form.addComponent(new Label("User Rating:"));
-                label = new Label(messageRecord.getUserRating(),ContentMode.PREFORMATTED);
+                label = new Label(messageRecord.getUserRating(), ContentMode.TEXT);
                 form.addComponent(label);
+                label.addStyleName("mystyle");
+                label.setWidth("100%");
                 
                 form.addComponent(new Label("Location:"));
-                label = new Label(messageRecord.getLocation(),ContentMode.PREFORMATTED);
+                label = new Label(messageRecord.getLocation(), ContentMode.TEXT);
                 form.addComponent(label);
- 
+                label.addStyleName("mystyle");
+                label.setWidth("100%");
+                
+                TextImpl reviewText = messageRecord.getReviewText();
+                
+                for (Sentence s : reviewText.getSentences()) {
+                    form.addComponent(new Label("=================================="));
+                    form.addComponent(new Label("Sentence:"));
+                    
+                    Label l = new Label(s.getSentence(), ContentMode.TEXT);
+                    form.addComponent(l);
+                    l.addStyleName("mystyle");
+                    l.setWidth("100%");
+                    
+                    form.addComponent(new Label("Features:"));
+                    l = new Label(s.getFeatures().toString(), ContentMode.TEXT);
+                    form.addComponent(l);
+                    l.addStyleName("mystyle");
+                    l.setWidth("100%");
+                    
+                    form.addComponent(new Label("Chunks:"));
+                    l = new Label(s.getChunks().toString(), ContentMode.TEXT);
+                    form.addComponent(l);
+                    l.addStyleName("mystyle");
+                    l.setWidth("100%");
+                    
+                    form.addComponent(new Label("Treebank:"));
+                    l = new Label(s.getTreebank().toString(), ContentMode.TEXT);
+                    form.addComponent(l);
+                    l.addStyleName("mystyle");
+                    l.setWidth("100%");
+                    
+                    form.addComponent(new Label("Sentiment:"));
+                    l = new Label("" + s.getSentiment(), ContentMode.TEXT);
+                    form.addComponent(l);
+                    l.addStyleName("mystyle");
+                    l.setWidth("100%");
+                    
+                }
+                
+                form.addComponent(new Label("=================================="));
+                form.addComponent(new Label("=================================="));
+                form.addComponent(new Label("Total Features:"));
+                label = new Label(reviewText.getFeatures().toString(), ContentMode.TEXT);
+                form.addComponent(label);
+                label.addStyleName("mystyle");
+                label.setWidth("100%");
+                
+                form.addComponent(new Label("Total Sentiment:"));
+                label = new Label("" + reviewText.getSentiment(), ContentMode.TEXT);
+                form.addComponent(label);
+                label.addStyleName("mystyle");
+                label.setWidth("100%");
+                
                 messageLayout.addComponent(panel);
- 
+                
             }
         } catch (ConnectionException e) {
             LOG.error("", e);
