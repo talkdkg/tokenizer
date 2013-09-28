@@ -55,6 +55,7 @@
 		<version.spring>3.2.0.RELEASE</version.spring>
 		<version.tagsoup>1.2.1</version.tagsoup>
 		<testng.version>6.8.5</testng.version>
+		<version.thrift>0.9.1</version.thrift>
 		<version.tika>1.4</version.tika>
 		<version.twitter4j>3.0.3</version.twitter4j>
 		<addonBaseName>dontpush-addon</addonBaseName>
@@ -468,6 +469,17 @@
 					<exclusion>
 						<artifactId>slf4j-jdk14</artifactId>
 						<groupId>org.slf4j</groupId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.thrift</groupId>
+				<artifactId>libthrift</artifactId>
+				<version>${version.thrift}</version>
+				<exclusions>
+					<exclusion>
+						<artifactId>httpcore</artifactId>
+						<groupId>org.apache.httpcomponents</groupId>
 					</exclusion>
 				</exclusions>
 			</dependency>
