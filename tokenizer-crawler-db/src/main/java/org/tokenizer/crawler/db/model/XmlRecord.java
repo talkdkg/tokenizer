@@ -14,6 +14,7 @@
 package org.tokenizer.crawler.db.model;
 
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.Date;
 
@@ -122,8 +123,14 @@ public class XmlRecord implements Serializable {
 
     @Override
     public String toString() {
-        return "XmlRecord [digest=" + Arrays.toString(digest) + ", timestamp=" + timestamp + ", host=" + host
-                + ", content=" + Arrays.toString(content) + ", parseAttemptCounter=" + parseAttemptCounter + "]";
+        try {
+            return "XmlRecord [digest=" + Arrays.toString(digest) + ", timestamp=" + timestamp + ", host=" + host
+                    + ", content=" + new String(content, "UTF-8") + ", parseAttemptCounter=" + parseAttemptCounter + "]";
+        } catch (UnsupportedEncodingException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return null;
     }
 
 }

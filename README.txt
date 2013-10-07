@@ -24,6 +24,52 @@ Then, deploy tokenizer-ui WAR file to Tomcat 7.0.32; it uses Vaadin, Atmosphere 
 As a minimum, you need ZooKeeper and Cassandra available at localhost. Tokenizer CA is distributed engine: you can have as many JVMs as you want; everything is managed via ZooKeeper. You can have huge cluster of executors, plus Cassandra, and single management point: Tomcat-based UI (and, in a future, command line UI). For details, see WIKI.
 
 
+### XPATH ###
+http://www.qutoric.com/xslt/analyser/xpathtool.html
+
+Trip Advisor:
+
+Splitter:
+//div[starts-with(@id, 'review')]
+
+Message Processor:
+
+topicXPath
+null
+
+authorXPath
+//div[starts-with(@class, 'username')]/span/text()
+
+	
+ageXPath
+null	
+	
+sexXPath
+null	
+	
+titleXPath
+//div[@class='quote']/a/text()	
+	
+contentXPath
+//div[@class='entry']/p/text()[1]
+	
+	
+dateXPath
+substring-after(//span[@class='ratingDate'],'Reviewed ')
+
+	
+userRatingXPath
+//img[@class='sprite-ratings']/@content
+
+	
+	
+locationXPath
+//div[@class='location']/text()
+
+
+
+
+
 XPath Samples:
 www.amazon.com splitter
 //table[@id='productReviews']//td/div
@@ -77,4 +123,8 @@ http://ask.metafilter.com/50594/Asking-a-girl-out-on-a-second-date
 fetched_result_records
 url_head_records
 host_records
+
+
+
+
 

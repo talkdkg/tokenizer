@@ -43,7 +43,7 @@ import org.xml.sax.SAXNotSupportedException;
 
 public class HtmlParser {
 
-	private static final LSSerializerFilter defaultLSSerializerFilter = new OutputFilter();
+	private static final LSSerializerFilter defaultLSSerializerFilter = new NoOutputFilter();
 	private static final Logger LOG = LoggerFactory.getLogger(HtmlParser.class);
 	private static final Schema HTML_SCHEMA = new HTMLSchema();
 
@@ -82,52 +82,6 @@ public class HtmlParser {
 
 		return null;
 	}
-
-	/*
-	 * 
-	 * public static Document parse2(final InputSource inputSource) {
-	 * 
-	 * SAX2DOM sax2dom = null;
-	 * 
-	 * try { sax2dom = new SAX2DOM(false); org.ccil.cowan.tagsoup.Parser parser
-	 * = new org.ccil.cowan.tagsoup.Parser();
-	 * 
-	 * // TIKA-528: Reuse share schema to avoid heavy instantiation
-	 * parser.setProperty(org.ccil.cowan.tagsoup.Parser.schemaProperty,
-	 * HTML_SCHEMA); // TIKA-599: Shared schema is thread-safe only if bogons
-	 * are ignored parser.setFeature(
-	 * org.ccil.cowan.tagsoup.Parser.ignoreBogonsFeature, true);
-	 * 
-	 * parser.setFeature(Parser.namespacesFeature, false);
-	 * parser.setFeature(Parser.namespacePrefixesFeature, false);
-	 * parser.setFeature(Parser.ignoreBogonsFeature, true);
-	 * parser.setFeature(Parser.bogonsEmptyFeature, false); //
-	 * parser.setProperty(Parser.autoDetectorProperty, false);
-	 * 
-	 * parser.setContentHandler(sax2dom);
-	 * 
-	 * // ransformer transformer = //
-	 * TransformerFactory.newInstance().newTransformer(); // DOMResult result =
-	 * new DOMResult(); // transformer.transform(new SAXSource(parser,
-	 * inputSource), // result); // Node htmlNode = result.getNode(); // return
-	 * (Document) htmlNode;
-	 * 
-	 * parser.parse(inputSource); Node doc = sax2dom.getDOM();
-	 * LOG.debug("{}",doc);
-	 * 
-	 * return (Document) doc;
-	 * 
-	 * } catch (ParserConfigurationException e) { // TODO Auto-generated catch
-	 * block e.printStackTrace(); } // Parse the HTML document catch
-	 * (SAXNotRecognizedException e) { // TODO Auto-generated catch block
-	 * e.printStackTrace(); } catch (SAXNotSupportedException e) { // TODO
-	 * Auto-generated catch block e.printStackTrace(); } catch (IOException e) {
-	 * // TODO Auto-generated catch block e.printStackTrace(); } catch
-	 * (SAXException e) { // TODO Auto-generated catch block
-	 * e.printStackTrace(); }
-	 * 
-	 * return null; }
-	 */
 
 	public static String format(final Node node) {
 		return format(node, defaultLSSerializerFilter);
@@ -198,4 +152,17 @@ class OutputFilter implements LSSerializerFilter {
 	public int getWhatToShow() {
 		return NodeFilter.SHOW_ELEMENT + NodeFilter.SHOW_ATTRIBUTE;
 	}
+}
+
+class NoOutputFilter implements LSSerializerFilter {
+
+    @Override
+    public short acceptNode(final Node n) {
+             return NodeFilter.FILTER_ACCEPT;
+    }
+
+    @Override
+    public int getWhatToShow() {
+        return NodeFilter.SHOW_ALL;
+    }
 }

@@ -14,6 +14,7 @@
 package org.tokenizer;
 
 import java.util.Date;
+import java.util.List;
 
 import org.apache.thrift.TException;
 import org.apache.thrift.protocol.TBinaryProtocol;
@@ -23,9 +24,10 @@ import org.apache.thrift.transport.TTransportException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tokenizer.core.TokenizerConfig;
-import org.tokenizer.thrift.ThriftMessageRecord;
+import org.tokenizer.thrift.Gender;
 import org.tokenizer.thrift.ThriftQueryResponse;
 import org.tokenizer.thrift.ThriftTokenizerService;
+import org.tokenizer.thrift.TokenizerDocument;
 
 public class TokenizerClient {
 
@@ -131,17 +133,63 @@ public class TokenizerClient {
         return result;
     }
 
+    public static ThriftQueryResponse retrieveMessages(
+            final String query, 
+            final int start, 
+            final int rows,
+            final long startTime, // see Date.getTime()
+            final long endTime,
+            final List<String> sources,
+            final List<String> countryCodes,
+            final int startAge,
+            final int endAge,
+            final Gender gender,
+            final List<String> languageCodes
+            ) {
+        TSocket transport = null;
+        ThriftQueryResponse result = null;
+        try {
+            transport = new TSocket(HOST, PORT);
+            TProtocol protocol = new TBinaryProtocol(transport);
+            ThriftTokenizerService.Client client = new ThriftTokenizerService.Client(protocol);
+            transport.open();
+            result = client.retrieve_messages(query, 
+                    start, 
+                    rows, 
+                    startTime, 
+                    endTime, 
+                    sources, 
+                    countryCodes,
+                    startAge,
+                    endAge,
+                    gender,
+                    languageCodes);
+        } catch (TTransportException e) {
+            LOG.error("", e);
+        } catch (TException e) {
+            LOG.error("", e);
+        } finally {
+            if (transport != null) {
+                transport.close();
+            }
+            transport = null;
+        }
+
+        return result;
+    }
+
+    
     public static void main(final String[] args) {
 
         long oneMonthMillis = 30 * 24 * 3600 * 1000L;
 
         // get 10 records from record number 30 to 39:
-        ThriftQueryResponse r = getMessageRecords("travel", 30, 10);
+        ThriftQueryResponse r = getMessageRecords("product", 30, 100);
         // System.out.println("Error: " + r.error);
         System.out.println("Elapsed Time: " + r.elapsedTime);
         System.out.println("Number of records found: " + r.numFound);
-        for (ThriftMessageRecord tmr : r.getMessages()) {
-            System.out.println(tmr);
+        for (TokenizerDocument tmr : r.getDocuments()) {
+       //     System.out.println(tmr);
         }
 
         // get 10 records from record number 0 to 9
@@ -150,8 +198,8 @@ public class TokenizerClient {
         // System.out.println("Error: " + r.error);
         System.out.println("Elapsed Time: " + r.elapsedTime);
         System.out.println("Number of records found: " + r.numFound);
-        for (ThriftMessageRecord tmr : r.getMessages()) {
-            System.out.println(tmr);
+        for (TokenizerDocument tmr : r.getDocuments()) {
+        //    System.out.println(tmr);
         }
 
         // get 10 records from record number 0 to 9
@@ -162,8 +210,8 @@ public class TokenizerClient {
         // System.out.println("Error: " + r.error);
         System.out.println("Elapsed Time: " + r.elapsedTime);
         System.out.println("Number of records found: " + r.numFound);
-        for (ThriftMessageRecord tmr : r.getMessages()) {
-            System.out.println(tmr);
+        for (TokenizerDocument tmr : r.getDocuments()) {
+       //     System.out.println(tmr);
         }
 
         // get 10 records from record number 0 to 9
@@ -172,8 +220,8 @@ public class TokenizerClient {
         // System.out.println("Error: " + r.error);
         System.out.println("Elapsed Time: " + r.elapsedTime);
         System.out.println("Number of records found: " + r.numFound);
-        for (ThriftMessageRecord tmr : r.getMessages()) {
-            System.out.println(tmr);
+        for (TokenizerDocument tmr : r.getDocuments()) {
+        //    System.out.println(tmr);
         }
 
         System.out.println(new Date(1361328830000L));

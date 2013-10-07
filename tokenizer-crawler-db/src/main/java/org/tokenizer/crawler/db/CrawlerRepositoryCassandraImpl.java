@@ -218,10 +218,16 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
                 .withAstyanaxConfiguration(new AstyanaxConfigurationImpl().setTargetCassandraVersion("1.2"))
                 .withConnectionPoolConfiguration(
                         new ConnectionPoolConfigurationImpl("MyConnectionPool").setPort(port)
-                                .setMaxConnsPerHost(16).setSeeds(seeds))
+                                .setSocketTimeout(30000)
+                                .setConnectTimeout(60000)
+                                .setTimeoutWindow(300000) // Shut down a host if
+                                                          // it times out too
+                                                          // many times within
+                                                          // this window (?)
+                                .setMaxConnsPerHost(256).setSeeds(seeds))
                 .withConnectionPoolMonitor(new CountingConnectionPoolMonitor())
                 .buildKeyspace(ThriftFamilyFactory.getInstance());
-        
+
         keyspaceContext.start();
         
         keyspace = keyspaceContext.getClient();
@@ -1052,6 +1058,14 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
         ColumnList<String> columns = result.getResult();
         return toWebpageRecord(digest, columns);
     }
+    
+    @Override
+    public MessageRecord retrieveMessageRecord(final byte[] digest) throws ConnectionException {
+        OperationResult<ColumnList<String>> result = keyspace.prepareQuery(CF_MESSAGE_RECORDS).getKey(digest).execute();
+        ColumnList<String> columns = result.getResult();
+        return toMessageRecord(digest, columns);
+    }
+
     
     @Override
     @Deprecated

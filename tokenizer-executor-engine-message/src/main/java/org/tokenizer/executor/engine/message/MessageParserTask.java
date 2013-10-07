@@ -42,7 +42,10 @@ import org.xml.sax.SAXException;
 import com.netflix.astyanax.connectionpool.exceptions.ConnectionException;
 
 public class MessageParserTask extends AbstractTask<MessageParserTaskConfiguration> {
-    
+ 
+    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory
+            .getLogger(MessageParserTask.class);
+
     // single thread only!
     private HXPathExpression topicXPathExpression;
     private HXPathExpression authorXPathExpression;
@@ -64,55 +67,55 @@ public class MessageParserTask extends AbstractTask<MessageParserTaskConfigurati
             topicXPathExpression = new HXPathExpression(LocalXPathFactory.newXPath().compile(
                     this.taskConfiguration.getTopicXPath()));
         } catch (XPathExpressionException e) {
-            LOG.warn(e.getMessage());
+            LOG.error("topicXPathExpression", e);
         }
         try {
             authorXPathExpression = new HXPathExpression(LocalXPathFactory.newXPath().compile(
                     this.taskConfiguration.getAuthorXPath()));
         } catch (XPathExpressionException e) {
-            LOG.warn(e.getMessage());
+            LOG.error("authorXPathExpression", e);
         }
         try {
             ageXPathExpression = new HXPathExpression(LocalXPathFactory.newXPath().compile(
                     this.taskConfiguration.getAgeXPath()));
         } catch (XPathExpressionException e) {
-            LOG.warn(e.getMessage());
+            LOG.error("ageXPathExpression", e);
         }
         try {
             sexXPathExpression = new HXPathExpression(LocalXPathFactory.newXPath().compile(
                     this.taskConfiguration.getSexXPath()));
         } catch (XPathExpressionException e) {
-            LOG.warn(e.getMessage());
+            LOG.error("sexXPathExpression", e);
         }
         try {
             titleXPathExpression = new HXPathExpression(LocalXPathFactory.newXPath().compile(
                     this.taskConfiguration.getTitleXPath()));
         } catch (XPathExpressionException e) {
-            LOG.warn(e.getMessage());
+            LOG.error("titleXPathExpression", e);
         }
         try {
             contentXPathExpression = new HXPathExpression(LocalXPathFactory.newXPath().compile(
                     this.taskConfiguration.getContentXPath()));
         } catch (XPathExpressionException e) {
-            LOG.warn(e.getMessage());
+            LOG.error("contentXPathExpression", e);
         }
         try {
             dateXPathExpression = new HXPathExpression(LocalXPathFactory.newXPath().compile(
                     this.taskConfiguration.getDateXPath()));
         } catch (XPathExpressionException e) {
-            LOG.warn(e.getMessage());
+            LOG.error("dateXPathExpression", e);
         }
         try {
             userRatingXPathExpression = new HXPathExpression(LocalXPathFactory.newXPath().compile(
                     this.taskConfiguration.getUserRatingXPath()));
         } catch (XPathExpressionException e) {
-            LOG.warn(e.getMessage());
+            LOG.error("userRatingXPathExpression", e);
         }
         try {
             locationXPathExpression = new HXPathExpression(LocalXPathFactory.newXPath().compile(
                     this.taskConfiguration.getLocationXPath()));
         } catch (XPathExpressionException e) {
-            LOG.warn(e.getMessage());
+            LOG.error("locationXPathExpression", e);
         }
         LOG.debug("Instance created");
     }
@@ -149,6 +152,9 @@ public class MessageParserTask extends AbstractTask<MessageParserTaskConfigurati
     
     public MessageRecord parse(final XmlRecord xmlRecord) throws XPathExpressionException,
             ParserConfigurationException, SAXException, IOException {
+        
+        LOG.debug("Processing XML record:\n{}", xmlRecord);
+        
         InputStream is = new ByteArrayInputStream(xmlRecord.getContent());
         InputSource source = new InputSource(is);
         // Node node = HtmlParser.parse(source);
@@ -175,7 +181,12 @@ public class MessageParserTask extends AbstractTask<MessageParserTaskConfigurati
         messageRecord.setAge(age);
         messageRecord.setSex(sex);
         messageRecord.setUserRating(userRating);
+        
         messageRecord.setLocation(location);
+        
+        LOG.debug("Message parsed:\n{}", messageRecord);
+        
+        
         return messageRecord;
     }
     

@@ -147,4 +147,8 @@ public interface CrawlerRepository {
     List<WebpageRecord> listWebpageRecords(final String host, final int splitAttemptCounter, final int maxResults)
             throws ConnectionException;
 
+    // MessageRecord
+    MessageRecord retrieveMessageRecord(final byte[] digest) throws ConnectionException;
+    
+    
 }

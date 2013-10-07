@@ -26,7 +26,7 @@ public class MessageRecord implements Serializable {
     
     private static final long serialVersionUID = 1L;
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory
-            .getLogger(UrlRecord.class);
+            .getLogger(MessageRecord.class);
     
     private byte[] digest = DefaultValues.EMPTY_ARRAY;
     private String host = DefaultValues.EMPTY_STRING;
@@ -49,8 +49,11 @@ public class MessageRecord implements Serializable {
     
     public static void main(final String[] args) {
         
-        String test = "2013-02-20T02:00:53Z";
-        TWITTER_DATE_FORMATTER.parseDateTime(test);
+        MessageRecord o = new MessageRecord(null, null, null, null);
+        
+        o.setDate("September 7, 2013");
+        
+        System.out.println(o.getISO8601Date());
         
     }
     
@@ -117,11 +120,12 @@ public class MessageRecord implements Serializable {
             
         } catch (Exception e) {
             
+            LOG.warn("Trying to process date: {}", date);
             try {
                 DateTime dt = fmt.parseDateTime(date);
                 return TWITTER_DATE_FORMATTER.print(dt);
             } catch (IllegalArgumentException e2) {
-                LOG.error("Can't parse date: {}", date);
+                LOG.warn("Can't parse date: {}", date);
             }
             
         }
