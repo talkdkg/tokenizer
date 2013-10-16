@@ -32,44 +32,46 @@ import java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class TokenizerDocument implements org.apache.thrift.TBase<TokenizerDocument, TokenizerDocument._Fields>, java.io.Serializable, Cloneable, Comparable<TokenizerDocument> {
-  private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("TokenizerDocument");
+public class ThriftDocument implements org.apache.thrift.TBase<ThriftDocument, ThriftDocument._Fields>, java.io.Serializable, Cloneable, Comparable<ThriftDocument> {
+  private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("ThriftDocument");
 
   private static final org.apache.thrift.protocol.TField ID_FIELD_DESC = new org.apache.thrift.protocol.TField("id", org.apache.thrift.protocol.TType.STRING, (short)-1);
   private static final org.apache.thrift.protocol.TField SOURCE_FIELD_DESC = new org.apache.thrift.protocol.TField("source", org.apache.thrift.protocol.TType.STRING, (short)-2);
-  private static final org.apache.thrift.protocol.TField DATE_FIELD_DESC = new org.apache.thrift.protocol.TField("date", org.apache.thrift.protocol.TType.I64, (short)-3);
+  private static final org.apache.thrift.protocol.TField DATE_FIELD_DESC = new org.apache.thrift.protocol.TField("date", org.apache.thrift.protocol.TType.STRING, (short)-3);
   private static final org.apache.thrift.protocol.TField AUTHOR_FIELD_DESC = new org.apache.thrift.protocol.TField("author", org.apache.thrift.protocol.TType.STRING, (short)-4);
   private static final org.apache.thrift.protocol.TField AGE_FIELD_DESC = new org.apache.thrift.protocol.TField("age", org.apache.thrift.protocol.TType.STRING, (short)-5);
-  private static final org.apache.thrift.protocol.TField GENDER_FIELD_DESC = new org.apache.thrift.protocol.TField("gender", org.apache.thrift.protocol.TType.I32, (short)-6);
+  private static final org.apache.thrift.protocol.TField THRIFT_GENDER_FIELD_DESC = new org.apache.thrift.protocol.TField("thriftGender", org.apache.thrift.protocol.TType.I32, (short)-6);
   private static final org.apache.thrift.protocol.TField TITLE_FIELD_DESC = new org.apache.thrift.protocol.TField("title", org.apache.thrift.protocol.TType.STRING, (short)-7);
   private static final org.apache.thrift.protocol.TField CONTENT_FIELD_DESC = new org.apache.thrift.protocol.TField("content", org.apache.thrift.protocol.TType.STRING, (short)-8);
   private static final org.apache.thrift.protocol.TField TOPIC_FIELD_DESC = new org.apache.thrift.protocol.TField("topic", org.apache.thrift.protocol.TType.STRING, (short)-9);
   private static final org.apache.thrift.protocol.TField USER_RATING_FIELD_DESC = new org.apache.thrift.protocol.TField("userRating", org.apache.thrift.protocol.TType.STRING, (short)-10);
   private static final org.apache.thrift.protocol.TField SENTIMENT_FIELD_DESC = new org.apache.thrift.protocol.TField("sentiment", org.apache.thrift.protocol.TType.I32, (short)-11);
   private static final org.apache.thrift.protocol.TField FEATURES_FIELD_DESC = new org.apache.thrift.protocol.TField("features", org.apache.thrift.protocol.TType.SET, (short)-12);
+  private static final org.apache.thrift.protocol.TField THRIFT_SENTENCES_FIELD_DESC = new org.apache.thrift.protocol.TField("thriftSentences", org.apache.thrift.protocol.TType.LIST, (short)-13);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
-    schemes.put(StandardScheme.class, new TokenizerDocumentStandardSchemeFactory());
-    schemes.put(TupleScheme.class, new TokenizerDocumentTupleSchemeFactory());
+    schemes.put(StandardScheme.class, new ThriftDocumentStandardSchemeFactory());
+    schemes.put(TupleScheme.class, new ThriftDocumentTupleSchemeFactory());
   }
 
   public String id; // required
   public String source; // required
-  public long date; // required
+  public String date; // required
   public String author; // required
   public String age; // required
   /**
    * 
-   * @see Gender
+   * @see ThriftGender
    */
-  public Gender gender; // required
+  public ThriftGender thriftGender; // required
   public String title; // required
   public String content; // required
   public String topic; // required
   public String userRating; // required
   public int sentiment; // required
   public Set<String> features; // required
+  public List<ThriftSentence> thriftSentences; // required
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -80,15 +82,16 @@ public class TokenizerDocument implements org.apache.thrift.TBase<TokenizerDocum
     AGE((short)-5, "age"),
     /**
      * 
-     * @see Gender
+     * @see ThriftGender
      */
-    GENDER((short)-6, "gender"),
+    THRIFT_GENDER((short)-6, "thriftGender"),
     TITLE((short)-7, "title"),
     CONTENT((short)-8, "content"),
     TOPIC((short)-9, "topic"),
     USER_RATING((short)-10, "userRating"),
     SENTIMENT((short)-11, "sentiment"),
-    FEATURES((short)-12, "features");
+    FEATURES((short)-12, "features"),
+    THRIFT_SENTENCES((short)-13, "thriftSentences");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -113,8 +116,8 @@ public class TokenizerDocument implements org.apache.thrift.TBase<TokenizerDocum
           return AUTHOR;
         case -5: // AGE
           return AGE;
-        case -6: // GENDER
-          return GENDER;
+        case -6: // THRIFT_GENDER
+          return THRIFT_GENDER;
         case -7: // TITLE
           return TITLE;
         case -8: // CONTENT
@@ -127,6 +130,8 @@ public class TokenizerDocument implements org.apache.thrift.TBase<TokenizerDocum
           return SENTIMENT;
         case -12: // FEATURES
           return FEATURES;
+        case -13: // THRIFT_SENTENCES
+          return THRIFT_SENTENCES;
         default:
           return null;
       }
@@ -167,8 +172,7 @@ public class TokenizerDocument implements org.apache.thrift.TBase<TokenizerDocum
   }
 
   // isset id assignments
-  private static final int __DATE_ISSET_ID = 0;
-  private static final int __SENTIMENT_ISSET_ID = 1;
+  private static final int __SENTIMENT_ISSET_ID = 0;
   private byte __isset_bitfield = 0;
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
@@ -178,13 +182,13 @@ public class TokenizerDocument implements org.apache.thrift.TBase<TokenizerDocum
     tmpMap.put(_Fields.SOURCE, new org.apache.thrift.meta_data.FieldMetaData("source", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.DATE, new org.apache.thrift.meta_data.FieldMetaData("date", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64)));
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.AUTHOR, new org.apache.thrift.meta_data.FieldMetaData("author", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.AGE, new org.apache.thrift.meta_data.FieldMetaData("age", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-    tmpMap.put(_Fields.GENDER, new org.apache.thrift.meta_data.FieldMetaData("gender", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-        new org.apache.thrift.meta_data.EnumMetaData(org.apache.thrift.protocol.TType.ENUM, Gender.class)));
+    tmpMap.put(_Fields.THRIFT_GENDER, new org.apache.thrift.meta_data.FieldMetaData("thriftGender", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+        new org.apache.thrift.meta_data.EnumMetaData(org.apache.thrift.protocol.TType.ENUM, ThriftGender.class)));
     tmpMap.put(_Fields.TITLE, new org.apache.thrift.meta_data.FieldMetaData("title", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.CONTENT, new org.apache.thrift.meta_data.FieldMetaData("content", org.apache.thrift.TFieldRequirementType.DEFAULT, 
@@ -198,35 +202,38 @@ public class TokenizerDocument implements org.apache.thrift.TBase<TokenizerDocum
     tmpMap.put(_Fields.FEATURES, new org.apache.thrift.meta_data.FieldMetaData("features", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.SetMetaData(org.apache.thrift.protocol.TType.SET, 
             new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING))));
+    tmpMap.put(_Fields.THRIFT_SENTENCES, new org.apache.thrift.meta_data.FieldMetaData("thriftSentences", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+        new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
+            new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, ThriftSentence.class))));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
-    org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(TokenizerDocument.class, metaDataMap);
+    org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(ThriftDocument.class, metaDataMap);
   }
 
-  public TokenizerDocument() {
+  public ThriftDocument() {
   }
 
-  public TokenizerDocument(
+  public ThriftDocument(
     String id,
     String source,
-    long date,
+    String date,
     String author,
     String age,
-    Gender gender,
+    ThriftGender thriftGender,
     String title,
     String content,
     String topic,
     String userRating,
     int sentiment,
-    Set<String> features)
+    Set<String> features,
+    List<ThriftSentence> thriftSentences)
   {
     this();
     this.id = id;
     this.source = source;
     this.date = date;
-    setDateIsSet(true);
     this.author = author;
     this.age = age;
-    this.gender = gender;
+    this.thriftGender = thriftGender;
     this.title = title;
     this.content = content;
     this.topic = topic;
@@ -234,12 +241,13 @@ public class TokenizerDocument implements org.apache.thrift.TBase<TokenizerDocum
     this.sentiment = sentiment;
     setSentimentIsSet(true);
     this.features = features;
+    this.thriftSentences = thriftSentences;
   }
 
   /**
    * Performs a deep copy on <i>other</i>.
    */
-  public TokenizerDocument(TokenizerDocument other) {
+  public ThriftDocument(ThriftDocument other) {
     __isset_bitfield = other.__isset_bitfield;
     if (other.isSetId()) {
       this.id = other.id;
@@ -247,15 +255,17 @@ public class TokenizerDocument implements org.apache.thrift.TBase<TokenizerDocum
     if (other.isSetSource()) {
       this.source = other.source;
     }
-    this.date = other.date;
+    if (other.isSetDate()) {
+      this.date = other.date;
+    }
     if (other.isSetAuthor()) {
       this.author = other.author;
     }
     if (other.isSetAge()) {
       this.age = other.age;
     }
-    if (other.isSetGender()) {
-      this.gender = other.gender;
+    if (other.isSetThriftGender()) {
+      this.thriftGender = other.thriftGender;
     }
     if (other.isSetTitle()) {
       this.title = other.title;
@@ -274,21 +284,27 @@ public class TokenizerDocument implements org.apache.thrift.TBase<TokenizerDocum
       Set<String> __this__features = new HashSet<String>(other.features);
       this.features = __this__features;
     }
+    if (other.isSetThriftSentences()) {
+      List<ThriftSentence> __this__thriftSentences = new ArrayList<ThriftSentence>(other.thriftSentences.size());
+      for (ThriftSentence other_element : other.thriftSentences) {
+        __this__thriftSentences.add(new ThriftSentence(other_element));
+      }
+      this.thriftSentences = __this__thriftSentences;
+    }
   }
 
-  public TokenizerDocument deepCopy() {
-    return new TokenizerDocument(this);
+  public ThriftDocument deepCopy() {
+    return new ThriftDocument(this);
   }
 
   @Override
   public void clear() {
     this.id = null;
     this.source = null;
-    setDateIsSet(false);
-    this.date = 0;
+    this.date = null;
     this.author = null;
     this.age = null;
-    this.gender = null;
+    this.thriftGender = null;
     this.title = null;
     this.content = null;
     this.topic = null;
@@ -296,13 +312,14 @@ public class TokenizerDocument implements org.apache.thrift.TBase<TokenizerDocum
     setSentimentIsSet(false);
     this.sentiment = 0;
     this.features = null;
+    this.thriftSentences = null;
   }
 
   public String getId() {
     return this.id;
   }
 
-  public TokenizerDocument setId(String id) {
+  public ThriftDocument setId(String id) {
     this.id = id;
     return this;
   }
@@ -326,7 +343,7 @@ public class TokenizerDocument implements org.apache.thrift.TBase<TokenizerDocum
     return this.source;
   }
 
-  public TokenizerDocument setSource(String source) {
+  public ThriftDocument setSource(String source) {
     this.source = source;
     return this;
   }
@@ -346,34 +363,35 @@ public class TokenizerDocument implements org.apache.thrift.TBase<TokenizerDocum
     }
   }
 
-  public long getDate() {
+  public String getDate() {
     return this.date;
   }
 
-  public TokenizerDocument setDate(long date) {
+  public ThriftDocument setDate(String date) {
     this.date = date;
-    setDateIsSet(true);
     return this;
   }
 
   public void unsetDate() {
-    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __DATE_ISSET_ID);
+    this.date = null;
   }
 
   /** Returns true if field date is set (has been assigned a value) and false otherwise */
   public boolean isSetDate() {
-    return EncodingUtils.testBit(__isset_bitfield, __DATE_ISSET_ID);
+    return this.date != null;
   }
 
   public void setDateIsSet(boolean value) {
-    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __DATE_ISSET_ID, value);
+    if (!value) {
+      this.date = null;
+    }
   }
 
   public String getAuthor() {
     return this.author;
   }
 
-  public TokenizerDocument setAuthor(String author) {
+  public ThriftDocument setAuthor(String author) {
     this.author = author;
     return this;
   }
@@ -397,7 +415,7 @@ public class TokenizerDocument implements org.apache.thrift.TBase<TokenizerDocum
     return this.age;
   }
 
-  public TokenizerDocument setAge(String age) {
+  public ThriftDocument setAge(String age) {
     this.age = age;
     return this;
   }
@@ -419,33 +437,33 @@ public class TokenizerDocument implements org.apache.thrift.TBase<TokenizerDocum
 
   /**
    * 
-   * @see Gender
+   * @see ThriftGender
    */
-  public Gender getGender() {
-    return this.gender;
+  public ThriftGender getThriftGender() {
+    return this.thriftGender;
   }
 
   /**
    * 
-   * @see Gender
+   * @see ThriftGender
    */
-  public TokenizerDocument setGender(Gender gender) {
-    this.gender = gender;
+  public ThriftDocument setThriftGender(ThriftGender thriftGender) {
+    this.thriftGender = thriftGender;
     return this;
   }
 
-  public void unsetGender() {
-    this.gender = null;
+  public void unsetThriftGender() {
+    this.thriftGender = null;
   }
 
-  /** Returns true if field gender is set (has been assigned a value) and false otherwise */
-  public boolean isSetGender() {
-    return this.gender != null;
+  /** Returns true if field thriftGender is set (has been assigned a value) and false otherwise */
+  public boolean isSetThriftGender() {
+    return this.thriftGender != null;
   }
 
-  public void setGenderIsSet(boolean value) {
+  public void setThriftGenderIsSet(boolean value) {
     if (!value) {
-      this.gender = null;
+      this.thriftGender = null;
     }
   }
 
@@ -453,7 +471,7 @@ public class TokenizerDocument implements org.apache.thrift.TBase<TokenizerDocum
     return this.title;
   }
 
-  public TokenizerDocument setTitle(String title) {
+  public ThriftDocument setTitle(String title) {
     this.title = title;
     return this;
   }
@@ -477,7 +495,7 @@ public class TokenizerDocument implements org.apache.thrift.TBase<TokenizerDocum
     return this.content;
   }
 
-  public TokenizerDocument setContent(String content) {
+  public ThriftDocument setContent(String content) {
     this.content = content;
     return this;
   }
@@ -501,7 +519,7 @@ public class TokenizerDocument implements org.apache.thrift.TBase<TokenizerDocum
     return this.topic;
   }
 
-  public TokenizerDocument setTopic(String topic) {
+  public ThriftDocument setTopic(String topic) {
     this.topic = topic;
     return this;
   }
@@ -525,7 +543,7 @@ public class TokenizerDocument implements org.apache.thrift.TBase<TokenizerDocum
     return this.userRating;
   }
 
-  public TokenizerDocument setUserRating(String userRating) {
+  public ThriftDocument setUserRating(String userRating) {
     this.userRating = userRating;
     return this;
   }
@@ -549,7 +567,7 @@ public class TokenizerDocument implements org.apache.thrift.TBase<TokenizerDocum
     return this.sentiment;
   }
 
-  public TokenizerDocument setSentiment(int sentiment) {
+  public ThriftDocument setSentiment(int sentiment) {
     this.sentiment = sentiment;
     setSentimentIsSet(true);
     return this;
@@ -587,7 +605,7 @@ public class TokenizerDocument implements org.apache.thrift.TBase<TokenizerDocum
     return this.features;
   }
 
-  public TokenizerDocument setFeatures(Set<String> features) {
+  public ThriftDocument setFeatures(Set<String> features) {
     this.features = features;
     return this;
   }
@@ -604,6 +622,45 @@ public class TokenizerDocument implements org.apache.thrift.TBase<TokenizerDocum
   public void setFeaturesIsSet(boolean value) {
     if (!value) {
       this.features = null;
+    }
+  }
+
+  public int getThriftSentencesSize() {
+    return (this.thriftSentences == null) ? 0 : this.thriftSentences.size();
+  }
+
+  public java.util.Iterator<ThriftSentence> getThriftSentencesIterator() {
+    return (this.thriftSentences == null) ? null : this.thriftSentences.iterator();
+  }
+
+  public void addToThriftSentences(ThriftSentence elem) {
+    if (this.thriftSentences == null) {
+      this.thriftSentences = new ArrayList<ThriftSentence>();
+    }
+    this.thriftSentences.add(elem);
+  }
+
+  public List<ThriftSentence> getThriftSentences() {
+    return this.thriftSentences;
+  }
+
+  public ThriftDocument setThriftSentences(List<ThriftSentence> thriftSentences) {
+    this.thriftSentences = thriftSentences;
+    return this;
+  }
+
+  public void unsetThriftSentences() {
+    this.thriftSentences = null;
+  }
+
+  /** Returns true if field thriftSentences is set (has been assigned a value) and false otherwise */
+  public boolean isSetThriftSentences() {
+    return this.thriftSentences != null;
+  }
+
+  public void setThriftSentencesIsSet(boolean value) {
+    if (!value) {
+      this.thriftSentences = null;
     }
   }
 
@@ -629,7 +686,7 @@ public class TokenizerDocument implements org.apache.thrift.TBase<TokenizerDocum
       if (value == null) {
         unsetDate();
       } else {
-        setDate((Long)value);
+        setDate((String)value);
       }
       break;
 
@@ -649,11 +706,11 @@ public class TokenizerDocument implements org.apache.thrift.TBase<TokenizerDocum
       }
       break;
 
-    case GENDER:
+    case THRIFT_GENDER:
       if (value == null) {
-        unsetGender();
+        unsetThriftGender();
       } else {
-        setGender((Gender)value);
+        setThriftGender((ThriftGender)value);
       }
       break;
 
@@ -705,6 +762,14 @@ public class TokenizerDocument implements org.apache.thrift.TBase<TokenizerDocum
       }
       break;
 
+    case THRIFT_SENTENCES:
+      if (value == null) {
+        unsetThriftSentences();
+      } else {
+        setThriftSentences((List<ThriftSentence>)value);
+      }
+      break;
+
     }
   }
 
@@ -717,7 +782,7 @@ public class TokenizerDocument implements org.apache.thrift.TBase<TokenizerDocum
       return getSource();
 
     case DATE:
-      return Long.valueOf(getDate());
+      return getDate();
 
     case AUTHOR:
       return getAuthor();
@@ -725,8 +790,8 @@ public class TokenizerDocument implements org.apache.thrift.TBase<TokenizerDocum
     case AGE:
       return getAge();
 
-    case GENDER:
-      return getGender();
+    case THRIFT_GENDER:
+      return getThriftGender();
 
     case TITLE:
       return getTitle();
@@ -745,6 +810,9 @@ public class TokenizerDocument implements org.apache.thrift.TBase<TokenizerDocum
 
     case FEATURES:
       return getFeatures();
+
+    case THRIFT_SENTENCES:
+      return getThriftSentences();
 
     }
     throw new IllegalStateException();
@@ -767,8 +835,8 @@ public class TokenizerDocument implements org.apache.thrift.TBase<TokenizerDocum
       return isSetAuthor();
     case AGE:
       return isSetAge();
-    case GENDER:
-      return isSetGender();
+    case THRIFT_GENDER:
+      return isSetThriftGender();
     case TITLE:
       return isSetTitle();
     case CONTENT:
@@ -781,6 +849,8 @@ public class TokenizerDocument implements org.apache.thrift.TBase<TokenizerDocum
       return isSetSentiment();
     case FEATURES:
       return isSetFeatures();
+    case THRIFT_SENTENCES:
+      return isSetThriftSentences();
     }
     throw new IllegalStateException();
   }
@@ -789,12 +859,12 @@ public class TokenizerDocument implements org.apache.thrift.TBase<TokenizerDocum
   public boolean equals(Object that) {
     if (that == null)
       return false;
-    if (that instanceof TokenizerDocument)
-      return this.equals((TokenizerDocument)that);
+    if (that instanceof ThriftDocument)
+      return this.equals((ThriftDocument)that);
     return false;
   }
 
-  public boolean equals(TokenizerDocument that) {
+  public boolean equals(ThriftDocument that) {
     if (that == null)
       return false;
 
@@ -816,12 +886,12 @@ public class TokenizerDocument implements org.apache.thrift.TBase<TokenizerDocum
         return false;
     }
 
-    boolean this_present_date = true;
-    boolean that_present_date = true;
+    boolean this_present_date = true && this.isSetDate();
+    boolean that_present_date = true && that.isSetDate();
     if (this_present_date || that_present_date) {
       if (!(this_present_date && that_present_date))
         return false;
-      if (this.date != that.date)
+      if (!this.date.equals(that.date))
         return false;
     }
 
@@ -843,12 +913,12 @@ public class TokenizerDocument implements org.apache.thrift.TBase<TokenizerDocum
         return false;
     }
 
-    boolean this_present_gender = true && this.isSetGender();
-    boolean that_present_gender = true && that.isSetGender();
-    if (this_present_gender || that_present_gender) {
-      if (!(this_present_gender && that_present_gender))
+    boolean this_present_thriftGender = true && this.isSetThriftGender();
+    boolean that_present_thriftGender = true && that.isSetThriftGender();
+    if (this_present_thriftGender || that_present_thriftGender) {
+      if (!(this_present_thriftGender && that_present_thriftGender))
         return false;
-      if (!this.gender.equals(that.gender))
+      if (!this.thriftGender.equals(that.thriftGender))
         return false;
     }
 
@@ -906,6 +976,15 @@ public class TokenizerDocument implements org.apache.thrift.TBase<TokenizerDocum
         return false;
     }
 
+    boolean this_present_thriftSentences = true && this.isSetThriftSentences();
+    boolean that_present_thriftSentences = true && that.isSetThriftSentences();
+    if (this_present_thriftSentences || that_present_thriftSentences) {
+      if (!(this_present_thriftSentences && that_present_thriftSentences))
+        return false;
+      if (!this.thriftSentences.equals(that.thriftSentences))
+        return false;
+    }
+
     return true;
   }
 
@@ -915,7 +994,7 @@ public class TokenizerDocument implements org.apache.thrift.TBase<TokenizerDocum
   }
 
   @Override
-  public int compareTo(TokenizerDocument other) {
+  public int compareTo(ThriftDocument other) {
     if (!getClass().equals(other.getClass())) {
       return getClass().getName().compareTo(other.getClass().getName());
     }
@@ -972,12 +1051,12 @@ public class TokenizerDocument implements org.apache.thrift.TBase<TokenizerDocum
         return lastComparison;
       }
     }
-    lastComparison = Boolean.valueOf(isSetGender()).compareTo(other.isSetGender());
+    lastComparison = Boolean.valueOf(isSetThriftGender()).compareTo(other.isSetThriftGender());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    if (isSetGender()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.gender, other.gender);
+    if (isSetThriftGender()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.thriftGender, other.thriftGender);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -1042,6 +1121,16 @@ public class TokenizerDocument implements org.apache.thrift.TBase<TokenizerDocum
         return lastComparison;
       }
     }
+    lastComparison = Boolean.valueOf(isSetThriftSentences()).compareTo(other.isSetThriftSentences());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetThriftSentences()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.thriftSentences, other.thriftSentences);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     return 0;
   }
 
@@ -1059,7 +1148,7 @@ public class TokenizerDocument implements org.apache.thrift.TBase<TokenizerDocum
 
   @Override
   public String toString() {
-    StringBuilder sb = new StringBuilder("TokenizerDocument(");
+    StringBuilder sb = new StringBuilder("ThriftDocument(");
     boolean first = true;
 
     sb.append("id:");
@@ -1079,7 +1168,11 @@ public class TokenizerDocument implements org.apache.thrift.TBase<TokenizerDocum
     first = false;
     if (!first) sb.append(", ");
     sb.append("date:");
-    sb.append(this.date);
+    if (this.date == null) {
+      sb.append("null");
+    } else {
+      sb.append(this.date);
+    }
     first = false;
     if (!first) sb.append(", ");
     sb.append("author:");
@@ -1098,11 +1191,11 @@ public class TokenizerDocument implements org.apache.thrift.TBase<TokenizerDocum
     }
     first = false;
     if (!first) sb.append(", ");
-    sb.append("gender:");
-    if (this.gender == null) {
+    sb.append("thriftGender:");
+    if (this.thriftGender == null) {
       sb.append("null");
     } else {
-      sb.append(this.gender);
+      sb.append(this.thriftGender);
     }
     first = false;
     if (!first) sb.append(", ");
@@ -1149,6 +1242,14 @@ public class TokenizerDocument implements org.apache.thrift.TBase<TokenizerDocum
       sb.append(this.features);
     }
     first = false;
+    if (!first) sb.append(", ");
+    sb.append("thriftSentences:");
+    if (this.thriftSentences == null) {
+      sb.append("null");
+    } else {
+      sb.append(this.thriftSentences);
+    }
+    first = false;
     sb.append(")");
     return sb.toString();
   }
@@ -1176,15 +1277,15 @@ public class TokenizerDocument implements org.apache.thrift.TBase<TokenizerDocum
     }
   }
 
-  private static class TokenizerDocumentStandardSchemeFactory implements SchemeFactory {
-    public TokenizerDocumentStandardScheme getScheme() {
-      return new TokenizerDocumentStandardScheme();
+  private static class ThriftDocumentStandardSchemeFactory implements SchemeFactory {
+    public ThriftDocumentStandardScheme getScheme() {
+      return new ThriftDocumentStandardScheme();
     }
   }
 
-  private static class TokenizerDocumentStandardScheme extends StandardScheme<TokenizerDocument> {
+  private static class ThriftDocumentStandardScheme extends StandardScheme<ThriftDocument> {
 
-    public void read(org.apache.thrift.protocol.TProtocol iprot, TokenizerDocument struct) throws org.apache.thrift.TException {
+    public void read(org.apache.thrift.protocol.TProtocol iprot, ThriftDocument struct) throws org.apache.thrift.TException {
       org.apache.thrift.protocol.TField schemeField;
       iprot.readStructBegin();
       while (true)
@@ -1211,8 +1312,8 @@ public class TokenizerDocument implements org.apache.thrift.TBase<TokenizerDocum
             }
             break;
           case -3: // DATE
-            if (schemeField.type == org.apache.thrift.protocol.TType.I64) {
-              struct.date = iprot.readI64();
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.date = iprot.readString();
               struct.setDateIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
@@ -1234,10 +1335,10 @@ public class TokenizerDocument implements org.apache.thrift.TBase<TokenizerDocum
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case -6: // GENDER
+          case -6: // THRIFT_GENDER
             if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
-              struct.gender = Gender.findByValue(iprot.readI32());
-              struct.setGenderIsSet(true);
+              struct.thriftGender = ThriftGender.findByValue(iprot.readI32());
+              struct.setThriftGenderIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
@@ -1285,17 +1386,36 @@ public class TokenizerDocument implements org.apache.thrift.TBase<TokenizerDocum
           case -12: // FEATURES
             if (schemeField.type == org.apache.thrift.protocol.TType.SET) {
               {
-                org.apache.thrift.protocol.TSet _set0 = iprot.readSetBegin();
-                struct.features = new HashSet<String>(2*_set0.size);
-                for (int _i1 = 0; _i1 < _set0.size; ++_i1)
+                org.apache.thrift.protocol.TSet _set16 = iprot.readSetBegin();
+                struct.features = new HashSet<String>(2*_set16.size);
+                for (int _i17 = 0; _i17 < _set16.size; ++_i17)
                 {
-                  String _elem2;
-                  _elem2 = iprot.readString();
-                  struct.features.add(_elem2);
+                  String _elem18;
+                  _elem18 = iprot.readString();
+                  struct.features.add(_elem18);
                 }
                 iprot.readSetEnd();
               }
               struct.setFeaturesIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case -13: // THRIFT_SENTENCES
+            if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
+              {
+                org.apache.thrift.protocol.TList _list19 = iprot.readListBegin();
+                struct.thriftSentences = new ArrayList<ThriftSentence>(_list19.size);
+                for (int _i20 = 0; _i20 < _list19.size; ++_i20)
+                {
+                  ThriftSentence _elem21;
+                  _elem21 = new ThriftSentence();
+                  _elem21.read(iprot);
+                  struct.thriftSentences.add(_elem21);
+                }
+                iprot.readListEnd();
+              }
+              struct.setThriftSentencesIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
@@ -1311,17 +1431,29 @@ public class TokenizerDocument implements org.apache.thrift.TBase<TokenizerDocum
       struct.validate();
     }
 
-    public void write(org.apache.thrift.protocol.TProtocol oprot, TokenizerDocument struct) throws org.apache.thrift.TException {
+    public void write(org.apache.thrift.protocol.TProtocol oprot, ThriftDocument struct) throws org.apache.thrift.TException {
       struct.validate();
 
       oprot.writeStructBegin(STRUCT_DESC);
+      if (struct.thriftSentences != null) {
+        oprot.writeFieldBegin(THRIFT_SENTENCES_FIELD_DESC);
+        {
+          oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.thriftSentences.size()));
+          for (ThriftSentence _iter22 : struct.thriftSentences)
+          {
+            _iter22.write(oprot);
+          }
+          oprot.writeListEnd();
+        }
+        oprot.writeFieldEnd();
+      }
       if (struct.features != null) {
         oprot.writeFieldBegin(FEATURES_FIELD_DESC);
         {
           oprot.writeSetBegin(new org.apache.thrift.protocol.TSet(org.apache.thrift.protocol.TType.STRING, struct.features.size()));
-          for (String _iter3 : struct.features)
+          for (String _iter23 : struct.features)
           {
-            oprot.writeString(_iter3);
+            oprot.writeString(_iter23);
           }
           oprot.writeSetEnd();
         }
@@ -1350,9 +1482,9 @@ public class TokenizerDocument implements org.apache.thrift.TBase<TokenizerDocum
         oprot.writeString(struct.title);
         oprot.writeFieldEnd();
       }
-      if (struct.gender != null) {
-        oprot.writeFieldBegin(GENDER_FIELD_DESC);
-        oprot.writeI32(struct.gender.getValue());
+      if (struct.thriftGender != null) {
+        oprot.writeFieldBegin(THRIFT_GENDER_FIELD_DESC);
+        oprot.writeI32(struct.thriftGender.getValue());
         oprot.writeFieldEnd();
       }
       if (struct.age != null) {
@@ -1365,9 +1497,11 @@ public class TokenizerDocument implements org.apache.thrift.TBase<TokenizerDocum
         oprot.writeString(struct.author);
         oprot.writeFieldEnd();
       }
-      oprot.writeFieldBegin(DATE_FIELD_DESC);
-      oprot.writeI64(struct.date);
-      oprot.writeFieldEnd();
+      if (struct.date != null) {
+        oprot.writeFieldBegin(DATE_FIELD_DESC);
+        oprot.writeString(struct.date);
+        oprot.writeFieldEnd();
+      }
       if (struct.source != null) {
         oprot.writeFieldBegin(SOURCE_FIELD_DESC);
         oprot.writeString(struct.source);
@@ -1384,16 +1518,16 @@ public class TokenizerDocument implements org.apache.thrift.TBase<TokenizerDocum
 
   }
 
-  private static class TokenizerDocumentTupleSchemeFactory implements SchemeFactory {
-    public TokenizerDocumentTupleScheme getScheme() {
-      return new TokenizerDocumentTupleScheme();
+  private static class ThriftDocumentTupleSchemeFactory implements SchemeFactory {
+    public ThriftDocumentTupleScheme getScheme() {
+      return new ThriftDocumentTupleScheme();
     }
   }
 
-  private static class TokenizerDocumentTupleScheme extends TupleScheme<TokenizerDocument> {
+  private static class ThriftDocumentTupleScheme extends TupleScheme<ThriftDocument> {
 
     @Override
-    public void write(org.apache.thrift.protocol.TProtocol prot, TokenizerDocument struct) throws org.apache.thrift.TException {
+    public void write(org.apache.thrift.protocol.TProtocol prot, ThriftDocument struct) throws org.apache.thrift.TException {
       TTupleProtocol oprot = (TTupleProtocol) prot;
       BitSet optionals = new BitSet();
       if (struct.isSetId()) {
@@ -1411,7 +1545,7 @@ public class TokenizerDocument implements org.apache.thrift.TBase<TokenizerDocum
       if (struct.isSetAge()) {
         optionals.set(4);
       }
-      if (struct.isSetGender()) {
+      if (struct.isSetThriftGender()) {
         optionals.set(5);
       }
       if (struct.isSetTitle()) {
@@ -1432,7 +1566,10 @@ public class TokenizerDocument implements org.apache.thrift.TBase<TokenizerDocum
       if (struct.isSetFeatures()) {
         optionals.set(11);
       }
-      oprot.writeBitSet(optionals, 12);
+      if (struct.isSetThriftSentences()) {
+        optionals.set(12);
+      }
+      oprot.writeBitSet(optionals, 13);
       if (struct.isSetId()) {
         oprot.writeString(struct.id);
       }
@@ -1440,7 +1577,7 @@ public class TokenizerDocument implements org.apache.thrift.TBase<TokenizerDocum
         oprot.writeString(struct.source);
       }
       if (struct.isSetDate()) {
-        oprot.writeI64(struct.date);
+        oprot.writeString(struct.date);
       }
       if (struct.isSetAuthor()) {
         oprot.writeString(struct.author);
@@ -1448,8 +1585,8 @@ public class TokenizerDocument implements org.apache.thrift.TBase<TokenizerDocum
       if (struct.isSetAge()) {
         oprot.writeString(struct.age);
       }
-      if (struct.isSetGender()) {
-        oprot.writeI32(struct.gender.getValue());
+      if (struct.isSetThriftGender()) {
+        oprot.writeI32(struct.thriftGender.getValue());
       }
       if (struct.isSetTitle()) {
         oprot.writeString(struct.title);
@@ -1469,18 +1606,27 @@ public class TokenizerDocument implements org.apache.thrift.TBase<TokenizerDocum
       if (struct.isSetFeatures()) {
         {
           oprot.writeI32(struct.features.size());
-          for (String _iter4 : struct.features)
+          for (String _iter24 : struct.features)
           {
-            oprot.writeString(_iter4);
+            oprot.writeString(_iter24);
+          }
+        }
+      }
+      if (struct.isSetThriftSentences()) {
+        {
+          oprot.writeI32(struct.thriftSentences.size());
+          for (ThriftSentence _iter25 : struct.thriftSentences)
+          {
+            _iter25.write(oprot);
           }
         }
       }
     }
 
     @Override
-    public void read(org.apache.thrift.protocol.TProtocol prot, TokenizerDocument struct) throws org.apache.thrift.TException {
+    public void read(org.apache.thrift.protocol.TProtocol prot, ThriftDocument struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
-      BitSet incoming = iprot.readBitSet(12);
+      BitSet incoming = iprot.readBitSet(13);
       if (incoming.get(0)) {
         struct.id = iprot.readString();
         struct.setIdIsSet(true);
@@ -1490,7 +1636,7 @@ public class TokenizerDocument implements org.apache.thrift.TBase<TokenizerDocum
         struct.setSourceIsSet(true);
       }
       if (incoming.get(2)) {
-        struct.date = iprot.readI64();
+        struct.date = iprot.readString();
         struct.setDateIsSet(true);
       }
       if (incoming.get(3)) {
@@ -1502,8 +1648,8 @@ public class TokenizerDocument implements org.apache.thrift.TBase<TokenizerDocum
         struct.setAgeIsSet(true);
       }
       if (incoming.get(5)) {
-        struct.gender = Gender.findByValue(iprot.readI32());
-        struct.setGenderIsSet(true);
+        struct.thriftGender = ThriftGender.findByValue(iprot.readI32());
+        struct.setThriftGenderIsSet(true);
       }
       if (incoming.get(6)) {
         struct.title = iprot.readString();
@@ -1527,16 +1673,30 @@ public class TokenizerDocument implements org.apache.thrift.TBase<TokenizerDocum
       }
       if (incoming.get(11)) {
         {
-          org.apache.thrift.protocol.TSet _set5 = new org.apache.thrift.protocol.TSet(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
-          struct.features = new HashSet<String>(2*_set5.size);
-          for (int _i6 = 0; _i6 < _set5.size; ++_i6)
+          org.apache.thrift.protocol.TSet _set26 = new org.apache.thrift.protocol.TSet(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
+          struct.features = new HashSet<String>(2*_set26.size);
+          for (int _i27 = 0; _i27 < _set26.size; ++_i27)
           {
-            String _elem7;
-            _elem7 = iprot.readString();
-            struct.features.add(_elem7);
+            String _elem28;
+            _elem28 = iprot.readString();
+            struct.features.add(_elem28);
           }
         }
         struct.setFeaturesIsSet(true);
+      }
+      if (incoming.get(12)) {
+        {
+          org.apache.thrift.protocol.TList _list29 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+          struct.thriftSentences = new ArrayList<ThriftSentence>(_list29.size);
+          for (int _i30 = 0; _i30 < _list29.size; ++_i30)
+          {
+            ThriftSentence _elem31;
+            _elem31 = new ThriftSentence();
+            _elem31.read(iprot);
+            struct.thriftSentences.add(_elem31);
+          }
+        }
+        struct.setThriftSentencesIsSet(true);
       }
     }
   }

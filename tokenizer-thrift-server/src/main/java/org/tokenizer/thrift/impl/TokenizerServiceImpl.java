@@ -17,11 +17,11 @@ import java.io.PrintWriter;
 import java.io.Serializable;
 import java.io.StringWriter;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrQuery.ORDER;
+import org.apache.solr.client.solrj.SolrQuery.SortClause;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.beans.Field;
@@ -34,10 +34,13 @@ import org.tokenizer.core.solr.SolrUtils;
 import org.tokenizer.core.util.MD5;
 import org.tokenizer.crawler.db.CrawlerRepositoryCassandraImpl;
 import org.tokenizer.crawler.db.model.MessageRecord;
-import org.tokenizer.thrift.Gender;
+import org.tokenizer.nlp.Sentence;
+import org.tokenizer.nlp.TextImpl;
+import org.tokenizer.thrift.ThriftDocument;
+import org.tokenizer.thrift.ThriftGender;
 import org.tokenizer.thrift.ThriftQueryResponse;
+import org.tokenizer.thrift.ThriftSentence;
 import org.tokenizer.thrift.ThriftTokenizerService;
-import org.tokenizer.thrift.TokenizerDocument;
 
 import com.netflix.astyanax.connectionpool.exceptions.ConnectionException;
 
@@ -47,15 +50,16 @@ public class TokenizerServiceImpl implements ThriftTokenizerService.Iface {
     
     private static SolrServer solrServer = SolrUtils.getSolrServerForMessages();
     
-    
     private static CrawlerRepositoryCassandraImpl repository;
-
+    
+    SortClause defaultSortClause = new SortClause("_docid_", ORDER.asc);
+    
     public static void setup() throws Exception {
         CrawlerRepositoryCassandraImpl repo = new CrawlerRepositoryCassandraImpl(null);
         repo.setup();
         repository = repo;
     }
-
+    
     public TokenizerServiceImpl() {
         super();
         try {
@@ -64,8 +68,6 @@ public class TokenizerServiceImpl implements ThriftTokenizerService.Iface {
             throw new RuntimeException(e);
         }
     }
-    
-    
     
     @Override
     public ThriftQueryResponse get_message_records(final String query, final int start, final int rows)
@@ -76,7 +78,7 @@ public class TokenizerServiceImpl implements ThriftTokenizerService.Iface {
         solrQuery.setStart(start);
         solrQuery.setRows(rows);
         solrQuery.setParam("df", "content_en");
-        solrQuery.setSortField("_docid_", ORDER.asc);
+        solrQuery.setSort(defaultSortClause);
         
         return query(solrQuery);
         
@@ -125,7 +127,7 @@ public class TokenizerServiceImpl implements ThriftTokenizerService.Iface {
         solrQuery.setStart(start);
         solrQuery.setRows(rows);
         solrQuery.setParam("df", "content_en");
-        solrQuery.setSortField("_docid_", ORDER.asc);
+        solrQuery.setSort(defaultSortClause);
         
         DateTime startDateTime = new DateTime(startTime);
         DateTime endDateTime = new DateTime(endTime);
@@ -144,7 +146,7 @@ public class TokenizerServiceImpl implements ThriftTokenizerService.Iface {
         solrQuery.setStart(start);
         solrQuery.setRows(rows);
         solrQuery.setParam("df", "content_en");
-        solrQuery.setSortField("_docid_", ORDER.asc);
+        solrQuery.setSort(defaultSortClause);
         
         DateTime startDateTime = new DateTime(startTime);
         DateTime endDateTime = new DateTime(endTime);
@@ -165,36 +167,45 @@ public class TokenizerServiceImpl implements ThriftTokenizerService.Iface {
         solrQuery.setStart(start);
         solrQuery.setRows(rows);
         solrQuery.setParam("df", "content_en");
-        solrQuery.setSortField("_docid_", ORDER.asc);
+        solrQuery.setSort(defaultSortClause);
         
         solrQuery.addFilterQuery("host_s:" + source);
         
         return query(solrQuery);
     }
     
-    
     @Override
-    public ThriftQueryResponse retrieve_messages(String query, int start, int rows, long startTime, long endTime,
-            List<String> sources, List<String> countryCodes, int startAge, int endAge, Gender gender, List<String> languageCodes)
-            throws TException {
-
+    public ThriftQueryResponse retrieve_messages(
+            String query,
+            int start,
+            int rows,
+            long startTime,
+            long endTime,
+            List<String> sources,
+            List<String> locations,
+            int startAge,
+            int endAge,
+            ThriftGender thriftGender,
+            List<String> languageCodes) throws TException {
+        
         SolrQuery solrQuery = new SolrQuery();
         solrQuery.setQuery(query);
         solrQuery.setStart(start);
         solrQuery.setRows(rows);
- 
+        
         DateTime startDateTime = new DateTime(startTime);
         DateTime endDateTime = new DateTime(endTime);
         solrQuery.addFilterQuery("date_tdt:[" + startDateTime.toString(TWITTER_DATE_FORMATTER) + " TO "
                 + endDateTime.toString(TWITTER_DATE_FORMATTER) + "]");
-
-        solrQuery.setSortField("_docid_", ORDER.asc);
-         
+        
+        
+        
+        
+        solrQuery.setSort(defaultSortClause);
+        
         return query(solrQuery);
-
-    
+        
     }
-    
     
     private ThriftQueryResponse query(final SolrQuery solrQuery) throws TException {
         
@@ -218,24 +229,23 @@ public class TokenizerServiceImpl implements ThriftTokenizerService.Iface {
         thriftQueryResponse.setNumFound(queryResponse.getResults().getNumFound());
         
         beans = queryResponse.getBeans(MessageBean.class);
-        thriftQueryResponse.setDocuments(toTokenizerDocumentList(beans));
+        thriftQueryResponse.setThriftDocuments(toTokenizerDocumentList(beans));
         return thriftQueryResponse;
         
     }
-
     
-    private List<TokenizerDocument> toTokenizerDocumentList(List<MessageBean> solrDocumentList){
+    private List<ThriftDocument> toTokenizerDocumentList(List<MessageBean> solrDocumentList) {
         
-        List<TokenizerDocument> thriftMessageRecords = new ArrayList<TokenizerDocument>();
+        List<ThriftDocument> thriftMessageRecords = new ArrayList<ThriftDocument>();
         
         for (MessageBean bean : solrDocumentList) {
             LOG.debug(bean.toString());
             String id = bean.getId();
             
-            TokenizerDocument thriftMessageRecord = new TokenizerDocument();
+            ThriftDocument thriftDocument = new ThriftDocument();
             
             byte[] digest = MD5.hex2Byte(id);
-         
+            
             MessageRecord messageRecord;
             try {
                 messageRecord = repository.retrieveMessageRecord(digest);
@@ -246,32 +256,43 @@ public class TokenizerServiceImpl implements ThriftTokenizerService.Iface {
             
             if (messageRecord == null) continue;
             
-            thriftMessageRecord.setId(id);
-            thriftMessageRecord.setAge(messageRecord.getAge());
-            
-            thriftMessageRecord.setAuthor(messageRecord.getAuthor());
-            thriftMessageRecord.setContent(messageRecord.getContent());
+            thriftDocument.setId(id);
+            thriftDocument.setSource(messageRecord.getHost());
+            thriftDocument.setDate(messageRecord.getISO8601Date());
+            thriftDocument.setAuthor(messageRecord.getAuthor());
+            thriftDocument.setAge(messageRecord.getAge());
             if (messageRecord.getSex() != null) {
-                thriftMessageRecord.setGender(messageRecord.getSex().equals("male") ? Gender.MALE
-                        : Gender.FEMALE);
+                thriftDocument.setThriftGender(messageRecord.getSex().equals("male") ? ThriftGender.MALE
+                        : ThriftGender.FEMALE);
             }
             
-            thriftMessageRecord.setSource(messageRecord.getHost());
-            //thriftMessageRecord.setDate(messageRecord.getDate());
+            thriftDocument.setTitle(messageRecord.getTitle());
+            thriftDocument.setContent(messageRecord.getContent());
+            thriftDocument.setTopic(messageRecord.getTopic());
+            thriftDocument.setUserRating(messageRecord.getUserRating());
             
-            thriftMessageRecord.setTitle(messageRecord.getTitle());
-            thriftMessageRecord.setTopic(messageRecord.getTopic());
-            thriftMessageRecord.setUserRating(messageRecord.getUserRating());
+            thriftDocument.setSentiment(messageRecord.getReviewText().getSentiment());
+            thriftDocument.setFeatures(messageRecord.getReviewText().getFeatures());
             
-            thriftMessageRecord.setSentiment(messageRecord.getReviewText().getSentiment());
-            thriftMessageRecord.setFeatures(messageRecord.getReviewText().getFeatures());
+            for (Sentence s : messageRecord.getReviewText().getSentences()) {
+                thriftDocument.addToThriftSentences(toThriftSentence(s));
+            }
             
-            thriftMessageRecords.add(thriftMessageRecord);
+            thriftMessageRecords.add(thriftDocument);
         }
-
+        
         return thriftMessageRecords;
         
     }
     
+    private ThriftSentence toThriftSentence(Sentence sentence) {
+        ThriftSentence thriftSentence = new ThriftSentence();
+        thriftSentence.setChunks(sentence.getChunks());
+        thriftSentence.setFeatures(sentence.getFeatures());
+        thriftSentence.setSentence(sentence.getSentence());
+        thriftSentence.setSentiment(sentence.getSentiment());
+        thriftSentence.setTreebank(sentence.getTreebank());
+        return thriftSentence;
+    }
     
 }

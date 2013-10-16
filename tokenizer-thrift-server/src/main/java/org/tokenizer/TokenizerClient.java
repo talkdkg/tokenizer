@@ -24,10 +24,10 @@ import org.apache.thrift.transport.TTransportException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tokenizer.core.TokenizerConfig;
-import org.tokenizer.thrift.Gender;
+import org.tokenizer.thrift.ThriftDocument;
+import org.tokenizer.thrift.ThriftGender;
 import org.tokenizer.thrift.ThriftQueryResponse;
 import org.tokenizer.thrift.ThriftTokenizerService;
-import org.tokenizer.thrift.TokenizerDocument;
 
 public class TokenizerClient {
 
@@ -143,7 +143,7 @@ public class TokenizerClient {
             final List<String> countryCodes,
             final int startAge,
             final int endAge,
-            final Gender gender,
+            final ThriftGender gender,
             final List<String> languageCodes
             ) {
         TSocket transport = null;
@@ -188,7 +188,7 @@ public class TokenizerClient {
         // System.out.println("Error: " + r.error);
         System.out.println("Elapsed Time: " + r.elapsedTime);
         System.out.println("Number of records found: " + r.numFound);
-        for (TokenizerDocument tmr : r.getDocuments()) {
+        for (ThriftDocument tmr : r.getThriftDocuments()) {
        //     System.out.println(tmr);
         }
 
@@ -198,7 +198,7 @@ public class TokenizerClient {
         // System.out.println("Error: " + r.error);
         System.out.println("Elapsed Time: " + r.elapsedTime);
         System.out.println("Number of records found: " + r.numFound);
-        for (TokenizerDocument tmr : r.getDocuments()) {
+        for (ThriftDocument tmr : r.getThriftDocuments()) {
         //    System.out.println(tmr);
         }
 
@@ -210,7 +210,7 @@ public class TokenizerClient {
         // System.out.println("Error: " + r.error);
         System.out.println("Elapsed Time: " + r.elapsedTime);
         System.out.println("Number of records found: " + r.numFound);
-        for (TokenizerDocument tmr : r.getDocuments()) {
+        for (ThriftDocument tmr : r.getThriftDocuments()) {
        //     System.out.println(tmr);
         }
 
@@ -220,7 +220,7 @@ public class TokenizerClient {
         // System.out.println("Error: " + r.error);
         System.out.println("Elapsed Time: " + r.elapsedTime);
         System.out.println("Number of records found: " + r.numFound);
-        for (TokenizerDocument tmr : r.getDocuments()) {
+        for (ThriftDocument tmr : r.getThriftDocuments()) {
         //    System.out.println(tmr);
         }
 

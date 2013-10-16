@@ -48,7 +48,7 @@ sexXPath
 null	
 	
 titleXPath
-//div[@class='quote']/a/text()	
+//div[@class='quote']/a/text()
 	
 contentXPath
 //div[@class='entry']/p/text()[1]

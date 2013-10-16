@@ -38,7 +38,7 @@ public class ThriftQueryResponse implements org.apache.thrift.TBase<ThriftQueryR
   private static final org.apache.thrift.protocol.TField NUM_FOUND_FIELD_DESC = new org.apache.thrift.protocol.TField("numFound", org.apache.thrift.protocol.TType.I64, (short)1);
   private static final org.apache.thrift.protocol.TField Q_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("qTime", org.apache.thrift.protocol.TType.I32, (short)2);
   private static final org.apache.thrift.protocol.TField ELAPSED_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("elapsedTime", org.apache.thrift.protocol.TType.I32, (short)3);
-  private static final org.apache.thrift.protocol.TField DOCUMENTS_FIELD_DESC = new org.apache.thrift.protocol.TField("documents", org.apache.thrift.protocol.TType.LIST, (short)4);
+  private static final org.apache.thrift.protocol.TField THRIFT_DOCUMENTS_FIELD_DESC = new org.apache.thrift.protocol.TField("thriftDocuments", org.apache.thrift.protocol.TType.LIST, (short)4);
   private static final org.apache.thrift.protocol.TField ERROR_FIELD_DESC = new org.apache.thrift.protocol.TField("error", org.apache.thrift.protocol.TType.STRING, (short)5);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
@@ -50,7 +50,7 @@ public class ThriftQueryResponse implements org.apache.thrift.TBase<ThriftQueryR
   public long numFound; // optional
   public int qTime; // optional
   public int elapsedTime; // optional
-  public List<TokenizerDocument> documents; // optional
+  public List<ThriftDocument> thriftDocuments; // optional
   public String error; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
@@ -58,7 +58,7 @@ public class ThriftQueryResponse implements org.apache.thrift.TBase<ThriftQueryR
     NUM_FOUND((short)1, "numFound"),
     Q_TIME((short)2, "qTime"),
     ELAPSED_TIME((short)3, "elapsedTime"),
-    DOCUMENTS((short)4, "documents"),
+    THRIFT_DOCUMENTS((short)4, "thriftDocuments"),
     ERROR((short)5, "error");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
@@ -80,8 +80,8 @@ public class ThriftQueryResponse implements org.apache.thrift.TBase<ThriftQueryR
           return Q_TIME;
         case 3: // ELAPSED_TIME
           return ELAPSED_TIME;
-        case 4: // DOCUMENTS
-          return DOCUMENTS;
+        case 4: // THRIFT_DOCUMENTS
+          return THRIFT_DOCUMENTS;
         case 5: // ERROR
           return ERROR;
         default:
@@ -128,7 +128,7 @@ public class ThriftQueryResponse implements org.apache.thrift.TBase<ThriftQueryR
   private static final int __QTIME_ISSET_ID = 1;
   private static final int __ELAPSEDTIME_ISSET_ID = 2;
   private byte __isset_bitfield = 0;
-  private _Fields optionals[] = {_Fields.NUM_FOUND,_Fields.Q_TIME,_Fields.ELAPSED_TIME,_Fields.DOCUMENTS,_Fields.ERROR};
+  private _Fields optionals[] = {_Fields.NUM_FOUND,_Fields.Q_TIME,_Fields.ELAPSED_TIME,_Fields.THRIFT_DOCUMENTS,_Fields.ERROR};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -138,9 +138,9 @@ public class ThriftQueryResponse implements org.apache.thrift.TBase<ThriftQueryR
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
     tmpMap.put(_Fields.ELAPSED_TIME, new org.apache.thrift.meta_data.FieldMetaData("elapsedTime", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
-    tmpMap.put(_Fields.DOCUMENTS, new org.apache.thrift.meta_data.FieldMetaData("documents", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+    tmpMap.put(_Fields.THRIFT_DOCUMENTS, new org.apache.thrift.meta_data.FieldMetaData("thriftDocuments", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
-            new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, TokenizerDocument.class))));
+            new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, ThriftDocument.class))));
     tmpMap.put(_Fields.ERROR, new org.apache.thrift.meta_data.FieldMetaData("error", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
@@ -158,12 +158,12 @@ public class ThriftQueryResponse implements org.apache.thrift.TBase<ThriftQueryR
     this.numFound = other.numFound;
     this.qTime = other.qTime;
     this.elapsedTime = other.elapsedTime;
-    if (other.isSetDocuments()) {
-      List<TokenizerDocument> __this__documents = new ArrayList<TokenizerDocument>(other.documents.size());
-      for (TokenizerDocument other_element : other.documents) {
-        __this__documents.add(new TokenizerDocument(other_element));
+    if (other.isSetThriftDocuments()) {
+      List<ThriftDocument> __this__thriftDocuments = new ArrayList<ThriftDocument>(other.thriftDocuments.size());
+      for (ThriftDocument other_element : other.thriftDocuments) {
+        __this__thriftDocuments.add(new ThriftDocument(other_element));
       }
-      this.documents = __this__documents;
+      this.thriftDocuments = __this__thriftDocuments;
     }
     if (other.isSetError()) {
       this.error = other.error;
@@ -182,7 +182,7 @@ public class ThriftQueryResponse implements org.apache.thrift.TBase<ThriftQueryR
     this.qTime = 0;
     setElapsedTimeIsSet(false);
     this.elapsedTime = 0;
-    this.documents = null;
+    this.thriftDocuments = null;
     this.error = null;
   }
 
@@ -255,42 +255,42 @@ public class ThriftQueryResponse implements org.apache.thrift.TBase<ThriftQueryR
     __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __ELAPSEDTIME_ISSET_ID, value);
   }
 
-  public int getDocumentsSize() {
-    return (this.documents == null) ? 0 : this.documents.size();
+  public int getThriftDocumentsSize() {
+    return (this.thriftDocuments == null) ? 0 : this.thriftDocuments.size();
   }
 
-  public java.util.Iterator<TokenizerDocument> getDocumentsIterator() {
-    return (this.documents == null) ? null : this.documents.iterator();
+  public java.util.Iterator<ThriftDocument> getThriftDocumentsIterator() {
+    return (this.thriftDocuments == null) ? null : this.thriftDocuments.iterator();
   }
 
-  public void addToDocuments(TokenizerDocument elem) {
-    if (this.documents == null) {
-      this.documents = new ArrayList<TokenizerDocument>();
+  public void addToThriftDocuments(ThriftDocument elem) {
+    if (this.thriftDocuments == null) {
+      this.thriftDocuments = new ArrayList<ThriftDocument>();
     }
-    this.documents.add(elem);
+    this.thriftDocuments.add(elem);
   }
 
-  public List<TokenizerDocument> getDocuments() {
-    return this.documents;
+  public List<ThriftDocument> getThriftDocuments() {
+    return this.thriftDocuments;
   }
 
-  public ThriftQueryResponse setDocuments(List<TokenizerDocument> documents) {
-    this.documents = documents;
+  public ThriftQueryResponse setThriftDocuments(List<ThriftDocument> thriftDocuments) {
+    this.thriftDocuments = thriftDocuments;
     return this;
   }
 
-  public void unsetDocuments() {
-    this.documents = null;
+  public void unsetThriftDocuments() {
+    this.thriftDocuments = null;
   }
 
-  /** Returns true if field documents is set (has been assigned a value) and false otherwise */
-  public boolean isSetDocuments() {
-    return this.documents != null;
+  /** Returns true if field thriftDocuments is set (has been assigned a value) and false otherwise */
+  public boolean isSetThriftDocuments() {
+    return this.thriftDocuments != null;
   }
 
-  public void setDocumentsIsSet(boolean value) {
+  public void setThriftDocumentsIsSet(boolean value) {
     if (!value) {
-      this.documents = null;
+      this.thriftDocuments = null;
     }
   }
 
@@ -344,11 +344,11 @@ public class ThriftQueryResponse implements org.apache.thrift.TBase<ThriftQueryR
       }
       break;
 
-    case DOCUMENTS:
+    case THRIFT_DOCUMENTS:
       if (value == null) {
-        unsetDocuments();
+        unsetThriftDocuments();
       } else {
-        setDocuments((List<TokenizerDocument>)value);
+        setThriftDocuments((List<ThriftDocument>)value);
       }
       break;
 
@@ -374,8 +374,8 @@ public class ThriftQueryResponse implements org.apache.thrift.TBase<ThriftQueryR
     case ELAPSED_TIME:
       return Integer.valueOf(getElapsedTime());
 
-    case DOCUMENTS:
-      return getDocuments();
+    case THRIFT_DOCUMENTS:
+      return getThriftDocuments();
 
     case ERROR:
       return getError();
@@ -397,8 +397,8 @@ public class ThriftQueryResponse implements org.apache.thrift.TBase<ThriftQueryR
       return isSetQTime();
     case ELAPSED_TIME:
       return isSetElapsedTime();
-    case DOCUMENTS:
-      return isSetDocuments();
+    case THRIFT_DOCUMENTS:
+      return isSetThriftDocuments();
     case ERROR:
       return isSetError();
     }
@@ -445,12 +445,12 @@ public class ThriftQueryResponse implements org.apache.thrift.TBase<ThriftQueryR
         return false;
     }
 
-    boolean this_present_documents = true && this.isSetDocuments();
-    boolean that_present_documents = true && that.isSetDocuments();
-    if (this_present_documents || that_present_documents) {
-      if (!(this_present_documents && that_present_documents))
+    boolean this_present_thriftDocuments = true && this.isSetThriftDocuments();
+    boolean that_present_thriftDocuments = true && that.isSetThriftDocuments();
+    if (this_present_thriftDocuments || that_present_thriftDocuments) {
+      if (!(this_present_thriftDocuments && that_present_thriftDocuments))
         return false;
-      if (!this.documents.equals(that.documents))
+      if (!this.thriftDocuments.equals(that.thriftDocuments))
         return false;
     }
 
@@ -509,12 +509,12 @@ public class ThriftQueryResponse implements org.apache.thrift.TBase<ThriftQueryR
         return lastComparison;
       }
     }
-    lastComparison = Boolean.valueOf(isSetDocuments()).compareTo(other.isSetDocuments());
+    lastComparison = Boolean.valueOf(isSetThriftDocuments()).compareTo(other.isSetThriftDocuments());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    if (isSetDocuments()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.documents, other.documents);
+    if (isSetThriftDocuments()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.thriftDocuments, other.thriftDocuments);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -566,13 +566,13 @@ public class ThriftQueryResponse implements org.apache.thrift.TBase<ThriftQueryR
       sb.append(this.elapsedTime);
       first = false;
     }
-    if (isSetDocuments()) {
+    if (isSetThriftDocuments()) {
       if (!first) sb.append(", ");
-      sb.append("documents:");
-      if (this.documents == null) {
+      sb.append("thriftDocuments:");
+      if (this.thriftDocuments == null) {
         sb.append("null");
       } else {
-        sb.append(this.documents);
+        sb.append(this.thriftDocuments);
       }
       first = false;
     }
@@ -655,21 +655,21 @@ public class ThriftQueryResponse implements org.apache.thrift.TBase<ThriftQueryR
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 4: // DOCUMENTS
+          case 4: // THRIFT_DOCUMENTS
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
-                org.apache.thrift.protocol.TList _list8 = iprot.readListBegin();
-                struct.documents = new ArrayList<TokenizerDocument>(_list8.size);
-                for (int _i9 = 0; _i9 < _list8.size; ++_i9)
+                org.apache.thrift.protocol.TList _list32 = iprot.readListBegin();
+                struct.thriftDocuments = new ArrayList<ThriftDocument>(_list32.size);
+                for (int _i33 = 0; _i33 < _list32.size; ++_i33)
                 {
-                  TokenizerDocument _elem10;
-                  _elem10 = new TokenizerDocument();
-                  _elem10.read(iprot);
-                  struct.documents.add(_elem10);
+                  ThriftDocument _elem34;
+                  _elem34 = new ThriftDocument();
+                  _elem34.read(iprot);
+                  struct.thriftDocuments.add(_elem34);
                 }
                 iprot.readListEnd();
               }
-              struct.setDocumentsIsSet(true);
+              struct.setThriftDocumentsIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
@@ -712,14 +712,14 @@ public class ThriftQueryResponse implements org.apache.thrift.TBase<ThriftQueryR
         oprot.writeI32(struct.elapsedTime);
         oprot.writeFieldEnd();
       }
-      if (struct.documents != null) {
-        if (struct.isSetDocuments()) {
-          oprot.writeFieldBegin(DOCUMENTS_FIELD_DESC);
+      if (struct.thriftDocuments != null) {
+        if (struct.isSetThriftDocuments()) {
+          oprot.writeFieldBegin(THRIFT_DOCUMENTS_FIELD_DESC);
           {
-            oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.documents.size()));
-            for (TokenizerDocument _iter11 : struct.documents)
+            oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.thriftDocuments.size()));
+            for (ThriftDocument _iter35 : struct.thriftDocuments)
             {
-              _iter11.write(oprot);
+              _iter35.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -760,7 +760,7 @@ public class ThriftQueryResponse implements org.apache.thrift.TBase<ThriftQueryR
       if (struct.isSetElapsedTime()) {
         optionals.set(2);
       }
-      if (struct.isSetDocuments()) {
+      if (struct.isSetThriftDocuments()) {
         optionals.set(3);
       }
       if (struct.isSetError()) {
@@ -776,12 +776,12 @@ public class ThriftQueryResponse implements org.apache.thrift.TBase<ThriftQueryR
       if (struct.isSetElapsedTime()) {
         oprot.writeI32(struct.elapsedTime);
       }
-      if (struct.isSetDocuments()) {
+      if (struct.isSetThriftDocuments()) {
         {
-          oprot.writeI32(struct.documents.size());
-          for (TokenizerDocument _iter12 : struct.documents)
+          oprot.writeI32(struct.thriftDocuments.size());
+          for (ThriftDocument _iter36 : struct.thriftDocuments)
           {
-            _iter12.write(oprot);
+            _iter36.write(oprot);
           }
         }
       }
@@ -808,17 +808,17 @@ public class ThriftQueryResponse implements org.apache.thrift.TBase<ThriftQueryR
       }
       if (incoming.get(3)) {
         {
-          org.apache.thrift.protocol.TList _list13 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-          struct.documents = new ArrayList<TokenizerDocument>(_list13.size);
-          for (int _i14 = 0; _i14 < _list13.size; ++_i14)
+          org.apache.thrift.protocol.TList _list37 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+          struct.thriftDocuments = new ArrayList<ThriftDocument>(_list37.size);
+          for (int _i38 = 0; _i38 < _list37.size; ++_i38)
           {
-            TokenizerDocument _elem15;
-            _elem15 = new TokenizerDocument();
-            _elem15.read(iprot);
-            struct.documents.add(_elem15);
+            ThriftDocument _elem39;
+            _elem39 = new ThriftDocument();
+            _elem39.read(iprot);
+            struct.thriftDocuments.add(_elem39);
           }
         }
-        struct.setDocumentsIsSet(true);
+        struct.setThriftDocumentsIsSet(true);
       }
       if (incoming.get(4)) {
         struct.error = iprot.readString();

@@ -44,7 +44,7 @@ public class ThriftTokenizerService {
 
     public ThriftQueryResponse get_message_records_by_source(String query, int start, int rows, String source) throws org.apache.thrift.TException;
 
-    public ThriftQueryResponse retrieve_messages(String query, int start, int rows, long startTime, long endTime, List<String> sources, List<String> countryCodes, int startAge, int endAge, Gender gender, List<String> languageCodes) throws org.apache.thrift.TException;
+    public ThriftQueryResponse retrieve_messages(String query, int start, int rows, long startTime, long endTime, List<String> sources, List<String> locations, int startAge, int endAge, ThriftGender thriftGender, List<String> languageCodes) throws org.apache.thrift.TException;
 
   }
 
@@ -58,7 +58,7 @@ public class ThriftTokenizerService {
 
     public void get_message_records_by_source(String query, int start, int rows, String source, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
-    public void retrieve_messages(String query, int start, int rows, long startTime, long endTime, List<String> sources, List<String> countryCodes, int startAge, int endAge, Gender gender, List<String> languageCodes, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
+    public void retrieve_messages(String query, int start, int rows, long startTime, long endTime, List<String> sources, List<String> locations, int startAge, int endAge, ThriftGender thriftGender, List<String> languageCodes, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
   }
 
@@ -188,13 +188,13 @@ public class ThriftTokenizerService {
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "get_message_records_by_source failed: unknown result");
     }
 
-    public ThriftQueryResponse retrieve_messages(String query, int start, int rows, long startTime, long endTime, List<String> sources, List<String> countryCodes, int startAge, int endAge, Gender gender, List<String> languageCodes) throws org.apache.thrift.TException
+    public ThriftQueryResponse retrieve_messages(String query, int start, int rows, long startTime, long endTime, List<String> sources, List<String> locations, int startAge, int endAge, ThriftGender thriftGender, List<String> languageCodes) throws org.apache.thrift.TException
     {
-      send_retrieve_messages(query, start, rows, startTime, endTime, sources, countryCodes, startAge, endAge, gender, languageCodes);
+      send_retrieve_messages(query, start, rows, startTime, endTime, sources, locations, startAge, endAge, thriftGender, languageCodes);
       return recv_retrieve_messages();
     }
 
-    public void send_retrieve_messages(String query, int start, int rows, long startTime, long endTime, List<String> sources, List<String> countryCodes, int startAge, int endAge, Gender gender, List<String> languageCodes) throws org.apache.thrift.TException
+    public void send_retrieve_messages(String query, int start, int rows, long startTime, long endTime, List<String> sources, List<String> locations, int startAge, int endAge, ThriftGender thriftGender, List<String> languageCodes) throws org.apache.thrift.TException
     {
       retrieve_messages_args args = new retrieve_messages_args();
       args.setQuery(query);
@@ -203,10 +203,10 @@ public class ThriftTokenizerService {
       args.setStartTime(startTime);
       args.setEndTime(endTime);
       args.setSources(sources);
-      args.setCountryCodes(countryCodes);
+      args.setLocations(locations);
       args.setStartAge(startAge);
       args.setEndAge(endAge);
-      args.setGender(gender);
+      args.setThriftGender(thriftGender);
       args.setLanguageCodes(languageCodes);
       sendBase("retrieve_messages", args);
     }
@@ -409,9 +409,9 @@ public class ThriftTokenizerService {
       }
     }
 
-    public void retrieve_messages(String query, int start, int rows, long startTime, long endTime, List<String> sources, List<String> countryCodes, int startAge, int endAge, Gender gender, List<String> languageCodes, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+    public void retrieve_messages(String query, int start, int rows, long startTime, long endTime, List<String> sources, List<String> locations, int startAge, int endAge, ThriftGender thriftGender, List<String> languageCodes, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
       checkReady();
-      retrieve_messages_call method_call = new retrieve_messages_call(query, start, rows, startTime, endTime, sources, countryCodes, startAge, endAge, gender, languageCodes, resultHandler, this, ___protocolFactory, ___transport);
+      retrieve_messages_call method_call = new retrieve_messages_call(query, start, rows, startTime, endTime, sources, locations, startAge, endAge, thriftGender, languageCodes, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
       ___manager.call(method_call);
     }
@@ -423,12 +423,12 @@ public class ThriftTokenizerService {
       private long startTime;
       private long endTime;
       private List<String> sources;
-      private List<String> countryCodes;
+      private List<String> locations;
       private int startAge;
       private int endAge;
-      private Gender gender;
+      private ThriftGender thriftGender;
       private List<String> languageCodes;
-      public retrieve_messages_call(String query, int start, int rows, long startTime, long endTime, List<String> sources, List<String> countryCodes, int startAge, int endAge, Gender gender, List<String> languageCodes, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+      public retrieve_messages_call(String query, int start, int rows, long startTime, long endTime, List<String> sources, List<String> locations, int startAge, int endAge, ThriftGender thriftGender, List<String> languageCodes, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
         this.query = query;
         this.start = start;
@@ -436,10 +436,10 @@ public class ThriftTokenizerService {
         this.startTime = startTime;
         this.endTime = endTime;
         this.sources = sources;
-        this.countryCodes = countryCodes;
+        this.locations = locations;
         this.startAge = startAge;
         this.endAge = endAge;
-        this.gender = gender;
+        this.thriftGender = thriftGender;
         this.languageCodes = languageCodes;
       }
 
@@ -452,10 +452,10 @@ public class ThriftTokenizerService {
         args.setStartTime(startTime);
         args.setEndTime(endTime);
         args.setSources(sources);
-        args.setCountryCodes(countryCodes);
+        args.setLocations(locations);
         args.setStartAge(startAge);
         args.setEndAge(endAge);
-        args.setGender(gender);
+        args.setThriftGender(thriftGender);
         args.setLanguageCodes(languageCodes);
         args.write(prot);
         prot.writeMessageEnd();
@@ -587,7 +587,7 @@ public class ThriftTokenizerService {
 
       public retrieve_messages_result getResult(I iface, retrieve_messages_args args) throws org.apache.thrift.TException {
         retrieve_messages_result result = new retrieve_messages_result();
-        result.success = iface.retrieve_messages(args.query, args.start, args.rows, args.startTime, args.endTime, args.sources, args.countryCodes, args.startAge, args.endAge, args.gender, args.languageCodes);
+        result.success = iface.retrieve_messages(args.query, args.start, args.rows, args.startTime, args.endTime, args.sources, args.locations, args.startAge, args.endAge, args.thriftGender, args.languageCodes);
         return result;
       }
     }
@@ -864,7 +864,7 @@ public class ThriftTokenizerService {
       }
 
       public void start(I iface, retrieve_messages_args args, org.apache.thrift.async.AsyncMethodCallback<ThriftQueryResponse> resultHandler) throws TException {
-        iface.retrieve_messages(args.query, args.start, args.rows, args.startTime, args.endTime, args.sources, args.countryCodes, args.startAge, args.endAge, args.gender, args.languageCodes,resultHandler);
+        iface.retrieve_messages(args.query, args.start, args.rows, args.startTime, args.endTime, args.sources, args.locations, args.startAge, args.endAge, args.thriftGender, args.languageCodes,resultHandler);
       }
     }
 
@@ -5075,10 +5075,10 @@ public class ThriftTokenizerService {
     private static final org.apache.thrift.protocol.TField START_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("startTime", org.apache.thrift.protocol.TType.I64, (short)4);
     private static final org.apache.thrift.protocol.TField END_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("endTime", org.apache.thrift.protocol.TType.I64, (short)5);
     private static final org.apache.thrift.protocol.TField SOURCES_FIELD_DESC = new org.apache.thrift.protocol.TField("sources", org.apache.thrift.protocol.TType.LIST, (short)6);
-    private static final org.apache.thrift.protocol.TField COUNTRY_CODES_FIELD_DESC = new org.apache.thrift.protocol.TField("countryCodes", org.apache.thrift.protocol.TType.LIST, (short)7);
+    private static final org.apache.thrift.protocol.TField LOCATIONS_FIELD_DESC = new org.apache.thrift.protocol.TField("locations", org.apache.thrift.protocol.TType.LIST, (short)7);
     private static final org.apache.thrift.protocol.TField START_AGE_FIELD_DESC = new org.apache.thrift.protocol.TField("startAge", org.apache.thrift.protocol.TType.I32, (short)8);
     private static final org.apache.thrift.protocol.TField END_AGE_FIELD_DESC = new org.apache.thrift.protocol.TField("endAge", org.apache.thrift.protocol.TType.I32, (short)9);
-    private static final org.apache.thrift.protocol.TField GENDER_FIELD_DESC = new org.apache.thrift.protocol.TField("gender", org.apache.thrift.protocol.TType.I32, (short)10);
+    private static final org.apache.thrift.protocol.TField THRIFT_GENDER_FIELD_DESC = new org.apache.thrift.protocol.TField("thriftGender", org.apache.thrift.protocol.TType.I32, (short)10);
     private static final org.apache.thrift.protocol.TField LANGUAGE_CODES_FIELD_DESC = new org.apache.thrift.protocol.TField("languageCodes", org.apache.thrift.protocol.TType.LIST, (short)11);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
@@ -5093,14 +5093,14 @@ public class ThriftTokenizerService {
     public long startTime; // required
     public long endTime; // required
     public List<String> sources; // required
-    public List<String> countryCodes; // required
+    public List<String> locations; // required
     public int startAge; // required
     public int endAge; // required
     /**
      * 
-     * @see Gender
+     * @see ThriftGender
      */
-    public Gender gender; // required
+    public ThriftGender thriftGender; // required
     public List<String> languageCodes; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
@@ -5111,14 +5111,14 @@ public class ThriftTokenizerService {
       START_TIME((short)4, "startTime"),
       END_TIME((short)5, "endTime"),
       SOURCES((short)6, "sources"),
-      COUNTRY_CODES((short)7, "countryCodes"),
+      LOCATIONS((short)7, "locations"),
       START_AGE((short)8, "startAge"),
       END_AGE((short)9, "endAge"),
       /**
        * 
-       * @see Gender
+       * @see ThriftGender
        */
-      GENDER((short)10, "gender"),
+      THRIFT_GENDER((short)10, "thriftGender"),
       LANGUAGE_CODES((short)11, "languageCodes");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
@@ -5146,14 +5146,14 @@ public class ThriftTokenizerService {
             return END_TIME;
           case 6: // SOURCES
             return SOURCES;
-          case 7: // COUNTRY_CODES
-            return COUNTRY_CODES;
+          case 7: // LOCATIONS
+            return LOCATIONS;
           case 8: // START_AGE
             return START_AGE;
           case 9: // END_AGE
             return END_AGE;
-          case 10: // GENDER
-            return GENDER;
+          case 10: // THRIFT_GENDER
+            return THRIFT_GENDER;
           case 11: // LANGUAGE_CODES
             return LANGUAGE_CODES;
           default:
@@ -5219,15 +5219,15 @@ public class ThriftTokenizerService {
       tmpMap.put(_Fields.SOURCES, new org.apache.thrift.meta_data.FieldMetaData("sources", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
               new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING))));
-      tmpMap.put(_Fields.COUNTRY_CODES, new org.apache.thrift.meta_data.FieldMetaData("countryCodes", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+      tmpMap.put(_Fields.LOCATIONS, new org.apache.thrift.meta_data.FieldMetaData("locations", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
               new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING))));
       tmpMap.put(_Fields.START_AGE, new org.apache.thrift.meta_data.FieldMetaData("startAge", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
       tmpMap.put(_Fields.END_AGE, new org.apache.thrift.meta_data.FieldMetaData("endAge", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
-      tmpMap.put(_Fields.GENDER, new org.apache.thrift.meta_data.FieldMetaData("gender", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-          new org.apache.thrift.meta_data.EnumMetaData(org.apache.thrift.protocol.TType.ENUM, Gender.class)));
+      tmpMap.put(_Fields.THRIFT_GENDER, new org.apache.thrift.meta_data.FieldMetaData("thriftGender", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.EnumMetaData(org.apache.thrift.protocol.TType.ENUM, ThriftGender.class)));
       tmpMap.put(_Fields.LANGUAGE_CODES, new org.apache.thrift.meta_data.FieldMetaData("languageCodes", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
               new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING))));
@@ -5245,10 +5245,10 @@ public class ThriftTokenizerService {
       long startTime,
       long endTime,
       List<String> sources,
-      List<String> countryCodes,
+      List<String> locations,
       int startAge,
       int endAge,
-      Gender gender,
+      ThriftGender thriftGender,
       List<String> languageCodes)
     {
       this();
@@ -5262,12 +5262,12 @@ public class ThriftTokenizerService {
       this.endTime = endTime;
       setEndTimeIsSet(true);
       this.sources = sources;
-      this.countryCodes = countryCodes;
+      this.locations = locations;
       this.startAge = startAge;
       setStartAgeIsSet(true);
       this.endAge = endAge;
       setEndAgeIsSet(true);
-      this.gender = gender;
+      this.thriftGender = thriftGender;
       this.languageCodes = languageCodes;
     }
 
@@ -5287,14 +5287,14 @@ public class ThriftTokenizerService {
         List<String> __this__sources = new ArrayList<String>(other.sources);
         this.sources = __this__sources;
       }
-      if (other.isSetCountryCodes()) {
-        List<String> __this__countryCodes = new ArrayList<String>(other.countryCodes);
-        this.countryCodes = __this__countryCodes;
+      if (other.isSetLocations()) {
+        List<String> __this__locations = new ArrayList<String>(other.locations);
+        this.locations = __this__locations;
       }
       this.startAge = other.startAge;
       this.endAge = other.endAge;
-      if (other.isSetGender()) {
-        this.gender = other.gender;
+      if (other.isSetThriftGender()) {
+        this.thriftGender = other.thriftGender;
       }
       if (other.isSetLanguageCodes()) {
         List<String> __this__languageCodes = new ArrayList<String>(other.languageCodes);
@@ -5318,12 +5318,12 @@ public class ThriftTokenizerService {
       setEndTimeIsSet(false);
       this.endTime = 0;
       this.sources = null;
-      this.countryCodes = null;
+      this.locations = null;
       setStartAgeIsSet(false);
       this.startAge = 0;
       setEndAgeIsSet(false);
       this.endAge = 0;
-      this.gender = null;
+      this.thriftGender = null;
       this.languageCodes = null;
     }
 
@@ -5482,42 +5482,42 @@ public class ThriftTokenizerService {
       }
     }
 
-    public int getCountryCodesSize() {
-      return (this.countryCodes == null) ? 0 : this.countryCodes.size();
+    public int getLocationsSize() {
+      return (this.locations == null) ? 0 : this.locations.size();
     }
 
-    public java.util.Iterator<String> getCountryCodesIterator() {
-      return (this.countryCodes == null) ? null : this.countryCodes.iterator();
+    public java.util.Iterator<String> getLocationsIterator() {
+      return (this.locations == null) ? null : this.locations.iterator();
     }
 
-    public void addToCountryCodes(String elem) {
-      if (this.countryCodes == null) {
-        this.countryCodes = new ArrayList<String>();
+    public void addToLocations(String elem) {
+      if (this.locations == null) {
+        this.locations = new ArrayList<String>();
       }
-      this.countryCodes.add(elem);
+      this.locations.add(elem);
     }
 
-    public List<String> getCountryCodes() {
-      return this.countryCodes;
+    public List<String> getLocations() {
+      return this.locations;
     }
 
-    public retrieve_messages_args setCountryCodes(List<String> countryCodes) {
-      this.countryCodes = countryCodes;
+    public retrieve_messages_args setLocations(List<String> locations) {
+      this.locations = locations;
       return this;
     }
 
-    public void unsetCountryCodes() {
-      this.countryCodes = null;
+    public void unsetLocations() {
+      this.locations = null;
     }
 
-    /** Returns true if field countryCodes is set (has been assigned a value) and false otherwise */
-    public boolean isSetCountryCodes() {
-      return this.countryCodes != null;
+    /** Returns true if field locations is set (has been assigned a value) and false otherwise */
+    public boolean isSetLocations() {
+      return this.locations != null;
     }
 
-    public void setCountryCodesIsSet(boolean value) {
+    public void setLocationsIsSet(boolean value) {
       if (!value) {
-        this.countryCodes = null;
+        this.locations = null;
       }
     }
 
@@ -5569,33 +5569,33 @@ public class ThriftTokenizerService {
 
     /**
      * 
-     * @see Gender
+     * @see ThriftGender
      */
-    public Gender getGender() {
-      return this.gender;
+    public ThriftGender getThriftGender() {
+      return this.thriftGender;
     }
 
     /**
      * 
-     * @see Gender
+     * @see ThriftGender
      */
-    public retrieve_messages_args setGender(Gender gender) {
-      this.gender = gender;
+    public retrieve_messages_args setThriftGender(ThriftGender thriftGender) {
+      this.thriftGender = thriftGender;
       return this;
     }
 
-    public void unsetGender() {
-      this.gender = null;
+    public void unsetThriftGender() {
+      this.thriftGender = null;
     }
 
-    /** Returns true if field gender is set (has been assigned a value) and false otherwise */
-    public boolean isSetGender() {
-      return this.gender != null;
+    /** Returns true if field thriftGender is set (has been assigned a value) and false otherwise */
+    public boolean isSetThriftGender() {
+      return this.thriftGender != null;
     }
 
-    public void setGenderIsSet(boolean value) {
+    public void setThriftGenderIsSet(boolean value) {
       if (!value) {
-        this.gender = null;
+        this.thriftGender = null;
       }
     }
 
@@ -5688,11 +5688,11 @@ public class ThriftTokenizerService {
         }
         break;
 
-      case COUNTRY_CODES:
+      case LOCATIONS:
         if (value == null) {
-          unsetCountryCodes();
+          unsetLocations();
         } else {
-          setCountryCodes((List<String>)value);
+          setLocations((List<String>)value);
         }
         break;
 
@@ -5712,11 +5712,11 @@ public class ThriftTokenizerService {
         }
         break;
 
-      case GENDER:
+      case THRIFT_GENDER:
         if (value == null) {
-          unsetGender();
+          unsetThriftGender();
         } else {
-          setGender((Gender)value);
+          setThriftGender((ThriftGender)value);
         }
         break;
 
@@ -5751,8 +5751,8 @@ public class ThriftTokenizerService {
       case SOURCES:
         return getSources();
 
-      case COUNTRY_CODES:
-        return getCountryCodes();
+      case LOCATIONS:
+        return getLocations();
 
       case START_AGE:
         return Integer.valueOf(getStartAge());
@@ -5760,8 +5760,8 @@ public class ThriftTokenizerService {
       case END_AGE:
         return Integer.valueOf(getEndAge());
 
-      case GENDER:
-        return getGender();
+      case THRIFT_GENDER:
+        return getThriftGender();
 
       case LANGUAGE_CODES:
         return getLanguageCodes();
@@ -5789,14 +5789,14 @@ public class ThriftTokenizerService {
         return isSetEndTime();
       case SOURCES:
         return isSetSources();
-      case COUNTRY_CODES:
-        return isSetCountryCodes();
+      case LOCATIONS:
+        return isSetLocations();
       case START_AGE:
         return isSetStartAge();
       case END_AGE:
         return isSetEndAge();
-      case GENDER:
-        return isSetGender();
+      case THRIFT_GENDER:
+        return isSetThriftGender();
       case LANGUAGE_CODES:
         return isSetLanguageCodes();
       }
@@ -5870,12 +5870,12 @@ public class ThriftTokenizerService {
           return false;
       }
 
-      boolean this_present_countryCodes = true && this.isSetCountryCodes();
-      boolean that_present_countryCodes = true && that.isSetCountryCodes();
-      if (this_present_countryCodes || that_present_countryCodes) {
-        if (!(this_present_countryCodes && that_present_countryCodes))
+      boolean this_present_locations = true && this.isSetLocations();
+      boolean that_present_locations = true && that.isSetLocations();
+      if (this_present_locations || that_present_locations) {
+        if (!(this_present_locations && that_present_locations))
           return false;
-        if (!this.countryCodes.equals(that.countryCodes))
+        if (!this.locations.equals(that.locations))
           return false;
       }
 
@@ -5897,12 +5897,12 @@ public class ThriftTokenizerService {
           return false;
       }
 
-      boolean this_present_gender = true && this.isSetGender();
-      boolean that_present_gender = true && that.isSetGender();
-      if (this_present_gender || that_present_gender) {
-        if (!(this_present_gender && that_present_gender))
+      boolean this_present_thriftGender = true && this.isSetThriftGender();
+      boolean that_present_thriftGender = true && that.isSetThriftGender();
+      if (this_present_thriftGender || that_present_thriftGender) {
+        if (!(this_present_thriftGender && that_present_thriftGender))
           return false;
-        if (!this.gender.equals(that.gender))
+        if (!this.thriftGender.equals(that.thriftGender))
           return false;
       }
 
@@ -5991,12 +5991,12 @@ public class ThriftTokenizerService {
           return lastComparison;
         }
       }
-      lastComparison = Boolean.valueOf(isSetCountryCodes()).compareTo(other.isSetCountryCodes());
+      lastComparison = Boolean.valueOf(isSetLocations()).compareTo(other.isSetLocations());
       if (lastComparison != 0) {
         return lastComparison;
       }
-      if (isSetCountryCodes()) {
-        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.countryCodes, other.countryCodes);
+      if (isSetLocations()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.locations, other.locations);
         if (lastComparison != 0) {
           return lastComparison;
         }
@@ -6021,12 +6021,12 @@ public class ThriftTokenizerService {
           return lastComparison;
         }
       }
-      lastComparison = Boolean.valueOf(isSetGender()).compareTo(other.isSetGender());
+      lastComparison = Boolean.valueOf(isSetThriftGender()).compareTo(other.isSetThriftGender());
       if (lastComparison != 0) {
         return lastComparison;
       }
-      if (isSetGender()) {
-        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.gender, other.gender);
+      if (isSetThriftGender()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.thriftGender, other.thriftGender);
         if (lastComparison != 0) {
           return lastComparison;
         }
@@ -6093,11 +6093,11 @@ public class ThriftTokenizerService {
       }
       first = false;
       if (!first) sb.append(", ");
-      sb.append("countryCodes:");
-      if (this.countryCodes == null) {
+      sb.append("locations:");
+      if (this.locations == null) {
         sb.append("null");
       } else {
-        sb.append(this.countryCodes);
+        sb.append(this.locations);
       }
       first = false;
       if (!first) sb.append(", ");
@@ -6109,11 +6109,11 @@ public class ThriftTokenizerService {
       sb.append(this.endAge);
       first = false;
       if (!first) sb.append(", ");
-      sb.append("gender:");
-      if (this.gender == null) {
+      sb.append("thriftGender:");
+      if (this.thriftGender == null) {
         sb.append("null");
       } else {
-        sb.append(this.gender);
+        sb.append(this.thriftGender);
       }
       first = false;
       if (!first) sb.append(", ");
@@ -6217,13 +6217,13 @@ public class ThriftTokenizerService {
             case 6: // SOURCES
               if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
                 {
-                  org.apache.thrift.protocol.TList _list16 = iprot.readListBegin();
-                  struct.sources = new ArrayList<String>(_list16.size);
-                  for (int _i17 = 0; _i17 < _list16.size; ++_i17)
+                  org.apache.thrift.protocol.TList _list40 = iprot.readListBegin();
+                  struct.sources = new ArrayList<String>(_list40.size);
+                  for (int _i41 = 0; _i41 < _list40.size; ++_i41)
                   {
-                    String _elem18;
-                    _elem18 = iprot.readString();
-                    struct.sources.add(_elem18);
+                    String _elem42;
+                    _elem42 = iprot.readString();
+                    struct.sources.add(_elem42);
                   }
                   iprot.readListEnd();
                 }
@@ -6232,20 +6232,20 @@ public class ThriftTokenizerService {
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
-            case 7: // COUNTRY_CODES
+            case 7: // LOCATIONS
               if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
                 {
-                  org.apache.thrift.protocol.TList _list19 = iprot.readListBegin();
-                  struct.countryCodes = new ArrayList<String>(_list19.size);
-                  for (int _i20 = 0; _i20 < _list19.size; ++_i20)
+                  org.apache.thrift.protocol.TList _list43 = iprot.readListBegin();
+                  struct.locations = new ArrayList<String>(_list43.size);
+                  for (int _i44 = 0; _i44 < _list43.size; ++_i44)
                   {
-                    String _elem21;
-                    _elem21 = iprot.readString();
-                    struct.countryCodes.add(_elem21);
+                    String _elem45;
+                    _elem45 = iprot.readString();
+                    struct.locations.add(_elem45);
                   }
                   iprot.readListEnd();
                 }
-                struct.setCountryCodesIsSet(true);
+                struct.setLocationsIsSet(true);
               } else { 
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
@@ -6266,10 +6266,10 @@ public class ThriftTokenizerService {
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
-            case 10: // GENDER
+            case 10: // THRIFT_GENDER
               if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
-                struct.gender = Gender.findByValue(iprot.readI32());
-                struct.setGenderIsSet(true);
+                struct.thriftGender = ThriftGender.findByValue(iprot.readI32());
+                struct.setThriftGenderIsSet(true);
               } else { 
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
@@ -6277,13 +6277,13 @@ public class ThriftTokenizerService {
             case 11: // LANGUAGE_CODES
               if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
                 {
-                  org.apache.thrift.protocol.TList _list22 = iprot.readListBegin();
-                  struct.languageCodes = new ArrayList<String>(_list22.size);
-                  for (int _i23 = 0; _i23 < _list22.size; ++_i23)
+                  org.apache.thrift.protocol.TList _list46 = iprot.readListBegin();
+                  struct.languageCodes = new ArrayList<String>(_list46.size);
+                  for (int _i47 = 0; _i47 < _list46.size; ++_i47)
                   {
-                    String _elem24;
-                    _elem24 = iprot.readString();
-                    struct.languageCodes.add(_elem24);
+                    String _elem48;
+                    _elem48 = iprot.readString();
+                    struct.languageCodes.add(_elem48);
                   }
                   iprot.readListEnd();
                 }
@@ -6334,21 +6334,21 @@ public class ThriftTokenizerService {
           oprot.writeFieldBegin(SOURCES_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, struct.sources.size()));
-            for (String _iter25 : struct.sources)
+            for (String _iter49 : struct.sources)
             {
-              oprot.writeString(_iter25);
+              oprot.writeString(_iter49);
             }
             oprot.writeListEnd();
           }
           oprot.writeFieldEnd();
         }
-        if (struct.countryCodes != null) {
-          oprot.writeFieldBegin(COUNTRY_CODES_FIELD_DESC);
+        if (struct.locations != null) {
+          oprot.writeFieldBegin(LOCATIONS_FIELD_DESC);
           {
-            oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, struct.countryCodes.size()));
-            for (String _iter26 : struct.countryCodes)
+            oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, struct.locations.size()));
+            for (String _iter50 : struct.locations)
             {
-              oprot.writeString(_iter26);
+              oprot.writeString(_iter50);
             }
             oprot.writeListEnd();
           }
@@ -6360,18 +6360,18 @@ public class ThriftTokenizerService {
         oprot.writeFieldBegin(END_AGE_FIELD_DESC);
         oprot.writeI32(struct.endAge);
         oprot.writeFieldEnd();
-        if (struct.gender != null) {
-          oprot.writeFieldBegin(GENDER_FIELD_DESC);
-          oprot.writeI32(struct.gender.getValue());
+        if (struct.thriftGender != null) {
+          oprot.writeFieldBegin(THRIFT_GENDER_FIELD_DESC);
+          oprot.writeI32(struct.thriftGender.getValue());
           oprot.writeFieldEnd();
         }
         if (struct.languageCodes != null) {
           oprot.writeFieldBegin(LANGUAGE_CODES_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, struct.languageCodes.size()));
-            for (String _iter27 : struct.languageCodes)
+            for (String _iter51 : struct.languageCodes)
             {
-              oprot.writeString(_iter27);
+              oprot.writeString(_iter51);
             }
             oprot.writeListEnd();
           }
@@ -6407,7 +6407,7 @@ public class ThriftTokenizerService {
         if (struct.isSetSources()) {
           optionals.set(2);
         }
-        if (struct.isSetCountryCodes()) {
+        if (struct.isSetLocations()) {
           optionals.set(3);
         }
         if (struct.isSetStartAge()) {
@@ -6416,7 +6416,7 @@ public class ThriftTokenizerService {
         if (struct.isSetEndAge()) {
           optionals.set(5);
         }
-        if (struct.isSetGender()) {
+        if (struct.isSetThriftGender()) {
           optionals.set(6);
         }
         if (struct.isSetLanguageCodes()) {
@@ -6432,18 +6432,18 @@ public class ThriftTokenizerService {
         if (struct.isSetSources()) {
           {
             oprot.writeI32(struct.sources.size());
-            for (String _iter28 : struct.sources)
+            for (String _iter52 : struct.sources)
             {
-              oprot.writeString(_iter28);
+              oprot.writeString(_iter52);
             }
           }
         }
-        if (struct.isSetCountryCodes()) {
+        if (struct.isSetLocations()) {
           {
-            oprot.writeI32(struct.countryCodes.size());
-            for (String _iter29 : struct.countryCodes)
+            oprot.writeI32(struct.locations.size());
+            for (String _iter53 : struct.locations)
             {
-              oprot.writeString(_iter29);
+              oprot.writeString(_iter53);
             }
           }
         }
@@ -6453,15 +6453,15 @@ public class ThriftTokenizerService {
         if (struct.isSetEndAge()) {
           oprot.writeI32(struct.endAge);
         }
-        if (struct.isSetGender()) {
-          oprot.writeI32(struct.gender.getValue());
+        if (struct.isSetThriftGender()) {
+          oprot.writeI32(struct.thriftGender.getValue());
         }
         if (struct.isSetLanguageCodes()) {
           {
             oprot.writeI32(struct.languageCodes.size());
-            for (String _iter30 : struct.languageCodes)
+            for (String _iter54 : struct.languageCodes)
             {
-              oprot.writeString(_iter30);
+              oprot.writeString(_iter54);
             }
           }
         }
@@ -6487,29 +6487,29 @@ public class ThriftTokenizerService {
         }
         if (incoming.get(2)) {
           {
-            org.apache.thrift.protocol.TList _list31 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
-            struct.sources = new ArrayList<String>(_list31.size);
-            for (int _i32 = 0; _i32 < _list31.size; ++_i32)
+            org.apache.thrift.protocol.TList _list55 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
+            struct.sources = new ArrayList<String>(_list55.size);
+            for (int _i56 = 0; _i56 < _list55.size; ++_i56)
             {
-              String _elem33;
-              _elem33 = iprot.readString();
-              struct.sources.add(_elem33);
+              String _elem57;
+              _elem57 = iprot.readString();
+              struct.sources.add(_elem57);
             }
           }
           struct.setSourcesIsSet(true);
         }
         if (incoming.get(3)) {
           {
-            org.apache.thrift.protocol.TList _list34 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
-            struct.countryCodes = new ArrayList<String>(_list34.size);
-            for (int _i35 = 0; _i35 < _list34.size; ++_i35)
+            org.apache.thrift.protocol.TList _list58 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
+            struct.locations = new ArrayList<String>(_list58.size);
+            for (int _i59 = 0; _i59 < _list58.size; ++_i59)
             {
-              String _elem36;
-              _elem36 = iprot.readString();
-              struct.countryCodes.add(_elem36);
+              String _elem60;
+              _elem60 = iprot.readString();
+              struct.locations.add(_elem60);
             }
           }
-          struct.setCountryCodesIsSet(true);
+          struct.setLocationsIsSet(true);
         }
         if (incoming.get(4)) {
           struct.startAge = iprot.readI32();
@@ -6520,18 +6520,18 @@ public class ThriftTokenizerService {
           struct.setEndAgeIsSet(true);
         }
         if (incoming.get(6)) {
-          struct.gender = Gender.findByValue(iprot.readI32());
-          struct.setGenderIsSet(true);
+          struct.thriftGender = ThriftGender.findByValue(iprot.readI32());
+          struct.setThriftGenderIsSet(true);
         }
         if (incoming.get(7)) {
           {
-            org.apache.thrift.protocol.TList _list37 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
-            struct.languageCodes = new ArrayList<String>(_list37.size);
-            for (int _i38 = 0; _i38 < _list37.size; ++_i38)
+            org.apache.thrift.protocol.TList _list61 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
+            struct.languageCodes = new ArrayList<String>(_list61.size);
+            for (int _i62 = 0; _i62 < _list61.size; ++_i62)
             {
-              String _elem39;
-              _elem39 = iprot.readString();
-              struct.languageCodes.add(_elem39);
+              String _elem63;
+              _elem63 = iprot.readString();
+              struct.languageCodes.add(_elem63);
             }
           }
           struct.setLanguageCodesIsSet(true);

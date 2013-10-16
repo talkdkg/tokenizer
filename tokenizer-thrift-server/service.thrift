@@ -1,30 +1,40 @@
 namespace java org.tokenizer.thrift
 
-enum Gender {
+enum ThriftGender {
     MALE,
     FEMALE
 }
 
-struct TokenizerDocument {
+struct ThriftSentence {
+    string sentence,
+    set<string> features,
+    string treebank,
+    list<string> chunks,
+    i32 sentiment
+}
+
+struct ThriftDocument {
    string id,
    string source,
-   i64 date,
+   /* Date in ISO8601 format */
+   string date,
    string author,
    string age,
-   Gender gender,
+   ThriftGender thriftGender,
    string title,
    string content,
    string topic,
    string userRating,
    i32 sentiment,
-   set<string> features
+   set<string> features,
+   list<ThriftSentence> thriftSentences
 }
 
 struct ThriftQueryResponse {
 	1: optional i64 numFound,
 	2: optional i32 qTime,
 	3: optional i32 elapsedTime,
-	4: optional list<TokenizerDocument> documents,
+	4: optional list<ThriftDocument> thriftDocuments,
 	5: optional string error
 }
 
@@ -40,10 +50,10 @@ service ThriftTokenizerService {
 		4:optional i64 startTime, 
 		5:optional i64 endTime, 
 		6:optional list<string> sources, 
-		7:optional list<string> countryCodes,
+		7:optional list<string> locations,
 		8:optional i32 startAge,
 		9:optional i32 endAge,
-		10:optional Gender gender,
+		10:optional ThriftGender thriftGender,
 		11:optional list<string> languageCodes)
 }
 

@@ -133,6 +133,8 @@ public class MessageRecord implements Serializable {
         
     }
     
+    
+    
     public void setDate(final String date) {
         if (date != null) {
             this.date = date;

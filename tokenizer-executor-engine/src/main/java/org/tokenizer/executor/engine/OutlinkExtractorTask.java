@@ -85,8 +85,23 @@ public class OutlinkExtractorTask extends AbstractTask<OutlinkExtractorTaskConfi
 
     @Override
     protected void process() throws InterruptedException, ConnectionException {
+
+        /*
+        Somehow "maxROws=100" causes following:
+            Caused by: org.apache.thrift.transport.TTransportException: Frame size (23093808) larger than max length (16384000)!
+
+        See also settings in *.yaml file:
+            # Frame size for thrift (maximum field length).
+            thrift_framed_transport_size_in_mb: 15
+
+            # The max length of a thrift message, including all fields and
+            # internal thrift overhead.
+            thrift_max_message_length_in_mb: 16
+
+        */
+        
         List<WebpageRecord> webpageRecords = crawlerRepository.listWebpageRecordsByExtractOutlinksAttemptCounter(
-                taskConfiguration.getHost(), taskConfiguration.getExtractOutlinksAttemptCounter(), 100);
+                taskConfiguration.getHost(), taskConfiguration.getExtractOutlinksAttemptCounter(), 10);
 
         for (WebpageRecord webpageRecord : webpageRecords) {
             parse(webpageRecord);
@@ -120,7 +135,7 @@ public class OutlinkExtractorTask extends AbstractTask<OutlinkExtractorTaskConfi
 
         for (Outlink outlink : outlinks) {
 
-            LOG.debug("outlink: {}", outlink);
+            //LOG.debug("outlink: {}", outlink);
 
             String url = outlink.getToUrl();
 
@@ -137,7 +152,7 @@ public class OutlinkExtractorTask extends AbstractTask<OutlinkExtractorTaskConfi
 
             // This is definition of "domain constrained crawl" (vertical crawl):
              if (!webpageRecord.getHost().equals(host)) {
-                LOG.debug("extrenal host ignored; initial: {} external: {}", webpageRecord.getHost(), host);
+                LOG.trace("extrenal host ignored; initial: {} external: {}", webpageRecord.getHost(), host);
                 continue;
             }
 

@@ -11,13 +11,13 @@ import java.util.Map;
 import java.util.HashMap;
 import org.apache.thrift.TEnum;
 
-public enum Gender implements org.apache.thrift.TEnum {
+public enum ThriftGender implements org.apache.thrift.TEnum {
   MALE(0),
   FEMALE(1);
 
   private final int value;
 
-  private Gender(int value) {
+  private ThriftGender(int value) {
     this.value = value;
   }
 
@@ -32,7 +32,7 @@ public enum Gender implements org.apache.thrift.TEnum {
    * Find a the enum type by its integer value, as defined in the Thrift IDL.
    * @return null if the value is not found.
    */
-  public static Gender findByValue(int value) { 
+  public static ThriftGender findByValue(int value) { 
     switch (value) {
       case 0:
         return MALE;
