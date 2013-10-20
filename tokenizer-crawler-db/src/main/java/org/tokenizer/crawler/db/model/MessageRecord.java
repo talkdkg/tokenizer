@@ -31,7 +31,7 @@ public class MessageRecord implements Serializable {
     private byte[] digest = DefaultValues.EMPTY_ARRAY;
     private String host = DefaultValues.EMPTY_STRING;
     private String topic = DefaultValues.EMPTY_STRING;
-    private String date = DefaultValues.EMPTY_STRING;
+    private String m_date = DefaultValues.EMPTY_STRING;
     private String author = DefaultValues.EMPTY_STRING;
     private String age = DefaultValues.EMPTY_STRING;
     private String sex = DefaultValues.EMPTY_STRING;
@@ -51,7 +51,7 @@ public class MessageRecord implements Serializable {
         
         MessageRecord o = new MessageRecord(null, null, null, null);
         
-        o.setDate("November 12, 2012\n");
+        o.setDate("September 22, 2013 NEW");
         
         System.out.println(o.getISO8601Date());
         
@@ -78,7 +78,7 @@ public class MessageRecord implements Serializable {
         this.digest = digest;
         if (host != null) this.host = host;
         if (topic != null) this.topic = topic;
-        if (date != null) this.date = date;
+        if (date != null) setDate(date);
         if (author != null) this.author = author;
         if (age != null) this.age = age;
         if (sex != null) this.sex = sex;
@@ -109,23 +109,23 @@ public class MessageRecord implements Serializable {
     }
     
     public String getDate() {
-        return date;
+        return m_date;
     }
     
     public String getISO8601Date() {
         
         try {
-            DateTime dt = TWITTER_DATE_FORMATTER.parseDateTime(date);
+            DateTime dt = TWITTER_DATE_FORMATTER.parseDateTime(m_date);
             return TWITTER_DATE_FORMATTER.print(dt);
             
         } catch (Exception e) {
             
-            LOG.debug("Trying to reprocess '{}' with '{}' pattern.", date, MMMM_D_YYYY);
+            LOG.debug("Trying to reprocess '{}' with '{}' pattern.", m_date, MMMM_D_YYYY);
             try {
-                DateTime dt = MMMM_D_YYYY.parseDateTime(date);
+                DateTime dt = MMMM_D_YYYY.parseDateTime(m_date);
                 return TWITTER_DATE_FORMATTER.print(dt);
             } catch (IllegalArgumentException e2) {
-                LOG.warn("Can't parse '{}' with '{}' pattern.", date, MMMM_D_YYYY.getParser());
+                LOG.warn("Can't parse '{}' with '{}' pattern.", m_date, MMMM_D_YYYY.getParser());
             }
             
         }
@@ -133,9 +133,14 @@ public class MessageRecord implements Serializable {
         
     }
     
-    public void setDate(final String date) {
+    public void setDate(String date) {
         if (date != null) {
-            this.date = date.trim();
+            this.m_date = date.replaceAll("\\s+", " ").replaceAll("NEW", " ").trim();
+            
+            
+            //LOG.error("" + this.m_date.charAt(this.m_date.length()-1));
+         
+            //LOG.error("" + ( (byte) this.m_date.charAt(this.m_date.length()-1)));
         }
     }
     
@@ -204,7 +209,7 @@ public class MessageRecord implements Serializable {
     @Override
     public String toString() {
         return "MessageRecord [digest=" + MD5.toHexString(digest) + ", host="
-                + host + ", topic=" + topic + ", date=" + date + ", author="
+                + host + ", topic=" + topic + ", date=" + m_date + ", author="
                 + author + ", age=" + age + ", sex=" + sex + ", title=" + title
                 + ", content=" + content + ", userRating=" + userRating
                 + ", location=" + location + "]";
