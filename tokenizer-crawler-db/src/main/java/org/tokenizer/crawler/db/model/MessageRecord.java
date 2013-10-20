@@ -41,7 +41,7 @@ public class MessageRecord implements Serializable {
     private String location = DefaultValues.EMPTY_STRING;
     private TextImpl reviewText = DefaultValues.EMPTY_REVIEW;
     
-    private static final DateTimeFormatter fmt = DateTimeFormat
+    private static final DateTimeFormatter MMMM_D_YYYY = DateTimeFormat
             .forPattern("MMMM d, yyyy");
     
     private static final DateTimeFormatter TWITTER_DATE_FORMATTER = DateTimeFormat
@@ -51,7 +51,7 @@ public class MessageRecord implements Serializable {
         
         MessageRecord o = new MessageRecord(null, null, null, null);
         
-        o.setDate("September 7, 2013");
+        o.setDate("November 12, 2012");
         
         System.out.println(o.getISO8601Date());
         
@@ -120,20 +120,18 @@ public class MessageRecord implements Serializable {
             
         } catch (Exception e) {
             
-            LOG.warn("Trying to process date: {}", date);
+            LOG.debug("Trying to reprocess '{}' with '{}' pattern.", date, MMMM_D_YYYY);
             try {
-                DateTime dt = fmt.parseDateTime(date);
+                DateTime dt = MMMM_D_YYYY.parseDateTime(date);
                 return TWITTER_DATE_FORMATTER.print(dt);
             } catch (IllegalArgumentException e2) {
-                LOG.warn("Can't parse date: {}", date);
+                LOG.warn("Can't parse '{}' with '{}' pattern.", date, MMMM_D_YYYY);
             }
             
         }
         return TWITTER_DATE_FORMATTER.print(new DateTime(0));
         
     }
-    
-    
     
     public void setDate(final String date) {
         if (date != null) {

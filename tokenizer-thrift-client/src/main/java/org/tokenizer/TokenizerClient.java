@@ -179,10 +179,45 @@ public class TokenizerClient {
         return result;
     }
     
-    public static void main(final String[] args) {
+    public static void main(String[] args) {
+        
+        // org.apache.log4j.BasicConfigurator.configure();
+        
+        testDateRange();
+        
+    }
+    
+    public static void testDateRange() {
+        
+        Calendar startDay = Calendar.getInstance();
+        
+        startDay.set(Calendar.YEAR, 1971);
+        startDay.set(Calendar.MONTH, 1);
+        startDay.set(Calendar.DAY_OF_MONTH, 1);
+        
+        Calendar endDay = Calendar.getInstance();
+        
+        endDay.set(Calendar.YEAR, 2014);
+        endDay.set(Calendar.MONTH, 12);
+        endDay.set(Calendar.DAY_OF_MONTH, 31);
+        
+        System.out.println(startDay);
+        System.out.println(endDay);
+        
+        ThriftQueryResponse r = TokenizerClient.getMessageRecords("review", 0, 100, 0,
+                endDay.getTimeInMillis(),
+                "www.tripadvisor.com");
+        System.out.println("Elapsed Time: " + r.elapsedTime);
+        System.out.println("Number of records found: " + r.numFound);
+        for (ThriftDocument tmr : r.getThriftDocuments()) {
+            System.out.println(tmr.getAuthor() + " " + tmr.getDate());
+        }
+    }
+    
+    public static void main2(final String[] args) {
         
         long oneMonthMillis = 30 * 24 * 3600 * 1000L;
-        org.apache.log4j.BasicConfigurator.configure();
+        //org.apache.log4j.BasicConfigurator.configure();
         
         // get 10 records from record number 30 to 39:
         ArrayList<String> sources = new ArrayList<>();
