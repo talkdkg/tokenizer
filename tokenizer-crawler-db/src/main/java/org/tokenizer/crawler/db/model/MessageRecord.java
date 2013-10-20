@@ -51,7 +51,7 @@ public class MessageRecord implements Serializable {
         
         MessageRecord o = new MessageRecord(null, null, null, null);
         
-        o.setDate("November 12, 2012");
+        o.setDate("November 12, 2012\n");
         
         System.out.println(o.getISO8601Date());
         
@@ -125,7 +125,7 @@ public class MessageRecord implements Serializable {
                 DateTime dt = MMMM_D_YYYY.parseDateTime(date);
                 return TWITTER_DATE_FORMATTER.print(dt);
             } catch (IllegalArgumentException e2) {
-                LOG.warn("Can't parse '{}' with '{}' pattern.", date, MMMM_D_YYYY);
+                LOG.warn("Can't parse '{}' with '{}' pattern.", date, MMMM_D_YYYY.getParser());
             }
             
         }
@@ -135,7 +135,7 @@ public class MessageRecord implements Serializable {
     
     public void setDate(final String date) {
         if (date != null) {
-            this.date = date;
+            this.date = date.trim();
         }
     }
     
