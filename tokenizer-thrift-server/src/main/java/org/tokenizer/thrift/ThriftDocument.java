@@ -48,6 +48,7 @@ public class ThriftDocument implements org.apache.thrift.TBase<ThriftDocument, T
   private static final org.apache.thrift.protocol.TField SENTIMENT_FIELD_DESC = new org.apache.thrift.protocol.TField("sentiment", org.apache.thrift.protocol.TType.I32, (short)-11);
   private static final org.apache.thrift.protocol.TField FEATURES_FIELD_DESC = new org.apache.thrift.protocol.TField("features", org.apache.thrift.protocol.TType.SET, (short)-12);
   private static final org.apache.thrift.protocol.TField THRIFT_SENTENCES_FIELD_DESC = new org.apache.thrift.protocol.TField("thriftSentences", org.apache.thrift.protocol.TType.LIST, (short)-13);
+  private static final org.apache.thrift.protocol.TField URLS_FIELD_DESC = new org.apache.thrift.protocol.TField("urls", org.apache.thrift.protocol.TType.SET, (short)-14);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -72,6 +73,7 @@ public class ThriftDocument implements org.apache.thrift.TBase<ThriftDocument, T
   public int sentiment; // required
   public Set<String> features; // required
   public List<ThriftSentence> thriftSentences; // required
+  public Set<String> urls; // required
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -91,7 +93,8 @@ public class ThriftDocument implements org.apache.thrift.TBase<ThriftDocument, T
     USER_RATING((short)-10, "userRating"),
     SENTIMENT((short)-11, "sentiment"),
     FEATURES((short)-12, "features"),
-    THRIFT_SENTENCES((short)-13, "thriftSentences");
+    THRIFT_SENTENCES((short)-13, "thriftSentences"),
+    URLS((short)-14, "urls");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -132,6 +135,8 @@ public class ThriftDocument implements org.apache.thrift.TBase<ThriftDocument, T
           return FEATURES;
         case -13: // THRIFT_SENTENCES
           return THRIFT_SENTENCES;
+        case -14: // URLS
+          return URLS;
         default:
           return null;
       }
@@ -205,6 +210,9 @@ public class ThriftDocument implements org.apache.thrift.TBase<ThriftDocument, T
     tmpMap.put(_Fields.THRIFT_SENTENCES, new org.apache.thrift.meta_data.FieldMetaData("thriftSentences", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
             new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, ThriftSentence.class))));
+    tmpMap.put(_Fields.URLS, new org.apache.thrift.meta_data.FieldMetaData("urls", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+        new org.apache.thrift.meta_data.SetMetaData(org.apache.thrift.protocol.TType.SET, 
+            new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING))));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(ThriftDocument.class, metaDataMap);
   }
@@ -225,7 +233,8 @@ public class ThriftDocument implements org.apache.thrift.TBase<ThriftDocument, T
     String userRating,
     int sentiment,
     Set<String> features,
-    List<ThriftSentence> thriftSentences)
+    List<ThriftSentence> thriftSentences,
+    Set<String> urls)
   {
     this();
     this.id = id;
@@ -242,6 +251,7 @@ public class ThriftDocument implements org.apache.thrift.TBase<ThriftDocument, T
     setSentimentIsSet(true);
     this.features = features;
     this.thriftSentences = thriftSentences;
+    this.urls = urls;
   }
 
   /**
@@ -291,6 +301,10 @@ public class ThriftDocument implements org.apache.thrift.TBase<ThriftDocument, T
       }
       this.thriftSentences = __this__thriftSentences;
     }
+    if (other.isSetUrls()) {
+      Set<String> __this__urls = new HashSet<String>(other.urls);
+      this.urls = __this__urls;
+    }
   }
 
   public ThriftDocument deepCopy() {
@@ -313,6 +327,7 @@ public class ThriftDocument implements org.apache.thrift.TBase<ThriftDocument, T
     this.sentiment = 0;
     this.features = null;
     this.thriftSentences = null;
+    this.urls = null;
   }
 
   public String getId() {
@@ -664,6 +679,45 @@ public class ThriftDocument implements org.apache.thrift.TBase<ThriftDocument, T
     }
   }
 
+  public int getUrlsSize() {
+    return (this.urls == null) ? 0 : this.urls.size();
+  }
+
+  public java.util.Iterator<String> getUrlsIterator() {
+    return (this.urls == null) ? null : this.urls.iterator();
+  }
+
+  public void addToUrls(String elem) {
+    if (this.urls == null) {
+      this.urls = new HashSet<String>();
+    }
+    this.urls.add(elem);
+  }
+
+  public Set<String> getUrls() {
+    return this.urls;
+  }
+
+  public ThriftDocument setUrls(Set<String> urls) {
+    this.urls = urls;
+    return this;
+  }
+
+  public void unsetUrls() {
+    this.urls = null;
+  }
+
+  /** Returns true if field urls is set (has been assigned a value) and false otherwise */
+  public boolean isSetUrls() {
+    return this.urls != null;
+  }
+
+  public void setUrlsIsSet(boolean value) {
+    if (!value) {
+      this.urls = null;
+    }
+  }
+
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
     case ID:
@@ -770,6 +824,14 @@ public class ThriftDocument implements org.apache.thrift.TBase<ThriftDocument, T
       }
       break;
 
+    case URLS:
+      if (value == null) {
+        unsetUrls();
+      } else {
+        setUrls((Set<String>)value);
+      }
+      break;
+
     }
   }
 
@@ -814,6 +876,9 @@ public class ThriftDocument implements org.apache.thrift.TBase<ThriftDocument, T
     case THRIFT_SENTENCES:
       return getThriftSentences();
 
+    case URLS:
+      return getUrls();
+
     }
     throw new IllegalStateException();
   }
@@ -851,6 +916,8 @@ public class ThriftDocument implements org.apache.thrift.TBase<ThriftDocument, T
       return isSetFeatures();
     case THRIFT_SENTENCES:
       return isSetThriftSentences();
+    case URLS:
+      return isSetUrls();
     }
     throw new IllegalStateException();
   }
@@ -982,6 +1049,15 @@ public class ThriftDocument implements org.apache.thrift.TBase<ThriftDocument, T
       if (!(this_present_thriftSentences && that_present_thriftSentences))
         return false;
       if (!this.thriftSentences.equals(that.thriftSentences))
+        return false;
+    }
+
+    boolean this_present_urls = true && this.isSetUrls();
+    boolean that_present_urls = true && that.isSetUrls();
+    if (this_present_urls || that_present_urls) {
+      if (!(this_present_urls && that_present_urls))
+        return false;
+      if (!this.urls.equals(that.urls))
         return false;
     }
 
@@ -1131,6 +1207,16 @@ public class ThriftDocument implements org.apache.thrift.TBase<ThriftDocument, T
         return lastComparison;
       }
     }
+    lastComparison = Boolean.valueOf(isSetUrls()).compareTo(other.isSetUrls());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetUrls()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.urls, other.urls);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     return 0;
   }
 
@@ -1248,6 +1334,14 @@ public class ThriftDocument implements org.apache.thrift.TBase<ThriftDocument, T
       sb.append("null");
     } else {
       sb.append(this.thriftSentences);
+    }
+    first = false;
+    if (!first) sb.append(", ");
+    sb.append("urls:");
+    if (this.urls == null) {
+      sb.append("null");
+    } else {
+      sb.append(this.urls);
     }
     first = false;
     sb.append(")");
@@ -1420,6 +1514,24 @@ public class ThriftDocument implements org.apache.thrift.TBase<ThriftDocument, T
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
+          case -14: // URLS
+            if (schemeField.type == org.apache.thrift.protocol.TType.SET) {
+              {
+                org.apache.thrift.protocol.TSet _set22 = iprot.readSetBegin();
+                struct.urls = new HashSet<String>(2*_set22.size);
+                for (int _i23 = 0; _i23 < _set22.size; ++_i23)
+                {
+                  String _elem24;
+                  _elem24 = iprot.readString();
+                  struct.urls.add(_elem24);
+                }
+                iprot.readSetEnd();
+              }
+              struct.setUrlsIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -1435,13 +1547,25 @@ public class ThriftDocument implements org.apache.thrift.TBase<ThriftDocument, T
       struct.validate();
 
       oprot.writeStructBegin(STRUCT_DESC);
+      if (struct.urls != null) {
+        oprot.writeFieldBegin(URLS_FIELD_DESC);
+        {
+          oprot.writeSetBegin(new org.apache.thrift.protocol.TSet(org.apache.thrift.protocol.TType.STRING, struct.urls.size()));
+          for (String _iter25 : struct.urls)
+          {
+            oprot.writeString(_iter25);
+          }
+          oprot.writeSetEnd();
+        }
+        oprot.writeFieldEnd();
+      }
       if (struct.thriftSentences != null) {
         oprot.writeFieldBegin(THRIFT_SENTENCES_FIELD_DESC);
         {
           oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.thriftSentences.size()));
-          for (ThriftSentence _iter22 : struct.thriftSentences)
+          for (ThriftSentence _iter26 : struct.thriftSentences)
           {
-            _iter22.write(oprot);
+            _iter26.write(oprot);
           }
           oprot.writeListEnd();
         }
@@ -1451,9 +1575,9 @@ public class ThriftDocument implements org.apache.thrift.TBase<ThriftDocument, T
         oprot.writeFieldBegin(FEATURES_FIELD_DESC);
         {
           oprot.writeSetBegin(new org.apache.thrift.protocol.TSet(org.apache.thrift.protocol.TType.STRING, struct.features.size()));
-          for (String _iter23 : struct.features)
+          for (String _iter27 : struct.features)
           {
-            oprot.writeString(_iter23);
+            oprot.writeString(_iter27);
           }
           oprot.writeSetEnd();
         }
@@ -1569,7 +1693,10 @@ public class ThriftDocument implements org.apache.thrift.TBase<ThriftDocument, T
       if (struct.isSetThriftSentences()) {
         optionals.set(12);
       }
-      oprot.writeBitSet(optionals, 13);
+      if (struct.isSetUrls()) {
+        optionals.set(13);
+      }
+      oprot.writeBitSet(optionals, 14);
       if (struct.isSetId()) {
         oprot.writeString(struct.id);
       }
@@ -1606,18 +1733,27 @@ public class ThriftDocument implements org.apache.thrift.TBase<ThriftDocument, T
       if (struct.isSetFeatures()) {
         {
           oprot.writeI32(struct.features.size());
-          for (String _iter24 : struct.features)
+          for (String _iter28 : struct.features)
           {
-            oprot.writeString(_iter24);
+            oprot.writeString(_iter28);
           }
         }
       }
       if (struct.isSetThriftSentences()) {
         {
           oprot.writeI32(struct.thriftSentences.size());
-          for (ThriftSentence _iter25 : struct.thriftSentences)
+          for (ThriftSentence _iter29 : struct.thriftSentences)
           {
-            _iter25.write(oprot);
+            _iter29.write(oprot);
+          }
+        }
+      }
+      if (struct.isSetUrls()) {
+        {
+          oprot.writeI32(struct.urls.size());
+          for (String _iter30 : struct.urls)
+          {
+            oprot.writeString(_iter30);
           }
         }
       }
@@ -1626,7 +1762,7 @@ public class ThriftDocument implements org.apache.thrift.TBase<ThriftDocument, T
     @Override
     public void read(org.apache.thrift.protocol.TProtocol prot, ThriftDocument struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
-      BitSet incoming = iprot.readBitSet(13);
+      BitSet incoming = iprot.readBitSet(14);
       if (incoming.get(0)) {
         struct.id = iprot.readString();
         struct.setIdIsSet(true);
@@ -1673,30 +1809,43 @@ public class ThriftDocument implements org.apache.thrift.TBase<ThriftDocument, T
       }
       if (incoming.get(11)) {
         {
-          org.apache.thrift.protocol.TSet _set26 = new org.apache.thrift.protocol.TSet(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
-          struct.features = new HashSet<String>(2*_set26.size);
-          for (int _i27 = 0; _i27 < _set26.size; ++_i27)
+          org.apache.thrift.protocol.TSet _set31 = new org.apache.thrift.protocol.TSet(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
+          struct.features = new HashSet<String>(2*_set31.size);
+          for (int _i32 = 0; _i32 < _set31.size; ++_i32)
           {
-            String _elem28;
-            _elem28 = iprot.readString();
-            struct.features.add(_elem28);
+            String _elem33;
+            _elem33 = iprot.readString();
+            struct.features.add(_elem33);
           }
         }
         struct.setFeaturesIsSet(true);
       }
       if (incoming.get(12)) {
         {
-          org.apache.thrift.protocol.TList _list29 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-          struct.thriftSentences = new ArrayList<ThriftSentence>(_list29.size);
-          for (int _i30 = 0; _i30 < _list29.size; ++_i30)
+          org.apache.thrift.protocol.TList _list34 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+          struct.thriftSentences = new ArrayList<ThriftSentence>(_list34.size);
+          for (int _i35 = 0; _i35 < _list34.size; ++_i35)
           {
-            ThriftSentence _elem31;
-            _elem31 = new ThriftSentence();
-            _elem31.read(iprot);
-            struct.thriftSentences.add(_elem31);
+            ThriftSentence _elem36;
+            _elem36 = new ThriftSentence();
+            _elem36.read(iprot);
+            struct.thriftSentences.add(_elem36);
           }
         }
         struct.setThriftSentencesIsSet(true);
+      }
+      if (incoming.get(13)) {
+        {
+          org.apache.thrift.protocol.TSet _set37 = new org.apache.thrift.protocol.TSet(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
+          struct.urls = new HashSet<String>(2*_set37.size);
+          for (int _i38 = 0; _i38 < _set37.size; ++_i38)
+          {
+            String _elem39;
+            _elem39 = iprot.readString();
+            struct.urls.add(_elem39);
+          }
+        }
+        struct.setUrlsIsSet(true);
       }
     }
   }

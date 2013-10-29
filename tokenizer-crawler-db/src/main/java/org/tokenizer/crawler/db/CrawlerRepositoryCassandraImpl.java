@@ -137,6 +137,20 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
     protected static AnnotatedCompositeSerializer<TimestampUrlIDX> TIMESTAMP_URL_IDX_SERIALIZER = new AnnotatedCompositeSerializer<TimestampUrlIDX>(
             TimestampUrlIDX.class);
     
+    
+    /**
+     * Tablespace name for Message -> URL inverted index
+     */
+    private static final String MESSAGE_URL_IDX = "message_url_idx";
+
+    /**
+     * Columnfamily definition for Message -> URL inverted index
+     */
+    protected final ColumnFamily<byte[],String> CF_MESSAGE_URL_IDX = ColumnFamily.newColumnFamily(MESSAGE_URL_IDX,
+    		BytesArraySerializer.get(), AsciiSerializer.get());
+    
+    
+    
     protected static AnnotatedCompositeSerializer<Weblog> WEBLOG_SERIALIZER = new AnnotatedCompositeSerializer<Weblog>(Weblog.class);
     
     // TODO: buffer is set explicitly to 8192 due to current bug in Astyanax
@@ -350,6 +364,15 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
             
         }
         
+        // MESSAGE_URL_IDX
+        if (def.getColumnFamily(MESSAGE_URL_IDX) == null) {
+            keyspace.createColumnFamily(
+            		CF_MESSAGE_URL_IDX,
+                    ImmutableMap.<String,Object> builder().put("key_validation_class", "BytesType")
+                            .put("comparator_type", "AsciiType").build());
+            
+        }
+
         // CF_TIMESTAMP_URL_IDX
         if (def.getColumnFamily(TIMESTAMP_URL_IDX) == null) {
             keyspace.createColumnFamily(
@@ -1934,4 +1957,36 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
         
     }
     
+    // MESSAGE_URL_IDX
+    @Override
+    public void insertMessageUrlIDX(final byte[] digest, final String url) throws ConnectionException {
+        MutationBatch m = keyspace.prepareMutationBatch();
+        m.withRow(CF_MESSAGE_URL_IDX, digest).putEmptyColumn(url);
+        m.execute();
+    }
+
+	@Override
+	public List<String> listUrlByMessageDigest(final byte[] digest)
+			throws ConnectionException
+	{
+		ColumnList<String> columns;
+		int pagesize = 100;
+		List<String> urls = new ArrayList<String>();
+		OperationResult<ColumnList<String>> result;
+		RowQuery<byte[], String> query = keyspace
+				.prepareQuery(CF_MESSAGE_URL_IDX).getKey(digest)
+				.withColumnRange(new RangeBuilder().setLimit(pagesize).build())
+				.autoPaginate(true);
+		while (!(columns = query.execute().getResult()).isEmpty())
+		{
+			for (Column<String> c : columns)
+			{
+				String url = c.getName();
+				urls.add(url);
+			}
+		}
+		return urls;
+
+	}
+
 }

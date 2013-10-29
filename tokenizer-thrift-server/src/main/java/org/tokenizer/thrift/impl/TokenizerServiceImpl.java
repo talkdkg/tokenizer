@@ -17,6 +17,7 @@ import java.io.PrintWriter;
 import java.io.Serializable;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import org.apache.solr.client.solrj.SolrQuery;
@@ -35,7 +36,6 @@ import org.tokenizer.core.util.MD5;
 import org.tokenizer.crawler.db.CrawlerRepositoryCassandraImpl;
 import org.tokenizer.crawler.db.model.MessageRecord;
 import org.tokenizer.nlp.Sentence;
-import org.tokenizer.nlp.TextImpl;
 import org.tokenizer.thrift.ThriftDocument;
 import org.tokenizer.thrift.ThriftGender;
 import org.tokenizer.thrift.ThriftQueryResponse;
@@ -273,6 +273,17 @@ public class TokenizerServiceImpl implements ThriftTokenizerService.Iface {
             
             thriftDocument.setSentiment(messageRecord.getReviewText().getSentiment());
             thriftDocument.setFeatures(messageRecord.getReviewText().getFeatures());
+            
+            try
+			{
+				List<String> urls = repository.listUrlByMessageDigest(messageRecord.getDigest());
+				thriftDocument.setUrls(new HashSet(urls));
+			}
+			catch (ConnectionException e)
+			{
+                LOG.error("", e);
+			}
+            
             
             for (Sentence s : messageRecord.getReviewText().getSentences()) {
                 thriftDocument.addToThriftSentences(toThriftSentence(s));

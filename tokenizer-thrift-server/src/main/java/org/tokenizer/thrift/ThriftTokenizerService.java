@@ -6217,13 +6217,13 @@ public class ThriftTokenizerService {
             case 6: // SOURCES
               if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
                 {
-                  org.apache.thrift.protocol.TList _list40 = iprot.readListBegin();
-                  struct.sources = new ArrayList<String>(_list40.size);
-                  for (int _i41 = 0; _i41 < _list40.size; ++_i41)
+                  org.apache.thrift.protocol.TList _list48 = iprot.readListBegin();
+                  struct.sources = new ArrayList<String>(_list48.size);
+                  for (int _i49 = 0; _i49 < _list48.size; ++_i49)
                   {
-                    String _elem42;
-                    _elem42 = iprot.readString();
-                    struct.sources.add(_elem42);
+                    String _elem50;
+                    _elem50 = iprot.readString();
+                    struct.sources.add(_elem50);
                   }
                   iprot.readListEnd();
                 }
@@ -6235,13 +6235,13 @@ public class ThriftTokenizerService {
             case 7: // LOCATIONS
               if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
                 {
-                  org.apache.thrift.protocol.TList _list43 = iprot.readListBegin();
-                  struct.locations = new ArrayList<String>(_list43.size);
-                  for (int _i44 = 0; _i44 < _list43.size; ++_i44)
+                  org.apache.thrift.protocol.TList _list51 = iprot.readListBegin();
+                  struct.locations = new ArrayList<String>(_list51.size);
+                  for (int _i52 = 0; _i52 < _list51.size; ++_i52)
                   {
-                    String _elem45;
-                    _elem45 = iprot.readString();
-                    struct.locations.add(_elem45);
+                    String _elem53;
+                    _elem53 = iprot.readString();
+                    struct.locations.add(_elem53);
                   }
                   iprot.readListEnd();
                 }
@@ -6277,13 +6277,13 @@ public class ThriftTokenizerService {
             case 11: // LANGUAGE_CODES
               if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
                 {
-                  org.apache.thrift.protocol.TList _list46 = iprot.readListBegin();
-                  struct.languageCodes = new ArrayList<String>(_list46.size);
-                  for (int _i47 = 0; _i47 < _list46.size; ++_i47)
+                  org.apache.thrift.protocol.TList _list54 = iprot.readListBegin();
+                  struct.languageCodes = new ArrayList<String>(_list54.size);
+                  for (int _i55 = 0; _i55 < _list54.size; ++_i55)
                   {
-                    String _elem48;
-                    _elem48 = iprot.readString();
-                    struct.languageCodes.add(_elem48);
+                    String _elem56;
+                    _elem56 = iprot.readString();
+                    struct.languageCodes.add(_elem56);
                   }
                   iprot.readListEnd();
                 }
@@ -6334,9 +6334,9 @@ public class ThriftTokenizerService {
           oprot.writeFieldBegin(SOURCES_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, struct.sources.size()));
-            for (String _iter49 : struct.sources)
+            for (String _iter57 : struct.sources)
             {
-              oprot.writeString(_iter49);
+              oprot.writeString(_iter57);
             }
             oprot.writeListEnd();
           }
@@ -6346,9 +6346,9 @@ public class ThriftTokenizerService {
           oprot.writeFieldBegin(LOCATIONS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, struct.locations.size()));
-            for (String _iter50 : struct.locations)
+            for (String _iter58 : struct.locations)
             {
-              oprot.writeString(_iter50);
+              oprot.writeString(_iter58);
             }
             oprot.writeListEnd();
           }
@@ -6369,9 +6369,9 @@ public class ThriftTokenizerService {
           oprot.writeFieldBegin(LANGUAGE_CODES_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, struct.languageCodes.size()));
-            for (String _iter51 : struct.languageCodes)
+            for (String _iter59 : struct.languageCodes)
             {
-              oprot.writeString(_iter51);
+              oprot.writeString(_iter59);
             }
             oprot.writeListEnd();
           }
@@ -6432,18 +6432,18 @@ public class ThriftTokenizerService {
         if (struct.isSetSources()) {
           {
             oprot.writeI32(struct.sources.size());
-            for (String _iter52 : struct.sources)
+            for (String _iter60 : struct.sources)
             {
-              oprot.writeString(_iter52);
+              oprot.writeString(_iter60);
             }
           }
         }
         if (struct.isSetLocations()) {
           {
             oprot.writeI32(struct.locations.size());
-            for (String _iter53 : struct.locations)
+            for (String _iter61 : struct.locations)
             {
-              oprot.writeString(_iter53);
+              oprot.writeString(_iter61);
             }
           }
         }
@@ -6459,9 +6459,9 @@ public class ThriftTokenizerService {
         if (struct.isSetLanguageCodes()) {
           {
             oprot.writeI32(struct.languageCodes.size());
-            for (String _iter54 : struct.languageCodes)
+            for (String _iter62 : struct.languageCodes)
             {
-              oprot.writeString(_iter54);
+              oprot.writeString(_iter62);
             }
           }
         }
@@ -6487,26 +6487,26 @@ public class ThriftTokenizerService {
         }
         if (incoming.get(2)) {
           {
-            org.apache.thrift.protocol.TList _list55 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
-            struct.sources = new ArrayList<String>(_list55.size);
-            for (int _i56 = 0; _i56 < _list55.size; ++_i56)
+            org.apache.thrift.protocol.TList _list63 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
+            struct.sources = new ArrayList<String>(_list63.size);
+            for (int _i64 = 0; _i64 < _list63.size; ++_i64)
             {
-              String _elem57;
-              _elem57 = iprot.readString();
-              struct.sources.add(_elem57);
+              String _elem65;
+              _elem65 = iprot.readString();
+              struct.sources.add(_elem65);
             }
           }
           struct.setSourcesIsSet(true);
         }
         if (incoming.get(3)) {
           {
-            org.apache.thrift.protocol.TList _list58 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
-            struct.locations = new ArrayList<String>(_list58.size);
-            for (int _i59 = 0; _i59 < _list58.size; ++_i59)
+            org.apache.thrift.protocol.TList _list66 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
+            struct.locations = new ArrayList<String>(_list66.size);
+            for (int _i67 = 0; _i67 < _list66.size; ++_i67)
             {
-              String _elem60;
-              _elem60 = iprot.readString();
-              struct.locations.add(_elem60);
+              String _elem68;
+              _elem68 = iprot.readString();
+              struct.locations.add(_elem68);
             }
           }
           struct.setLocationsIsSet(true);
@@ -6525,13 +6525,13 @@ public class ThriftTokenizerService {
         }
         if (incoming.get(7)) {
           {
-            org.apache.thrift.protocol.TList _list61 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
-            struct.languageCodes = new ArrayList<String>(_list61.size);
-            for (int _i62 = 0; _i62 < _list61.size; ++_i62)
+            org.apache.thrift.protocol.TList _list69 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
+            struct.languageCodes = new ArrayList<String>(_list69.size);
+            for (int _i70 = 0; _i70 < _list69.size; ++_i70)
             {
-              String _elem63;
-              _elem63 = iprot.readString();
-              struct.languageCodes.add(_elem63);
+              String _elem71;
+              _elem71 = iprot.readString();
+              struct.languageCodes.add(_elem71);
             }
           }
           struct.setLanguageCodesIsSet(true);

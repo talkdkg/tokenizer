@@ -658,14 +658,14 @@ public class ThriftQueryResponse implements org.apache.thrift.TBase<ThriftQueryR
           case 4: // THRIFT_DOCUMENTS
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
-                org.apache.thrift.protocol.TList _list32 = iprot.readListBegin();
-                struct.thriftDocuments = new ArrayList<ThriftDocument>(_list32.size);
-                for (int _i33 = 0; _i33 < _list32.size; ++_i33)
+                org.apache.thrift.protocol.TList _list40 = iprot.readListBegin();
+                struct.thriftDocuments = new ArrayList<ThriftDocument>(_list40.size);
+                for (int _i41 = 0; _i41 < _list40.size; ++_i41)
                 {
-                  ThriftDocument _elem34;
-                  _elem34 = new ThriftDocument();
-                  _elem34.read(iprot);
-                  struct.thriftDocuments.add(_elem34);
+                  ThriftDocument _elem42;
+                  _elem42 = new ThriftDocument();
+                  _elem42.read(iprot);
+                  struct.thriftDocuments.add(_elem42);
                 }
                 iprot.readListEnd();
               }
@@ -717,9 +717,9 @@ public class ThriftQueryResponse implements org.apache.thrift.TBase<ThriftQueryR
           oprot.writeFieldBegin(THRIFT_DOCUMENTS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.thriftDocuments.size()));
-            for (ThriftDocument _iter35 : struct.thriftDocuments)
+            for (ThriftDocument _iter43 : struct.thriftDocuments)
             {
-              _iter35.write(oprot);
+              _iter43.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -779,9 +779,9 @@ public class ThriftQueryResponse implements org.apache.thrift.TBase<ThriftQueryR
       if (struct.isSetThriftDocuments()) {
         {
           oprot.writeI32(struct.thriftDocuments.size());
-          for (ThriftDocument _iter36 : struct.thriftDocuments)
+          for (ThriftDocument _iter44 : struct.thriftDocuments)
           {
-            _iter36.write(oprot);
+            _iter44.write(oprot);
           }
         }
       }
@@ -808,14 +808,14 @@ public class ThriftQueryResponse implements org.apache.thrift.TBase<ThriftQueryR
       }
       if (incoming.get(3)) {
         {
-          org.apache.thrift.protocol.TList _list37 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-          struct.thriftDocuments = new ArrayList<ThriftDocument>(_list37.size);
-          for (int _i38 = 0; _i38 < _list37.size; ++_i38)
+          org.apache.thrift.protocol.TList _list45 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+          struct.thriftDocuments = new ArrayList<ThriftDocument>(_list45.size);
+          for (int _i46 = 0; _i46 < _list45.size; ++_i46)
           {
-            ThriftDocument _elem39;
-            _elem39 = new ThriftDocument();
-            _elem39.read(iprot);
-            struct.thriftDocuments.add(_elem39);
+            ThriftDocument _elem47;
+            _elem47 = new ThriftDocument();
+            _elem47.read(iprot);
+            struct.thriftDocuments.add(_elem47);
           }
         }
         struct.setThriftDocumentsIsSet(true);

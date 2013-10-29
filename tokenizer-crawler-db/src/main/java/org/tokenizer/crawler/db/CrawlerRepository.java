@@ -150,5 +150,7 @@ public interface CrawlerRepository {
     // MessageRecord
     MessageRecord retrieveMessageRecord(final byte[] digest) throws ConnectionException;
     
-    
+    void insertMessageUrlIDX(final byte[] digest, final String url) throws ConnectionException;
+
+    List<String> listUrlByMessageDigest(final byte[] digest)  throws ConnectionException;
 }

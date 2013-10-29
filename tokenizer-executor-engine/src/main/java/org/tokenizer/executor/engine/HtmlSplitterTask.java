@@ -92,6 +92,11 @@ public class HtmlSplitterTask extends
 				crawlerRepository.insertIfNotExist(xmlRecord);
 				metricsCache.increment(MetricsCache.XML_TOTAL_KEY);
 				webpageRecord.addXmlLink(xmlRecord.getDigest());
+				
+				// inverted index: XML Record -> Parent URL
+				LOG.warn("Inserting MESAGE_URL_IDX: {}",  webpageRecord.getFetchedUrl());
+				crawlerRepository.insertMessageUrlIDX(xmlRecord.getDigest(), webpageRecord.getFetchedUrl());
+				
 			}
 			webpageRecord.incrementSplitAttemptCounter();
 			crawlerRepository.updateSplitAttemptCounterAndLinks(webpageRecord);

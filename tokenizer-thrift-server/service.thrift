@@ -27,7 +27,8 @@ struct ThriftDocument {
    string userRating,
    i32 sentiment,
    set<string> features,
-   list<ThriftSentence> thriftSentences
+   list<ThriftSentence> thriftSentences,
+   set<string> urls
 }
 
 struct ThriftQueryResponse {
