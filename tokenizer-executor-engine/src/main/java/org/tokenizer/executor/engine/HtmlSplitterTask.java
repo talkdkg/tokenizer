@@ -44,6 +44,7 @@ public class HtmlSplitterTask extends
 
 	// single thread only!
 	private HXPathExpression splitterXPathExpression = null;
+	private HXPathExpression mainSubjectXPathExpression = null;
 
 	public HtmlSplitterTask(final UUID uuid, final String friendlyName,
 			final ZooKeeperItf zk,
@@ -54,9 +55,19 @@ public class HtmlSplitterTask extends
 		super(uuid, friendlyName, zk, taskConfiguration, crawlerRepository,
 				model, hostLocker);
 
+	}
+	
+	private void resetXPath() {
 		try {
 			splitterXPathExpression = new HXPathExpression(LocalXPathFactory
 					.newXPath().compile(this.taskConfiguration.getXpath()));
+		} catch (XPathExpressionException e) {
+			LOG.error("", e);
+		}
+
+		try {
+			mainSubjectXPathExpression = new HXPathExpression(LocalXPathFactory
+					.newXPath().compile(this.taskConfiguration.getMainSubjectXPath()));
 		} catch (XPathExpressionException e) {
 			LOG.error("", e);
 		}
@@ -65,9 +76,16 @@ public class HtmlSplitterTask extends
 
 	@Override
 	protected void process() throws InterruptedException, ConnectionException {
+
+		// this is needed because we can change configuration at runtime...
+		resetXPath();
+		
 		if (splitterXPathExpression == null) {
+			LOG.warn("splitterXPathExpression is null, sleeping 60 seconds to avoid spinloop...");
+			Thread.sleep(60000);
 			return;
 		}
+		
 		List<WebpageRecord> webpageRecords = crawlerRepository
 				.listWebpageRecords(taskConfiguration.getHost(),
 						taskConfiguration.getSplitAttemptCounter(), 100);
@@ -148,6 +166,17 @@ public class HtmlSplitterTask extends
 					contentString.substring(contentString.length() - 200));
 			return null;
 		}
+		
+		String mainSubject = null;
+		try
+		{
+			mainSubject = (mainSubjectXPathExpression == null ? null : mainSubjectXPathExpression.evalAsString(document));
+		}
+		catch (XPathExpressionException e)
+		{
+			LOG.warn("can't process:", e);
+		}
+
 		List<Node> nodes;
 		try {
 			nodes = splitterXPathExpression.evalAsNativeNodeList(document);
@@ -162,10 +191,12 @@ public class HtmlSplitterTask extends
 			try {
 				record = new XmlRecord(page.getHost(), xml.getBytes("UTF-8"));
 				results.add(record);
+				record.setMainSubject(mainSubject);
 				LOG.debug("XML record created: {}", record);
 			} catch (UnsupportedEncodingException e) {
 				LOG.error("", e);
 			}
+
 		}
 		return results;
 	}

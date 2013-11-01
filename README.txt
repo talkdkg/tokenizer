@@ -32,6 +32,11 @@ Trip Advisor:
 Splitter:
 //div[starts-with(@id, 'review')]
 
+Main Subject:
+//*[@id="HEADING"]
+
+
+
 Message Processor:
 
 topicXPath

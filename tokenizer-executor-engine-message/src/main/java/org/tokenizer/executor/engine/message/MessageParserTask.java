@@ -181,13 +181,13 @@ public class MessageParserTask extends AbstractTask<MessageParserTaskConfigurati
         messageRecord.setAge(age);
         messageRecord.setSex(sex);
         messageRecord.setUserRating(userRating);
-        
         messageRecord.setLocation(location);
-        
+        messageRecord.setMainSubject(xmlRecord.getMainSubject());
+
         LOG.debug("Message parsed:\n{}", messageRecord);
         
-        
         return messageRecord;
+  
     }
     
 }

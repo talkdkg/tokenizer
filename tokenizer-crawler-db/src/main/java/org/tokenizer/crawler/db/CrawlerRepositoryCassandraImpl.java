@@ -576,10 +576,15 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
                                             .put("host",
                                                     ImmutableMap.<String,Object> builder()
                                                             .put("validation_class",
-                                                                    "BytesType")
+                                                                    "AsciiType")
                                                             .put("index_type",
                                                                     "KEYS")
                                                             .build())
+                                            .put("mainSubject",
+                                                    ImmutableMap.<String,Object> builder()
+                                                            .put("validation_class",
+                                                                    "UTF8Type")
+                                                             .build())
                                             .put("content",
                                                     ImmutableMap.<String,Object> builder()
                                                             .put("validation_class",
@@ -662,6 +667,11 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
                                                             .put("validation_class",
                                                                     "UTF8Type")
                                                             .build())
+                                            .put("mainSubject",
+                                                    ImmutableMap.<String,Object> builder()
+                                                            .put("validation_class",
+                                                                    "UTF8Type")
+                                                             .build())
                                             .put("reviewText",
                                                     ImmutableMap.<String,Object> builder()
                                                             .put("validation_class",
@@ -1127,6 +1137,7 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
     protected void insert(final XmlRecord xmlRecord) throws ConnectionException {
         MutationBatch m = keyspace.prepareMutationBatch();
         m.withRow(CF_XML_RECORDS, xmlRecord.getDigest()).putColumn("host", xmlRecord.getHost(), null)
+        .putColumn("mainSubject", xmlRecord.getMainSubject(), null)
                 .putColumn("timestamp", xmlRecord.getTimestamp(), null).putColumn("content", xmlRecord.getContent(), null)
                 .putColumn("host_parseAttemptCounter", xmlRecord.getHostParseAttemptCounter(), null);
         m.execute();
@@ -1211,6 +1222,7 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
                 .putColumn("content", messageRecord.getContent(), null)
                 .putColumn("userRating", messageRecord.getUserRating(), null)
                 .putColumn("location", messageRecord.getLocation(), null)
+                .putColumn("mainSubject", messageRecord.getMainSubject(), null)
                 .putColumn("reviewText", JavaSerializationUtils.serialize(messageRecord.getReviewText()), null);
         m.execute();
     }
@@ -1427,13 +1439,15 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
         }
         Date timestamp = columns.getDateValue("timestamp", null);
         String host = columns.getStringValue("host", null);
+        String mainSubject = columns.getStringValue("mainSubject", null);
         byte[] content = columns.getByteArrayValue("content", null);
         
         String host_parseAttemptCounter = columns.getStringValue("host_parseAttemptCounter", null);
         String parseAttemptCounterString = host_parseAttemptCounter.substring(host.length());
         int parseAttemptCounter = Integer.parseInt(parseAttemptCounterString);
         
-        XmlRecord xmlRecord = new XmlRecord(digest, timestamp, host, content, parseAttemptCounter);
+        XmlRecord xmlRecord = new XmlRecord(digest, timestamp, host, mainSubject, content, parseAttemptCounter);
+        
         LOG.trace("xmlRecord: {}", xmlRecord);
         
         return xmlRecord;
@@ -1470,11 +1484,12 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
         String content = columns.getStringValue("content", null);
         String userRating = columns.getStringValue("userRating", null);
         String location = columns.getStringValue("location", null);
+        String mainSubject = columns.getStringValue("mainSubject", null);
         final TextImpl reviewText = (TextImpl) JavaSerializationUtils.deserialize(columns.getByteArrayValue(
                 "reviewText", null));
 
         MessageRecord messageRecord = new MessageRecord(digest, host, topic, date, author, age, sex, title, content, userRating,
-                location);
+                location, mainSubject);
         
         messageRecord.setReviewText(reviewText);
         

@@ -184,11 +184,14 @@ public class TaskInfoComponent extends CustomComponent implements Broadcaster.Br
         host.setWidth(COMMON_FIELD_WIDTH, Unit.EM);
         TextField xpath = new TextField("XPath");
         xpath.setWidth(80, Unit.EM);
+        TextField mainSubjectXPath = new TextField("mainSubjectXPath");
+        mainSubjectXPath.setWidth(80, Unit.EM);
         TextField splitAttemptCounter = new TextField("Split Attempt Counter");
         splitAttemptCounter.setWidth(COMMON_FIELD_WIDTH, Unit.EM);
         componentContainer.addComponent(host);
         componentContainer.addComponent(xpath);
         componentContainer.addComponent(splitAttemptCounter);
+        componentContainer.addComponent(mainSubjectXPath);
         fieldGroup.bind(host, "host");
         fieldGroup.bind(xpath, "xpath");
         fieldGroup.bind(splitAttemptCounter, "splitAttemptCounter");

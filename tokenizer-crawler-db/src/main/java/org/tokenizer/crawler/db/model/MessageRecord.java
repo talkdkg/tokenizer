@@ -14,6 +14,7 @@
 package org.tokenizer.crawler.db.model;
 
 import java.io.Serializable;
+import java.util.Arrays;
 
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
@@ -40,6 +41,8 @@ public class MessageRecord implements Serializable {
     private String userRating = DefaultValues.EMPTY_STRING;
     private String location = DefaultValues.EMPTY_STRING;
     private TextImpl reviewText = DefaultValues.EMPTY_REVIEW;
+    private String mainSubject = DefaultValues.EMPTY_STRING;
+
     
     private static final DateTimeFormatter MMMM_D_YYYY = DateTimeFormat
             .forPattern("MMMM d, yyyy");
@@ -74,7 +77,7 @@ public class MessageRecord implements Serializable {
     public MessageRecord(final byte[] digest, final String host,
             final String topic, final String date, final String author,
             final String age, final String sex, final String title,
-            final String content, final String userRating, final String location) {
+            final String content, final String userRating, final String location, final String mainSubject) {
         this.digest = digest;
         if (host != null) this.host = host;
         if (topic != null) this.topic = topic;
@@ -86,6 +89,8 @@ public class MessageRecord implements Serializable {
         if (content != null) this.content = content;
         if (userRating != null) this.userRating = userRating;
         if (location != null) this.location = location;
+       setMainSubject(mainSubject);
+        
     }
     
     public String getHost() {
@@ -206,12 +211,29 @@ public class MessageRecord implements Serializable {
         if (reviewText != null) this.reviewText = reviewText;
     }
     
-    @Override
-    public String toString() {
-        return "MessageRecord [digest=" + MD5.toHexString(digest) + ", host="
-                + host + ", topic=" + topic + ", date=" + m_date + ", author="
-                + author + ", age=" + age + ", sex=" + sex + ", title=" + title
-                + ", content=" + content + ", userRating=" + userRating
-                + ", location=" + location + "]";
-    }
+    
+    
+    
+    public String getMainSubject()
+	{
+		return mainSubject;
+	}
+
+	public void setMainSubject(String mainSubject)
+	{
+		if (mainSubject != null) this.mainSubject = mainSubject;	
+	}
+
+	@Override
+	public String toString()
+	{
+		return "MessageRecord [digest=" + MD5.toHexString(digest) + ", host="
+				+ host + ", topic=" + topic + ", m_date=" + m_date
+				+ ", author=" + author + ", age=" + age + ", sex=" + sex
+				+ ", title=" + title + ", content=" + content + ", userRating="
+				+ userRating + ", location=" + location + ", reviewText="
+				+ reviewText + ", mainSubject=" + mainSubject + "]";
+	}
+
+
 }

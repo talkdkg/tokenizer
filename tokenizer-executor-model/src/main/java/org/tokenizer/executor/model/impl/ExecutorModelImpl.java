@@ -148,8 +148,8 @@ public class ExecutorModelImpl implements WritableExecutorModel {
             throw new TaskUpdateException("You are not owner of the Task lock, your lock path is: " + lock);
         assertValid(task);
         TaskInfoBean currentTask = getMutableTask(task.getUuid());
-        if (currentTask.getTaskConfiguration().getGeneralState() == TaskGeneralState.DELETE_REQUESTED)
-            throw new TaskUpdateException("Task in the state " + task.getTaskConfiguration().getGeneralState()
+        if (currentTask.getTaskConfiguration().getGeneralState().equals(TaskGeneralState.DELETE_REQUESTED))
+            throw new TaskUpdateException("Task in the state " + currentTask.getTaskConfiguration().getGeneralState()
                     + " cannot be modified.");
         updateTaskInternal(task);
     }
@@ -219,6 +219,7 @@ public class ExecutorModelImpl implements WritableExecutorModel {
                         } catch (KeeperException.NotEmptyException e) {
                             // Someone again took a lock on the
                             // Task, retry
+                        	LOG.error("", e);
                         }
                         return false;
                     }

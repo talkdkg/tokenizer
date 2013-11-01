@@ -37,18 +37,19 @@ public class ThriftDocument implements org.apache.thrift.TBase<ThriftDocument, T
 
   private static final org.apache.thrift.protocol.TField ID_FIELD_DESC = new org.apache.thrift.protocol.TField("id", org.apache.thrift.protocol.TType.STRING, (short)-1);
   private static final org.apache.thrift.protocol.TField SOURCE_FIELD_DESC = new org.apache.thrift.protocol.TField("source", org.apache.thrift.protocol.TType.STRING, (short)-2);
-  private static final org.apache.thrift.protocol.TField DATE_FIELD_DESC = new org.apache.thrift.protocol.TField("date", org.apache.thrift.protocol.TType.STRING, (short)-3);
-  private static final org.apache.thrift.protocol.TField AUTHOR_FIELD_DESC = new org.apache.thrift.protocol.TField("author", org.apache.thrift.protocol.TType.STRING, (short)-4);
-  private static final org.apache.thrift.protocol.TField AGE_FIELD_DESC = new org.apache.thrift.protocol.TField("age", org.apache.thrift.protocol.TType.STRING, (short)-5);
-  private static final org.apache.thrift.protocol.TField THRIFT_GENDER_FIELD_DESC = new org.apache.thrift.protocol.TField("thriftGender", org.apache.thrift.protocol.TType.I32, (short)-6);
-  private static final org.apache.thrift.protocol.TField TITLE_FIELD_DESC = new org.apache.thrift.protocol.TField("title", org.apache.thrift.protocol.TType.STRING, (short)-7);
-  private static final org.apache.thrift.protocol.TField CONTENT_FIELD_DESC = new org.apache.thrift.protocol.TField("content", org.apache.thrift.protocol.TType.STRING, (short)-8);
-  private static final org.apache.thrift.protocol.TField TOPIC_FIELD_DESC = new org.apache.thrift.protocol.TField("topic", org.apache.thrift.protocol.TType.STRING, (short)-9);
-  private static final org.apache.thrift.protocol.TField USER_RATING_FIELD_DESC = new org.apache.thrift.protocol.TField("userRating", org.apache.thrift.protocol.TType.STRING, (short)-10);
-  private static final org.apache.thrift.protocol.TField SENTIMENT_FIELD_DESC = new org.apache.thrift.protocol.TField("sentiment", org.apache.thrift.protocol.TType.I32, (short)-11);
-  private static final org.apache.thrift.protocol.TField FEATURES_FIELD_DESC = new org.apache.thrift.protocol.TField("features", org.apache.thrift.protocol.TType.SET, (short)-12);
-  private static final org.apache.thrift.protocol.TField THRIFT_SENTENCES_FIELD_DESC = new org.apache.thrift.protocol.TField("thriftSentences", org.apache.thrift.protocol.TType.LIST, (short)-13);
-  private static final org.apache.thrift.protocol.TField URLS_FIELD_DESC = new org.apache.thrift.protocol.TField("urls", org.apache.thrift.protocol.TType.SET, (short)-14);
+  private static final org.apache.thrift.protocol.TField MAIN_SUBJECT_FIELD_DESC = new org.apache.thrift.protocol.TField("mainSubject", org.apache.thrift.protocol.TType.STRING, (short)-3);
+  private static final org.apache.thrift.protocol.TField DATE_FIELD_DESC = new org.apache.thrift.protocol.TField("date", org.apache.thrift.protocol.TType.STRING, (short)-4);
+  private static final org.apache.thrift.protocol.TField AUTHOR_FIELD_DESC = new org.apache.thrift.protocol.TField("author", org.apache.thrift.protocol.TType.STRING, (short)-5);
+  private static final org.apache.thrift.protocol.TField AGE_FIELD_DESC = new org.apache.thrift.protocol.TField("age", org.apache.thrift.protocol.TType.STRING, (short)-6);
+  private static final org.apache.thrift.protocol.TField THRIFT_GENDER_FIELD_DESC = new org.apache.thrift.protocol.TField("thriftGender", org.apache.thrift.protocol.TType.I32, (short)-7);
+  private static final org.apache.thrift.protocol.TField TITLE_FIELD_DESC = new org.apache.thrift.protocol.TField("title", org.apache.thrift.protocol.TType.STRING, (short)-8);
+  private static final org.apache.thrift.protocol.TField CONTENT_FIELD_DESC = new org.apache.thrift.protocol.TField("content", org.apache.thrift.protocol.TType.STRING, (short)-9);
+  private static final org.apache.thrift.protocol.TField TOPIC_FIELD_DESC = new org.apache.thrift.protocol.TField("topic", org.apache.thrift.protocol.TType.STRING, (short)-10);
+  private static final org.apache.thrift.protocol.TField USER_RATING_FIELD_DESC = new org.apache.thrift.protocol.TField("userRating", org.apache.thrift.protocol.TType.STRING, (short)-11);
+  private static final org.apache.thrift.protocol.TField SENTIMENT_FIELD_DESC = new org.apache.thrift.protocol.TField("sentiment", org.apache.thrift.protocol.TType.I32, (short)-12);
+  private static final org.apache.thrift.protocol.TField FEATURES_FIELD_DESC = new org.apache.thrift.protocol.TField("features", org.apache.thrift.protocol.TType.SET, (short)-13);
+  private static final org.apache.thrift.protocol.TField THRIFT_SENTENCES_FIELD_DESC = new org.apache.thrift.protocol.TField("thriftSentences", org.apache.thrift.protocol.TType.LIST, (short)-14);
+  private static final org.apache.thrift.protocol.TField URLS_FIELD_DESC = new org.apache.thrift.protocol.TField("urls", org.apache.thrift.protocol.TType.SET, (short)-15);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -58,6 +59,7 @@ public class ThriftDocument implements org.apache.thrift.TBase<ThriftDocument, T
 
   public String id; // required
   public String source; // required
+  public String mainSubject; // required
   public String date; // required
   public String author; // required
   public String age; // required
@@ -79,22 +81,23 @@ public class ThriftDocument implements org.apache.thrift.TBase<ThriftDocument, T
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
     ID((short)-1, "id"),
     SOURCE((short)-2, "source"),
-    DATE((short)-3, "date"),
-    AUTHOR((short)-4, "author"),
-    AGE((short)-5, "age"),
+    MAIN_SUBJECT((short)-3, "mainSubject"),
+    DATE((short)-4, "date"),
+    AUTHOR((short)-5, "author"),
+    AGE((short)-6, "age"),
     /**
      * 
      * @see ThriftGender
      */
-    THRIFT_GENDER((short)-6, "thriftGender"),
-    TITLE((short)-7, "title"),
-    CONTENT((short)-8, "content"),
-    TOPIC((short)-9, "topic"),
-    USER_RATING((short)-10, "userRating"),
-    SENTIMENT((short)-11, "sentiment"),
-    FEATURES((short)-12, "features"),
-    THRIFT_SENTENCES((short)-13, "thriftSentences"),
-    URLS((short)-14, "urls");
+    THRIFT_GENDER((short)-7, "thriftGender"),
+    TITLE((short)-8, "title"),
+    CONTENT((short)-9, "content"),
+    TOPIC((short)-10, "topic"),
+    USER_RATING((short)-11, "userRating"),
+    SENTIMENT((short)-12, "sentiment"),
+    FEATURES((short)-13, "features"),
+    THRIFT_SENTENCES((short)-14, "thriftSentences"),
+    URLS((short)-15, "urls");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -113,29 +116,31 @@ public class ThriftDocument implements org.apache.thrift.TBase<ThriftDocument, T
           return ID;
         case -2: // SOURCE
           return SOURCE;
-        case -3: // DATE
+        case -3: // MAIN_SUBJECT
+          return MAIN_SUBJECT;
+        case -4: // DATE
           return DATE;
-        case -4: // AUTHOR
+        case -5: // AUTHOR
           return AUTHOR;
-        case -5: // AGE
+        case -6: // AGE
           return AGE;
-        case -6: // THRIFT_GENDER
+        case -7: // THRIFT_GENDER
           return THRIFT_GENDER;
-        case -7: // TITLE
+        case -8: // TITLE
           return TITLE;
-        case -8: // CONTENT
+        case -9: // CONTENT
           return CONTENT;
-        case -9: // TOPIC
+        case -10: // TOPIC
           return TOPIC;
-        case -10: // USER_RATING
+        case -11: // USER_RATING
           return USER_RATING;
-        case -11: // SENTIMENT
+        case -12: // SENTIMENT
           return SENTIMENT;
-        case -12: // FEATURES
+        case -13: // FEATURES
           return FEATURES;
-        case -13: // THRIFT_SENTENCES
+        case -14: // THRIFT_SENTENCES
           return THRIFT_SENTENCES;
-        case -14: // URLS
+        case -15: // URLS
           return URLS;
         default:
           return null;
@@ -186,6 +191,8 @@ public class ThriftDocument implements org.apache.thrift.TBase<ThriftDocument, T
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.SOURCE, new org.apache.thrift.meta_data.FieldMetaData("source", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.MAIN_SUBJECT, new org.apache.thrift.meta_data.FieldMetaData("mainSubject", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.DATE, new org.apache.thrift.meta_data.FieldMetaData("date", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.AUTHOR, new org.apache.thrift.meta_data.FieldMetaData("author", org.apache.thrift.TFieldRequirementType.DEFAULT, 
@@ -223,6 +230,7 @@ public class ThriftDocument implements org.apache.thrift.TBase<ThriftDocument, T
   public ThriftDocument(
     String id,
     String source,
+    String mainSubject,
     String date,
     String author,
     String age,
@@ -239,6 +247,7 @@ public class ThriftDocument implements org.apache.thrift.TBase<ThriftDocument, T
     this();
     this.id = id;
     this.source = source;
+    this.mainSubject = mainSubject;
     this.date = date;
     this.author = author;
     this.age = age;
@@ -264,6 +273,9 @@ public class ThriftDocument implements org.apache.thrift.TBase<ThriftDocument, T
     }
     if (other.isSetSource()) {
       this.source = other.source;
+    }
+    if (other.isSetMainSubject()) {
+      this.mainSubject = other.mainSubject;
     }
     if (other.isSetDate()) {
       this.date = other.date;
@@ -315,6 +327,7 @@ public class ThriftDocument implements org.apache.thrift.TBase<ThriftDocument, T
   public void clear() {
     this.id = null;
     this.source = null;
+    this.mainSubject = null;
     this.date = null;
     this.author = null;
     this.age = null;
@@ -375,6 +388,30 @@ public class ThriftDocument implements org.apache.thrift.TBase<ThriftDocument, T
   public void setSourceIsSet(boolean value) {
     if (!value) {
       this.source = null;
+    }
+  }
+
+  public String getMainSubject() {
+    return this.mainSubject;
+  }
+
+  public ThriftDocument setMainSubject(String mainSubject) {
+    this.mainSubject = mainSubject;
+    return this;
+  }
+
+  public void unsetMainSubject() {
+    this.mainSubject = null;
+  }
+
+  /** Returns true if field mainSubject is set (has been assigned a value) and false otherwise */
+  public boolean isSetMainSubject() {
+    return this.mainSubject != null;
+  }
+
+  public void setMainSubjectIsSet(boolean value) {
+    if (!value) {
+      this.mainSubject = null;
     }
   }
 
@@ -736,6 +773,14 @@ public class ThriftDocument implements org.apache.thrift.TBase<ThriftDocument, T
       }
       break;
 
+    case MAIN_SUBJECT:
+      if (value == null) {
+        unsetMainSubject();
+      } else {
+        setMainSubject((String)value);
+      }
+      break;
+
     case DATE:
       if (value == null) {
         unsetDate();
@@ -843,6 +888,9 @@ public class ThriftDocument implements org.apache.thrift.TBase<ThriftDocument, T
     case SOURCE:
       return getSource();
 
+    case MAIN_SUBJECT:
+      return getMainSubject();
+
     case DATE:
       return getDate();
 
@@ -894,6 +942,8 @@ public class ThriftDocument implements org.apache.thrift.TBase<ThriftDocument, T
       return isSetId();
     case SOURCE:
       return isSetSource();
+    case MAIN_SUBJECT:
+      return isSetMainSubject();
     case DATE:
       return isSetDate();
     case AUTHOR:
@@ -950,6 +1000,15 @@ public class ThriftDocument implements org.apache.thrift.TBase<ThriftDocument, T
       if (!(this_present_source && that_present_source))
         return false;
       if (!this.source.equals(that.source))
+        return false;
+    }
+
+    boolean this_present_mainSubject = true && this.isSetMainSubject();
+    boolean that_present_mainSubject = true && that.isSetMainSubject();
+    if (this_present_mainSubject || that_present_mainSubject) {
+      if (!(this_present_mainSubject && that_present_mainSubject))
+        return false;
+      if (!this.mainSubject.equals(that.mainSubject))
         return false;
     }
 
@@ -1093,6 +1152,16 @@ public class ThriftDocument implements org.apache.thrift.TBase<ThriftDocument, T
     }
     if (isSetSource()) {
       lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.source, other.source);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetMainSubject()).compareTo(other.isSetMainSubject());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetMainSubject()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.mainSubject, other.mainSubject);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -1253,6 +1322,14 @@ public class ThriftDocument implements org.apache.thrift.TBase<ThriftDocument, T
     }
     first = false;
     if (!first) sb.append(", ");
+    sb.append("mainSubject:");
+    if (this.mainSubject == null) {
+      sb.append("null");
+    } else {
+      sb.append(this.mainSubject);
+    }
+    first = false;
+    if (!first) sb.append(", ");
     sb.append("date:");
     if (this.date == null) {
       sb.append("null");
@@ -1405,7 +1482,15 @@ public class ThriftDocument implements org.apache.thrift.TBase<ThriftDocument, T
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case -3: // DATE
+          case -3: // MAIN_SUBJECT
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.mainSubject = iprot.readString();
+              struct.setMainSubjectIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case -4: // DATE
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.date = iprot.readString();
               struct.setDateIsSet(true);
@@ -1413,7 +1498,7 @@ public class ThriftDocument implements org.apache.thrift.TBase<ThriftDocument, T
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case -4: // AUTHOR
+          case -5: // AUTHOR
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.author = iprot.readString();
               struct.setAuthorIsSet(true);
@@ -1421,7 +1506,7 @@ public class ThriftDocument implements org.apache.thrift.TBase<ThriftDocument, T
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case -5: // AGE
+          case -6: // AGE
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.age = iprot.readString();
               struct.setAgeIsSet(true);
@@ -1429,7 +1514,7 @@ public class ThriftDocument implements org.apache.thrift.TBase<ThriftDocument, T
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case -6: // THRIFT_GENDER
+          case -7: // THRIFT_GENDER
             if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
               struct.thriftGender = ThriftGender.findByValue(iprot.readI32());
               struct.setThriftGenderIsSet(true);
@@ -1437,7 +1522,7 @@ public class ThriftDocument implements org.apache.thrift.TBase<ThriftDocument, T
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case -7: // TITLE
+          case -8: // TITLE
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.title = iprot.readString();
               struct.setTitleIsSet(true);
@@ -1445,7 +1530,7 @@ public class ThriftDocument implements org.apache.thrift.TBase<ThriftDocument, T
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case -8: // CONTENT
+          case -9: // CONTENT
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.content = iprot.readString();
               struct.setContentIsSet(true);
@@ -1453,7 +1538,7 @@ public class ThriftDocument implements org.apache.thrift.TBase<ThriftDocument, T
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case -9: // TOPIC
+          case -10: // TOPIC
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.topic = iprot.readString();
               struct.setTopicIsSet(true);
@@ -1461,7 +1546,7 @@ public class ThriftDocument implements org.apache.thrift.TBase<ThriftDocument, T
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case -10: // USER_RATING
+          case -11: // USER_RATING
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.userRating = iprot.readString();
               struct.setUserRatingIsSet(true);
@@ -1469,7 +1554,7 @@ public class ThriftDocument implements org.apache.thrift.TBase<ThriftDocument, T
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case -11: // SENTIMENT
+          case -12: // SENTIMENT
             if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
               struct.sentiment = iprot.readI32();
               struct.setSentimentIsSet(true);
@@ -1477,7 +1562,7 @@ public class ThriftDocument implements org.apache.thrift.TBase<ThriftDocument, T
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case -12: // FEATURES
+          case -13: // FEATURES
             if (schemeField.type == org.apache.thrift.protocol.TType.SET) {
               {
                 org.apache.thrift.protocol.TSet _set16 = iprot.readSetBegin();
@@ -1495,7 +1580,7 @@ public class ThriftDocument implements org.apache.thrift.TBase<ThriftDocument, T
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case -13: // THRIFT_SENTENCES
+          case -14: // THRIFT_SENTENCES
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
                 org.apache.thrift.protocol.TList _list19 = iprot.readListBegin();
@@ -1514,7 +1599,7 @@ public class ThriftDocument implements org.apache.thrift.TBase<ThriftDocument, T
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case -14: // URLS
+          case -15: // URLS
             if (schemeField.type == org.apache.thrift.protocol.TType.SET) {
               {
                 org.apache.thrift.protocol.TSet _set22 = iprot.readSetBegin();
@@ -1626,6 +1711,11 @@ public class ThriftDocument implements org.apache.thrift.TBase<ThriftDocument, T
         oprot.writeString(struct.date);
         oprot.writeFieldEnd();
       }
+      if (struct.mainSubject != null) {
+        oprot.writeFieldBegin(MAIN_SUBJECT_FIELD_DESC);
+        oprot.writeString(struct.mainSubject);
+        oprot.writeFieldEnd();
+      }
       if (struct.source != null) {
         oprot.writeFieldBegin(SOURCE_FIELD_DESC);
         oprot.writeString(struct.source);
@@ -1660,48 +1750,54 @@ public class ThriftDocument implements org.apache.thrift.TBase<ThriftDocument, T
       if (struct.isSetSource()) {
         optionals.set(1);
       }
-      if (struct.isSetDate()) {
+      if (struct.isSetMainSubject()) {
         optionals.set(2);
       }
-      if (struct.isSetAuthor()) {
+      if (struct.isSetDate()) {
         optionals.set(3);
       }
-      if (struct.isSetAge()) {
+      if (struct.isSetAuthor()) {
         optionals.set(4);
       }
-      if (struct.isSetThriftGender()) {
+      if (struct.isSetAge()) {
         optionals.set(5);
       }
-      if (struct.isSetTitle()) {
+      if (struct.isSetThriftGender()) {
         optionals.set(6);
       }
-      if (struct.isSetContent()) {
+      if (struct.isSetTitle()) {
         optionals.set(7);
       }
-      if (struct.isSetTopic()) {
+      if (struct.isSetContent()) {
         optionals.set(8);
       }
-      if (struct.isSetUserRating()) {
+      if (struct.isSetTopic()) {
         optionals.set(9);
       }
-      if (struct.isSetSentiment()) {
+      if (struct.isSetUserRating()) {
         optionals.set(10);
       }
-      if (struct.isSetFeatures()) {
+      if (struct.isSetSentiment()) {
         optionals.set(11);
       }
-      if (struct.isSetThriftSentences()) {
+      if (struct.isSetFeatures()) {
         optionals.set(12);
       }
-      if (struct.isSetUrls()) {
+      if (struct.isSetThriftSentences()) {
         optionals.set(13);
       }
-      oprot.writeBitSet(optionals, 14);
+      if (struct.isSetUrls()) {
+        optionals.set(14);
+      }
+      oprot.writeBitSet(optionals, 15);
       if (struct.isSetId()) {
         oprot.writeString(struct.id);
       }
       if (struct.isSetSource()) {
         oprot.writeString(struct.source);
+      }
+      if (struct.isSetMainSubject()) {
+        oprot.writeString(struct.mainSubject);
       }
       if (struct.isSetDate()) {
         oprot.writeString(struct.date);
@@ -1762,7 +1858,7 @@ public class ThriftDocument implements org.apache.thrift.TBase<ThriftDocument, T
     @Override
     public void read(org.apache.thrift.protocol.TProtocol prot, ThriftDocument struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
-      BitSet incoming = iprot.readBitSet(14);
+      BitSet incoming = iprot.readBitSet(15);
       if (incoming.get(0)) {
         struct.id = iprot.readString();
         struct.setIdIsSet(true);
@@ -1772,42 +1868,46 @@ public class ThriftDocument implements org.apache.thrift.TBase<ThriftDocument, T
         struct.setSourceIsSet(true);
       }
       if (incoming.get(2)) {
+        struct.mainSubject = iprot.readString();
+        struct.setMainSubjectIsSet(true);
+      }
+      if (incoming.get(3)) {
         struct.date = iprot.readString();
         struct.setDateIsSet(true);
       }
-      if (incoming.get(3)) {
+      if (incoming.get(4)) {
         struct.author = iprot.readString();
         struct.setAuthorIsSet(true);
       }
-      if (incoming.get(4)) {
+      if (incoming.get(5)) {
         struct.age = iprot.readString();
         struct.setAgeIsSet(true);
       }
-      if (incoming.get(5)) {
+      if (incoming.get(6)) {
         struct.thriftGender = ThriftGender.findByValue(iprot.readI32());
         struct.setThriftGenderIsSet(true);
       }
-      if (incoming.get(6)) {
+      if (incoming.get(7)) {
         struct.title = iprot.readString();
         struct.setTitleIsSet(true);
       }
-      if (incoming.get(7)) {
+      if (incoming.get(8)) {
         struct.content = iprot.readString();
         struct.setContentIsSet(true);
       }
-      if (incoming.get(8)) {
+      if (incoming.get(9)) {
         struct.topic = iprot.readString();
         struct.setTopicIsSet(true);
       }
-      if (incoming.get(9)) {
+      if (incoming.get(10)) {
         struct.userRating = iprot.readString();
         struct.setUserRatingIsSet(true);
       }
-      if (incoming.get(10)) {
+      if (incoming.get(11)) {
         struct.sentiment = iprot.readI32();
         struct.setSentimentIsSet(true);
       }
-      if (incoming.get(11)) {
+      if (incoming.get(12)) {
         {
           org.apache.thrift.protocol.TSet _set31 = new org.apache.thrift.protocol.TSet(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
           struct.features = new HashSet<String>(2*_set31.size);
@@ -1820,7 +1920,7 @@ public class ThriftDocument implements org.apache.thrift.TBase<ThriftDocument, T
         }
         struct.setFeaturesIsSet(true);
       }
-      if (incoming.get(12)) {
+      if (incoming.get(13)) {
         {
           org.apache.thrift.protocol.TList _list34 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
           struct.thriftSentences = new ArrayList<ThriftSentence>(_list34.size);
@@ -1834,7 +1934,7 @@ public class ThriftDocument implements org.apache.thrift.TBase<ThriftDocument, T
         }
         struct.setThriftSentencesIsSet(true);
       }
-      if (incoming.get(13)) {
+      if (incoming.get(14)) {
         {
           org.apache.thrift.protocol.TSet _set37 = new org.apache.thrift.protocol.TSet(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
           struct.urls = new HashSet<String>(2*_set37.size);

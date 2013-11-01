@@ -26,5 +26,7 @@ public class ExecutorMasterModule extends AbstractModule {
     protected void configure() {
         bind(WritableExecutorModel.class).to(ExecutorModelImpl.class);
         bind(ZooKeeperItf.class).to(ZooKeeperImpl.class);
+        bind(Executor.class).to(ExecutorMaster.class).asEagerSingleton();
+
     }
 }

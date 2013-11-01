@@ -16,6 +16,7 @@ struct ThriftSentence {
 struct ThriftDocument {
    string id,
    string source,
+   string mainSubject,
    /* Date in ISO8601 format */
    string date,
    string author,

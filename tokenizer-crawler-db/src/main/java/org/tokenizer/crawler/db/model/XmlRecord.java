@@ -32,6 +32,7 @@ public class XmlRecord implements Serializable {
     private byte[] digest = DefaultValues.EMPTY_ARRAY;
     private Date timestamp = DefaultValues.EMPTY_DATE;
     private String host = DefaultValues.EMPTY_STRING;
+    private String mainSubject = DefaultValues.EMPTY_STRING;
     private byte[] content = DefaultValues.EMPTY_ARRAY;
     private int parseAttemptCounter = 0;
 
@@ -42,13 +43,14 @@ public class XmlRecord implements Serializable {
         this.content = content;
     }
 
-    public XmlRecord(final byte[] digest, final Date timestamp, final String host, final byte[] content,
+    public XmlRecord(final byte[] digest, final Date timestamp, final String host, final String mainSubject, final byte[] content,
             final int parseAttemptCounter) {
         this.digest = digest;
         this.timestamp = timestamp;
         this.host = host;
         this.parseAttemptCounter = parseAttemptCounter;
         this.content = content;
+        setMainSubject(mainSubject);
     }
 
     public byte[] getDigest() {
@@ -99,7 +101,19 @@ public class XmlRecord implements Serializable {
         return getHost() + String.valueOf(getParseAttemptCounter());
     }
 
-    @Override
+    
+    
+    public String getMainSubject()
+	{
+		return mainSubject;
+	}
+
+	public void setMainSubject(String mainSubject)
+	{
+		if (mainSubject != null) this.mainSubject = mainSubject;
+	}
+
+	@Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
@@ -121,16 +135,14 @@ public class XmlRecord implements Serializable {
         return true;
     }
 
-    @Override
-    public String toString() {
-        try {
-            return "XmlRecord [digest=" + Arrays.toString(digest) + ", timestamp=" + timestamp + ", host=" + host
-                    + ", content=" + new String(content, "UTF-8") + ", parseAttemptCounter=" + parseAttemptCounter + "]";
-        } catch (UnsupportedEncodingException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        return null;
-    }
+	@Override
+	public String toString()
+	{
+		return "XmlRecord [digest=" + MD5.toHexString(digest) + ", timestamp="
+				+ timestamp + ", host=" + host + ", mainSubject=" + mainSubject
+				+ ", content=" + Arrays.toString(content)
+				+ ", parseAttemptCounter=" + parseAttemptCounter + "]";
+	}
+
 
 }

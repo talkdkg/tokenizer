@@ -186,7 +186,8 @@ public class ExecutorMaster implements Executor {
                             // ignore
                         }
                         if (taskDefinition != null) {
-                            if (taskDefinition.getTaskConfiguration().getGeneralState() == TaskGeneralState.DELETE_REQUESTED) {
+                            if (taskDefinition.getTaskConfiguration().getGeneralState().equals(TaskGeneralState.DELETE_REQUESTED)) {
+                            	LOG.debug("DELETE REQUESTED");
                                 model.deleteTask(taskDefinition.getUuid());
                                 continue;
                             }
