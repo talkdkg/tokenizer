@@ -276,6 +276,16 @@
    <!-- Create a string version of author for faceting -->
    <copyField source="author" dest="author_s"/>
 	
+   
+   
+   <copyField source="content_en" dest="text_en"/>
+   <copyField source="author_en" dest="text_en"/>
+   <copyField source="title_en" dest="text_en"/>
+   <copyField source="location_s" dest="text_en"/>
+   <copyField source="topic_en" dest="text_en"/>
+   <copyField source="mainSubject_en" dest="text_en"/>
+      
+   
    <!-- Above, multiple source fields are copied to the [text] field. 
 	  Another way to map multiple source fields to the same 
 	  destination field is to use the dynamic field syntax. 

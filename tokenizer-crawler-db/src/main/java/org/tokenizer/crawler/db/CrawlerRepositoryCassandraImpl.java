@@ -1640,6 +1640,7 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
         doc.addField("topic_en", messageRecord.getTopic());
         doc.addField("userRating_s", messageRecord.getUserRating());
         doc.addField("location_s", messageRecord.getLocation());
+        doc.addField("mainSubject_en", messageRecord.getMainSubject());
         
         Text text = messageRecord.getReviewText();
         

@@ -184,12 +184,12 @@ public class TokenizerClient {
         long oneMonthMillis = 30 * 24 * 3600 * 1000L;
 
         // get 10 records from record number 30 to 39:
-        ThriftQueryResponse r = getMessageRecords("product", 30, 100);
+        ThriftQueryResponse r = getMessageRecords("Yuan Hotel", 0, 100);
         // System.out.println("Error: " + r.error);
         System.out.println("Elapsed Time: " + r.elapsedTime);
-        System.out.println("Number of records found: " + r.numFound);
+        System.out.println("Number of records found ZZ: " + r.numFound);
         for (ThriftDocument tmr : r.getThriftDocuments()) {
-       //     System.out.println(tmr);
+            System.out.println(tmr);
         }
 
         // get 10 records from record number 0 to 9

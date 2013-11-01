@@ -19,6 +19,7 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrQuery.ORDER;
@@ -52,7 +53,6 @@ public class TokenizerServiceImpl implements ThriftTokenizerService.Iface {
     
     private static CrawlerRepositoryCassandraImpl repository;
     
-    SortClause defaultSortClause = new SortClause("_docid_", ORDER.asc);
     
     public static void setup() throws Exception {
         CrawlerRepositoryCassandraImpl repo = new CrawlerRepositoryCassandraImpl(null);
@@ -73,12 +73,7 @@ public class TokenizerServiceImpl implements ThriftTokenizerService.Iface {
     public ThriftQueryResponse get_message_records(final String query, final int start, final int rows)
             throws TException {
         
-        SolrQuery solrQuery = new SolrQuery();
-        solrQuery.setQuery(query);
-        solrQuery.setStart(start);
-        solrQuery.setRows(rows);
-        solrQuery.setParam("df", "content_en");
-        solrQuery.setSort(defaultSortClause);
+        SolrQuery solrQuery = prepareDefaultQuery(query, start, rows);
         
         return query(solrQuery);
         
@@ -122,12 +117,8 @@ public class TokenizerServiceImpl implements ThriftTokenizerService.Iface {
     @Override
     public ThriftQueryResponse get_message_records_by_date_range(final String query, final int start, final int rows,
             final long startTime, final long endTime) throws TException {
-        SolrQuery solrQuery = new SolrQuery();
-        solrQuery.setQuery(query);
-        solrQuery.setStart(start);
-        solrQuery.setRows(rows);
-        solrQuery.setParam("df", "content_en");
-        solrQuery.setSort(defaultSortClause);
+
+    	SolrQuery solrQuery = prepareDefaultQuery(query, start, rows);
         
         DateTime startDateTime = new DateTime(startTime);
         DateTime endDateTime = new DateTime(endTime);
@@ -141,13 +132,9 @@ public class TokenizerServiceImpl implements ThriftTokenizerService.Iface {
     @Override
     public ThriftQueryResponse get_message_records_by_date_range_and_source(final String query, final int start,
             final int rows, final long startTime, final long endTime, final String source) throws TException {
-        SolrQuery solrQuery = new SolrQuery();
-        solrQuery.setQuery(query);
-        solrQuery.setStart(start);
-        solrQuery.setRows(rows);
-        solrQuery.setParam("df", "content_en");
-        solrQuery.setSort(defaultSortClause);
-        
+
+        SolrQuery solrQuery = prepareDefaultQuery(query, start, rows);
+
         DateTime startDateTime = new DateTime(startTime);
         DateTime endDateTime = new DateTime(endTime);
         
@@ -162,13 +149,9 @@ public class TokenizerServiceImpl implements ThriftTokenizerService.Iface {
     @Override
     public ThriftQueryResponse get_message_records_by_source(final String query, final int start, final int rows,
             final String source) throws TException {
-        SolrQuery solrQuery = new SolrQuery();
-        solrQuery.setQuery(query);
-        solrQuery.setStart(start);
-        solrQuery.setRows(rows);
-        solrQuery.setParam("df", "content_en");
-        solrQuery.setSort(defaultSortClause);
-        
+
+        SolrQuery solrQuery = prepareDefaultQuery(query, start, rows);
+
         solrQuery.addFilterQuery("host_s:" + source);
         
         return query(solrQuery);
@@ -188,10 +171,7 @@ public class TokenizerServiceImpl implements ThriftTokenizerService.Iface {
             ThriftGender thriftGender,
             List<String> languageCodes) throws TException {
         
-        SolrQuery solrQuery = new SolrQuery();
-        solrQuery.setQuery(query);
-        solrQuery.setStart(start);
-        solrQuery.setRows(rows);
+        SolrQuery solrQuery = prepareDefaultQuery(query, start, rows);
         
         DateTime startDateTime = new DateTime(startTime);
         DateTime endDateTime = new DateTime(endTime);
@@ -200,8 +180,6 @@ public class TokenizerServiceImpl implements ThriftTokenizerService.Iface {
         
         
         
-        
-        solrQuery.setSort(defaultSortClause);
         
         return query(solrQuery);
         
@@ -261,15 +239,28 @@ public class TokenizerServiceImpl implements ThriftTokenizerService.Iface {
             thriftDocument.setDate(messageRecord.getISO8601Date());
             thriftDocument.setAuthor(messageRecord.getAuthor());
             thriftDocument.setAge(messageRecord.getAge());
+  
+            thriftDocument.setThriftGender(ThriftGender.UNDEFINED);
             if (messageRecord.getSex() != null) {
-                thriftDocument.setThriftGender(messageRecord.getSex().equals("male") ? ThriftGender.MALE
-                        : ThriftGender.FEMALE);
+            	if (messageRecord.getSex().equals("male"))  thriftDocument.setThriftGender(ThriftGender.MALE);
+            	else if (messageRecord.getSex().equals("female"))  thriftDocument.setThriftGender(ThriftGender.FEMALE);
             }
             
             thriftDocument.setTitle(messageRecord.getTitle());
             thriftDocument.setContent(messageRecord.getContent());
             thriftDocument.setTopic(messageRecord.getTopic());
             thriftDocument.setUserRating(messageRecord.getUserRating());
+            
+            thriftDocument.setMainSubject(messageRecord.getMainSubject());
+            
+            try
+			{
+				thriftDocument.setUrls(new HashSet(repository.listUrlByMessageDigest(digest)));
+			}
+			catch (ConnectionException e1)
+			{
+				LOG.error("", e1);
+			}
             
             thriftDocument.setSentiment(messageRecord.getReviewText().getSentiment());
             thriftDocument.setFeatures(messageRecord.getReviewText().getFeatures());
@@ -304,6 +295,23 @@ public class TokenizerServiceImpl implements ThriftTokenizerService.Iface {
         thriftSentence.setSentiment(sentence.getSentiment());
         thriftSentence.setTreebank(sentence.getTreebank());
         return thriftSentence;
+    }
+    
+    
+    private SolrQuery prepareDefaultQuery(String query, final int start, final int rows) {
+        
+        SolrQuery solrQuery = new SolrQuery();
+        solrQuery.setQuery(query);
+        solrQuery.setStart(start);
+        solrQuery.setRows(rows);
+        solrQuery.setParam("df", "text_en");
+        solrQuery.setParam("q.op", "AND");
+        
+        SortClause defaultSortClause = new SortClause("_docid_", ORDER.asc);
+        solrQuery.setSort(defaultSortClause);
+
+        return solrQuery;
+        
     }
     
 }

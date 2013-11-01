@@ -1,6 +1,7 @@
 namespace java org.tokenizer.thrift
 
 enum ThriftGender {
+	UNDEFINED,
     MALE,
     FEMALE
 }

@@ -12,8 +12,9 @@ import java.util.HashMap;
 import org.apache.thrift.TEnum;
 
 public enum ThriftGender implements org.apache.thrift.TEnum {
-  MALE(0),
-  FEMALE(1);
+  UNDEFINED(0),
+  MALE(1),
+  FEMALE(2);
 
   private final int value;
 
@@ -35,8 +36,10 @@ public enum ThriftGender implements org.apache.thrift.TEnum {
   public static ThriftGender findByValue(int value) { 
     switch (value) {
       case 0:
-        return MALE;
+        return UNDEFINED;
       case 1:
+        return MALE;
+      case 2:
         return FEMALE;
       default:
         return null;

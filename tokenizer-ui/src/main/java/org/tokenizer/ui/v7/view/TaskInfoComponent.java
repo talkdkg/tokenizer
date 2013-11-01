@@ -182,9 +182,9 @@ public class TaskInfoComponent extends CustomComponent implements Broadcaster.Br
         buildBaseTaskConfigurationForm(fieldGroup, componentContainer);
         TextField host = new TextField("Host");
         host.setWidth(COMMON_FIELD_WIDTH, Unit.EM);
-        TextField xpath = new TextField("XPath");
+        TextField xpath = new TextField("Splitter XPath");
         xpath.setWidth(80, Unit.EM);
-        TextField mainSubjectXPath = new TextField("mainSubjectXPath");
+        TextField mainSubjectXPath = new TextField("Main Subject XPath");
         mainSubjectXPath.setWidth(80, Unit.EM);
         TextField splitAttemptCounter = new TextField("Split Attempt Counter");
         splitAttemptCounter.setWidth(COMMON_FIELD_WIDTH, Unit.EM);
@@ -194,6 +194,7 @@ public class TaskInfoComponent extends CustomComponent implements Broadcaster.Br
         componentContainer.addComponent(mainSubjectXPath);
         fieldGroup.bind(host, "host");
         fieldGroup.bind(xpath, "xpath");
+        fieldGroup.bind(mainSubjectXPath, "mainSubjectXPath");
         fieldGroup.bind(splitAttemptCounter, "splitAttemptCounter");
         componentContainer.addComponent(formControls);
     }
