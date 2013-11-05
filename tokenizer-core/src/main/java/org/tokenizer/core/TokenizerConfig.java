@@ -17,6 +17,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,6 +73,12 @@ public class TokenizerConfig {
 
     public static final String getString(final String key) {
         return getProperties().getProperty(key);
+    }
+
+    public static final String getString(final String key, final String defaultValue) {
+        String value = getProperties().getProperty(key);
+        if (StringUtils.isBlank(value)) return defaultValue;
+        else return value;    
     }
 
     public static final String getHome() {

@@ -13,6 +13,8 @@
  */
 package org.tokenizer;
 
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -29,9 +31,9 @@ import org.tokenizer.thrift.ThriftGender;
 import org.tokenizer.thrift.ThriftQueryResponse;
 import org.tokenizer.thrift.ThriftTokenizerService;
 
-public class TokenizerClient {
+public class TokenizerClientTest {
 
-    private static final Logger LOG = LoggerFactory.getLogger(TokenizerClient.class);
+    private static final Logger LOG = LoggerFactory.getLogger(TokenizerClientTest.class);
 
     private static final String HOST = TokenizerConfig.getProperties().getProperty("tokenizer.thrift.host",
             "108.175.12.244");
@@ -181,51 +183,67 @@ public class TokenizerClient {
     
     public static void main(final String[] args) {
 
-        long oneMonthMillis = 30 * 24 * 3600 * 1000L;
 
-        // get 10 records from record number 30 to 39:
-        ThriftQueryResponse r = getMessageRecords("Yuan Hotel", 0, 100);
-        // System.out.println("Error: " + r.error);
-        System.out.println("Elapsed Time: " + r.elapsedTime);
-        System.out.println("Number of records found ZZ: " + r.numFound);
-        for (ThriftDocument tmr : r.getThriftDocuments()) {
-            System.out.println(tmr);
-        }
-
-        // get 10 records from record number 0 to 9
-        // filered by date range "last month"
-        r = getMessageRecords("travel", 0, 10, System.currentTimeMillis() - oneMonthMillis, System.currentTimeMillis());
-        // System.out.println("Error: " + r.error);
-        System.out.println("Elapsed Time: " + r.elapsedTime);
-        System.out.println("Number of records found: " + r.numFound);
-        for (ThriftDocument tmr : r.getThriftDocuments()) {
-        //    System.out.println(tmr);
-        }
-
-        // get 10 records from record number 0 to 9
-        // filered by date range "last month"
-        // filtered by "source" (host)
-        r = getMessageRecords("travel", 0, 10, System.currentTimeMillis() - oneMonthMillis, System.currentTimeMillis(),
-                "www.amazon.com");
-        // System.out.println("Error: " + r.error);
-        System.out.println("Elapsed Time: " + r.elapsedTime);
-        System.out.println("Number of records found: " + r.numFound);
-        for (ThriftDocument tmr : r.getThriftDocuments()) {
-       //     System.out.println(tmr);
-        }
-
-        // get 10 records from record number 0 to 9
-        // filtered by "source" (host)
-        r = getMessageRecords("travel", 0, 10, "stream.twitter.com");
-        // System.out.println("Error: " + r.error);
-        System.out.println("Elapsed Time: " + r.elapsedTime);
-        System.out.println("Number of records found: " + r.numFound);
-        for (ThriftDocument tmr : r.getThriftDocuments()) {
-        //    System.out.println(tmr);
-        }
-
-        System.out.println(new Date(1361328830000L));
-
+    	testRetrieveMessages();
     }
 
+    
+    private static void testRetrieveMessages() {
+ /*   	   public static ThriftQueryResponse retrieveMessages(
+    	            final String query, 
+    	            final int start, 
+    	            final int rows,
+    	            final long startTime, // see Date.getTime()
+    	            final long endTime,
+    	            final List<String> sources,
+    	            final List<String> countryCodes,
+    	            final int startAge,
+    	            final int endAge,
+    	            final ThriftGender gender,
+    	            final List<String> languageCodes
+    	            ) {
+*/
+    		   
+    		   
+    	        Calendar startDay = Calendar.getInstance();
+    	        
+    	        startDay.set(Calendar.YEAR, 2013);
+    	        startDay.set(Calendar.MONTH, 5);
+    	        startDay.set(Calendar.DATE, 1);
+    	        
+    	        Calendar endDay = Calendar.getInstance();
+    	        
+    	        endDay.set(Calendar.YEAR, 2013);
+    	        endDay.set(Calendar.MONTH, 5);
+    	        endDay.set(Calendar.DATE, 31);
+
+    	        ArrayList<String> sources = new ArrayList<>();
+    	        sources.add("www.amazon.com");
+    	        sources.add("stream.twitter.com");
+    	        
+    	        ArrayList<String> countryCodes = new ArrayList<>();
+    	        ArrayList<String> languageCodes = new ArrayList<>();
+    	        languageCodes.add("en");
+    	        languageCodes.add("fr");
+    	        languageCodes.add("ru");
+    	        languageCodes.add("es");
+    	        
+    	        ThriftQueryResponse r = TokenizerClientTest.retrieveMessages("fashioned charm", 0, 10, startDay.getTimeInMillis(),
+    	                endDay.getTimeInMillis(), sources, countryCodes, 0, 10, ThriftGender.UNDEFINED, languageCodes);
+    	        
+    	        if (r==null) {
+    	        	System.out.println("no results...");
+    	        	return;
+    	        }
+    	        System.out.println("Elapsed Time: " + r.elapsedTime);
+    	        System.out.println("Number of records found: " + r.numFound);
+    	        for (ThriftDocument d : r.getThriftDocuments()) {
+    	            System.out.println(d.getDate());
+    	        }
+
+
+    	        
+    }
+    
+    
 }

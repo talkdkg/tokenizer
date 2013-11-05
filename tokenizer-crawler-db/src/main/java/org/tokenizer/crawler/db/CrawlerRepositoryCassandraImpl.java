@@ -31,9 +31,11 @@ import org.apache.solr.common.SolrInputDocument;
 import org.apache.tika.metadata.Metadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tokenizer.core.TokenizerConfig;
 import org.tokenizer.core.solr.SolrUtils;
 import org.tokenizer.core.util.HttpUtils;
 import org.tokenizer.core.util.JavaSerializationUtils;
+import org.tokenizer.core.util.LanguageDetector;
 import org.tokenizer.core.util.MD5;
 import org.tokenizer.crawler.db.model.FetchedResultRecord;
 import org.tokenizer.crawler.db.model.HostRecord;
@@ -50,6 +52,7 @@ import org.tokenizer.nlp.NlpTools;
 import org.tokenizer.nlp.Text;
 import org.tokenizer.nlp.TextImpl;
 
+import com.cybozu.labs.langdetect.LangDetectException;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableMap;
 import com.google.inject.Inject;
@@ -100,8 +103,9 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
     protected static Logger LOG = LoggerFactory.getLogger(CrawlerRepositoryCassandraImpl.class);
     protected final String clusterName = "web_crawl_cluster";
     protected final String keyspaceName = "web_crawl_keyspace";
-    protected String seeds = "127.0.0.1";
-    protected int port = 9160;
+    
+    protected String seeds = TokenizerConfig.getString("tokenizer.cassandra.seeds", "127.0.0.1");
+    protected int port = TokenizerConfig.getInt("tokenizer.cassandra.port", 9160);
     
     /**
      * This is classic table key:=URL and columns:= all the response headers
@@ -233,7 +237,7 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
                 .withConnectionPoolConfiguration(
                         new ConnectionPoolConfigurationImpl("MyConnectionPool").setPort(port)
                                 .setSocketTimeout(30000)
-                                .setConnectTimeout(60000)
+                                .setConnectTimeout(120000)
                                 .setTimeoutWindow(300000) // Shut down a host if
                                                           // it times out too
                                                           // many times within
@@ -1641,6 +1645,18 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
         doc.addField("userRating_s", messageRecord.getUserRating());
         doc.addField("location_s", messageRecord.getLocation());
         doc.addField("mainSubject_en", messageRecord.getMainSubject());
+        
+        
+        try
+		{
+			String language = LanguageDetector.detect(messageRecord.getContent());
+			doc.addField("language_s", language);
+		}
+		catch (LangDetectException e1)
+		{
+			LOG.debug("", e1);
+		}
+        
         
         Text text = messageRecord.getReviewText();
         

@@ -179,6 +179,23 @@ public class TokenizerServiceImpl implements ThriftTokenizerService.Iface {
                 + endDateTime.toString(TWITTER_DATE_FORMATTER) + "]");
         
         
+        StringBuilder languageCodesFilterQuery = new StringBuilder("");
+        
+        for (int i=0; i < languageCodes.size(); i++) {
+        	String languageCode = languageCodes.get(i);
+        	
+        	languageCodesFilterQuery.append("language_s:")
+        	.append(languageCode);
+        	
+         	if (i < languageCodes.size() - 1) {
+        		languageCodesFilterQuery.append(" OR ");
+        	}
+         	
+        }
+        
+        if (languageCodes != null && languageCodes.size() > 0) {
+        	 solrQuery.addFilterQuery(languageCodesFilterQuery.toString());
+        }
         
         
         return query(solrQuery);
