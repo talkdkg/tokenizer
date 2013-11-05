@@ -227,12 +227,12 @@ public class TokenizerClientTest {
     	        
     	        ArrayList<String> languageCodes = new ArrayList<>();
     	        //languageCodes.add("en");
-    	        languageCodes.add("fr");
+    	        //languageCodes.add("fr");
     	        //languageCodes.add("ru");
     	        //languageCodes.add("es");
     	        
     	        ThriftQueryResponse r = TokenizerClientTest.retrieveMessages("*", 0, 10, startDay.getTimeInMillis(),
-    	                endDay.getTimeInMillis(), sources, countryCodes, 0, 10, ThriftGender.UNDEFINED, languageCodes);
+    	                endDay.getTimeInMillis(), sources, countryCodes, 0, 0, ThriftGender.UNDEFINED, languageCodes);
     	        
     	        if (r==null) {
     	        	System.out.println("no results...");

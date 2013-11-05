@@ -188,6 +188,13 @@ public class TokenizerServiceImpl implements ThriftTokenizerService.Iface {
         String locationsFilterQuery = prepareFilter("location_s", locations);
 		if (locationsFilterQuery != null) solrQuery.addFilterQuery(locationsFilterQuery);
 
+        StringBuilder ageFilterQuery = new StringBuilder("age_ti:[")
+        		.append(startAge)
+        		.append(" TO ")
+        		.append(endAge)
+        		.append("]");
+		
+        solrQuery.addFilterQuery(ageFilterQuery.toString());
         
         return query(solrQuery);
         
