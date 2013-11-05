@@ -196,6 +196,14 @@ public class TokenizerServiceImpl implements ThriftTokenizerService.Iface {
 		
         solrQuery.addFilterQuery(ageFilterQuery.toString());
         
+        if (thriftGender.equals(ThriftGender.MALE)) {
+        	 solrQuery.addFilterQuery("sex_s:male");
+        } else if (thriftGender.equals(ThriftGender.FEMALE)) {
+       	 	solrQuery.addFilterQuery("sex_s:female");
+        } else {
+        	// retrive all... including undefined.
+        }
+        
         return query(solrQuery);
         
     }
