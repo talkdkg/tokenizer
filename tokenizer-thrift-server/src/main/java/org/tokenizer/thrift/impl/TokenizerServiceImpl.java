@@ -179,49 +179,15 @@ public class TokenizerServiceImpl implements ThriftTokenizerService.Iface {
                 + endDateTime.toString(TWITTER_DATE_FORMATTER) + "]");
         
         
-
-		if (languageCodes != null && languageCodes.size() > 0)
-		{
-	        StringBuilder languageCodesFilterQuery = new StringBuilder("");
-			for (int i = 0; i < languageCodes.size(); i++)
-			{
-				String languageCode = languageCodes.get(i);
-
-				languageCodesFilterQuery.append("language_s:")
-						.append(languageCode);
-
-				if (i < languageCodes.size() - 1)
-				{
-					languageCodesFilterQuery.append(" OR ");
-				}
-
-			}
-
-			solrQuery.addFilterQuery(languageCodesFilterQuery.toString());
-		}        
+        String languageCodesFilterQuery = prepareFilter("language_s", languageCodes);
+		if (languageCodesFilterQuery != null) solrQuery.addFilterQuery(languageCodesFilterQuery);
         
+        String sourcesFilterQuery = prepareFilter("host_s", sources);
+		if (sourcesFilterQuery != null) solrQuery.addFilterQuery(sourcesFilterQuery);
 		
-		if (sources != null && sources.size() > 0)
-		{
-			StringBuilder sourcesFilterQuery = new StringBuilder("");
+        String locationsFilterQuery = prepareFilter("location_s", locations);
+		if (locationsFilterQuery != null) solrQuery.addFilterQuery(locationsFilterQuery);
 
-			for (int i = 0; i < sources.size(); i++)
-			{
-				String source = sources.get(i);
-
-				sourcesFilterQuery.append("host_s:")
-						.append(source);
-
-				if (i < sources.size() - 1)
-				{
-					sourcesFilterQuery.append(" OR ");
-				}
-
-			}
-
-			solrQuery.addFilterQuery(sourcesFilterQuery.toString());
-		}
-        
         
         return query(solrQuery);
         
@@ -356,4 +322,30 @@ public class TokenizerServiceImpl implements ThriftTokenizerService.Iface {
         
     }
     
+    
+    private String prepareFilter(String field, List<String> values) {
+		if (values != null && values.size() > 0)
+		{
+			StringBuilder filterQuery = new StringBuilder("");
+
+			for (int i = 0; i < values.size(); i++)
+			{
+				String value = values.get(i);
+
+				filterQuery.append(field).append(":")
+						.append(value);
+
+				if (i < values.size() - 1)
+				{
+					filterQuery.append(" OR ");
+				}
+
+			}
+
+			return filterQuery.toString();
+		}
+
+		return null;
+		
+    }
 }
