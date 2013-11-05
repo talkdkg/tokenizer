@@ -207,28 +207,31 @@ public class TokenizerClientTest {
     		   
     	        Calendar startDay = Calendar.getInstance();
     	        
-    	        startDay.set(Calendar.YEAR, 2013);
-    	        startDay.set(Calendar.MONTH, 5);
+    	        startDay.set(Calendar.YEAR, 1000);
+    	        startDay.set(Calendar.MONTH, 1);
     	        startDay.set(Calendar.DATE, 1);
     	        
     	        Calendar endDay = Calendar.getInstance();
     	        
     	        endDay.set(Calendar.YEAR, 2013);
-    	        endDay.set(Calendar.MONTH, 5);
+    	        endDay.set(Calendar.MONTH, 12);
     	        endDay.set(Calendar.DATE, 31);
 
     	        ArrayList<String> sources = new ArrayList<>();
-    	        sources.add("www.amazon.com");
+    	        //sources.add("www.amazon.com");
     	        sources.add("stream.twitter.com");
+    	        sources.add("www.tripadvisor.com");
     	        
     	        ArrayList<String> countryCodes = new ArrayList<>();
-    	        ArrayList<String> languageCodes = new ArrayList<>();
-    	        languageCodes.add("en");
-    	        languageCodes.add("fr");
-    	        languageCodes.add("ru");
-    	        languageCodes.add("es");
     	        
-    	        ThriftQueryResponse r = TokenizerClientTest.retrieveMessages("fashioned charm", 0, 10, startDay.getTimeInMillis(),
+    	        
+    	        ArrayList<String> languageCodes = new ArrayList<>();
+    	        //languageCodes.add("en");
+    	        languageCodes.add("fr");
+    	        //languageCodes.add("ru");
+    	        //languageCodes.add("es");
+    	        
+    	        ThriftQueryResponse r = TokenizerClientTest.retrieveMessages("*", 0, 10, startDay.getTimeInMillis(),
     	                endDay.getTimeInMillis(), sources, countryCodes, 0, 10, ThriftGender.UNDEFINED, languageCodes);
     	        
     	        if (r==null) {

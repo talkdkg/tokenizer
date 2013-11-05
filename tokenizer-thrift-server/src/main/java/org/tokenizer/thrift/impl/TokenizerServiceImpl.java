@@ -179,23 +179,48 @@ public class TokenizerServiceImpl implements ThriftTokenizerService.Iface {
                 + endDateTime.toString(TWITTER_DATE_FORMATTER) + "]");
         
         
-        StringBuilder languageCodesFilterQuery = new StringBuilder("");
+
+		if (languageCodes != null && languageCodes.size() > 0)
+		{
+	        StringBuilder languageCodesFilterQuery = new StringBuilder("");
+			for (int i = 0; i < languageCodes.size(); i++)
+			{
+				String languageCode = languageCodes.get(i);
+
+				languageCodesFilterQuery.append("language_s:")
+						.append(languageCode);
+
+				if (i < languageCodes.size() - 1)
+				{
+					languageCodesFilterQuery.append(" OR ");
+				}
+
+			}
+
+			solrQuery.addFilterQuery(languageCodesFilterQuery.toString());
+		}        
         
-        for (int i=0; i < languageCodes.size(); i++) {
-        	String languageCode = languageCodes.get(i);
-        	
-        	languageCodesFilterQuery.append("language_s:")
-        	.append(languageCode);
-        	
-         	if (i < languageCodes.size() - 1) {
-        		languageCodesFilterQuery.append(" OR ");
-        	}
-         	
-        }
-        
-        if (languageCodes != null && languageCodes.size() > 0) {
-        	 solrQuery.addFilterQuery(languageCodesFilterQuery.toString());
-        }
+		
+		if (sources != null && sources.size() > 0)
+		{
+			StringBuilder sourcesFilterQuery = new StringBuilder("");
+
+			for (int i = 0; i < sources.size(); i++)
+			{
+				String source = sources.get(i);
+
+				sourcesFilterQuery.append("host_s:")
+						.append(source);
+
+				if (i < sources.size() - 1)
+				{
+					sourcesFilterQuery.append(" OR ");
+				}
+
+			}
+
+			solrQuery.addFilterQuery(sourcesFilterQuery.toString());
+		}
         
         
         return query(solrQuery);
