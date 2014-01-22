@@ -13,72 +13,74 @@
  */
 package org.tokenizer.ui;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import javax.inject.Inject;
-import javax.inject.Provider;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletContextEvent;
-
-import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.guice.aop.ShiroAopModule;
-import org.apache.shiro.mgt.SecurityManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tokenizer.core.jpa.PersistenceServicesModule;
-import org.tokenizer.crawler.db.module.CrawlerRepositoryModule;
-import org.tokenizer.executor.master.ExecutorMasterModule;
-import org.tokenizer.executor.model.ExecutorModelModule;
-import org.tokenizer.executor.worker.ExecutorWorkerModule;
-import org.tokenizer.guice.zk.ZkModule;
 import org.tokenizer.ui.v7.modules.DemoModule;
 import org.tokenizer.ui.v7.modules.DemoUIModule;
-import org.xaloon.core.jpa.user.JpaUserDao;
 
-import uk.co.q3c.v7.base.config.IniModule;
-import uk.co.q3c.v7.base.config.V7Ini;
-import uk.co.q3c.v7.base.guice.BaseModule;
-import uk.co.q3c.v7.base.guice.threadscope.ThreadScopeModule;
-import uk.co.q3c.v7.base.guice.uiscope.UIScopeModule;
-import uk.co.q3c.v7.base.navigate.Sitemap;
-import uk.co.q3c.v7.base.navigate.SitemapProvider;
-import uk.co.q3c.v7.base.shiro.DefaultShiroModule;
-import uk.co.q3c.v7.base.shiro.ShiroVaadinModule;
-import uk.co.q3c.v7.base.shiro.V7SecurityManager;
-import uk.co.q3c.v7.base.shiro.VaadinSessionManager;
-import uk.co.q3c.v7.base.useropt.DefaultUserOptionModule;
-import uk.co.q3c.v7.base.view.ApplicationViewModule;
-import uk.co.q3c.v7.base.view.StandardViewModule;
-import uk.co.q3c.v7.i18n.I18NModule;
+import uk.co.q3c.v7.base.guice.BaseGuiceServletInjector;
+import uk.co.q3c.v7.base.navigate.sitemap.SystemAccountManagementPages;
 
-import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Module;
 import com.google.inject.persist.PersistService;
-import com.google.inject.persist.jpa.JpaPersistModule;
-import com.google.inject.servlet.GuiceServletContextListener;
 
-public class MyGuiceServletContextListener extends GuiceServletContextListener {
-    private static Logger log = LoggerFactory.getLogger(MyGuiceServletContextListener.class);
-
-    private ThreadLocal<ServletContext> ctx;
-
-    protected ThreadLocal<ServletContext> createThreadLocalServletContext() {
-        return new ThreadLocal<ServletContext>();
-    }
+public class DemoGuiceServletInjector extends BaseGuiceServletInjector {
+    
+    
+    private static Logger log = LoggerFactory.getLogger(DemoGuiceServletInjector.class);
 
     Injector injector;
     
     static PersistService persistService;
-    
 
     /**
-     * Module instances for the base should be added in {@link #getModules()}. Module instance for the app using V7
-     * should be added to {@link AppModules#appModules()}
-     * 
-     * @see com.google.inject.servlet.GuiceServletContextListener#getInjector()
+    * @see uk.co.q3c.v7.base.guice.BaseGuiceServletInjector#addAppModules(java.util.List)
+    */
+    @Override
+    protected void addAppModules(List<Module> baseModules)
+    {
+
+        // baseModules.add(new JpaPersistModule("default-persistence-unit"));
+        // baseModules.add(new PersistenceServicesModule());
+
+        baseModules.add(new DemoModule());
+        //baseModules.add(new ZkModule(ini));
+        //baseModules.add(new CrawlerRepositoryModule(ini));
+        baseModules.add(new DemoUIModule());
+        // baseModules.add(new DemoDAOModule());
+        //baseModules.add(new ExecutorModelModule());
+        //baseModules.add(new ExecutorMasterModule());
+        //baseModules.add(new ExecutorWorkerModule());
+
+    }
+    
+    
+    @Override
+    protected void addSitemapModules(List<Module> baseModules) {
+        super.addSitemapModules(baseModules);
+        baseModules.add(new SystemAccountManagementPages());
+    }
+
+    /* copied from DEMO application:
+     
+        @Override
+    protected Module standardViewsModule() {
+        return new DemoViewModule();
+    }
+
+    @Override
+    protected void addSitemapModules(List<Module> baseModules) {
+        super.addSitemapModules(baseModules);
+        baseModules.add(new SystemAccountManagementPages());
+    }
+
      */
+    
+    
+/*
     @Override
     public Injector getInjector() {
         if (this.injector == null) {
@@ -143,19 +145,6 @@ public class MyGuiceServletContextListener extends GuiceServletContextListener {
         return baseModules;
     }
 
-    @Override
-    public void contextInitialized(ServletContextEvent servletContextEvent) {
-        ctx = createThreadLocalServletContext();
-        final ServletContext servletContext = servletContextEvent.getServletContext();
-        ctx.set(servletContext);
-        super.contextInitialized(servletContextEvent);
-    }
-
-    @Override
-    public void contextDestroyed(ServletContextEvent servletContextEvent) {
-        super.contextDestroyed(servletContextEvent);
-        ctx.remove();
-    }
     
-
+*/
 }

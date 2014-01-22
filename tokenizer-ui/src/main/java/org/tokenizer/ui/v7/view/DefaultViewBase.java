@@ -23,49 +23,57 @@ import org.slf4j.LoggerFactory;
 import uk.co.q3c.v7.base.navigate.V7Navigator;
 import uk.co.q3c.v7.base.view.V7View;
 import uk.co.q3c.v7.base.view.V7ViewChangeEvent;
+import uk.co.q3c.v7.base.view.ViewBase;
 import uk.co.q3c.v7.base.view.component.UserNavigationTree;
 
 import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalSplitPanel;
 
-public abstract class DefaultViewBase implements V7View {
+public class DefaultViewBase extends ViewBase {
+
     private static Logger log = LoggerFactory.getLogger(DefaultViewBase.class);
 
     protected HorizontalSplitPanel layout;
-    private final UserNavigationTree navtree;
-    private final V7Navigator navigator;
 
+    UserNavigationTree navtree;
+    
     @Inject
-    protected DefaultViewBase(V7Navigator navigator, UserNavigationTree navtree) {
-        super();
+    public DefaultViewBase(V7Navigator navigator, UserNavigationTree navtree) {
+        super(navigator);
         this.navtree = navtree;
-        this.navigator = navigator;
-        buildUI();
     }
 
-    protected void buildUI() {
-        layout = new HorizontalSplitPanel();
-        layout.setSplitPosition(200f, Unit.PIXELS);
-        layout.setFirstComponent(navtree);
-        layout.setLocked(true);
-    }
-
+    /**
+    *****************************************************************************
+    * Description.
+    * 
+    * @see uk.co.q3c.v7.base.view.ViewBase#buildView()
+    *****************************************************************************
+    */
     @Override
-    public void enter(V7ViewChangeEvent event) {
-        log.debug("entered view: " + this.getClass().getSimpleName() + " with uri: " + navigator.getNavigationState());
-        List<String> params = navigator.getNavigationParams();
-        processParams(params);
+    protected void buildView()
+    {
+            layout = new HorizontalSplitPanel();
+            layout.setSplitPosition(200f, Unit.PIXELS);
+            layout.setFirstComponent(navtree);
+            layout.setLocked(true);
     }
 
+    /**
+    *****************************************************************************
+    * Description.
+    * 
+    * @param params
+    * @see uk.co.q3c.v7.base.view.ViewBase#processParams(java.util.List)
+    *****************************************************************************
+    */
     @Override
-    public Component getUiComponent() {
-        return layout;
+    protected void processParams(List<String> params)
+    {
+        // TODO Auto-generated method stub
+        
     }
 
-    protected abstract void processParams(List<String> params);
-
-    public V7Navigator getNavigator() {
-        return navigator;
-    }
+ 
 }

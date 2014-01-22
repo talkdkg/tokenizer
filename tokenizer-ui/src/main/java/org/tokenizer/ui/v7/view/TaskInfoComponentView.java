@@ -17,11 +17,13 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import com.vaadin.ui.Component;
+
 import uk.co.q3c.v7.base.navigate.V7Navigator;
 import uk.co.q3c.v7.base.view.V7View;
 import uk.co.q3c.v7.base.view.component.UserNavigationTree;
 
-public class TaskInfoComponentView extends DefaultViewBase implements V7View {
+public class TaskInfoComponentView extends DefaultViewBase {
 
     @Inject
     protected TaskInfoComponentView(TaskInfoComponent component, V7Navigator navigator, UserNavigationTree navtree) {
@@ -29,9 +31,8 @@ public class TaskInfoComponentView extends DefaultViewBase implements V7View {
         layout.setSecondComponent(component);
     }
 
-    @Override
-    protected void processParams(List<String> params) {
+ 
 
-    }
+ 
 
 }

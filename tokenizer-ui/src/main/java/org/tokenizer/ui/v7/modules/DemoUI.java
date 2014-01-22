@@ -19,6 +19,7 @@ import org.xaloon.core.api.security.external.AuthenticationFacade;
 import org.xaloon.core.jpa.user.JpaUserDao;
 
 import uk.co.q3c.v7.base.navigate.V7Navigator;
+import uk.co.q3c.v7.base.shiro.LoginStatusHandler;
 import uk.co.q3c.v7.base.ui.ScopedUI;
 
 import com.google.inject.Injector;
@@ -48,8 +49,8 @@ public class DemoUI extends ScopedUI implements Broadcaster.BroadcastListener {
 
     @Inject
     protected DemoUI(final V7Navigator navigator, final ErrorHandler errorHandler,
-            final ConverterFactory converterFactory) {
-        super(navigator, errorHandler, converterFactory);
+            final ConverterFactory converterFactory, LoginStatusHandler loginStatusHandler) {
+        super(navigator, errorHandler, converterFactory, loginStatusHandler);
     }
 
     @Override

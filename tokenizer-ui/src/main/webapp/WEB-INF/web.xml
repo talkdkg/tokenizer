@@ -16,8 +16,9 @@
         <filter-name>guiceFilter</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>
+    
     <listener>
-        <listener-class>org.tokenizer.ui.MyGuiceServletContextListener</listener-class>
+        <listener-class>org.tokenizer.ui.DemoGuiceServletInjector</listener-class>
     </listener>
     
 <!--     
