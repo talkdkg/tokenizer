@@ -13,6 +13,7 @@
  */
 package org.tokenizer.crawler.db.module;
 
+import org.apache.commons.configuration.CompositeConfiguration;
 import org.apache.shiro.config.Ini;
 import org.apache.shiro.config.Ini.Section;
 import org.slf4j.Logger;
@@ -26,18 +27,21 @@ public class CrawlerRepositoryModule extends AbstractModule {
 
     protected static Logger LOG = LoggerFactory.getLogger(CrawlerRepositoryModule.class);
 
-    private final Ini ini;
+    //private Ini ini;
     private String nlpToolsImplementationClass;
 
-    public CrawlerRepositoryModule(Ini ini) {
+    private CompositeConfiguration configuration;
+    
+    public CrawlerRepositoryModule(CompositeConfiguration configuration) {
         super();
-        this.ini = ini;
+        //this.ini = ini;
+        this.configuration = configuration;
     }
 
     @Override
     protected void configure() {
-        Section zk = ini.getSection("nlp");
-        this.nlpToolsImplementationClass = zk.get("implementation");
+        //Section zk = ini.getSection("nlp");
+        this.nlpToolsImplementationClass = configuration.getString("nlp.implementation");
     }
 
     @Provides

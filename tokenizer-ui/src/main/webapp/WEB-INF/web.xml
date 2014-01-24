@@ -1,25 +1,54 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app id="WebApp_ID" version="3.0" xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
       http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
-    <display-name>Tokenizer-UI</display-name>
-    <context-param>
-        <description>Vaadin Production Mode</description>
-        <param-name>productionMode</param-name>
-        <param-value>false</param-value>
-    </context-param>
-    <filter>
-        <filter-name>guiceFilter</filter-name>
-        <filter-class>com.google.inject.servlet.GuiceFilter</filter-class>
-    </filter>
-    <filter-mapping>
-        <filter-name>guiceFilter</filter-name>
-        <url-pattern>/*</url-pattern>
-    </filter-mapping>
+
+	<display-name>Tokenizer-UI</display-name>
+
+	<context-param>
+		<description>Vaadin Production Mode</description>
+		<param-name>productionMode</param-name>
+		<param-value>false</param-value>
+	</context-param>
+
+	<filter>
+		<filter-name>guiceFilter</filter-name>
+		<filter-class>com.google.inject.servlet.GuiceFilter</filter-class>
+	</filter>
+
+	<filter-mapping>
+		<filter-name>guiceFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+
+	<listener>
+		<listener-class>uk.co.q3c.v7.demo.DemoGuiceServletInjector</listener-class>
+	</listener>
+
+<!-- 
+	<servlet>
+		<servlet-name>V7 Application</servlet-name>
+		<servlet-class>uk.co.q3c.v7.base.guice.BaseServlet</servlet-class>
+		<init-param>
+			<description>Widget Set to Use</description>
+			<param-name>widgetset</param-name>
+			<param-value>uk.co.q3c.v7.demo.widgetset.V7demoWidgetset</param-value>
+		</init-param>
+        <init-param>
+            <description>something dummy; ignore</description>
+            <param-name>UI</param-name>
+            <param-value>uk.co.q3c.v7.demo.DemoUI</param-value>
+        </init-param>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>V7 Application</servlet-name>
+		<url-pattern>/*</url-pattern>
+	</servlet-mapping>
     
-    <listener>
-        <listener-class>org.tokenizer.ui.DemoGuiceServletInjector</listener-class>
-    </listener>
+     -->
+     
+     
     
 <!--     
     <servlet>
@@ -51,5 +80,5 @@
         <url-pattern>/*</url-pattern>
     </servlet-mapping>
  -->
- 
- </web-app>
+
+</web-app>

@@ -11,9 +11,7 @@
   
   Dissemination of this information or reproduction of this material is strictly 
   forbidden unless prior written permission is obtained from Tokenizer Inc.
--->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+--><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<apache-mime4j.version>0.7.2</apache-mime4j.version>
@@ -60,8 +58,8 @@
 		<version.twitter4j>3.0.3</version.twitter4j>
 		<addonBaseName>dontpush-addon</addonBaseName>
 		<vaadin.charts.version>1.1.2</vaadin.charts.version>
-		<vaadin.plugin.version>7.1.0</vaadin.plugin.version>
-		<vaadin.version>7.1.0</vaadin.version>
+		<vaadin.plugin.version>7.1.10</vaadin.plugin.version>
+		<vaadin.version>7.1.10</vaadin.version>
 		<version.dontpush>1.0.1</version.dontpush>
 		<xaloon.version>1.5.1</xaloon.version>
 		<xstream.version>1.4.4</xstream.version>
@@ -93,7 +91,8 @@
 		<module>tokenizer-nlp-impl</module>
 		<module>tokenizer-core-jpa</module>
 		<module>tokenizer-core-api</module>
-	</modules>
+    <module>tokenizer-vaadin-test</module>
+  </modules>
 	<repositories>
 		<repository>
 			<id>default</id>

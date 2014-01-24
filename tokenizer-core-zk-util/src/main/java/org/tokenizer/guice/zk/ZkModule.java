@@ -13,6 +13,7 @@
  */
 package org.tokenizer.guice.zk;
 
+import org.apache.commons.configuration.CompositeConfiguration;
 import org.apache.shiro.config.Ini;
 import org.apache.shiro.config.Ini.Section;
 
@@ -20,18 +21,20 @@ import com.google.inject.AbstractModule;
 
 public class ZkModule extends AbstractModule {
 
-    private final Ini ini;
+    //private final Ini ini;
 
-    public ZkModule(Ini ini) {
+    private final CompositeConfiguration configuration;
+
+    public ZkModule( CompositeConfiguration configuration) {
         super();
-        this.ini = ini;
+        this.configuration = configuration;
     }
 
     @Override
     protected void configure() {
-        Section zk = ini.getSection("zookeeper");
-        bindConstant().annotatedWith(ConnectString.class).to(zk.get("connectString"));
-        bindConstant().annotatedWith(SessionTimeout.class).to(zk.get("sessionTimeout"));
+        //Section zk = ini.getSection("zookeeper");
+        bindConstant().annotatedWith(ConnectString.class).to(configuration.getString("connectString"));
+        bindConstant().annotatedWith(SessionTimeout.class).to(configuration.getString("sessionTimeout"));
     }
 
 }

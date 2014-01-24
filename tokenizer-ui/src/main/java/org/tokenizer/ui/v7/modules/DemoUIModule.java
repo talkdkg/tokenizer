@@ -27,7 +27,7 @@ public class DemoUIModule extends V7UIModule {
 
     @Override
     protected void addUIBindings(MapBinder<String, UI> mapbinder) {
-        super.addUIBindings(mapbinder);
+        //super.addUIBindings(mapbinder);
         mapbinder.addBinding(DemoUI.class.getName()).to(DemoUI.class);
     }
 }

@@ -12,4 +12,6 @@
     <inherits name="com.vaadin.addon.timeline.gwt.TimelineWidgetSet" />
 
     <inherits name="org.tokenizer.ui.V7Widgetset" />
+
+    <inherits name="uk.co.q3c.v7.demo.widgetset.V7demoWidgetset" />
 </module>

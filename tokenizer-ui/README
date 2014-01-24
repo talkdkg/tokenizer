@@ -8,3 +8,10 @@ https://gist.github.com/mpilone/
 
 
 test7 for #close
+
+
+mvn archetype:generate -DarchetypeGroupId=com.vaadin -DarchetypeArtifactId=vaadin-archetype-application -DarchetypeVersion=7.1.10 -DgroupId=org.tokenizer -DartifactId=tokenizer-vaadin-test -Dversion=1.0 -Dpackaging=war
+	
+	
+   
+   

@@ -23,16 +23,16 @@ import java.util.EnumMap;
  */
 public class DemoLabels_de extends DemoLabels {
 
-    private static final EnumMap<DemoLabelKeys, String> map = new EnumMap<DemoLabelKeys, String>(DemoLabelKeys.class);
+    private static final EnumMap<TokenizerLabelKeys, String> map = new EnumMap<TokenizerLabelKeys, String>(TokenizerLabelKeys.class);
     // TODO make map unmodifiable
     static {
-        map.put(DemoLabelKeys.Yes, "ja");
-        map.put(DemoLabelKeys.No, "nein");
+        map.put(TokenizerLabelKeys.Yes, "ja");
+        map.put(TokenizerLabelKeys.No, "nein");
 
     }
 
     @Override
-    public EnumMap<DemoLabelKeys, String> getMap() {
+    public EnumMap<TokenizerLabelKeys, String> getMap() {
         return map;
     }
 
