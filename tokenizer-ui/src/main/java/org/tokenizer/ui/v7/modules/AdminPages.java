@@ -14,7 +14,7 @@ public class AdminPages extends DirectSitemapModule {
 	 */
 	@Override
 	protected void define() {
-		addEntry("task-info", TaskInfoComponentView.class, TokenizerLabelKeys.TaskInfoComponent, PageAccessControl.AUTHENTICATION);
+		addEntry("task-info", TaskInfoComponentView.class, TokenizerLabelKeys.TaskInfoComponent, PageAccessControl.GUEST);
         addEntry("message-search", MessageSearchComponentView.class, TokenizerLabelKeys.View2, PageAccessControl.AUTHENTICATION);
 //		addEntry("system-account/request-account", RequestSystemAccountCreateView.class, LabelKey.Request_Account,
 //				PageAccessControl.PUBLIC);

@@ -488,6 +488,7 @@ public class TaskInfoComponent extends CustomComponent implements Broadcaster.Br
         table.setVisibleColumns(new String[] { "name", "implementationName", "submitDate", "generalState",
                 "zkDataVersion" });
         table.setColumnHeaders(new String[] { "Name", "Implementation", "Date", "State", "Version" });
+        //table.setEditable(true);
     }
 
     private void buildFormControls() {
@@ -650,9 +651,12 @@ public class TaskInfoComponent extends CustomComponent implements Broadcaster.Br
                     }
 
                     task.makeMutable();
+
+                    
                     table.getContainerProperty(task, "zkDataVersion").setValue(task.getZkDataVersion());
-                    table.getContainerProperty(task, "generalState").setValue(task.getGeneralState());
-                    table.getContainerProperty(task, "name").setValue(task.getName());
+                    //table.getContainerProperty(task, "generalState").setValue(task.getGeneralState());
+                    //table.getContainerProperty(task, "name").setValue(task.getName());
+                    
 
                 }
             });

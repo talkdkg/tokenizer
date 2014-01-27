@@ -12,7 +12,8 @@
   Dissemination of this information or reproduction of this material is strictly 
   forbidden unless prior written permission is obtained from Tokenizer Inc.
 -->
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+<project
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
 	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
@@ -24,25 +25,14 @@
 	<packaging>war</packaging>
 	<name>test-web Maven Webapp</name>
 	<url>http://maven.apache.org</url>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<vaadin.version>7.1.10</vaadin.version>
+		<vaadin.plugin.version>${vaadin.version}</vaadin.plugin.version>
+	</properties>
+
 	<repositories>
-		<repository>
-			<id>default</id>
-			<name>Maven Repository Switchboard</name>
-			<layout>default</layout>
-			<url>http://repo1.maven.org/maven2</url>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</repository>
-		<repository>
-			<id>restlet</id>
-			<url>http://maven.restlet.org/</url>
-		</repository>
-		<repository>
-			<id>EclipseLink Repo</id>
-			<url>http://download.eclipse.org/rt/eclipselink/maven.repo</url>
-			<name>EclipseLink Repo</name>
-		</repository>
 		<repository>
 			<id>vaadin-addons</id>
 			<url>http://maven.vaadin.com/vaadin-addons</url>
@@ -54,10 +44,20 @@
 				<enabled>false</enabled>
 			</releases>
 			<snapshots>
-				<enabled>true</enabled>
 			</snapshots>
 		</repository>
+		<repository>
+			<id>restlet</id>
+			<url>http://maven.restlet.org/</url>
+		</repository>
+		<repository>
+			<id>EclipseLink Repo</id>
+			<url>http://download.eclipse.org/rt/eclipselink/maven.repo</url>
+			<name>EclipseLink Repo</name>
+		</repository>
 	</repositories>
+
+
 	<pluginRepositories>
 		<pluginRepository>
 			<id>vaadin-snapshots</id>
@@ -66,41 +66,107 @@
 				<enabled>false</enabled>
 			</releases>
 			<snapshots>
-				<enabled>true</enabled>
 			</snapshots>
 		</pluginRepository>
 	</pluginRepositories>
+	
+	
 	<dependencies>
-    
-    <!--  REVIEW!!! -->
+
 		<dependency>
 			<groupId>org.hibernate.javax.persistence</groupId>
 			<artifactId>hibernate-jpa-2.0-api</artifactId>
 			<version>1.0.0.Final</version>
 		</dependency>
+		
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-entitymanager</artifactId>
 			<version>4.2.3.Final</version>
 		</dependency>
+		
 		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
 			<version>5.1.25</version>
 		</dependency>
-            <!-- Eclipselink -->
- <!--        <dependency>
+        
+ <!--        
+ 		<dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>eclipselink</artifactId>
              <scope>provided</scope>
         </dependency>
  -->
+ 
+ 
+ <!-- VAADIN -->
+ 
+ 
+		<dependency>
+			<groupId>uk.co.q3c</groupId>
+			<artifactId>v7</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.vaadin</groupId>
+			<artifactId>vaadin-server</artifactId>
+			<version>${vaadin.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.vaadin</groupId>
+			<artifactId>vaadin-client-compiled</artifactId>
+			<version>${vaadin.version}</version>
+		</dependency>
+		<!--
+		  Needed when using the widgetset optimizer (custom ConnectorBundleLoaderFactory).
+		  
+		  For widgetset compilation, vaadin-client-compiler is automatically added on the
+		  compilation classpath by vaadin-maven-plugin so normally there is no need for an
+		  explicit dependency.
+		-->
+		<!--
+		<dependency>
+			<groupId>com.vaadin</groupId>
+			<artifactId>vaadin-client-compiler</artifactId>
+			<version>${vaadin.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		-->
+		<dependency>
+			<groupId>com.vaadin</groupId>
+			<artifactId>vaadin-client</artifactId>
+			<version>${vaadin.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.vaadin</groupId>
+			<artifactId>vaadin-push</artifactId>
+			<version>${vaadin.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.vaadin</groupId>
+			<artifactId>vaadin-themes</artifactId>
+			<version>${vaadin.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<version>3.0.1</version>
+			<scope>provided</scope>
+		</dependency>
+ 
+ 
+ <!-- OTHER -->
+ 
 		<dependency>
 			<groupId>com.google.inject.extensions</groupId>
 			<artifactId>guice-persist</artifactId>
 			<version>3.0</version>
 		</dependency>
-    <!--  !!! -->
+
 
 		<dependency>
 			<groupId>uk.co.q3c</groupId>
@@ -228,34 +294,7 @@
 			<groupId>${project.groupId}</groupId>
 			<artifactId>tokenizer-executor-worker</artifactId>
 		</dependency>
-        <!-- VAADIN -->
-		<dependency>
-			<groupId>com.vaadin</groupId>
-			<artifactId>vaadin-server</artifactId>
-			<version>${vaadin.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.vaadin</groupId>
-			<artifactId>vaadin-client-compiled</artifactId>
-			<version>${vaadin.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.vaadin</groupId>
-			<artifactId>vaadin-client</artifactId>
-			<version>${vaadin.version}</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.vaadin</groupId>
-			<artifactId>vaadin-themes</artifactId>
-			<version>${vaadin.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>servlet-api</artifactId>
-			<version>2.5</version>
-			<scope>provided</scope>
-		</dependency>
+
 		<dependency>
 			<groupId>net.sf.jung</groupId>
 			<artifactId>jung2</artifactId>
@@ -320,6 +359,10 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
+
+
+
+
 	<build>
 		<plugins>
 			<plugin>
@@ -330,6 +373,8 @@
 					<target>1.7</target>
 				</configuration>
 			</plugin>
+			<!-- As we are doing "inplace" GWT compilation, ensure the widgetset -->
+			<!-- directory is cleaned properly
 			<plugin>
 				<artifactId>maven-clean-plugin</artifactId>
 				<version>2.4.1</version>
@@ -340,16 +385,22 @@
 						</fileset>
 					</filesets>
 				</configuration>
+			</plugin>  -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-war-plugin</artifactId>
+				<version>2.2</version>
+				<configuration>
+					<failOnMissingWebXml>false</failOnMissingWebXml>
+				</configuration>
 			</plugin>
-
-
+<!-- 
 			<plugin>
 				<groupId>com.vaadin</groupId>
 				<artifactId>vaadin-maven-plugin</artifactId>
 				<version>${vaadin.plugin.version}</version>
 				<configuration>
-					<extraJvmArgs>-Xms1024M -Xmx1024M -Xss1024k</extraJvmArgs>
-                    <!-- <runTarget>mobilemail</runTarget> -->
+					<extraJvmArgs>-Xmx512M -Xss1024k</extraJvmArgs>
 					<webappDirectory>${basedir}/src/main/webapp/VAADIN/widgetsets</webappDirectory>
 					<hostedWebapp>${basedir}/src/main/webapp/VAADIN/widgetsets</hostedWebapp>
 					<noServer>true</noServer>
@@ -359,16 +410,11 @@
 					<strict>true</strict>
 					<runTarget>http://localhost:8080/</runTarget>
 				</configuration>
-
 				<executions>
 					<execution>
-						<configuration>
-							<modules>
-								<module>com.vaadin.demo.mobilemail.gwt.ColorPickerWidgetSet</module>
-							</modules>
-						</configuration>
+						<configuration></configuration>
 						<goals>
-							<goal>clean</goal>
+ 							<goal>clean</goal>
 							<goal>resources</goal>
 							<goal>update-theme</goal>
 							<goal>update-widgetset</goal>
@@ -377,9 +423,8 @@
 						</goals>
 					</execution>
 				</executions>
-
 			</plugin>
-
+ -->
 			<plugin>
 				<groupId>org.mortbay.jetty</groupId>
 				<artifactId>jetty-maven-plugin</artifactId>
@@ -387,6 +432,7 @@
 		</plugins>
 		<pluginManagement>
 			<plugins>
+				<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.
 				<plugin>
 					<groupId>org.eclipse.m2e</groupId>
 					<artifactId>lifecycle-mapping</artifactId>
@@ -398,14 +444,13 @@
 									<pluginExecutionFilter>
 										<groupId>com.vaadin</groupId>
 										<artifactId>vaadin-maven-plugin</artifactId>
-										<versionRange>[7.1.0,)</versionRange>
+										<versionRange>[7.1.10,)</versionRange>
 										<goals>
-											<goal>clean</goal>
 											<goal>resources</goal>
-											<goal>update-theme</goal>
 											<goal>update-widgetset</goal>
-											<goal>compile-theme</goal>
 											<goal>compile</goal>
+											<goal>update-theme</goal>
+											<goal>compile-theme</goal>
 										</goals>
 									</pluginExecutionFilter>
 									<action>
@@ -416,7 +461,9 @@
 						</lifecycleMappingMetadata>
 					</configuration>
 				</plugin>
+				-->
 			</plugins>
 		</pluginManagement>
 	</build>
+	
 </project>

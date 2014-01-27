@@ -1,5 +1,7 @@
 package uk.co.q3c.v7.demo;
 
+import org.tokenizer.ui.v7.modules.Broadcaster;
+
 import com.google.inject.Inject;
 
 import uk.co.q3c.v7.base.navigate.V7Navigator;
@@ -14,8 +16,12 @@ import uk.co.q3c.v7.base.view.component.MessageStatusPanel;
 import uk.co.q3c.v7.base.view.component.SubpagePanel;
 import uk.co.q3c.v7.base.view.component.UserNavigationTree;
 
+import com.vaadin.annotations.Push;
+import com.vaadin.annotations.Theme;
 import com.vaadin.data.util.converter.ConverterFactory;
 import com.vaadin.server.ErrorHandler;
+import com.vaadin.server.VaadinRequest;
+import com.vaadin.shared.communication.PushMode;
 import com.vaadin.ui.AbstractOrderedLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.HorizontalSplitPanel;
@@ -27,10 +33,15 @@ import com.vaadin.ui.VerticalLayout;
  * @author David Sowerby
  * 
  */
-// @Theme("v7demo")
-public class DemoUI extends ScopedUI {
+@Push(PushMode.AUTOMATIC)
+@Theme("mytheme")
+public class DemoUI extends ScopedUI  implements Broadcaster.BroadcastListener {
 
-	private VerticalLayout baseLayout;
+	/**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
+    private VerticalLayout baseLayout;
 	private final UserNavigationTree navTree;
 	private final Breadcrumb breadcrumb;
 	private final LoginStatusPanel loginOut;
@@ -54,6 +65,10 @@ public class DemoUI extends ScopedUI {
 		this.messageBar = messageBar;
 		this.logo = logo;
 		this.header = header;
+		
+        Broadcaster.register(this);
+
+		
 	}
 
 	@Override
@@ -115,5 +130,51 @@ public class DemoUI extends ScopedUI {
 		messageBar.setWidth("100%");
 
 	}
+	
+	//////////////
+	   @Override
+	    protected void init(final VaadinRequest request) {
+	        //Broadcaster.register(this);
+
+	        // UI.getCurrent().getPushConfiguration().setPushMode(PushMode.AUTOMATIC);
+
+	        // The background thread that updates clock times once every second.
+	        // new Timer().scheduleAtFixedRate(new TimerTask() {
+	        // @Override
+	        // public void run() {
+	        // final Date currentTime = getCurrentUtcTime();
+	        // for (final PushClock pushClock : getActiveClocks()) {
+	        // try {
+	        // pushClock.getUI().access(new Runnable() {
+	        // @Override
+	        // public void run() {
+	        // pushClock.updateTime(currentTime);
+	        // }
+	        // });
+	        // } catch (final UIDetachedException e) {
+	        // // Ignore
+	        // }
+	        // }
+	        // }
+	        // }, new Date(), 1000);
+
+	        super.init(request);
+	    }
+
+	    @Override
+	    public void detach() {
+	        Broadcaster.unregister(this);
+	        super.detach();
+	    }
+
+	    @Override
+	    public void receiveBroadcast(final String message) {
+	        access(new Runnable() {
+	            @Override
+	            public void run() {
+//	                //
+	            }
+	        });
+	    }
 
 }

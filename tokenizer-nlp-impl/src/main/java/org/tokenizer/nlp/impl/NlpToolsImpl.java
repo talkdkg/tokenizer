@@ -22,6 +22,8 @@ import org.tokenizer.nlp.TextImpl;
  */
 public class NlpToolsImpl implements NlpTools {
 
+    
+    
     @Override
     public Text process(String text) {
         return new TextImpl();

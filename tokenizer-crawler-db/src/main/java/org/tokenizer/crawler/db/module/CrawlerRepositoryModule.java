@@ -33,19 +33,53 @@ public class CrawlerRepositoryModule extends AbstractModule {
     private CompositeConfiguration configuration;
     
     public CrawlerRepositoryModule(CompositeConfiguration configuration) {
+        
+        
         super();
+        System.out.println("URRRRRRRRRRAAAAAAAAAAAAAAAAAAAAAAAAAAAAA!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        System.out.println("URRRRRRRRRRAAAAAAAAAAAAAAAAAAAAAAAAAAAAA!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        System.out.println("URRRRRRRRRRAAAAAAAAAAAAAAAAAAAAAAAAAAAAA!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        System.out.println("URRRRRRRRRRAAAAAAAAAAAAAAAAAAAAAAAAAAAAA!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        System.out.println("URRRRRRRRRRAAAAAAAAAAAAAAAAAAAAAAAAAAAAA!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        System.out.println("URRRRRRRRRRAAAAAAAAAAAAAAAAAAAAAAAAAAAAA!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        System.out.println("URRRRRRRRRRAAAAAAAAAAAAAAAAAAAAAAAAAAAAA!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        System.out.println("URRRRRRRRRRAAAAAAAAAAAAAAAAAAAAAAAAAAAAA!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        System.out.println("URRRRRRRRRRAAAAAAAAAAAAAAAAAAAAAAAAAAAAA!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        System.out.println("URRRRRRRRRRAAAAAAAAAAAAAAAAAAAAAAAAAAAAA!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        System.out.println("URRRRRRRRRRAAAAAAAAAAAAAAAAAAAAAAAAAAAAA!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        System.out.println("URRRRRRRRRRAAAAAAAAAAAAAAAAAAAAAAAAAAAAA!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        System.out.println("URRRRRRRRRRAAAAAAAAAAAAAAAAAAAAAAAAAAAAA!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        System.out.println("URRRRRRRRRRAAAAAAAAAAAAAAAAAAAAAAAAAAAAA!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        System.out.println("URRRRRRRRRRAAAAAAAAAAAAAAAAAAAAAAAAAAAAA!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        System.out.println("URRRRRRRRRRAAAAAAAAAAAAAAAAAAAAAAAAAAAAA!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        System.out.println("URRRRRRRRRRAAAAAAAAAAAAAAAAAAAAAAAAAAAAA!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        System.out.println("URRRRRRRRRRAAAAAAAAAAAAAAAAAAAAAAAAAAAAA!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        System.out.println("URRRRRRRRRRAAAAAAAAAAAAAAAAAAAAAAAAAAAAA!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        System.out.println("URRRRRRRRRRAAAAAAAAAAAAAAAAAAAAAAAAAAAAA!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        System.out.println("URRRRRRRRRRAAAAAAAAAAAAAAAAAAAAAAAAAAAAA!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        System.out.println("URRRRRRRRRRAAAAAAAAAAAAAAAAAAAAAAAAAAAAA!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        System.out.println("URRRRRRRRRRAAAAAAAAAAAAAAAAAAAAAAAAAAAAA!!!!!!!!!!!!!!!!!!!!!!!!!!!");
         //this.ini = ini;
         this.configuration = configuration;
+        this.nlpToolsImplementationClass = configuration.getString("nlp.implementation", "orgzzz.tokenizer.nlp.impl.NlpToolsImpl");
     }
 
     @Override
     protected void configure() {
         //Section zk = ini.getSection("nlp");
-        this.nlpToolsImplementationClass = configuration.getString("nlp.implementation");
+        //this.nlpToolsImplementationClass = configuration.getString("nlp.implementation");
     }
 
     @Provides
     NlpTools provideNlpTools() {
+        
+        if (nlpToolsImplementationClass ==  null) {
+            LOG.warn("null!!!");
+            nlpToolsImplementationClass = configuration.getString("nlp.implementation");
+        } else {
+            LOG.warn("nlpToolsImplementationClass: {}", nlpToolsImplementationClass);
+        }
+        
         try {
             Class<?> clazz = Class.forName(nlpToolsImplementationClass);
             if (NlpTools.class.isAssignableFrom(clazz)) {

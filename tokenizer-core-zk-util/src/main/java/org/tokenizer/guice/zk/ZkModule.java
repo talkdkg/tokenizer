@@ -34,7 +34,7 @@ public class ZkModule extends AbstractModule {
     protected void configure() {
         //Section zk = ini.getSection("zookeeper");
         bindConstant().annotatedWith(ConnectString.class).to(configuration.getString("connectString"));
-        bindConstant().annotatedWith(SessionTimeout.class).to(configuration.getString("sessionTimeout"));
+        bindConstant().annotatedWith(SessionTimeout.class).to(configuration.getInt("sessionTimeout"));
     }
 
 }
