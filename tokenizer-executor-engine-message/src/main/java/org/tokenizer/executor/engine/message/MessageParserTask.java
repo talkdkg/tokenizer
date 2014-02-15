@@ -64,54 +64,63 @@ public class MessageParserTask extends AbstractTask<MessageParserTaskConfigurati
         super(uuid, friendlyName, zk, taskConfiguration, crawlerRepository, model, hostLocker);
         
         try {
+            if (this.taskConfiguration.getTopicXPath() != null)
             topicXPathExpression = new HXPathExpression(LocalXPathFactory.newXPath().compile(
                     this.taskConfiguration.getTopicXPath()));
         } catch (XPathExpressionException e) {
             LOG.error("topicXPathExpression", e);
         }
         try {
+            if (this.taskConfiguration.getAuthorXPath() != null)
             authorXPathExpression = new HXPathExpression(LocalXPathFactory.newXPath().compile(
                     this.taskConfiguration.getAuthorXPath()));
         } catch (XPathExpressionException e) {
             LOG.error("authorXPathExpression", e);
         }
         try {
+            if (this.taskConfiguration.getAgeXPath() != null)
             ageXPathExpression = new HXPathExpression(LocalXPathFactory.newXPath().compile(
                     this.taskConfiguration.getAgeXPath()));
         } catch (XPathExpressionException e) {
             LOG.error("ageXPathExpression", e);
         }
         try {
+            if (this.taskConfiguration.getSexXPath() != null)
             sexXPathExpression = new HXPathExpression(LocalXPathFactory.newXPath().compile(
                     this.taskConfiguration.getSexXPath()));
         } catch (XPathExpressionException e) {
             LOG.error("sexXPathExpression", e);
         }
         try {
+            if (this.taskConfiguration.getTitleXPath() != null)
             titleXPathExpression = new HXPathExpression(LocalXPathFactory.newXPath().compile(
                     this.taskConfiguration.getTitleXPath()));
         } catch (XPathExpressionException e) {
             LOG.error("titleXPathExpression", e);
         }
         try {
+            if (this.taskConfiguration.getContentXPath() != null)
             contentXPathExpression = new HXPathExpression(LocalXPathFactory.newXPath().compile(
                     this.taskConfiguration.getContentXPath()));
         } catch (XPathExpressionException e) {
             LOG.error("contentXPathExpression", e);
         }
         try {
+            if (this.taskConfiguration.getDateXPath() != null)
             dateXPathExpression = new HXPathExpression(LocalXPathFactory.newXPath().compile(
                     this.taskConfiguration.getDateXPath()));
         } catch (XPathExpressionException e) {
             LOG.error("dateXPathExpression", e);
         }
         try {
+            if (this.taskConfiguration.getUserRatingXPath() != null)
             userRatingXPathExpression = new HXPathExpression(LocalXPathFactory.newXPath().compile(
                     this.taskConfiguration.getUserRatingXPath()));
         } catch (XPathExpressionException e) {
             LOG.error("userRatingXPathExpression", e);
         }
         try {
+            if (this.taskConfiguration.getLocationXPath() != null)
             locationXPathExpression = new HXPathExpression(LocalXPathFactory.newXPath().compile(
                     this.taskConfiguration.getLocationXPath()));
         } catch (XPathExpressionException e) {
