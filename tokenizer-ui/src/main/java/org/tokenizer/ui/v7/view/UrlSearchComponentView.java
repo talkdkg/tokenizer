@@ -17,22 +17,28 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import uk.co.q3c.util.ID;
 import uk.co.q3c.v7.base.navigate.V7Navigator;
-import uk.co.q3c.v7.base.view.V7View;
-import uk.co.q3c.v7.base.view.component.UserNavigationTree;
+import uk.co.q3c.v7.base.view.ViewBase;
 
-public class UrlSearchComponentView extends DefaultViewBase implements V7View {
-
+public class UrlSearchComponentView extends ViewBase {
+    
     @Inject
-    protected UrlSearchComponentView(final UrlSearchComponent component, final V7Navigator navigator,
-            final UserNavigationTree navtree) {
-        super(navigator, navtree);
-        layout.setSecondComponent(component);
+    protected UrlSearchComponentView(final V7Navigator navigator, final UrlSearchComponent component) {
+        super(navigator);
+        component.setSizeFull();
+        rootComponent = component;
+        rootComponent.setId(ID.getId(this, rootComponent));
     }
-
+    
     @Override
-    protected void processParams(final List<String> params) {
-
+    protected void buildView() {}
+    
+    @Override
+    protected void processParams(List<String> params) {}
+    
+    protected void setIds() {
+        // rootComponent.setId(ID.getId(this, rootComponent));
     }
-
+    
 }

@@ -233,7 +233,7 @@ public class TweetCollectorTask extends AbstractTask<TweetCollectorTaskConfigura
 
         messageRecord.setHost("stream.twitter.com");
 
-        messageRecord.setDate(org.apache.solr.schema.DateField.formatExternal(status.getCreatedAt()));
+        messageRecord.setDate(org.tokenizer.org.apache.solr.schema.DateField.formatExternal(status.getCreatedAt()));
 
         crawlerRepository.insertIfNotExists(messageRecord);
         metricsCache.increment(MetricsCache.MESSAGE_TOTAL_KEY);

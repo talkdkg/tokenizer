@@ -216,6 +216,9 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
     @Inject
     public CrawlerRepositoryCassandraImpl(final NlpTools nlpTools) {
         this.nlpTools = nlpTools;
+        
+        LOG.error("Constructor called...");
+        
         try {
             setup();
         } catch (ConnectionException | InterruptedException e) {
@@ -223,12 +226,16 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
         }
     }
     
-    CrawlerRepositoryCassandraImpl(final int port) {
-        this.port = port;
-    }
+    //CrawlerRepositoryCassandraImpl(final int port) {
+    //    this.port = port;
+    //}
     
     // @PostConstruct
     public void setup() throws ConnectionException, InterruptedException {
+        
+        LOG.error("setup called...");
+        
+        LOG.error("seeds: {}", seeds);
         
         keyspaceContext = new AstyanaxContext.Builder()
                 .forCluster(clusterName)
@@ -236,13 +243,13 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
                 .withAstyanaxConfiguration(new AstyanaxConfigurationImpl().setTargetCassandraVersion("1.2"))
                 .withConnectionPoolConfiguration(
                         new ConnectionPoolConfigurationImpl("MyConnectionPool").setPort(port)
-                                .setSocketTimeout(30000)
-                                .setConnectTimeout(120000)
-                                .setTimeoutWindow(300000) // Shut down a host if
+                                .setSocketTimeout(120000)
+                                .setConnectTimeout(300000)
+                                .setTimeoutWindow(600000) // Shut down a host if
                                                           // it times out too
                                                           // many times within
                                                           // this window (?)
-                                .setMaxConnsPerHost(256).setSeeds(seeds))
+                                .setMaxConnsPerHost(16).setSeeds(seeds))
                 .withConnectionPoolMonitor(new CountingConnectionPoolMonitor())
                 .buildKeyspace(ThriftFamilyFactory.getInstance());
 
@@ -1091,6 +1098,7 @@ public class CrawlerRepositoryCassandraImpl implements CrawlerRepository {
     
     @Override
     public WebpageRecord retrieveWebpageRecord(final byte[] digest) throws ConnectionException {
+        if (digest == null || digest.length == 0) return null;
         OperationResult<ColumnList<String>> result = keyspace.prepareQuery(CF_WEBPAGE_RECORDS).getKey(digest).execute();
         ColumnList<String> columns = result.getResult();
         return toWebpageRecord(digest, columns);

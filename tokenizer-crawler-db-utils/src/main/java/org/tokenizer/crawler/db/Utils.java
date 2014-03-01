@@ -30,14 +30,17 @@ import com.netflix.astyanax.model.ColumnList;
 import com.netflix.astyanax.model.Row;
 import com.netflix.astyanax.model.Rows;
 
-public class Utils {
+public class Utils
+{
 
     protected static Logger LOG = LoggerFactory.getLogger(Utils.class);
 
-    static CrawlerRepositoryCassandraImpl oldRepository = new CrawlerRepositoryCassandraImpl(9160);
-    static CrawlerRepositoryCassandraImpl newRepository = new CrawlerRepositoryCassandraImpl(19160);
+    static CrawlerRepositoryCassandraImpl oldRepository = new CrawlerRepositoryCassandraImpl(null);
 
-    public static void main(String[] args) throws ConnectionException, InterruptedException {
+    static CrawlerRepositoryCassandraImpl newRepository = new CrawlerRepositoryCassandraImpl(null);
+
+    public static void main(final String[] args) throws ConnectionException, InterruptedException
+    {
 
         oldRepository.setup();
         newRepository.setup();
@@ -64,185 +67,236 @@ public class Utils {
 
     }
 
-    public static class UrlMigrationThread extends Thread {
+    public static class UrlMigrationThread extends Thread
+    {
 
         @Override
-        public void run() {
+        public void run()
+        {
             final AtomicLong counter = new AtomicLong();
-            try {
+            try
+            {
                 //@formatter:off
-                    oldRepository.keyspace
-                            .prepareQuery(oldRepository.CF_URL_RECORDS)
-                            .getAllRows()
-                            .setRowLimit(100)                           
-                            .setRepeatLastToken(true)
-                             .executeWithCallback(new RowCallback<String, String>() {
-                                @Override
-                                public void success(final Rows<String, String> rows) {
-                                    for (Row<String, String> row : rows) {
-                                        ColumnList<String> columns = row.getColumns();
-                                        UrlRecord urlRecord = toUrlRecord(row.getKey(), columns);         
-                                        try {
-                                            newRepository.update(urlRecord);
-                                        } catch (ConnectionException e) {
-                                            LOG.error("UrlMigrationThread - " + e.getMessage());
-                                            LOG.error("UrlMigrationThread - " + e.getCause().getMessage());
-                                        }
-                                        counter.incrementAndGet();
-                                        if (counter.get() % 1000 == 0) {
-                                            LOG.warn("{} records migrated...", counter.get());
-                                        }
-
+                oldRepository.keyspace
+                        .prepareQuery(oldRepository.CF_URL_RECORDS)
+                        .getAllRows()
+                        .setRowLimit(100)
+                        .setRepeatLastToken(true)
+                        .executeWithCallback(new RowCallback<String, String>() {
+                            @Override
+                            public void success(final Rows<String, String> rows)
+                            {
+                                for (final Row<String, String> row : rows)
+                                {
+                                    final ColumnList<String> columns = row.getColumns();
+                                    final UrlRecord urlRecord = toUrlRecord(row.getKey(), columns);
+                                    try
+                                    {
+                                        newRepository.update(urlRecord);
                                     }
-                                }
+                                    catch (final ConnectionException e)
+                                    {
+                                        LOG.error("UrlMigrationThread - " + e.getMessage());
+                                        LOG.error("UrlMigrationThread - " + e.getCause().getMessage());
+                                    }
+                                    counter.incrementAndGet();
+                                    if (counter.get() % 1000 == 0)
+                                    {
+                                        LOG.warn("{} records migrated...", counter.get());
+                                    }
 
-                                @Override
-                                public boolean failure(final ConnectionException e) {
-                                    LOG.error(e.getMessage(), e);
-                                    return false;
                                 }
-                            });
-                    // @formatter:on
-            } catch (Exception e) {
+                            }
+
+                            @Override
+                            public boolean failure(final ConnectionException e)
+                            {
+                                LOG.error(e.getMessage(), e);
+                                return false;
+                            }
+                        });
+                // @formatter:on
+            }
+            catch (final Exception e)
+            {
                 LOG.error("", e);
             }
             LOG.error("Total {} records reindexed... ", counter.get());
         }
     }
 
-    public static class WebpageMigrationThread extends Thread {
+    public static class WebpageMigrationThread extends Thread
+    {
 
         @Override
-        public void run() {
+        public void run()
+        {
             final AtomicLong counter = new AtomicLong();
-            try {
+            try
+            {
                 //@formatter:off
-                    oldRepository.keyspace
-                            .prepareQuery(oldRepository.CF_WEBPAGE_RECORDS)
-                            .getAllRows()
-                            .setRowLimit(100)                           
-                            .setRepeatLastToken(true)
-                             .executeWithCallback(new RowCallback<byte[], String>() {
-                                @Override
-                                public void success(final Rows<byte[], String> rows) {
-                                    for (Row<byte[], String> row : rows) {
-                                        ColumnList<String> columns = row.getColumns();
-                                        WebpageRecord record = CrawlerRepositoryCassandraImpl.toWebpageRecord(row.getKey(), columns);         
-                                        try {
-                                            newRepository.insert(record);
-                                        } catch (ConnectionException e) {
-                                            LOG.error("WebpageMigrationThread - " + e.getMessage());
-                                            LOG.error("WebpageMigrationThread - " + e.getCause().getMessage());
-                                        }
-                                        counter.incrementAndGet();
-                                        if (counter.get() % 1000 == 0) {
-                                            LOG.warn("{} records migrated...", counter.get());
-                                        }
-
+                oldRepository.keyspace
+                        .prepareQuery(oldRepository.CF_WEBPAGE_RECORDS)
+                        .getAllRows()
+                        .setRowLimit(100)
+                        .setRepeatLastToken(true)
+                        .executeWithCallback(new RowCallback<byte[], String>() {
+                            @Override
+                            public void success(final Rows<byte[], String> rows)
+                            {
+                                for (final Row<byte[], String> row : rows)
+                                {
+                                    final ColumnList<String> columns = row.getColumns();
+                                    final WebpageRecord record = CrawlerRepositoryCassandraImpl.toWebpageRecord(
+                                            row.getKey(), columns);
+                                    try
+                                    {
+                                        newRepository.insert(record);
                                     }
-                                }
+                                    catch (final ConnectionException e)
+                                    {
+                                        LOG.error("WebpageMigrationThread - " + e.getMessage());
+                                        LOG.error("WebpageMigrationThread - " + e.getCause().getMessage());
+                                    }
+                                    counter.incrementAndGet();
+                                    if (counter.get() % 1000 == 0)
+                                    {
+                                        LOG.warn("{} records migrated...", counter.get());
+                                    }
 
-                                @Override
-                                public boolean failure(final ConnectionException e) {
-                                    LOG.error(e.getMessage(), e);
-                                    return false;
                                 }
-                            });
-                    // @formatter:on
-            } catch (Exception e) {
+                            }
+
+                            @Override
+                            public boolean failure(final ConnectionException e)
+                            {
+                                LOG.error(e.getMessage(), e);
+                                return false;
+                            }
+                        });
+                // @formatter:on
+            }
+            catch (final Exception e)
+            {
                 LOG.error("", e);
             }
             LOG.error("Total {} records migrated... ", counter.get());
         }
     }
 
-    public static class XmlMigrationThread extends Thread {
+    public static class XmlMigrationThread extends Thread
+    {
 
         @Override
-        public void run() {
+        public void run()
+        {
             final AtomicLong counter = new AtomicLong();
-            try {
+            try
+            {
                 //@formatter:off
-                    oldRepository.keyspace
-                            .prepareQuery(oldRepository.CF_XML_RECORDS)
-                            .getAllRows()
-                            .setRowLimit(100)                           
-                            .setRepeatLastToken(true)
-                             .executeWithCallback(new RowCallback<byte[], String>() {
-                                @Override
-                                public void success(final Rows<byte[], String> rows) {
-                                    for (Row<byte[], String> row : rows) {
-                                        ColumnList<String> columns = row.getColumns();
-                                        XmlRecord record = CrawlerRepositoryCassandraImpl.toXmlRecord(row.getKey(), columns);         
-                                        try {
-                                            newRepository.insert(record);
-                                        } catch (ConnectionException e) {
-                                            LOG.error("XmlMigrationThread - " + e.getMessage());
-                                            LOG.error("XmlMigrationThread - " + e.getCause().getMessage());
-                                        }
-                                        counter.incrementAndGet();
-                                        if (counter.get() % 1000 == 0) {
-                                            LOG.warn("{} records migrated...", counter.get());
-                                        }
-
+                oldRepository.keyspace
+                        .prepareQuery(oldRepository.CF_XML_RECORDS)
+                        .getAllRows()
+                        .setRowLimit(100)
+                        .setRepeatLastToken(true)
+                        .executeWithCallback(new RowCallback<byte[], String>() {
+                            @Override
+                            public void success(final Rows<byte[], String> rows)
+                            {
+                                for (final Row<byte[], String> row : rows)
+                                {
+                                    final ColumnList<String> columns = row.getColumns();
+                                    final XmlRecord record = CrawlerRepositoryCassandraImpl.toXmlRecord(row.getKey(),
+                                            columns);
+                                    try
+                                    {
+                                        newRepository.insert(record);
                                     }
-                                }
+                                    catch (final ConnectionException e)
+                                    {
+                                        LOG.error("XmlMigrationThread - " + e.getMessage());
+                                        LOG.error("XmlMigrationThread - " + e.getCause().getMessage());
+                                    }
+                                    counter.incrementAndGet();
+                                    if (counter.get() % 1000 == 0)
+                                    {
+                                        LOG.warn("{} records migrated...", counter.get());
+                                    }
 
-                                @Override
-                                public boolean failure(final ConnectionException e) {
-                                    LOG.error(e.getMessage(), e);
-                                    return false;
                                 }
-                            });
-                    // @formatter:on
-            } catch (Exception e) {
+                            }
+
+                            @Override
+                            public boolean failure(final ConnectionException e)
+                            {
+                                LOG.error(e.getMessage(), e);
+                                return false;
+                            }
+                        });
+                // @formatter:on
+            }
+            catch (final Exception e)
+            {
                 LOG.error("", e);
             }
             LOG.error("Total {} records migrated... ", counter.get());
         }
     }
 
-    public static class MessageMigrationThread extends Thread {
+    public static class MessageMigrationThread extends Thread
+    {
 
         @Override
-        public void run() {
+        public void run()
+        {
             final AtomicLong counter = new AtomicLong();
-            try {
+            try
+            {
                 //@formatter:off
-                    oldRepository.keyspace
-                            .prepareQuery(oldRepository.CF_MESSAGE_RECORDS)
-                            .getAllRows()
-                            .setRowLimit(100)                           
-                            .setRepeatLastToken(true)
-                             .executeWithCallback(new RowCallback<byte[], String>() {
-                                @Override
-                                public void success(final Rows<byte[], String> rows) {
-                                    for (Row<byte[], String> row : rows) {
-                                        ColumnList<String> columns = row.getColumns();
-                                        MessageRecord record = CrawlerRepositoryCassandraImpl.toMessageRecord(row.getKey(), columns);    
-                                        //LOG.debug("MessageRecord: {}", record);
-                                        try {
-                                            newRepository.insert(record);
-                                        } catch (ConnectionException e) {
-                                            LOG.error("MessageMigrationThread - " + e.getMessage());
-                                            LOG.error("MessageMigrationThread - Cause -" + e.getCause().getMessage(), e);
-                                        }
-                                        counter.incrementAndGet();
-                                        if (counter.get() % 1000 == 0) {
-                                            LOG.warn("{} records migrated...", counter.get());
-                                        }
-
+                oldRepository.keyspace
+                        .prepareQuery(oldRepository.CF_MESSAGE_RECORDS)
+                        .getAllRows()
+                        .setRowLimit(100)
+                        .setRepeatLastToken(true)
+                        .executeWithCallback(new RowCallback<byte[], String>() {
+                            @Override
+                            public void success(final Rows<byte[], String> rows)
+                            {
+                                for (final Row<byte[], String> row : rows)
+                                {
+                                    final ColumnList<String> columns = row.getColumns();
+                                    final MessageRecord record = CrawlerRepositoryCassandraImpl.toMessageRecord(
+                                            row.getKey(), columns);
+                                    //LOG.debug("MessageRecord: {}", record);
+                                    try
+                                    {
+                                        newRepository.insert(record);
                                     }
-                                }
+                                    catch (final ConnectionException e)
+                                    {
+                                        LOG.error("MessageMigrationThread - " + e.getMessage());
+                                        LOG.error("MessageMigrationThread - Cause -" + e.getCause().getMessage(), e);
+                                    }
+                                    counter.incrementAndGet();
+                                    if (counter.get() % 1000 == 0)
+                                    {
+                                        LOG.warn("{} records migrated...", counter.get());
+                                    }
 
-                                @Override
-                                public boolean failure(final ConnectionException e) {
-                                    LOG.error(e.getMessage(), e);
-                                    return false;
                                 }
-                            });
-                    // @formatter:on
-            } catch (Exception e) {
+                            }
+
+                            @Override
+                            public boolean failure(final ConnectionException e)
+                            {
+                                LOG.error(e.getMessage(), e);
+                                return false;
+                            }
+                        });
+                // @formatter:on
+            }
+            catch (final Exception e)
+            {
                 LOG.error("", e);
             }
             LOG.error("Total {} records migrated... ", counter.get());

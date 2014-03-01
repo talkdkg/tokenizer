@@ -17,39 +17,28 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import org.tokenizer.crawler.db.CrawlerRepository;
-import org.tokenizer.executor.model.api.WritableExecutorModel;
-
 import uk.co.q3c.util.ID;
 import uk.co.q3c.v7.base.navigate.V7Navigator;
 import uk.co.q3c.v7.base.view.ViewBase;
 
 public class TaskInfoComponentView extends ViewBase {
     
-    WritableExecutorModel model;
-    CrawlerRepository repository;
-    
     @Inject
     protected TaskInfoComponentView(V7Navigator navigator, TaskInfoComponent component) {
         super(navigator);
-        this.rootComponent = component;
-
+        component.setSizeFull();
+        rootComponent = component;
+        rootComponent.setId(ID.getId(this, rootComponent));
     }
     
     @Override
-    protected void buildView() {
-        //rootComponent = new TaskInfoComponent(model, repository);
-    }
+    protected void buildView() {}
     
     @Override
-    protected void processParams(List<String> params) {
-    }
+    protected void processParams(List<String> params) {}
     
-    @Override
     protected void setIds() {
-        //super.setIds();
-        //rootComponent.setId(ID.getId(this.getClass().getSimpleName(), rootComponent));
-     }
+//        rootComponent.setId(ID.getId(this, rootComponent));
+    }
 
-    
 }

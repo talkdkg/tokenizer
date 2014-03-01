@@ -14,7 +14,9 @@
 package org.tokenizer.crawler.db.model;
 
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.tika.metadata.Metadata;
@@ -307,5 +309,25 @@ public class WebpageRecord implements Serializable {
     public void addXmlLink(byte[] digest) {
         this.xmlLinks.add(digest);
     }
+
+    @Override
+    public String toString()
+    {
+        try
+        {
+            return "WebpageRecord [host=" + host + ", baseUrl=" + baseUrl + ", fetchedUrl=" + fetchedUrl + ", fetchTime="
+                    + fetchTime + ", content=" + new String(content, "UTF-8") + ", contentType=" + contentType
+                    + ", responseRate=" + responseRate + ", headers=" + headers + ", newBaseUrl=" + newBaseUrl
+                    + ", numRedirects=" + numRedirects + ", hostAddress=" + hostAddress + ", httpStatus=" + httpStatus
+                    + ", reasonPhrase=" + reasonPhrase + ", extractOutlinksAttemptCounter=" + extractOutlinksAttemptCounter
+                    + ", splitAttemptCounter=" + splitAttemptCounter + ", xmlLinks=" + xmlLinks + "]";
+        }
+        catch (UnsupportedEncodingException e)
+        {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
 
 }

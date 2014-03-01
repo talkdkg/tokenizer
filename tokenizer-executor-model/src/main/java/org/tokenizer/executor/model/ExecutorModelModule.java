@@ -20,10 +20,12 @@ import org.tokenizer.util.zookeeper.ZooKeeperItf;
 
 import com.google.inject.AbstractModule;
 
-public class ExecutorModelModule extends AbstractModule {
+public class ExecutorModelModule extends AbstractModule
+{
 
     @Override
-    protected void configure() {
+    protected void configure()
+    {
         bind(WritableExecutorModel.class).to(ExecutorModelImpl.class);
         bind(ZooKeeperItf.class).to(ZooKeeperImpl.class);
     }

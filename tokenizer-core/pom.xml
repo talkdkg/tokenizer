@@ -74,11 +74,13 @@
             <groupId>org.apache.solr</groupId>
             <artifactId>solr-solrj</artifactId>
         </dependency>
-        <dependency>
+<!--         
+		<dependency>
             <groupId>org.apache.solr</groupId>
             <artifactId>solr-core</artifactId>
         </dependency>
-        <dependency>
+ -->    
+ 	    <dependency>
             <groupId>org.apache.tika</groupId>
             <artifactId>tika-parsers</artifactId>
         </dependency>

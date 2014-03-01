@@ -145,12 +145,14 @@
         
         <!-- Java EE annotations -->
         <!-- EJB 3.1 -->
+        
         <dependency>
             <groupId>org.glassfish</groupId>
             <artifactId>javax.ejb</artifactId>
             <version>3.1</version>
         </dependency>
-        <dependency>
+        
+<!--         <dependency>
             <groupId>javax.enterprise</groupId>
             <artifactId>cdi-api</artifactId>
             <version>1.1.EDR1.2</version>
@@ -165,6 +167,7 @@
                 </exclusion>
             </exclusions>
         </dependency>
+ -->    
         <dependency>
             <groupId>com.google.inject</groupId>
             <artifactId>guice</artifactId>

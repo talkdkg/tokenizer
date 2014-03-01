@@ -88,10 +88,14 @@ public class UrlSearchComponent extends CustomComponent {
         this.repository = repository;
         
         buildMainLayout();
-        setCompositionRoot(mainLayout);
-        setCaption("Personal details");
-        // mainLayout.setSizeFull();
         
+        
+        
+        Panel panel = new Panel();
+        panel.setSizeFull();
+        panel.setContent(mainLayout);
+        setCompositionRoot(panel);
+
     }
     
     private void buildMainLayout() {

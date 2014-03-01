@@ -14,8 +14,6 @@
 package org.tokenizer.crawler.db.module;
 
 import org.apache.commons.configuration.CompositeConfiguration;
-import org.apache.shiro.config.Ini;
-import org.apache.shiro.config.Ini.Section;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tokenizer.nlp.NlpTools;
@@ -23,69 +21,69 @@ import org.tokenizer.nlp.NlpTools;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 
-public class CrawlerRepositoryModule extends AbstractModule {
+public class CrawlerRepositoryModule extends AbstractModule
+{
 
     protected static Logger LOG = LoggerFactory.getLogger(CrawlerRepositoryModule.class);
 
     //private Ini ini;
     private String nlpToolsImplementationClass;
 
-    private CompositeConfiguration configuration;
-    
-    public CrawlerRepositoryModule(CompositeConfiguration configuration) {
-        
-        
+    private final CompositeConfiguration configuration;
+
+    public CrawlerRepositoryModule(final CompositeConfiguration configuration)
+    {
+
         super();
-        System.out.println("URRRRRRRRRRAAAAAAAAAAAAAAAAAAAAAAAAAAAAA!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-        System.out.println("URRRRRRRRRRAAAAAAAAAAAAAAAAAAAAAAAAAAAAA!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-        System.out.println("URRRRRRRRRRAAAAAAAAAAAAAAAAAAAAAAAAAAAAA!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-        System.out.println("URRRRRRRRRRAAAAAAAAAAAAAAAAAAAAAAAAAAAAA!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-        System.out.println("URRRRRRRRRRAAAAAAAAAAAAAAAAAAAAAAAAAAAAA!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-        System.out.println("URRRRRRRRRRAAAAAAAAAAAAAAAAAAAAAAAAAAAAA!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-        System.out.println("URRRRRRRRRRAAAAAAAAAAAAAAAAAAAAAAAAAAAAA!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-        System.out.println("URRRRRRRRRRAAAAAAAAAAAAAAAAAAAAAAAAAAAAA!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-        System.out.println("URRRRRRRRRRAAAAAAAAAAAAAAAAAAAAAAAAAAAAA!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-        System.out.println("URRRRRRRRRRAAAAAAAAAAAAAAAAAAAAAAAAAAAAA!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-        System.out.println("URRRRRRRRRRAAAAAAAAAAAAAAAAAAAAAAAAAAAAA!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-        System.out.println("URRRRRRRRRRAAAAAAAAAAAAAAAAAAAAAAAAAAAAA!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-        System.out.println("URRRRRRRRRRAAAAAAAAAAAAAAAAAAAAAAAAAAAAA!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-        System.out.println("URRRRRRRRRRAAAAAAAAAAAAAAAAAAAAAAAAAAAAA!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-        System.out.println("URRRRRRRRRRAAAAAAAAAAAAAAAAAAAAAAAAAAAAA!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-        System.out.println("URRRRRRRRRRAAAAAAAAAAAAAAAAAAAAAAAAAAAAA!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-        System.out.println("URRRRRRRRRRAAAAAAAAAAAAAAAAAAAAAAAAAAAAA!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-        System.out.println("URRRRRRRRRRAAAAAAAAAAAAAAAAAAAAAAAAAAAAA!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-        System.out.println("URRRRRRRRRRAAAAAAAAAAAAAAAAAAAAAAAAAAAAA!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-        System.out.println("URRRRRRRRRRAAAAAAAAAAAAAAAAAAAAAAAAAAAAA!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-        System.out.println("URRRRRRRRRRAAAAAAAAAAAAAAAAAAAAAAAAAAAAA!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-        System.out.println("URRRRRRRRRRAAAAAAAAAAAAAAAAAAAAAAAAAAAAA!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-        System.out.println("URRRRRRRRRRAAAAAAAAAAAAAAAAAAAAAAAAAAAAA!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-        //this.ini = ini;
         this.configuration = configuration;
-        this.nlpToolsImplementationClass = configuration.getString("nlp.implementation", "orgzzz.tokenizer.nlp.impl.NlpToolsImpl");
+        this.nlpToolsImplementationClass = configuration.getString("nlp.implementation",
+                "org222.tokenizer.nlp.impl.NlpToolsImpl");
+        
+        LOG.error("nlpToolsImplementationClass: {}", nlpToolsImplementationClass);
+        
     }
 
+    /**
+     * @see com.google.inject.AbstractModule#configure()
+     */
     @Override
-    protected void configure() {
-        //Section zk = ini.getSection("nlp");
-        //this.nlpToolsImplementationClass = configuration.getString("nlp.implementation");
+    protected void configure()
+    {
+        // TODO Auto-generated method stub
+
     }
+
+    //@Override
+    //protected void configure()
+    //{
+    //Section zk = ini.getSection("nlp");
+    //this.nlpToolsImplementationClass = configuration.getString("nlp.implementation");
+    //}
 
     @Provides
-    NlpTools provideNlpTools() {
-        
-        if (nlpToolsImplementationClass ==  null) {
+    NlpTools provideNlpTools()
+    {
+
+        if (nlpToolsImplementationClass == null)
+        {
             LOG.warn("null!!!");
             nlpToolsImplementationClass = configuration.getString("nlp.implementation");
-        } else {
+        }
+        else
+        {
             LOG.warn("nlpToolsImplementationClass: {}", nlpToolsImplementationClass);
         }
-        
-        try {
-            Class<?> clazz = Class.forName(nlpToolsImplementationClass);
-            if (NlpTools.class.isAssignableFrom(clazz)) {
+
+        try
+        {
+            final Class<?> clazz = Class.forName(nlpToolsImplementationClass);
+            if (NlpTools.class.isAssignableFrom(clazz))
+            {
                 return (NlpTools) clazz.newInstance();
             }
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+        }
+        catch (ClassNotFoundException | InstantiationException | IllegalAccessException e)
+        {
             LOG.error("", e);
         }
 

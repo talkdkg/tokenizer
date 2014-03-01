@@ -70,8 +70,6 @@ public abstract class AbstractFetcherTask<T extends AbstractFetcherTaskConfigura
         }
     };
 
-    private static final long DEFAULT_REFRESH_DELAY = 10 * 1000;
-
     private static final int MAX_PARSE_DURATION = 180 * 1000;
 
     private final SimpleHttpFetcher httpClient;
@@ -82,6 +80,21 @@ public abstract class AbstractFetcherTask<T extends AbstractFetcherTaskConfigura
     private static BaseUrlValidator urlValidator = new SimpleUrlValidator();
     private static BaseUrlNormalizer urlNormalizer = new SimpleUrlNormalizer();
 
+    
+    /**
+     * Default delay between subsequent refresh of homepage
+     */
+    private static final long HOMEPAGE_DEFAULT_REFRESH_RATE = 23 * 3600 * 1000L;
+    private long lastHomepageRefreshTimestamp = 0L;
+    
+    private static final long ROBOT_DEFAULT_REFRESH_RATE = 1 * 3600 * 1000L;
+    private long lastRobotRefreshTimestamp = 0L;
+    
+    private static final long DEFAULT_DELAY_BETWEEN_FETCHES = 1500L;
+    
+    private long lastFetchTimestamp = 0L;
+    
+    
     //@formatter:off
     @SuppressWarnings("unchecked")
     public AbstractFetcherTask(
@@ -137,6 +150,7 @@ public abstract class AbstractFetcherTask<T extends AbstractFetcherTaskConfigura
             long start = System.currentTimeMillis();
             long fetchAttemptTimestamp = System.currentTimeMillis();
 
+             
             String url = timestampUrlIDX.getUrl();
 
             LOG.debug("Trying URL: {}", url);
@@ -163,6 +177,9 @@ public abstract class AbstractFetcherTask<T extends AbstractFetcherTaskConfigura
                 continue;
 
             }
+
+            if (fetchAttemptTimestamp - lastFetchTimestamp < DEFAULT_DELAY_BETWEEN_FETCHES)
+                Thread.currentThread().sleep(DEFAULT_DELAY_BETWEEN_FETCHES - (fetchAttemptTimestamp - lastFetchTimestamp));
 
             FetchedResult fetchedResult = null;
             try {
@@ -257,6 +274,9 @@ public abstract class AbstractFetcherTask<T extends AbstractFetcherTaskConfigura
             // String charset = CharsetUtils.clean(HttpUtils.getCharsetFromContentType(fetchedResult.getContentType()));
             WebpageRecord webpageRecord = new WebpageRecord(fetchedResult);
             crawlerRepository.insertIfNotExists(webpageRecord);
+            
+            LOG.debug("webpageRecord: {}", webpageRecord);
+            
 
             urlRecord.setWebpageDigest(webpageRecord.getDigest());
             crawlerRepository.update(urlRecord);
@@ -267,6 +287,9 @@ public abstract class AbstractFetcherTask<T extends AbstractFetcherTaskConfigura
             crawlerRepository.insert(timestampUrlIDX);
 
             processFetchedResult(fetchedResult);
+
+            // put it at the; "END of last fetch"; fetch could be 10 seconds etc.
+            lastFetchTimestamp = System.currentTimeMillis();
 
         }
 
@@ -289,6 +312,10 @@ public abstract class AbstractFetcherTask<T extends AbstractFetcherTaskConfigura
      * @return
      */
     protected synchronized boolean refreshRobotRules() {
+        
+        if (System.currentTimeMillis() - lastRobotRefreshTimestamp < ROBOT_DEFAULT_REFRESH_RATE) return false;
+        lastRobotRefreshTimestamp = System.currentTimeMillis();
+
         BaseRobotsParser parser = new SimpleRobotRulesParser();
         try {
             robotRules = RobotUtils.getRobotRules(robotFetcher, parser, new URL("http://" + taskConfiguration.getHost()
@@ -302,6 +329,9 @@ public abstract class AbstractFetcherTask<T extends AbstractFetcherTaskConfigura
 
     protected void refreshHome() throws ConnectionException, InterruptedException {
 
+        if (System.currentTimeMillis() - lastHomepageRefreshTimestamp < HOMEPAGE_DEFAULT_REFRESH_RATE) return;
+        lastHomepageRefreshTimestamp = System.currentTimeMillis();
+        
         String url = "http://" + taskConfiguration.getHost() + "/";
         UrlRecord urlRecord = crawlerRepository.retrieveUrlRecord(url);
 
@@ -311,10 +341,6 @@ public abstract class AbstractFetcherTask<T extends AbstractFetcherTaskConfigura
             crawlerRepository.insert(urlRecord);
         }
         else {
-            if (System.currentTimeMillis() - urlRecord.getFetchTime() <= DEFAULT_REFRESH_DELAY) {
-                LOG.warn("Sleeping {} ms before attempting to refresh homepage", DEFAULT_REFRESH_DELAY);
-                Thread.sleep(DEFAULT_REFRESH_DELAY);
-            }
             TimestampUrlIDX timestampUrlIDX = new TimestampUrlIDX(url);
             timestampUrlIDX.setTimestamp(urlRecord.getFetchTime());
             LOG.info("Deleting existing TimestampUrlIDX record for homepage: {}", url);
@@ -324,7 +350,7 @@ public abstract class AbstractFetcherTask<T extends AbstractFetcherTaskConfigura
         TimestampUrlIDX timestampUrlIDX = new TimestampUrlIDX(url);
         timestampUrlIDX.setTimestamp(0);
         crawlerRepository.insert(timestampUrlIDX);
-
+        
     }
 
     protected abstract boolean accept(final String url);

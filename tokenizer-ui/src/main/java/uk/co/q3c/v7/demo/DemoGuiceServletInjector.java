@@ -27,7 +27,7 @@ public class DemoGuiceServletInjector extends BaseGuiceServletInjector {
         modules.add(new DemoModule());
         modules.add(new DemoUIModule());
         
-        File file = new File("/java/git/tokenizer/tokenizer-ui", "V7.ini");
+        File file = new File("/usr/java/tokenizer-home", "V7.ini");
         
         if (file.exists()) {
             HierarchicalINIConfiguration config;

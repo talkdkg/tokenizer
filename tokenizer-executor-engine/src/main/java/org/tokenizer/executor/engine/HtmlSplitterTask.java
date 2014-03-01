@@ -88,7 +88,7 @@ public class HtmlSplitterTask extends
 		
 		List<WebpageRecord> webpageRecords = crawlerRepository
 				.listWebpageRecords(taskConfiguration.getHost(),
-						taskConfiguration.getSplitAttemptCounter(), 100);
+						taskConfiguration.getSplitAttemptCounter(), 10);
 		for (WebpageRecord webpageRecord : webpageRecords) {
 			// yes, we encountered that when created dummy task with host=null:
 			if (webpageRecord == null) {

@@ -67,6 +67,7 @@ import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Panel;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
@@ -106,7 +107,11 @@ public class TaskInfoComponent extends CustomComponent implements Broadcaster.Br
         ExecutorModelListener listener = new MyExecutorModelListener();
         tasks = model.getTasks(listener);
         buildMainLayout();
-        setCompositionRoot(mainLayout);
+        
+        Panel panel = new Panel();
+        panel.setSizeFull();
+        panel.setContent(mainLayout);
+        setCompositionRoot(panel);
 
         buildFormControls();
     }
@@ -114,8 +119,8 @@ public class TaskInfoComponent extends CustomComponent implements Broadcaster.Br
     private void buildMainLayout() {
 
         mainLayout = new VerticalLayout();
-        mainLayout.setSpacing(true);
-        mainLayout.setMargin(true);
+        //mainLayout.setSpacing(true);
+        //mainLayout.setMargin(true);
 
         tableControls = buildTableControls();
         // this.addComponent(viewLabel());
