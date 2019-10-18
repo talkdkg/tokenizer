@@ -51,7 +51,7 @@
 		<version.rome>1.0</version.rome>
 		<shiro.version>1.2.2</shiro.version>
 		<version.slf4j>1.6.6</version.slf4j>
-		<version.solr>4.4.0</version.solr>
+		<version.solr>8.2.0</version.solr>
 		<version.spring>3.2.0.RELEASE</version.spring>
 		<version.tagsoup>1.2.1</version.tagsoup>
 		<testng.version>6.8.5</testng.version>
