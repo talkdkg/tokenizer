@@ -64,7 +64,7 @@
 		<vaadin.version>7.1.10</vaadin.version>
 		<version.dontpush>1.0.1</version.dontpush>
 		<xaloon.version>1.5.1</xaloon.version>
-		<xstream.version>1.4.4</xstream.version>
+		<xstream.version>1.4.6</xstream.version>
 		<version.zookeeper>3.4.5</version.zookeeper>
 	</properties>
 	<modelVersion>4.0.0</modelVersion>
